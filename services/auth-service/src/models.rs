@@ -21,4 +21,5 @@ pub struct DbRefreshToken {
     pub user_id: Uuid,
     pub token_hash: String,
     pub expires_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
 }

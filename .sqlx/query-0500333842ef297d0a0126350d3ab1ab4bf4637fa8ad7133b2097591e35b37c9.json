@@ -1,0 +1,70 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM collections.entries WHERE user_id = $1 ORDER BY updated_at DESC",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "item_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "game_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 4,
+        "name": "owned",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 5,
+        "name": "constellation_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "ascension",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "0500333842ef297d0a0126350d3ab1ab4bf4637fa8ad7133b2097591e35b37c9"
+}

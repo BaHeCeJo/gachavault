@@ -1,0 +1,75 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE games.games SET\n            name = COALESCE($2, name),\n            description = COALESCE($3, description),\n            logo_url = COALESCE($4, logo_url),\n            banner_url = COALESCE($5, banner_url),\n            is_active = COALESCE($6, is_active),\n            updated_at = NOW()\n           WHERE id = $1\n           RETURNING *",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "slug",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "logo_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "banner_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "is_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 7,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Text",
+        "Text",
+        "Text",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "079fddf11e4e13e3f3384e47cb8c02f38af014b4e271c03369e83ec1ed20fd35"
+}

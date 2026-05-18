@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE auth.password_resets SET used = TRUE WHERE user_id = $1 AND used = FALSE",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "62db919e6e6346ac1fa2965935889283af9cf556c0f3510337f9446633ccb3e4"
+}

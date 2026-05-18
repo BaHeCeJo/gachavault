@@ -1,4 +1,4 @@
-use axum::{routing::{delete, get, post, put}, Router};
+use axum::{routing::{delete, get, post}, Router};
 use serde_json::json;
 use std::net::SocketAddr;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};

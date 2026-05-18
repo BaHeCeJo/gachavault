@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, item_id, name, description, skill_type, data, \"order\" as \"order: i32\"\n           FROM items.item_skills WHERE item_id = $1 ORDER BY \"order\" ASC",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "item_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "skill_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "data",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 6,
+        "name": "order: i32",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "66a3ea72a6995f3799399cadcae6e2093d5837a5d1f8ef21669c668a5b9f6c90"
+}

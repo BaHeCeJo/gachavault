@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO tierlists.tier_list_entries (tier_list_id, item_id, tier) VALUES ($1, $2, $3)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1da0f4048cfce3be113a3f7379c7bc3ba295b57d64b40d4e4c20b0d4a128c406"
+}

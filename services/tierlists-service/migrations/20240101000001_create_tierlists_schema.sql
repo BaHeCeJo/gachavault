@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS tierlists.tier_lists (
     game_id UUID NOT NULL,
     title VARCHAR(255) NOT NULL,
     is_public BOOLEAN NOT NULL DEFAULT TRUE,
-    share_slug VARCHAR(100) NOT NULL UNIQUE DEFAULT encode(gen_random_bytes(8), 'hex'),
+    share_slug VARCHAR(100) NOT NULL UNIQUE DEFAULT replace(gen_random_uuid()::text, '-', ''),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
