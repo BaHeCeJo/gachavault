@@ -1,0 +1,66 @@
+[workspace]
+members = [
+    "services/api-gateway",
+    "services/auth-service",
+    "services/games-service",
+    "services/items-service",
+    "services/collections-service",
+    "services/tierlists-service",
+    "services/media-service",
+    "services/search-service",
+    "services/notifications-service",
+    "crates/shared-types",
+    "crates/shared-auth",
+    "crates/shared-errors",
+    "crates/shared-db",
+]
+resolver = "2"
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Web framework
+axum = { version = "0.7", features = ["macros", "multipart"] }
+axum-extra = { version = "0.9", features = ["typed-header"] }
+tower = { version = "0.4", features = ["util"] }
+tower-http = { version = "0.5", features = ["cors", "trace", "timeout", "request-id", "fs"] }
+lettre = { version = "0.11", features = ["tokio1-native-tls", "smtp-transport", "builder"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "migrate", "json"] }
+
+# Types
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Logging/tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Config
+dotenvy = "0.15"
+
+# HTTP client (inter-service calls)
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+
+# Auth
+jsonwebtoken = "9"
+argon2 = "0.5"
+
+# Validation
+validator = { version = "0.18", features = ["derive"] }
+
+# Shared crates
+shared-types = { path = "crates/shared-types" }
+shared-auth = { path = "crates/shared-auth" }
+shared-errors = { path = "crates/shared-errors" }
+shared-db = { path = "crates/shared-db" }

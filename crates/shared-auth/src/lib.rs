@@ -1,0 +1,112 @@
+use axum::{
+    async_trait,
+    extract::FromRequestParts,
+    http::{request::Parts, StatusCode},
+    Json, RequestPartsExt,
+};
+use axum_extra::{headers::{authorization::Bearer, Authorization}, TypedHeader};
+use chrono::Utc;
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Claims {
+    pub sub: String,
+    pub email: String,
+    pub username: String,
+    pub exp: usize,
+    pub iat: usize,
+    pub jti: String,
+}
+
+impl Claims {
+    pub fn new(user_id: Uuid, email: String, username: String, expiry_seconds: i64) -> Self {
+        let now = Utc::now().timestamp() as usize;
+        Self {
+            sub: user_id.to_string(),
+            email,
+            username,
+            iat: now,
+            exp: (Utc::now().timestamp() + expiry_seconds) as usize,
+            jti: Uuid::new_v4().to_string(),
+        }
+    }
+
+    pub fn user_id(&self) -> Uuid {
+        Uuid::parse_str(&self.sub).expect("Invalid UUID in JWT claims")
+    }
+
+    pub fn encode(&self, secret: &str) -> Result<String, jsonwebtoken::errors::Error> {
+        encode(&Header::default(), self, &EncodingKey::from_secret(secret.as_bytes()))
+    }
+
+    pub fn decode(token: &str, secret: &str) -> Result<Self, jsonwebtoken::errors::Error> {
+        let data = decode::<Claims>(
+            token,
+            &DecodingKey::from_secret(secret.as_bytes()),
+            &Validation::new(Algorithm::HS256),
+        )?;
+        Ok(data.claims)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct AuthUser(pub Claims);
+
+impl AuthUser {
+    pub fn id(&self) -> Uuid { self.0.user_id() }
+    pub fn email(&self) -> &str { &self.0.email }
+    pub fn username(&self) -> &str { &self.0.username }
+}
+
+#[async_trait]
+impl<S> FromRequestParts<S> for AuthUser
+where
+    S: Send + Sync,
+{
+    type Rejection = (StatusCode, Json<serde_json::Value>);
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let TypedHeader(Authorization(bearer)) = parts
+            .extract::<TypedHeader<Authorization<Bearer>>>()
+            .await
+            .map_err(|_| unauthorized("Missing or malformed authorization header"))?;
+
+        let secret = std::env::var("JWT_SECRET")
+            .map_err(|_| unauthorized("JWT secret not configured"))?;
+
+        let claims = Claims::decode(bearer.token(), &secret)
+            .map_err(|e| {
+                tracing::debug!("JWT validation failed: {:?}", e);
+                unauthorized("Invalid or expired token")
+            })?;
+
+        Ok(AuthUser(claims))
+    }
+}
+
+fn unauthorized(msg: &str) -> (StatusCode, Json<serde_json::Value>) {
+    (StatusCode::UNAUTHORIZED, Json(serde_json::json!({
+        "success": false,
+        "error": { "code": "UNAUTHORIZED", "message": msg }
+    })))
+}
+
+#[derive(Debug, Clone)]
+pub struct OptionalAuthUser(pub Option<Claims>);
+
+#[async_trait]
+impl<S> FromRequestParts<S> for OptionalAuthUser
+where
+    S: Send + Sync,
+{
+    type Rejection = std::convert::Infallible;
+
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+        match AuthUser::from_request_parts(parts, state).await {
+            Ok(u) => Ok(OptionalAuthUser(Some(u.0))),
+            Err(_) => Ok(OptionalAuthUser(None)),
+        }
+    }
+}

@@ -1,0 +1,26 @@
+# Rust build artifacts
+target/
+
+# Environment files - never commit secrets
+.env
+.env.local
+*.env.local
+
+# Node.js
+node_modules/
+web/.next/
+web/out/
+web/.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads (local media storage)
+uploads/
