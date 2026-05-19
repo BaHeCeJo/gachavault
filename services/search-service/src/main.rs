@@ -1,4 +1,7 @@
-use axum::{routing::{delete, get, post}, Router};
+use axum::{
+    routing::{delete, get, post},
+    Router,
+};
 use reqwest::Client;
 use serde_json::json;
 use std::{net::SocketAddr, sync::Arc};
@@ -26,7 +29,8 @@ async fn main() {
 
     let state = AppState {
         meilisearch_url: std::env::var("MEILISEARCH_URL").expect("MEILISEARCH_URL required"),
-        meilisearch_key: std::env::var("MEILISEARCH_MASTER_KEY").expect("MEILISEARCH_MASTER_KEY required"),
+        meilisearch_key: std::env::var("MEILISEARCH_MASTER_KEY")
+            .expect("MEILISEARCH_MASTER_KEY required"),
         http_client: Arc::new(Client::new()),
     };
 
@@ -36,7 +40,10 @@ async fn main() {
         .route("/health", get(health_check))
         .route("/api/v1/search", get(routes::search))
         .route("/api/v1/search/index", post(routes::index_item))
-        .route("/api/v1/search/index/:id", delete(routes::remove_from_index))
+        .route(
+            "/api/v1/search/index/:id",
+            delete(routes::remove_from_index),
+        )
         .with_state(state);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3007".to_string());
@@ -62,7 +69,10 @@ async fn init_meilisearch_index(state: &AppState) {
         .await;
 
     if let Err(e) = create_index {
-        tracing::warn!("Failed to create Meilisearch index (may already exist): {}", e);
+        tracing::warn!(
+            "Failed to create Meilisearch index (may already exist): {}",
+            e
+        );
     }
 
     let settings = json!({

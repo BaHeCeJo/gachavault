@@ -98,7 +98,11 @@ pub async fn create_game(
     if body.slug.is_empty() || body.name.is_empty() {
         return Err(AppError::BadRequest("slug and name are required".into()));
     }
-    if !body.slug.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
+    if !body
+        .slug
+        .chars()
+        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+    {
         return Err(AppError::BadRequest(
             "slug must only contain lowercase letters, numbers, and hyphens".into(),
         ));
@@ -204,16 +208,25 @@ pub async fn create_section(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound(format!("Game '{}' not found", slug)))?;
 
-    let section = db::create_section(&pool, game.id, &body.slug, &body.name, body.order.unwrap_or(0))
-        .await
-        .map_err(|e| match e {
-            sqlx::Error::Database(db_err)
-                if db_err.constraint() == Some("sections_game_id_slug_key") =>
-            {
-                AppError::Conflict(format!("Section '{}' already exists in this game", body.slug))
-            }
-            other => AppError::Database(other),
-        })?;
+    let section = db::create_section(
+        &pool,
+        game.id,
+        &body.slug,
+        &body.name,
+        body.order.unwrap_or(0),
+    )
+    .await
+    .map_err(|e| match e {
+        sqlx::Error::Database(db_err)
+            if db_err.constraint() == Some("sections_game_id_slug_key") =>
+        {
+            AppError::Conflict(format!(
+                "Section '{}' already exists in this game",
+                body.slug
+            ))
+        }
+        other => AppError::Database(other),
+    })?;
 
     Ok(Json(ApiResponse::success(section)))
 }
@@ -332,7 +345,9 @@ pub async fn create_attribute(
     ensure_admin(&auth)?;
 
     if body.attr_type.is_empty() || body.key.is_empty() || body.name.is_empty() {
-        return Err(AppError::BadRequest("attr_type, key, and name are required".into()));
+        return Err(AppError::BadRequest(
+            "attr_type, key, and name are required".into(),
+        ));
     }
 
     let game = db::find_game_by_slug(&pool, &slug)
@@ -625,12 +640,14 @@ pub async fn list_game_translations(
 
     let translations: Vec<serde_json::Value> = rows
         .iter()
-        .map(|r| serde_json::json!({
-            "locale":      r.get::<String, _>("locale"),
-            "name":        r.get::<String, _>("name"),
-            "description": r.try_get::<Option<String>, _>("description").ok().flatten(),
-            "updated_at":  r.get::<chrono::DateTime<chrono::Utc>, _>("updated_at"),
-        }))
+        .map(|r| {
+            serde_json::json!({
+                "locale":      r.get::<String, _>("locale"),
+                "name":        r.get::<String, _>("name"),
+                "description": r.try_get::<Option<String>, _>("description").ok().flatten(),
+                "updated_at":  r.get::<chrono::DateTime<chrono::Utc>, _>("updated_at"),
+            })
+        })
         .collect();
 
     Ok(Json(ApiResponse::success(translations)))
@@ -648,7 +665,9 @@ pub async fn upsert_game_translation(
         return Err(AppError::BadRequest("name is required".into()));
     }
     if locale == "en" {
-        return Err(AppError::BadRequest("Use the game update endpoint to edit English content".into()));
+        return Err(AppError::BadRequest(
+            "Use the game update endpoint to edit English content".into(),
+        ));
     }
 
     let game = db::find_game_by_slug(&pool, &slug)
@@ -690,17 +709,18 @@ pub async fn delete_game_translation(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound(format!("Game '{}' not found", slug)))?;
 
-    let result = sqlx::query(
-        "DELETE FROM games.translations WHERE game_id = $1 AND locale = $2",
-    )
-    .bind(game.id)
-    .bind(&locale)
-    .execute(&pool)
-    .await
-    .map_err(AppError::Database)?;
+    let result = sqlx::query("DELETE FROM games.translations WHERE game_id = $1 AND locale = $2")
+        .bind(game.id)
+        .bind(&locale)
+        .execute(&pool)
+        .await
+        .map_err(AppError::Database)?;
 
     if result.rows_affected() == 0 {
-        return Err(AppError::NotFound(format!("No '{}' translation found for this game", locale)));
+        return Err(AppError::NotFound(format!(
+            "No '{}' translation found for this game",
+            locale
+        )));
     }
 
     Ok(Json(ApiResponse::success(())))

@@ -24,23 +24,15 @@ pub async fn create_user(
 }
 
 pub async fn find_user_by_email(pool: &PgPool, email: &str) -> Result<Option<DbUser>, sqlx::Error> {
-    sqlx::query_as!(
-        DbUser,
-        "SELECT * FROM auth.users WHERE email = $1",
-        email
-    )
-    .fetch_optional(pool)
-    .await
+    sqlx::query_as!(DbUser, "SELECT * FROM auth.users WHERE email = $1", email)
+        .fetch_optional(pool)
+        .await
 }
 
 pub async fn find_user_by_id(pool: &PgPool, id: Uuid) -> Result<Option<DbUser>, sqlx::Error> {
-    sqlx::query_as!(
-        DbUser,
-        "SELECT * FROM auth.users WHERE id = $1",
-        id
-    )
-    .fetch_optional(pool)
-    .await
+    sqlx::query_as!(DbUser, "SELECT * FROM auth.users WHERE id = $1", id)
+        .fetch_optional(pool)
+        .await
 }
 
 pub async fn store_refresh_token(
@@ -73,10 +65,16 @@ pub async fn find_and_delete_refresh_token(
     .await
 }
 
-pub async fn delete_refresh_tokens_for_user(pool: &PgPool, user_id: Uuid) -> Result<(), sqlx::Error> {
-    sqlx::query!("DELETE FROM auth.refresh_tokens WHERE user_id = $1", user_id)
-        .execute(pool)
-        .await?;
+pub async fn delete_refresh_tokens_for_user(
+    pool: &PgPool,
+    user_id: Uuid,
+) -> Result<(), sqlx::Error> {
+    sqlx::query!(
+        "DELETE FROM auth.refresh_tokens WHERE user_id = $1",
+        user_id
+    )
+    .execute(pool)
+    .await?;
     Ok(())
 }
 
@@ -87,9 +85,12 @@ pub async fn store_email_verification(
     expires_at: DateTime<Utc>,
 ) -> Result<(), sqlx::Error> {
     // Delete any existing verification tokens for this user first
-    sqlx::query!("DELETE FROM auth.email_verifications WHERE user_id = $1", user_id)
-        .execute(pool)
-        .await?;
+    sqlx::query!(
+        "DELETE FROM auth.email_verifications WHERE user_id = $1",
+        user_id
+    )
+    .execute(pool)
+    .await?;
     sqlx::query!(
         "INSERT INTO auth.email_verifications (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
         user_id,
@@ -245,7 +246,11 @@ async fn make_unique_username(pool: &PgPool, base: &str) -> Result<String, sqlx:
         .filter(|c| c.is_alphanumeric() || *c == '_')
         .take(40)
         .collect();
-    let base = if base.len() < 3 { "user".to_string() } else { base };
+    let base = if base.len() < 3 {
+        "user".to_string()
+    } else {
+        base
+    };
 
     // Try base first, then add random suffix
     let exists: bool = sqlx::query_scalar!(

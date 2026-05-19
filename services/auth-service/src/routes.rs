@@ -101,26 +101,34 @@ pub async fn register(
         return Err(AppError::BadRequest("Invalid email address".into()));
     }
     if body.username.len() < 3 || body.username.len() > 50 {
-        return Err(AppError::BadRequest("Username must be 3–50 characters".into()));
+        return Err(AppError::BadRequest(
+            "Username must be 3–50 characters".into(),
+        ));
     }
     if body.password.len() < 8 {
-        return Err(AppError::BadRequest("Password must be at least 8 characters".into()));
+        return Err(AppError::BadRequest(
+            "Password must be at least 8 characters".into(),
+        ));
     }
 
-    let password_hash = crypto::hash_password(&body.password)
-        .map_err(|e| AppError::Internal(e))?;
+    let password_hash = crypto::hash_password(&body.password).map_err(|e| AppError::Internal(e))?;
 
-    let user = db::create_user(&pool, &body.email.to_lowercase(), &body.username, &password_hash)
-        .await
-        .map_err(|e| match e {
-            sqlx::Error::Database(db_err) if db_err.constraint() == Some("users_email_key") => {
-                AppError::Conflict("Email already in use".into())
-            }
-            sqlx::Error::Database(db_err) if db_err.constraint() == Some("users_username_key") => {
-                AppError::Conflict("Username already taken".into())
-            }
-            other => AppError::Database(other),
-        })?;
+    let user = db::create_user(
+        &pool,
+        &body.email.to_lowercase(),
+        &body.username,
+        &password_hash,
+    )
+    .await
+    .map_err(|e| match e {
+        sqlx::Error::Database(db_err) if db_err.constraint() == Some("users_email_key") => {
+            AppError::Conflict("Email already in use".into())
+        }
+        sqlx::Error::Database(db_err) if db_err.constraint() == Some("users_username_key") => {
+            AppError::Conflict("Username already taken".into())
+        }
+        other => AppError::Database(other),
+    })?;
 
     // Generate and store email verification token
     let token = crypto::generate_token();
@@ -159,7 +167,8 @@ pub async fn login(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::Unauthorized("Invalid email or password".into()))?;
 
-    let password_hash = user.password_hash
+    let password_hash = user
+        .password_hash
         .as_deref()
         .ok_or_else(|| AppError::Unauthorized("This account uses social login".into()))?;
 
@@ -258,7 +267,9 @@ pub async fn reset_password(
     Json(body): Json<ResetPasswordRequest>,
 ) -> AppResult<Json<ApiResponse<()>>> {
     if body.password.len() < 8 {
-        return Err(AppError::BadRequest("Password must be at least 8 characters".into()));
+        return Err(AppError::BadRequest(
+            "Password must be at least 8 characters".into(),
+        ));
     }
 
     let token_hash = crypto::hash_token(&body.token);
@@ -268,8 +279,7 @@ pub async fn reset_password(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::BadRequest("Invalid or expired reset token".into()))?;
 
-    let password_hash = crypto::hash_password(&body.password)
-        .map_err(|e| AppError::Internal(e))?;
+    let password_hash = crypto::hash_password(&body.password).map_err(|e| AppError::Internal(e))?;
 
     db::update_password(&pool, user_id, &password_hash)
         .await
@@ -313,16 +323,16 @@ pub async fn update_avatar(
         return Err(AppError::BadRequest("avatar_url too long".into()));
     }
 
-    sqlx::query(
-        "UPDATE auth.users SET avatar_url = $1, updated_at = NOW() WHERE id = $2",
-    )
-    .bind(&body.avatar_url)
-    .bind(auth.id())
-    .execute(&pool)
-    .await
-    .map_err(AppError::Database)?;
+    sqlx::query("UPDATE auth.users SET avatar_url = $1, updated_at = NOW() WHERE id = $2")
+        .bind(&body.avatar_url)
+        .bind(auth.id())
+        .execute(&pool)
+        .await
+        .map_err(AppError::Database)?;
 
-    Ok(Json(ApiResponse::success(serde_json::json!({ "avatar_url": body.avatar_url }))))
+    Ok(Json(ApiResponse::success(
+        serde_json::json!({ "avatar_url": body.avatar_url }),
+    )))
 }
 
 pub async fn list_users(
@@ -372,7 +382,11 @@ pub async fn set_user_role(
     }
     let valid_roles = ["user", "editor", "admin", "superadmin"];
     if !valid_roles.contains(&body.role.as_str()) {
-        return Err(AppError::BadRequest(format!("Invalid role '{}'. Valid: {}", body.role, valid_roles.join(", "))));
+        return Err(AppError::BadRequest(format!(
+            "Invalid role '{}'. Valid: {}",
+            body.role,
+            valid_roles.join(", ")
+        )));
     }
 
     // Remove any existing global role
@@ -386,15 +400,13 @@ pub async fn set_user_role(
 
     // Insert new role (unless 'user' which is the default — no DB row needed)
     if body.role != "user" {
-        sqlx::query(
-            "INSERT INTO auth.user_roles (user_id, role, granted_by) VALUES ($1, $2, $3)",
-        )
-        .bind(user_id)
-        .bind(&body.role)
-        .bind(auth.id())
-        .execute(&pool)
-        .await
-        .map_err(AppError::Database)?;
+        sqlx::query("INSERT INTO auth.user_roles (user_id, role, granted_by) VALUES ($1, $2, $3)")
+            .bind(user_id)
+            .bind(&body.role)
+            .bind(auth.id())
+            .execute(&pool)
+            .await
+            .map_err(AppError::Database)?;
     }
 
     Ok(Json(ApiResponse::success(())))
@@ -406,10 +418,18 @@ pub async fn update_username(
     Json(body): Json<UpdateUsernameRequest>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
     if body.username.len() < 3 || body.username.len() > 50 {
-        return Err(AppError::BadRequest("Username must be 3–50 characters".into()));
+        return Err(AppError::BadRequest(
+            "Username must be 3–50 characters".into(),
+        ));
     }
-    if !body.username.chars().all(|c| c.is_alphanumeric() || c == '_') {
-        return Err(AppError::BadRequest("Username may only contain letters, numbers, and underscores".into()));
+    if !body
+        .username
+        .chars()
+        .all(|c| c.is_alphanumeric() || c == '_')
+    {
+        return Err(AppError::BadRequest(
+            "Username may only contain letters, numbers, and underscores".into(),
+        ));
     }
 
     sqlx::query("UPDATE auth.users SET username = $1, updated_at = NOW() WHERE id = $2")
@@ -424,7 +444,9 @@ pub async fn update_username(
             other => AppError::Database(other),
         })?;
 
-    Ok(Json(ApiResponse::success(serde_json::json!({ "username": body.username }))))
+    Ok(Json(ApiResponse::success(
+        serde_json::json!({ "username": body.username }),
+    )))
 }
 
 pub async fn change_password(
@@ -433,7 +455,9 @@ pub async fn change_password(
     Json(body): Json<ChangePasswordRequest>,
 ) -> AppResult<Json<ApiResponse<()>>> {
     if body.new_password.len() < 8 {
-        return Err(AppError::BadRequest("New password must be at least 8 characters".into()));
+        return Err(AppError::BadRequest(
+            "New password must be at least 8 characters".into(),
+        ));
     }
 
     let user = db::find_user_by_id(&pool, auth.id())
@@ -441,18 +465,19 @@ pub async fn change_password(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound("User not found".into()))?;
 
-    let password_hash = user.password_hash
-        .as_deref()
-        .ok_or_else(|| AppError::BadRequest("This account uses social login — password cannot be changed".into()))?;
+    let password_hash = user.password_hash.as_deref().ok_or_else(|| {
+        AppError::BadRequest("This account uses social login — password cannot be changed".into())
+    })?;
 
     let valid = crypto::verify_password(&body.current_password, password_hash)
         .map_err(AppError::Internal)?;
     if !valid {
-        return Err(AppError::Unauthorized("Current password is incorrect".into()));
+        return Err(AppError::Unauthorized(
+            "Current password is incorrect".into(),
+        ));
     }
 
-    let new_hash = crypto::hash_password(&body.new_password)
-        .map_err(AppError::Internal)?;
+    let new_hash = crypto::hash_password(&body.new_password).map_err(AppError::Internal)?;
 
     db::update_password(&pool, auth.id(), &new_hash)
         .await
@@ -477,8 +502,7 @@ pub async fn delete_account(
 
     if let Some(password_hash) = user.password_hash.as_deref() {
         let provided = body.password.as_deref().unwrap_or("");
-        let valid = crypto::verify_password(provided, password_hash)
-            .map_err(AppError::Internal)?;
+        let valid = crypto::verify_password(provided, password_hash).map_err(AppError::Internal)?;
         if !valid {
             return Err(AppError::Unauthorized("Password is incorrect".into()));
         }
@@ -569,15 +593,25 @@ pub async fn set_user_game_role(
             sqlx::query(
                 "DELETE FROM auth.user_roles WHERE user_id=$1 AND game_id=$2 AND section_id=$3",
             )
-            .bind(user_id).bind(body.game_id).bind(sid)
-            .execute(&pool).await.map_err(AppError::Database)?;
+            .bind(user_id)
+            .bind(body.game_id)
+            .bind(sid)
+            .execute(&pool)
+            .await
+            .map_err(AppError::Database)?;
 
             sqlx::query(
                 "INSERT INTO auth.user_roles (user_id, game_id, section_id, role, granted_by) \
                  VALUES ($1, $2, $3, $4, $5)",
             )
-            .bind(user_id).bind(body.game_id).bind(sid).bind(&body.role).bind(auth.id())
-            .execute(&pool).await.map_err(AppError::Database)?;
+            .bind(user_id)
+            .bind(body.game_id)
+            .bind(sid)
+            .bind(&body.role)
+            .bind(auth.id())
+            .execute(&pool)
+            .await
+            .map_err(AppError::Database)?;
         }
         None => {
             sqlx::query(
@@ -590,8 +624,13 @@ pub async fn set_user_game_role(
                 "INSERT INTO auth.user_roles (user_id, game_id, section_id, role, granted_by) \
                  VALUES ($1, $2, NULL, $3, $4)",
             )
-            .bind(user_id).bind(body.game_id).bind(&body.role).bind(auth.id())
-            .execute(&pool).await.map_err(AppError::Database)?;
+            .bind(user_id)
+            .bind(body.game_id)
+            .bind(&body.role)
+            .bind(auth.id())
+            .execute(&pool)
+            .await
+            .map_err(AppError::Database)?;
         }
     }
 
@@ -657,17 +696,31 @@ pub async fn get_admin_stats(
     .map_err(AppError::Database)?;
 
     let games: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM games.games")
-        .fetch_one(&pool).await.map_err(AppError::Database)?;
+        .fetch_one(&pool)
+        .await
+        .map_err(AppError::Database)?;
     let sections: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM games.sections")
-        .fetch_one(&pool).await.map_err(AppError::Database)?;
+        .fetch_one(&pool)
+        .await
+        .map_err(AppError::Database)?;
     let items: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM items.items")
-        .fetch_one(&pool).await.map_err(AppError::Database)?;
+        .fetch_one(&pool)
+        .await
+        .map_err(AppError::Database)?;
     let tierlists: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tierlists.tier_lists")
-        .fetch_one(&pool).await.map_err(AppError::Database)?;
-    let public_tierlists: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tierlists.tier_lists WHERE is_public = TRUE")
-        .fetch_one(&pool).await.map_err(AppError::Database)?;
-    let collections: i64 = sqlx::query_scalar("SELECT COUNT(DISTINCT user_id) FROM collections.collection_entries")
-        .fetch_one(&pool).await.map_err(AppError::Database)?;
+        .fetch_one(&pool)
+        .await
+        .map_err(AppError::Database)?;
+    let public_tierlists: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM tierlists.tier_lists WHERE is_public = TRUE")
+            .fetch_one(&pool)
+            .await
+            .map_err(AppError::Database)?;
+    let collections: i64 =
+        sqlx::query_scalar("SELECT COUNT(DISTINCT user_id) FROM collections.collection_entries")
+            .fetch_one(&pool)
+            .await
+            .map_err(AppError::Database)?;
 
     Ok(Json(ApiResponse::success(serde_json::json!({
         "total_users":      total,
@@ -714,7 +767,13 @@ pub async fn issue_tokens(
     .unwrap_or_else(|| "user".to_string());
 
     // Issue JWT
-    let claims = Claims::new(*user_id, email.to_string(), username.to_string(), role, expiry_seconds);
+    let claims = Claims::new(
+        *user_id,
+        email.to_string(),
+        username.to_string(),
+        role,
+        expiry_seconds,
+    );
     let access_token = claims
         .encode(&jwt_secret)
         .map_err(|e| AppError::Internal(anyhow::anyhow!("Failed to sign JWT: {}", e)))?;

@@ -1,4 +1,7 @@
-use axum::{extract::{Path, State}, Json};
+use axum::{
+    extract::{Path, State},
+    Json,
+};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use shared_auth::AuthUser;
@@ -87,7 +90,9 @@ pub async fn upsert_entry(
 ) -> AppResult<Json<ApiResponse<DbEntry>>> {
     if let Some(lvl) = body.constellation_level {
         if !(0..=6).contains(&lvl) {
-            return Err(AppError::BadRequest("constellation_level must be 0–6".into()));
+            return Err(AppError::BadRequest(
+                "constellation_level must be 0–6".into(),
+            ));
         }
     }
     if let Some(lvl) = body.level {

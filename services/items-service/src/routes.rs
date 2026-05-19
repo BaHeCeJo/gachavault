@@ -108,7 +108,11 @@ pub async fn get_item(
     Ok(Json(ApiResponse::success(translated)))
 }
 
-async fn apply_item_translation(pool: &sqlx::PgPool, item: DbItem, locale: &str) -> serde_json::Value {
+async fn apply_item_translation(
+    pool: &sqlx::PgPool,
+    item: DbItem,
+    locale: &str,
+) -> serde_json::Value {
     let mut data = item.data.clone();
 
     if locale != "en" {
@@ -121,7 +125,9 @@ async fn apply_item_translation(pool: &sqlx::PgPool, item: DbItem, locale: &str)
         .await
         {
             if let Ok(fields) = row.try_get::<serde_json::Value, _>("fields") {
-                if let (Some(data_obj), Some(fields_obj)) = (data.as_object_mut(), fields.as_object()) {
+                if let (Some(data_obj), Some(fields_obj)) =
+                    (data.as_object_mut(), fields.as_object())
+                {
                     for (k, v) in fields_obj {
                         data_obj.insert(k.clone(), v.clone());
                     }
@@ -149,8 +155,12 @@ pub async fn create_item(
     auth: AuthUser,
     Json(body): Json<CreateItemRequest>,
 ) -> AppResult<Json<ApiResponse<DbItem>>> {
-    if !auth.can_edit() && !can_edit_game(&state.pool, auth.id(), body.game_id, Some(body.section_id)).await {
-        return Err(AppError::Forbidden("Editor, game_editor, or section_editor role required".into()));
+    if !auth.can_edit()
+        && !can_edit_game(&state.pool, auth.id(), body.game_id, Some(body.section_id)).await
+    {
+        return Err(AppError::Forbidden(
+            "Editor, game_editor, or section_editor role required".into(),
+        ));
     }
 
     let slug = if body.slug.is_empty() {
@@ -176,7 +186,10 @@ pub async fn create_item(
     .await
     .map_err(|e| match e {
         sqlx::Error::Database(db_err) if db_err.constraint() == Some("items_game_id_slug_key") => {
-            AppError::Conflict(format!("Item with slug '{}' already exists in this game", slug))
+            AppError::Conflict(format!(
+                "Item with slug '{}' already exists in this game",
+                slug
+            ))
         }
         other => AppError::Database(other),
     })?;
@@ -203,8 +216,17 @@ pub async fn update_item(
             .await
             .map_err(AppError::Database)?
             .ok_or_else(|| AppError::NotFound("Item not found".into()))?;
-        if !can_edit_game(&state.pool, auth.id(), existing.game_id, Some(existing.section_id)).await {
-            return Err(AppError::Forbidden("Editor, game_editor, or section_editor role required".into()));
+        if !can_edit_game(
+            &state.pool,
+            auth.id(),
+            existing.game_id,
+            Some(existing.section_id),
+        )
+        .await
+        {
+            return Err(AppError::Forbidden(
+                "Editor, game_editor, or section_editor role required".into(),
+            ));
         }
     }
     let item = db::update_item(&state.pool, id, body.slug.as_deref(), body.data.as_ref())
@@ -244,7 +266,9 @@ pub async fn delete_item(
         .flatten()
         .is_some();
         if !is_game_admin {
-            return Err(AppError::Forbidden("Admin or game_admin role required to delete items".into()));
+            return Err(AppError::Forbidden(
+                "Admin or game_admin role required to delete items".into(),
+            ));
         }
     }
     let deleted = db::delete_item(&state.pool, id)
@@ -270,7 +294,9 @@ pub async fn bulk_import(
     Json(items): Json<Vec<CreateItemRequest>>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
     if !auth.is_admin() {
-        return Err(AppError::Forbidden("Admin role required for bulk import".into()));
+        return Err(AppError::Forbidden(
+            "Admin role required for bulk import".into(),
+        ));
     }
     if items.is_empty() {
         return Err(AppError::BadRequest("No items provided".into()));
@@ -287,7 +313,9 @@ pub async fn bulk_import(
         let slug = if item.slug.is_empty() {
             let name = item.data.get("name").and_then(|v| v.as_str()).unwrap_or("");
             if name.is_empty() {
-                errors.push(serde_json::json!({ "slug": "", "error": "slug or data.name is required" }));
+                errors.push(
+                    serde_json::json!({ "slug": "", "error": "slug or data.name is required" }),
+                );
                 continue;
             }
             slugify(name)
@@ -309,7 +337,9 @@ pub async fn bulk_import(
                 created += 1;
                 let state_clone = state.clone();
                 let item_clone = new_item.clone();
-                tokio::spawn(async move { index_item(&state_clone, &item_clone).await; });
+                tokio::spawn(async move {
+                    index_item(&state_clone, &item_clone).await;
+                });
             }
             Err(sqlx::Error::Database(e)) if e.constraint() == Some("items_game_id_slug_key") => {
                 skipped += 1;
@@ -408,7 +438,9 @@ pub async fn create_changelog(
     Json(body): Json<CreateChangelogRequest>,
 ) -> AppResult<Json<ApiResponse<DbChangelog>>> {
     if body.version.is_empty() || body.changes.is_empty() {
-        return Err(AppError::BadRequest("version and changes are required".into()));
+        return Err(AppError::BadRequest(
+            "version and changes are required".into(),
+        ));
     }
 
     let entry = db::create_changelog(
@@ -429,7 +461,13 @@ pub async fn create_changelog(
 
 fn slugify(name: &str) -> String {
     name.chars()
-        .map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { '-' })
+        .map(|c| {
+            if c.is_ascii_alphanumeric() {
+                c.to_ascii_lowercase()
+            } else {
+                '-'
+            }
+        })
         .collect::<String>()
         .split('-')
         .filter(|s| !s.is_empty())
@@ -439,7 +477,11 @@ fn slugify(name: &str) -> String {
 
 // ── Search indexing helpers ──────────────────────────────────────────────────
 
-async fn lookup_slugs(pool: &sqlx::PgPool, game_id: Uuid, section_id: Uuid) -> Option<(String, String)> {
+async fn lookup_slugs(
+    pool: &sqlx::PgPool,
+    game_id: Uuid,
+    section_id: Uuid,
+) -> Option<(String, String)> {
     let row = sqlx::query(
         "SELECT g.slug AS game_slug, s.slug AS section_slug \
          FROM games.games g \
@@ -458,12 +500,19 @@ async fn lookup_slugs(pool: &sqlx::PgPool, game_id: Uuid, section_id: Uuid) -> O
 }
 
 async fn index_item(state: &AppState, item: &DbItem) {
-    let Some((game_slug, section_slug)) = lookup_slugs(&state.pool, item.game_id, item.section_id).await else {
-        tracing::warn!("Could not resolve slugs for item {} — skipping search index", item.id);
+    let Some((game_slug, section_slug)) =
+        lookup_slugs(&state.pool, item.game_id, item.section_id).await
+    else {
+        tracing::warn!(
+            "Could not resolve slugs for item {} — skipping search index",
+            item.id
+        );
         return;
     };
 
-    let name = item.data.get("name")
+    let name = item
+        .data
+        .get("name")
         .and_then(|v| v.as_str())
         .unwrap_or(&item.slug)
         .to_string();
@@ -509,11 +558,13 @@ pub async fn list_item_translations(
 
     let translations: Vec<serde_json::Value> = rows
         .iter()
-        .map(|r| serde_json::json!({
-            "locale":     r.get::<String, _>("locale"),
-            "fields":     r.get::<serde_json::Value, _>("fields"),
-            "updated_at": r.get::<chrono::DateTime<chrono::Utc>, _>("updated_at"),
-        }))
+        .map(|r| {
+            serde_json::json!({
+                "locale":     r.get::<String, _>("locale"),
+                "fields":     r.get::<serde_json::Value, _>("fields"),
+                "updated_at": r.get::<chrono::DateTime<chrono::Utc>, _>("updated_at"),
+            })
+        })
         .collect();
 
     Ok(Json(ApiResponse::success(translations)))
@@ -534,7 +585,9 @@ pub async fn upsert_item_translation(
         return Err(AppError::Forbidden("Editor or admin role required".into()));
     }
     if locale == "en" {
-        return Err(AppError::BadRequest("Use the item update endpoint to edit English content".into()));
+        return Err(AppError::BadRequest(
+            "Use the item update endpoint to edit English content".into(),
+        ));
     }
     if !body.fields.is_object() {
         return Err(AppError::BadRequest("fields must be a JSON object".into()));
@@ -569,17 +622,19 @@ pub async fn delete_item_translation(
         return Err(AppError::Forbidden("Editor or admin role required".into()));
     }
 
-    let result = sqlx::query(
-        "DELETE FROM items.item_translations WHERE item_id = $1 AND locale = $2",
-    )
-    .bind(id)
-    .bind(&locale)
-    .execute(&state.pool)
-    .await
-    .map_err(AppError::Database)?;
+    let result =
+        sqlx::query("DELETE FROM items.item_translations WHERE item_id = $1 AND locale = $2")
+            .bind(id)
+            .bind(&locale)
+            .execute(&state.pool)
+            .await
+            .map_err(AppError::Database)?;
 
     if result.rows_affected() == 0 {
-        return Err(AppError::NotFound(format!("No '{}' translation found for this item", locale)));
+        return Err(AppError::NotFound(format!(
+            "No '{}' translation found for this item",
+            locale
+        )));
     }
 
     Ok(Json(ApiResponse::success(())))

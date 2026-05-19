@@ -1,4 +1,7 @@
-use axum::{routing::{get, post}, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 use serde_json::json;
 use std::net::SocketAddr;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -17,7 +20,9 @@ async fn main() {
         .init();
 
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL required");
-    let pool = shared_db::create_pool(&database_url).await.expect("Failed to connect to database");
+    let pool = shared_db::create_pool(&database_url)
+        .await
+        .expect("Failed to connect to database");
     let mut migrator = sqlx::migrate!("./migrations");
     migrator.ignore_missing = true;
     migrator.run(&pool).await.expect("Failed to run migrations");
@@ -25,9 +30,18 @@ async fn main() {
     let app = Router::new()
         .route("/health", get(health_check))
         .route("/api/v1/collections", get(routes::get_my_collection))
-        .route("/api/v1/collections/:game_id", get(routes::get_collection_by_game))
-        .route("/api/v1/collections/items/:item_id", post(routes::upsert_entry).delete(routes::delete_entry))
-        .route("/api/v1/users/:user_id/collections", get(routes::get_user_collection))
+        .route(
+            "/api/v1/collections/:game_id",
+            get(routes::get_collection_by_game),
+        )
+        .route(
+            "/api/v1/collections/items/:item_id",
+            post(routes::upsert_entry).delete(routes::delete_entry),
+        )
+        .route(
+            "/api/v1/users/:user_id/collections",
+            get(routes::get_user_collection),
+        )
         .with_state(pool);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3004".to_string());

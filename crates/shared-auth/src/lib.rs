@@ -4,7 +4,10 @@ use axum::{
     http::{request::Parts, StatusCode},
     Json, RequestPartsExt,
 };
-use axum_extra::{headers::{authorization::Bearer, Authorization}, TypedHeader};
+use axum_extra::{
+    headers::{authorization::Bearer, Authorization},
+    TypedHeader,
+};
 use chrono::Utc;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
@@ -55,7 +58,11 @@ impl Claims {
     }
 
     pub fn encode(&self, secret: &str) -> Result<String, jsonwebtoken::errors::Error> {
-        encode(&Header::default(), self, &EncodingKey::from_secret(secret.as_bytes()))
+        encode(
+            &Header::default(),
+            self,
+            &EncodingKey::from_secret(secret.as_bytes()),
+        )
     }
 
     pub fn decode(token: &str, secret: &str) -> Result<Self, jsonwebtoken::errors::Error> {
@@ -72,10 +79,18 @@ impl Claims {
 pub struct AuthUser(pub Claims);
 
 impl AuthUser {
-    pub fn id(&self) -> Uuid { self.0.user_id() }
-    pub fn email(&self) -> &str { &self.0.email }
-    pub fn username(&self) -> &str { &self.0.username }
-    pub fn role(&self) -> &str { self.0.role() }
+    pub fn id(&self) -> Uuid {
+        self.0.user_id()
+    }
+    pub fn email(&self) -> &str {
+        &self.0.email
+    }
+    pub fn username(&self) -> &str {
+        &self.0.username
+    }
+    pub fn role(&self) -> &str {
+        self.0.role()
+    }
 
     pub fn is_admin(&self) -> bool {
         matches!(self.role(), "admin" | "superadmin")
@@ -99,24 +114,26 @@ where
             .await
             .map_err(|_| unauthorized("Missing or malformed authorization header"))?;
 
-        let secret = std::env::var("JWT_SECRET")
-            .map_err(|_| unauthorized("JWT secret not configured"))?;
+        let secret =
+            std::env::var("JWT_SECRET").map_err(|_| unauthorized("JWT secret not configured"))?;
 
-        let claims = Claims::decode(bearer.token(), &secret)
-            .map_err(|e| {
-                tracing::debug!("JWT validation failed: {:?}", e);
-                unauthorized("Invalid or expired token")
-            })?;
+        let claims = Claims::decode(bearer.token(), &secret).map_err(|e| {
+            tracing::debug!("JWT validation failed: {:?}", e);
+            unauthorized("Invalid or expired token")
+        })?;
 
         Ok(AuthUser(claims))
     }
 }
 
 fn unauthorized(msg: &str) -> (StatusCode, Json<serde_json::Value>) {
-    (StatusCode::UNAUTHORIZED, Json(serde_json::json!({
-        "success": false,
-        "error": { "code": "UNAUTHORIZED", "message": msg }
-    })))
+    (
+        StatusCode::UNAUTHORIZED,
+        Json(serde_json::json!({
+            "success": false,
+            "error": { "code": "UNAUTHORIZED", "message": msg }
+        })),
+    )
 }
 
 #[derive(Debug, Clone)]

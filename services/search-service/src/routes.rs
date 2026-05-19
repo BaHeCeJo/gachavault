@@ -1,4 +1,7 @@
-use axum::{extract::{Path, Query, State}, Json};
+use axum::{
+    extract::{Path, Query, State},
+    Json,
+};
 use serde::{Deserialize, Serialize};
 use shared_errors::{AppError, AppResult};
 use shared_types::ApiResponse;
@@ -80,10 +83,12 @@ pub async fn search(
         )));
     }
 
-    let result: serde_json::Value = response
-        .json()
-        .await
-        .map_err(|e| AppError::Internal(anyhow::anyhow!("Failed to parse Meilisearch response: {}", e)))?;
+    let result: serde_json::Value = response.json().await.map_err(|e| {
+        AppError::Internal(anyhow::anyhow!(
+            "Failed to parse Meilisearch response: {}",
+            e
+        ))
+    })?;
 
     Ok(Json(ApiResponse::success(result)))
 }
@@ -132,7 +137,10 @@ pub async fn remove_from_index(
 ) -> AppResult<Json<ApiResponse<()>>> {
     let response = state
         .http_client
-        .delete(format!("{}/indexes/items/documents/{}", state.meilisearch_url, id))
+        .delete(format!(
+            "{}/indexes/items/documents/{}",
+            state.meilisearch_url, id
+        ))
         .header("Authorization", format!("Bearer {}", state.meilisearch_key))
         .send()
         .await

@@ -58,7 +58,12 @@ pub async fn send_verification(
         url = verify_url,
     );
 
-    send_email(&state, &body.to_email, "Verify your GachaVault account", html)?;
+    send_email(
+        &state,
+        &body.to_email,
+        "Verify your GachaVault account",
+        html,
+    )?;
     Ok(Json(ApiResponse::success(())))
 }
 
@@ -91,7 +96,12 @@ pub async fn send_password_reset(
         url = reset_url,
     );
 
-    send_email(&state, &body.to_email, "Reset your GachaVault password", html)?;
+    send_email(
+        &state,
+        &body.to_email,
+        "Reset your GachaVault password",
+        html,
+    )?;
     Ok(Json(ApiResponse::success(())))
 }
 

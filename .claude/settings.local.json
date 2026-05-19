@@ -28,7 +28,10 @@
       "WebFetch(domain:honkai-star-rail.fandom.com)",
       "WebFetch(domain:genshin-impact.fandom.com)",
       "WebSearch",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(cargo fmt *)"
     ]
   }
 }

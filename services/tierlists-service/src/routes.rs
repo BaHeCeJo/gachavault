@@ -1,4 +1,7 @@
-use axum::{extract::{Path, Query, State}, Json};
+use axum::{
+    extract::{Path, Query, State},
+    Json,
+};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use shared_auth::{AuthUser, OptionalAuthUser};
@@ -86,7 +89,9 @@ pub async fn list_my_tierlists(
     .await
     .map_err(AppError::Database)?;
 
-    Ok(Json(ApiResponse::success(rows.iter().map(row_to_tierlist).collect())))
+    Ok(Json(ApiResponse::success(
+        rows.iter().map(row_to_tierlist).collect(),
+    )))
 }
 
 #[derive(Debug, Deserialize)]
@@ -98,7 +103,9 @@ pub async fn list_public_tierlists_query(
     State(pool): State<PgPool>,
     Query(q): Query<PublicTierListsQuery>,
 ) -> AppResult<Json<ApiResponse<Vec<DbTierList>>>> {
-    let game_id = q.game_id.ok_or_else(|| AppError::BadRequest("game_id is required".into()))?;
+    let game_id = q
+        .game_id
+        .ok_or_else(|| AppError::BadRequest("game_id is required".into()))?;
     let rows = sqlx::query(
         "SELECT id, user_id, game_id, title, is_public, share_slug, upvote_count, created_at, updated_at \
          FROM tierlists.tier_lists WHERE game_id = $1 AND is_public = TRUE \
@@ -108,7 +115,9 @@ pub async fn list_public_tierlists_query(
     .fetch_all(&pool)
     .await
     .map_err(AppError::Database)?;
-    Ok(Json(ApiResponse::success(rows.iter().map(row_to_tierlist).collect())))
+    Ok(Json(ApiResponse::success(
+        rows.iter().map(row_to_tierlist).collect(),
+    )))
 }
 
 pub async fn list_public_tierlists(
@@ -125,7 +134,9 @@ pub async fn list_public_tierlists(
     .await
     .map_err(AppError::Database)?;
 
-    Ok(Json(ApiResponse::success(rows.iter().map(row_to_tierlist).collect())))
+    Ok(Json(ApiResponse::success(
+        rows.iter().map(row_to_tierlist).collect(),
+    )))
 }
 
 pub async fn get_tierlist(
@@ -169,7 +180,13 @@ pub async fn get_tierlist(
 
     let (tiers, section_id) = fetch_tiers_and_section(&pool, id).await?;
     let entries = fetch_entries(&pool, id).await?;
-    Ok(Json(ApiResponse::success(TierListWithEntries { tier_list, entries, tiers, section_id, user_upvoted })))
+    Ok(Json(ApiResponse::success(TierListWithEntries {
+        tier_list,
+        entries,
+        tiers,
+        section_id,
+        user_upvoted,
+    })))
 }
 
 pub async fn get_by_share_slug(
@@ -190,7 +207,13 @@ pub async fn get_by_share_slug(
     let id = tier_list.id;
     let (tiers, section_id) = fetch_tiers_and_section(&pool, id).await?;
     let entries = fetch_entries(&pool, id).await?;
-    Ok(Json(ApiResponse::success(TierListWithEntries { tier_list, entries, tiers, section_id, user_upvoted: false })))
+    Ok(Json(ApiResponse::success(TierListWithEntries {
+        tier_list,
+        entries,
+        tiers,
+        section_id,
+        user_upvoted: false,
+    })))
 }
 
 pub async fn create_tierlist(
@@ -278,7 +301,9 @@ pub async fn delete_tierlist(
     .map_err(AppError::Database)?;
 
     if result.rows_affected() == 0 {
-        return Err(AppError::NotFound("Tier list not found or not owned by you".into()));
+        return Err(AppError::NotFound(
+            "Tier list not found or not owned by you".into(),
+        ));
     }
 
     Ok(Json(ApiResponse::success(())))
@@ -313,14 +338,12 @@ pub async fn upvote_tierlist(
     .map_err(AppError::Database)?;
 
     if already == 0 {
-        sqlx::query(
-            "INSERT INTO tierlists.upvotes (tierlist_id, user_id) VALUES ($1, $2)",
-        )
-        .bind(id)
-        .bind(auth.id())
-        .execute(&pool)
-        .await
-        .map_err(AppError::Database)?;
+        sqlx::query("INSERT INTO tierlists.upvotes (tierlist_id, user_id) VALUES ($1, $2)")
+            .bind(id)
+            .bind(auth.id())
+            .execute(&pool)
+            .await
+            .map_err(AppError::Database)?;
 
         sqlx::query(
             "UPDATE tierlists.tier_lists SET upvote_count = upvote_count + 1 WHERE id = $1",
@@ -331,13 +354,12 @@ pub async fn upvote_tierlist(
         .map_err(AppError::Database)?;
     }
 
-    let count: i64 = sqlx::query_scalar(
-        "SELECT upvote_count FROM tierlists.tier_lists WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_one(&pool)
-    .await
-    .map_err(AppError::Database)?;
+    let count: i64 =
+        sqlx::query_scalar("SELECT upvote_count FROM tierlists.tier_lists WHERE id = $1")
+            .bind(id)
+            .fetch_one(&pool)
+            .await
+            .map_err(AppError::Database)?;
 
     Ok(Json(ApiResponse::success(serde_json::json!({
         "upvote_count": count,
@@ -350,14 +372,13 @@ pub async fn remove_upvote(
     auth: AuthUser,
     Path(id): Path<Uuid>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
-    let result = sqlx::query(
-        "DELETE FROM tierlists.upvotes WHERE tierlist_id = $1 AND user_id = $2",
-    )
-    .bind(id)
-    .bind(auth.id())
-    .execute(&pool)
-    .await
-    .map_err(AppError::Database)?;
+    let result =
+        sqlx::query("DELETE FROM tierlists.upvotes WHERE tierlist_id = $1 AND user_id = $2")
+            .bind(id)
+            .bind(auth.id())
+            .execute(&pool)
+            .await
+            .map_err(AppError::Database)?;
 
     if result.rows_affected() > 0 {
         sqlx::query(
@@ -369,13 +390,12 @@ pub async fn remove_upvote(
         .map_err(AppError::Database)?;
     }
 
-    let count: i64 = sqlx::query_scalar(
-        "SELECT upvote_count FROM tierlists.tier_lists WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_one(&pool)
-    .await
-    .map_err(AppError::Database)?;
+    let count: i64 =
+        sqlx::query_scalar("SELECT upvote_count FROM tierlists.tier_lists WHERE id = $1")
+            .bind(id)
+            .fetch_one(&pool)
+            .await
+            .map_err(AppError::Database)?;
 
     Ok(Json(ApiResponse::success(serde_json::json!({
         "upvote_count": count,
@@ -398,14 +418,16 @@ pub async fn list_comments(
 
     let comments: Vec<serde_json::Value> = rows
         .iter()
-        .map(|r| serde_json::json!({
-            "id": r.get::<Uuid, _>("id"),
-            "tierlist_id": r.get::<Uuid, _>("tierlist_id"),
-            "user_id": r.get::<Uuid, _>("user_id"),
-            "username": r.get::<String, _>("username"),
-            "body": r.get::<String, _>("body"),
-            "created_at": r.get::<DateTime<Utc>, _>("created_at"),
-        }))
+        .map(|r| {
+            serde_json::json!({
+                "id": r.get::<Uuid, _>("id"),
+                "tierlist_id": r.get::<Uuid, _>("tierlist_id"),
+                "user_id": r.get::<Uuid, _>("user_id"),
+                "username": r.get::<String, _>("username"),
+                "body": r.get::<String, _>("body"),
+                "created_at": r.get::<DateTime<Utc>, _>("created_at"),
+            })
+        })
         .collect();
 
     Ok(Json(ApiResponse::success(serde_json::json!(comments))))
@@ -424,7 +446,9 @@ pub async fn create_comment(
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
     let body_text = body.body.trim().to_string();
     if body_text.is_empty() || body_text.len() > 2000 {
-        return Err(AppError::BadRequest("Comment must be 1–2000 characters".into()));
+        return Err(AppError::BadRequest(
+            "Comment must be 1–2000 characters".into(),
+        ));
     }
 
     // Verify tier list exists and is public (or user owns it)
@@ -471,14 +495,12 @@ pub async fn delete_comment(
 ) -> AppResult<Json<ApiResponse<()>>> {
     // Allow comment author or admin to delete
     let result = if auth.is_admin() {
-        sqlx::query(
-            "DELETE FROM tierlists.comments WHERE id = $1 AND tierlist_id = $2",
-        )
-        .bind(comment_id)
-        .bind(tierlist_id)
-        .execute(&pool)
-        .await
-        .map_err(AppError::Database)?
+        sqlx::query("DELETE FROM tierlists.comments WHERE id = $1 AND tierlist_id = $2")
+            .bind(comment_id)
+            .bind(tierlist_id)
+            .execute(&pool)
+            .await
+            .map_err(AppError::Database)?
     } else {
         sqlx::query(
             "DELETE FROM tierlists.comments WHERE id = $1 AND tierlist_id = $2 AND user_id = $3",
@@ -516,14 +538,19 @@ pub async fn upsert_entries(
     .unwrap_or(false);
 
     if !exists {
-        return Err(AppError::NotFound("Tier list not found or not owned by you".into()));
+        return Err(AppError::NotFound(
+            "Tier list not found or not owned by you".into(),
+        ));
     }
 
     // Delete existing entries and re-insert (simpler than per-item upsert)
-    sqlx::query!("DELETE FROM tierlists.tier_list_entries WHERE tier_list_id = $1", id)
-        .execute(&pool)
-        .await
-        .map_err(AppError::Database)?;
+    sqlx::query!(
+        "DELETE FROM tierlists.tier_list_entries WHERE tier_list_id = $1",
+        id
+    )
+    .execute(&pool)
+    .await
+    .map_err(AppError::Database)?;
 
     for entry in &entries {
         sqlx::query!(
@@ -538,10 +565,13 @@ pub async fn upsert_entries(
     }
 
     // Update tier list updated_at
-    sqlx::query!("UPDATE tierlists.tier_lists SET updated_at = NOW() WHERE id = $1", id)
-        .execute(&pool)
-        .await
-        .map_err(AppError::Database)?;
+    sqlx::query!(
+        "UPDATE tierlists.tier_lists SET updated_at = NOW() WHERE id = $1",
+        id
+    )
+    .execute(&pool)
+    .await
+    .map_err(AppError::Database)?;
 
     let result = fetch_entries(&pool, id).await?;
     Ok(Json(ApiResponse::success(result)))
@@ -558,7 +588,10 @@ async fn fetch_entries(pool: &PgPool, tier_list_id: Uuid) -> AppResult<Vec<DbTie
     .map_err(AppError::Database)
 }
 
-async fn fetch_tiers_and_section(pool: &PgPool, tier_list_id: Uuid) -> AppResult<(serde_json::Value, Option<Uuid>)> {
+async fn fetch_tiers_and_section(
+    pool: &PgPool,
+    tier_list_id: Uuid,
+) -> AppResult<(serde_json::Value, Option<Uuid>)> {
     let row = sqlx::query("SELECT tiers, section_id FROM tierlists.tier_lists WHERE id = $1")
         .bind(tier_list_id)
         .fetch_one(pool)

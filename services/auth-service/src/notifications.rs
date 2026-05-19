@@ -30,7 +30,10 @@ pub async fn send_password_reset(
 ) {
     let client = Client::new();
     let result = client
-        .post(format!("{}/internal/send-password-reset", notifications_url))
+        .post(format!(
+            "{}/internal/send-password-reset",
+            notifications_url
+        ))
         .json(&serde_json::json!({
             "to_email": to_email,
             "username": username,
@@ -40,6 +43,10 @@ pub async fn send_password_reset(
         .await;
 
     if let Err(e) = result {
-        tracing::warn!("Failed to send password reset email to {}: {:?}", to_email, e);
+        tracing::warn!(
+            "Failed to send password reset email to {}: {:?}",
+            to_email,
+            e
+        );
     }
 }

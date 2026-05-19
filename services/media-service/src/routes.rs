@@ -104,7 +104,9 @@ pub async fn delete_asset(
 
     // Admins can delete any asset; other users only their own
     if !auth.is_admin() && asset.uploaded_by != Some(auth.id()) {
-        return Err(AppError::Forbidden("You can only delete your own uploads".into()));
+        return Err(AppError::Forbidden(
+            "You can only delete your own uploads".into(),
+        ));
     }
 
     // Delete the file from disk
@@ -127,18 +129,15 @@ async fn handle_upload(
     images_only: bool,
 ) -> AppResult<DbAsset> {
     let upload_dir = std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
-    let public_base = std::env::var("PUBLIC_BASE_URL")
-        .unwrap_or_else(|_| "http://localhost:3006".to_string());
+    let public_base =
+        std::env::var("PUBLIC_BASE_URL").unwrap_or_else(|_| "http://localhost:3006".to_string());
 
     while let Some(field) = multipart
         .next_field()
         .await
         .map_err(|e| AppError::BadRequest(format!("Multipart error: {}", e)))?
     {
-        let original_filename = field
-            .file_name()
-            .unwrap_or("upload")
-            .to_string();
+        let original_filename = field.file_name().unwrap_or("upload").to_string();
 
         let mime_type = field
             .content_type()
@@ -198,5 +197,7 @@ async fn handle_upload(
         return Ok(asset);
     }
 
-    Err(AppError::BadRequest("No file provided in multipart form".into()))
+    Err(AppError::BadRequest(
+        "No file provided in multipart form".into(),
+    ))
 }
