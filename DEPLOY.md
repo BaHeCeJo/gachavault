@@ -32,10 +32,10 @@ ssh root@YOUR_SERVER_IP
 
 Run the setup script (substitute your GitHub username):
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/gachavault/main/setup-vps.sh | bash -s YOUR_GITHUB_USERNAME
+curl -fsSL https://raw.githubusercontent.com/BaHeCeJo/gachavault/main/setup-vps.sh | bash -s BaHeCeJo
 ```
 
-Or copy the file manually and run `bash setup-vps.sh YOUR_GITHUB_USERNAME`.
+Or copy the file manually and run `bash setup-vps.sh BaHeCeJo`.
 
 ---
 
@@ -87,7 +87,7 @@ git init
 git add .
 git commit -m "Initial commit"
 git branch -M main
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/gachavault.git
+git remote add origin https://github.com/BaHeCeJo/gachavault.git
 git push -u origin main
 ```
 
@@ -116,10 +116,10 @@ ssh root@YOUR_SERVER_IP
 cd /opt/gachavault
 
 # The repo needs to be cloned here so `git pull` works in CI
-git clone https://github.com/YOUR_GITHUB_USERNAME/gachavault.git .
+git clone https://github.com/BaHeCeJo/gachavault.git .
 
 # Log in to GHCR (first time only)
-docker login ghcr.io -u YOUR_GITHUB_USERNAME
+docker login ghcr.io -u BaHeCeJo
 
 # Start everything
 docker compose -f docker-compose.prod.yml pull

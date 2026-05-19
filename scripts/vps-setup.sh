@@ -22,7 +22,7 @@ usermod -aG docker gachavault
 # 5. Clone repo into /opt/gachavault
 mkdir -p /opt/gachavault
 # Replace with your actual GitHub repo URL:
-git clone https://github.com/YOUR_ORG/gachavault.git /opt/gachavault || true
+git clone https://github.com/BaHeCeJo/gachavault.git /opt/gachavault || true
 chown -R gachavault:gachavault /opt/gachavault
 
 # 6. Create .env file (edit this after running)
@@ -45,7 +45,7 @@ FROM_EMAIL=noreply@yourdomain.com
 FRONTEND_URL=https://yourdomain.com
 BACKEND_URL=https://yourdomain.com
 
-GHCR_OWNER=YOUR_GITHUB_USERNAME
+GHCR_OWNER=BaHeCeJo
 ENVEOF
 
 chmod 600 /opt/gachavault/.env
