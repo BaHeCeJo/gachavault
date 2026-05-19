@@ -34,7 +34,7 @@ pub async fn send_verification(
     Json(body): Json<SendVerificationRequest>,
 ) -> AppResult<Json<ApiResponse<()>>> {
     let verify_url = format!(
-        "{}/verify-email?token={}",
+        "{}/auth/verify-email?token={}",
         state.frontend_url, body.verification_token
     );
 
@@ -67,7 +67,7 @@ pub async fn send_password_reset(
     Json(body): Json<SendPasswordResetRequest>,
 ) -> AppResult<Json<ApiResponse<()>>> {
     let reset_url = format!(
-        "{}/reset-password?token={}",
+        "{}/auth/reset-password?token={}",
         state.frontend_url, body.reset_token
     );
 
@@ -139,13 +139,20 @@ fn send_email(state: &AppState, to: &str, subject: &str, html_body: String) -> A
         .body(html_body)
         .map_err(|e| AppError::Internal(anyhow::anyhow!("Failed to build email: {}", e)))?;
 
-    let creds = Credentials::new(state.smtp_username.clone(), state.smtp_password.clone());
-
-    let mailer = SmtpTransport::starttls_relay(&state.smtp_host)
-        .map_err(|e| AppError::Internal(anyhow::anyhow!("SMTP relay error: {}", e)))?
-        .credentials(creds)
-        .port(state.smtp_port)
-        .build();
+    let mailer = if state.smtp_username.is_empty() {
+        // Plain SMTP — no auth, no TLS (Mailhog / local dev)
+        SmtpTransport::builder_dangerous(&state.smtp_host)
+            .port(state.smtp_port)
+            .build()
+    } else {
+        // Production SMTP with STARTTLS + credentials
+        let creds = Credentials::new(state.smtp_username.clone(), state.smtp_password.clone());
+        SmtpTransport::starttls_relay(&state.smtp_host)
+            .map_err(|e| AppError::Internal(anyhow::anyhow!("SMTP relay error: {}", e)))?
+            .credentials(creds)
+            .port(state.smtp_port)
+            .build()
+    };
 
     mailer
         .send(&message)

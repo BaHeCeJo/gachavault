@@ -13,6 +13,8 @@ pub struct SearchParams {
     pub section: Option<String>,
     pub page: Option<u32>,
     pub per_page: Option<u32>,
+    /// "name:asc" | "name:desc" — passed directly to Meilisearch sort
+    pub sort: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -50,6 +52,13 @@ pub async fn search(
     }
     if !filters.is_empty() {
         body["filter"] = serde_json::Value::String(filters.join(" AND "));
+    }
+
+    // Sort param: accept "name:asc" or "name:desc" only (whitelist against injection)
+    if let Some(sort) = &params.sort {
+        if matches!(sort.as_str(), "name:asc" | "name:desc") {
+            body["sort"] = serde_json::json!([sort]);
+        }
     }
 
     let response = state

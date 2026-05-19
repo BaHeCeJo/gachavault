@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO auth.users (email, username, google_id, avatar_url, provider, email_verified)\n           VALUES ($1, $2, $3, $4, 'google', TRUE)\n           RETURNING *",
+  "describe": {
+    "columns": [
+      { "ordinal": 0, "name": "id", "type_info": "Uuid" },
+      { "ordinal": 1, "name": "email", "type_info": "Varchar" },
+      { "ordinal": 2, "name": "username", "type_info": "Varchar" },
+      { "ordinal": 3, "name": "password_hash", "type_info": "Varchar" },
+      { "ordinal": 4, "name": "avatar_url", "type_info": "Text" },
+      { "ordinal": 5, "name": "email_verified", "type_info": "Bool" },
+      { "ordinal": 6, "name": "google_id", "type_info": "Varchar" },
+      { "ordinal": 7, "name": "provider", "type_info": "Varchar" },
+      { "ordinal": 8, "name": "created_at", "type_info": "Timestamptz" },
+      { "ordinal": 9, "name": "updated_at", "type_info": "Timestamptz" }
+    ],
+    "parameters": {
+      "Left": ["Varchar", "Varchar", "Varchar", "Text"]
+    },
+    "nullable": [false, false, false, true, true, false, true, false, false, false]
+  },
+  "hash": "e8b33cd5275a06ed2ca16df28eb77096a396d029fd553dc1305fac8e9bb20b64"
+}

@@ -8,6 +8,9 @@ export default function AdminPage() {
         <AdminCard title="Games" description="Add and manage gacha games" href="/admin/games" />
         <AdminCard title="Items" description="Add and edit game items" href="/admin/items" />
         <AdminCard title="Users" description="Manage user roles and permissions" href="/admin/users" />
+        <AdminCard title="Media" description="Browse and delete uploaded files" href="/admin/media" />
+        <AdminCard title="Backups" description="Database backup status and restore instructions" href="/admin/backups" />
+        <AdminCard title="Statistics" description="User counts, content totals, and site activity" href="/admin/stats" />
       </div>
     </main>
   );

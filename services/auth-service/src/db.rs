@@ -180,3 +180,102 @@ pub async fn update_password(
     .await?;
     Ok(())
 }
+
+pub async fn find_or_create_google_user(
+    pool: &PgPool,
+    google_id: &str,
+    email: &str,
+    display_name: Option<&str>,
+    avatar_url: Option<&str>,
+) -> Result<DbUser, sqlx::Error> {
+    // Try to find by google_id first
+    if let Some(user) = sqlx::query_as!(
+        DbUser,
+        "SELECT * FROM auth.users WHERE google_id = $1",
+        google_id
+    )
+    .fetch_optional(pool)
+    .await?
+    {
+        return Ok(user);
+    }
+
+    // Try to find by email (link existing account)
+    if let Some(user) = sqlx::query_as!(
+        DbUser,
+        "UPDATE auth.users SET google_id = $1, avatar_url = COALESCE(avatar_url, $2), provider = 'google', updated_at = NOW()
+         WHERE email = $3
+         RETURNING *",
+        google_id,
+        avatar_url,
+        email,
+    )
+    .fetch_optional(pool)
+    .await?
+    {
+        return Ok(user);
+    }
+
+    // Create new Google user — derive username from display_name or email prefix
+    let base_username = display_name
+        .map(|n| n.to_lowercase().replace(' ', "_"))
+        .unwrap_or_else(|| email.split('@').next().unwrap_or("user").to_string());
+
+    // Make username unique by appending a random suffix if needed
+    let username = make_unique_username(pool, &base_username).await?;
+
+    sqlx::query_as!(
+        DbUser,
+        r#"INSERT INTO auth.users (email, username, google_id, avatar_url, provider, email_verified)
+           VALUES ($1, $2, $3, $4, 'google', TRUE)
+           RETURNING *"#,
+        email,
+        username,
+        google_id,
+        avatar_url,
+    )
+    .fetch_one(pool)
+    .await
+}
+
+async fn make_unique_username(pool: &PgPool, base: &str) -> Result<String, sqlx::Error> {
+    // Sanitize: keep only alphanumeric and underscore, max 40 chars
+    let base: String = base
+        .chars()
+        .filter(|c| c.is_alphanumeric() || *c == '_')
+        .take(40)
+        .collect();
+    let base = if base.len() < 3 { "user".to_string() } else { base };
+
+    // Try base first, then add random suffix
+    let exists: bool = sqlx::query_scalar!(
+        "SELECT EXISTS(SELECT 1 FROM auth.users WHERE username = $1)",
+        base
+    )
+    .fetch_one(pool)
+    .await?
+    .unwrap_or(false);
+
+    if !exists {
+        return Ok(base);
+    }
+
+    for _ in 0..10 {
+        let suffix: u32 = rand::random::<u32>() % 9000 + 1000;
+        let candidate = format!("{}_{}", &base[..base.len().min(35)], suffix);
+        let taken: bool = sqlx::query_scalar!(
+            "SELECT EXISTS(SELECT 1 FROM auth.users WHERE username = $1)",
+            candidate
+        )
+        .fetch_one(pool)
+        .await?
+        .unwrap_or(false);
+
+        if !taken {
+            return Ok(candidate);
+        }
+    }
+
+    // Fallback: uuid-based
+    Ok(format!("user_{}", uuid::Uuid::new_v4().simple()))
+}

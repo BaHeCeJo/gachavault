@@ -30,6 +30,8 @@ async fn main() {
         http_client: Arc::new(Client::new()),
     };
 
+    init_meilisearch_index(&state).await;
+
     let app = Router::new()
         .route("/health", get(health_check))
         .route("/api/v1/search", get(routes::search))
@@ -47,4 +49,40 @@ async fn main() {
 
 async fn health_check() -> axum::Json<serde_json::Value> {
     axum::Json(json!({"status": "ok", "service": "search-service"}))
+}
+
+async fn init_meilisearch_index(state: &AppState) {
+    // Ensure the index exists with correct filterable attributes
+    let create_index = state
+        .http_client
+        .post(format!("{}/indexes", state.meilisearch_url))
+        .header("Authorization", format!("Bearer {}", state.meilisearch_key))
+        .json(&json!({ "uid": "items", "primaryKey": "id" }))
+        .send()
+        .await;
+
+    if let Err(e) = create_index {
+        tracing::warn!("Failed to create Meilisearch index (may already exist): {}", e);
+    }
+
+    let settings = json!({
+        "filterableAttributes": ["game_slug", "section_slug", "game_id", "section_id"],
+        "sortableAttributes": ["name"],
+        "searchableAttributes": ["name", "slug", "data.description", "data.role", "data.element"]
+    });
+
+    match state
+        .http_client
+        .patch(format!("{}/indexes/items/settings", state.meilisearch_url))
+        .header("Authorization", format!("Bearer {}", state.meilisearch_key))
+        .json(&settings)
+        .send()
+        .await
+    {
+        Ok(r) if r.status().is_success() => {
+            tracing::info!("Meilisearch index 'items' configured successfully");
+        }
+        Ok(r) => tracing::warn!("Meilisearch settings update returned {}", r.status()),
+        Err(e) => tracing::warn!("Failed to configure Meilisearch settings: {}", e),
+    }
 }

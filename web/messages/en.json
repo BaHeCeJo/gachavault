@@ -1,0 +1,142 @@
+{
+  "nav": {
+    "games": "Games",
+    "search": "Search",
+    "collections": "My Collection",
+    "tierlists": "Tier Lists",
+    "profile": "Profile",
+    "admin": "Admin",
+    "login": "Sign in",
+    "register": "Sign up",
+    "logout": "Sign out"
+  },
+  "home": {
+    "title": "GachaVault",
+    "subtitle": "The complete gacha game database — characters, weapons, tier lists, and more.",
+    "searchPlaceholder": "Search characters, weapons, items…",
+    "searchButton": "Search",
+    "browseGames": "Browse Games",
+    "createAccount": "Create Account",
+    "gamesSection": "Games",
+    "viewAll": "View all"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submitButton": "Sign in",
+      "googleButton": "Continue with Google",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "register": "Sign up"
+    },
+    "register": {
+      "title": "Create account",
+      "usernameLabel": "Username",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submitButton": "Create account",
+      "googleButton": "Continue with Google",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Reset password",
+      "description": "Enter your email and we'll send you a reset link.",
+      "emailLabel": "Email",
+      "submitButton": "Send reset email",
+      "backToLogin": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "passwordLabel": "New password",
+      "submitButton": "Set new password"
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "success": "Your email has been verified!",
+      "invalid": "Invalid or expired verification link."
+    }
+  },
+  "games": {
+    "title": "Games",
+    "noGames": "No games yet — check back soon.",
+    "noItems": "No items in this section yet.",
+    "communityTierlists": "Community Tier Lists",
+    "createYours": "Create yours"
+  },
+  "items": {
+    "addToCollection": "+ Add to Collection",
+    "inCollection": "✓ In Collection",
+    "tabs": {
+      "skills": "Skills",
+      "builds": "Builds",
+      "changelog": "Changelog"
+    },
+    "noSkills": "No skills documented yet.",
+    "noBuilds": "No builds yet.",
+    "noChangelog": "No changelog entries.",
+    "addSkill": "+ Add Skill",
+    "addBuild": "+ Add Build",
+    "addEntry": "+ Add Entry"
+  },
+  "collections": {
+    "title": "My Collection",
+    "selectGame": "Select a game to view your collection.",
+    "noItems": "You haven't added any items from this game yet.",
+    "owned": "Owned",
+    "level": "Level",
+    "constellation": "Constellation",
+    "ascension": "Ascension"
+  },
+  "tierlists": {
+    "title": "Tier Lists",
+    "create": "New Tier List",
+    "empty": "No tier lists yet. Create your first one!",
+    "publicLabel": "Public",
+    "privateLabel": "Private",
+    "share": "Share",
+    "save": "Save",
+    "saving": "Saving…"
+  },
+  "profile": {
+    "title": "My Profile",
+    "emailVerified": "Email verified",
+    "signInMethod": "Sign-in method",
+    "memberSince": "Member since",
+    "quickLinks": "Quick links",
+    "changeAvatar": "Change",
+    "signOut": "Sign out"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search items across all games…",
+    "noResults": "No results found.",
+    "resultsFor": "Results for"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "games": "Games",
+    "items": "Items",
+    "users": "Users",
+    "gamesDescription": "Add and manage gacha games",
+    "itemsDescription": "Add and edit game items",
+    "usersDescription": "Manage user roles and permissions"
+  },
+  "errors": {
+    "notFound": "Not found",
+    "failedToLoad": "Failed to load",
+    "tryAgain": "Please try again"
+  },
+  "common": {
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "loading": "Loading…",
+    "back": "Back"
+  }
+}

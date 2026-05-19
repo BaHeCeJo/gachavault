@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PROTECTED_ROUTES = ["/admin", "/profile", "/collections", "/tierlists/new"];
+const PROTECTED_ROUTES = ["/admin", "/profile", "/collections", "/tierlists"];
+const PUBLIC_OVERRIDES = ["/tierlists/share"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
+  const isPublicOverride = PUBLIC_OVERRIDES.some((route) => pathname.startsWith(route));
+  const isProtected = !isPublicOverride && PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 
   if (isProtected) {
     const token = request.cookies.get("access_token")?.value;

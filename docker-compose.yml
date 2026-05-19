@@ -27,6 +27,12 @@ services:
       timeout: 5s
       retries: 5
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
   meilisearch:
     image: getmeili/meilisearch:v1.11
     environment:
@@ -81,6 +87,7 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3009}
+      BACKEND_URL: ${BACKEND_URL:-http://localhost:3000}
       NOTIFICATIONS_SERVICE_URL: http://notifications-service:3008
       INTERNAL_SECRET: ${INTERNAL_SECRET}
     depends_on:
@@ -164,6 +171,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       UPLOAD_DIR: /app/uploads
       MAX_FILE_SIZE_MB: 10
+      PUBLIC_BASE_URL: ${BACKEND_URL:-http://localhost:3006}
     volumes:
       - media_uploads:/app/uploads
     depends_on:
@@ -191,13 +199,15 @@ services:
       dockerfile: services/notifications-service/Dockerfile
     ports:
       - "3008:3008"
+    depends_on:
+      - mailhog
     environment:
       PORT: 3008
       RUST_LOG: info
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_USERNAME: ${SMTP_USERNAME}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_HOST: ${SMTP_HOST:-mailhog}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       FROM_EMAIL: ${FROM_EMAIL:-noreply@gachavault.com}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3009}
       INTERNAL_SECRET: ${INTERNAL_SECRET}
@@ -214,8 +224,27 @@ services:
     depends_on:
       - api-gateway
 
+  db-backup:
+    image: postgres:16-alpine
+    entrypoint: ["/bin/sh", "/scripts/db-backup.sh"]
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGHOST: postgres
+      PGUSER: gachavault
+      PGDATABASE: gachavault
+      KEEP_DAYS: 7
+      BACKUP_INTERVAL: 86400
+    volumes:
+      - ./scripts/db-backup.sh:/scripts/db-backup.sh:ro
+      - db_backups:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
   meilisearch_data:
   media_uploads:
+  db_backups:

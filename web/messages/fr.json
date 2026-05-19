@@ -1,0 +1,142 @@
+{
+  "nav": {
+    "games": "Jeux",
+    "search": "Recherche",
+    "collections": "Ma Collection",
+    "tierlists": "Tier Lists",
+    "profile": "Profil",
+    "admin": "Admin",
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion"
+  },
+  "home": {
+    "title": "GachaVault",
+    "subtitle": "La base de données complète des jeux gacha — personnages, armes, tier lists et plus encore.",
+    "searchPlaceholder": "Rechercher des personnages, armes, objets…",
+    "searchButton": "Rechercher",
+    "browseGames": "Parcourir les jeux",
+    "createAccount": "Créer un compte",
+    "gamesSection": "Jeux",
+    "viewAll": "Voir tout"
+  },
+  "auth": {
+    "login": {
+      "title": "Connexion",
+      "emailLabel": "Adresse e-mail",
+      "passwordLabel": "Mot de passe",
+      "submitButton": "Se connecter",
+      "googleButton": "Continuer avec Google",
+      "forgotPassword": "Mot de passe oublié ?",
+      "noAccount": "Pas encore de compte ?",
+      "register": "Inscription"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "usernameLabel": "Nom d'utilisateur",
+      "emailLabel": "Adresse e-mail",
+      "passwordLabel": "Mot de passe",
+      "submitButton": "Créer un compte",
+      "googleButton": "Continuer avec Google",
+      "hasAccount": "Déjà un compte ?",
+      "login": "Connexion"
+    },
+    "forgotPassword": {
+      "title": "Réinitialiser le mot de passe",
+      "description": "Entrez votre e-mail et nous vous enverrons un lien de réinitialisation.",
+      "emailLabel": "Adresse e-mail",
+      "submitButton": "Envoyer le lien",
+      "backToLogin": "Retour à la connexion"
+    },
+    "resetPassword": {
+      "title": "Nouveau mot de passe",
+      "passwordLabel": "Nouveau mot de passe",
+      "submitButton": "Définir le nouveau mot de passe"
+    },
+    "verifyEmail": {
+      "title": "Vérifier votre e-mail",
+      "success": "Votre e-mail a été vérifié !",
+      "invalid": "Lien de vérification invalide ou expiré."
+    }
+  },
+  "games": {
+    "title": "Jeux",
+    "noGames": "Aucun jeu pour l'instant — revenez bientôt.",
+    "noItems": "Aucun élément dans cette section pour l'instant.",
+    "communityTierlists": "Tier Lists de la communauté",
+    "createYours": "Créer la vôtre"
+  },
+  "items": {
+    "addToCollection": "+ Ajouter à la collection",
+    "inCollection": "✓ Dans la collection",
+    "tabs": {
+      "skills": "Compétences",
+      "builds": "Builds",
+      "changelog": "Historique"
+    },
+    "noSkills": "Aucune compétence documentée pour l'instant.",
+    "noBuilds": "Aucun build pour l'instant.",
+    "noChangelog": "Aucune entrée dans l'historique.",
+    "addSkill": "+ Ajouter une compétence",
+    "addBuild": "+ Ajouter un build",
+    "addEntry": "+ Ajouter une entrée"
+  },
+  "collections": {
+    "title": "Ma Collection",
+    "selectGame": "Sélectionnez un jeu pour voir votre collection.",
+    "noItems": "Vous n'avez encore ajouté aucun élément de ce jeu.",
+    "owned": "Possédé",
+    "level": "Niveau",
+    "constellation": "Constellation",
+    "ascension": "Ascension"
+  },
+  "tierlists": {
+    "title": "Tier Lists",
+    "create": "Nouvelle Tier List",
+    "empty": "Aucune tier list pour l'instant. Créez la première !",
+    "publicLabel": "Publique",
+    "privateLabel": "Privée",
+    "share": "Partager",
+    "save": "Sauvegarder",
+    "saving": "Sauvegarde…"
+  },
+  "profile": {
+    "title": "Mon Profil",
+    "emailVerified": "E-mail vérifié",
+    "signInMethod": "Méthode de connexion",
+    "memberSince": "Membre depuis",
+    "quickLinks": "Liens rapides",
+    "changeAvatar": "Modifier",
+    "signOut": "Déconnexion"
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher des éléments dans tous les jeux…",
+    "noResults": "Aucun résultat trouvé.",
+    "resultsFor": "Résultats pour"
+  },
+  "admin": {
+    "title": "Panneau d'administration",
+    "games": "Jeux",
+    "items": "Éléments",
+    "users": "Utilisateurs",
+    "gamesDescription": "Ajouter et gérer des jeux gacha",
+    "itemsDescription": "Ajouter et modifier des éléments",
+    "usersDescription": "Gérer les rôles et permissions des utilisateurs"
+  },
+  "errors": {
+    "notFound": "Introuvable",
+    "failedToLoad": "Chargement échoué",
+    "tryAgain": "Veuillez réessayer"
+  },
+  "common": {
+    "save": "Sauvegarder",
+    "saving": "Sauvegarde…",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "loading": "Chargement…",
+    "back": "Retour"
+  }
+}

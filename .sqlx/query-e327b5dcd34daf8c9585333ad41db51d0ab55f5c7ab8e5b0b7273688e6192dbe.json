@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT EXISTS(SELECT 1 FROM auth.users WHERE username = $1)",
+  "describe": {
+    "columns": [
+      { "ordinal": 0, "name": "exists", "type_info": "Bool" }
+    ],
+    "parameters": {
+      "Left": ["Varchar"]
+    },
+    "nullable": [true]
+  },
+  "hash": "e327b5dcd34daf8c9585333ad41db51d0ab55f5c7ab8e5b0b7273688e6192dbe"
+}

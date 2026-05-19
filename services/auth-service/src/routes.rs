@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use shared_auth::{AuthUser, Claims};
 use shared_errors::{AppError, AppResult};
 use shared_types::ApiResponse;
-use sqlx::PgPool;
+use sqlx::{PgPool, Row};
 
 use crate::{crypto, db, notifications};
 
@@ -42,6 +42,44 @@ pub struct ForgotPasswordRequest {
 pub struct ResetPasswordRequest {
     pub token: String,
     pub password: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateAvatarRequest {
+    pub avatar_url: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SetRoleRequest {
+    pub role: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateUsernameRequest {
+    pub username: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ChangePasswordRequest {
+    pub current_password: String,
+    pub new_password: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct DeleteAccountRequest {
+    pub password: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct UserSummary {
+    pub id: uuid::Uuid,
+    pub email: String,
+    pub username: String,
+    pub avatar_url: Option<String>,
+    pub email_verified: bool,
+    pub provider: String,
+    pub role: String,
+    pub created_at: chrono::DateTime<Utc>,
 }
 
 #[derive(Debug, Serialize)]
@@ -261,13 +299,393 @@ pub async fn me(
         "avatar_url": user.avatar_url,
         "email_verified": user.email_verified,
         "provider": user.provider,
+        "role": auth.role(),
         "created_at": user.created_at,
+    }))))
+}
+
+pub async fn update_avatar(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Json(body): Json<UpdateAvatarRequest>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    if body.avatar_url.len() > 2048 {
+        return Err(AppError::BadRequest("avatar_url too long".into()));
+    }
+
+    sqlx::query(
+        "UPDATE auth.users SET avatar_url = $1, updated_at = NOW() WHERE id = $2",
+    )
+    .bind(&body.avatar_url)
+    .bind(auth.id())
+    .execute(&pool)
+    .await
+    .map_err(AppError::Database)?;
+
+    Ok(Json(ApiResponse::success(serde_json::json!({ "avatar_url": body.avatar_url }))))
+}
+
+pub async fn list_users(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+) -> AppResult<Json<ApiResponse<Vec<UserSummary>>>> {
+    if !auth.is_admin() {
+        return Err(AppError::Forbidden("Admin access required".into()));
+    }
+
+    let rows = sqlx::query(
+        "SELECT u.id, u.email, u.username, u.avatar_url, u.email_verified, u.provider, u.created_at, \
+         COALESCE(r.role, 'user') AS role \
+         FROM auth.users u \
+         LEFT JOIN auth.user_roles r ON r.user_id = u.id AND r.game_id IS NULL AND r.section_id IS NULL \
+         ORDER BY u.created_at DESC LIMIT 500",
+    )
+    .fetch_all(&pool)
+    .await
+    .map_err(AppError::Database)?;
+
+    let users: Vec<UserSummary> = rows
+        .iter()
+        .map(|row| UserSummary {
+            id: row.get("id"),
+            email: row.get("email"),
+            username: row.get("username"),
+            avatar_url: row.get("avatar_url"),
+            email_verified: row.get("email_verified"),
+            provider: row.get("provider"),
+            role: row.get("role"),
+            created_at: row.get("created_at"),
+        })
+        .collect();
+
+    Ok(Json(ApiResponse::success(users)))
+}
+
+pub async fn set_user_role(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    axum::extract::Path(user_id): axum::extract::Path<uuid::Uuid>,
+    Json(body): Json<SetRoleRequest>,
+) -> AppResult<Json<ApiResponse<()>>> {
+    if !auth.is_admin() {
+        return Err(AppError::Forbidden("Admin access required".into()));
+    }
+    let valid_roles = ["user", "editor", "admin", "superadmin"];
+    if !valid_roles.contains(&body.role.as_str()) {
+        return Err(AppError::BadRequest(format!("Invalid role '{}'. Valid: {}", body.role, valid_roles.join(", "))));
+    }
+
+    // Remove any existing global role
+    sqlx::query(
+        "DELETE FROM auth.user_roles WHERE user_id = $1 AND game_id IS NULL AND section_id IS NULL",
+    )
+    .bind(user_id)
+    .execute(&pool)
+    .await
+    .map_err(AppError::Database)?;
+
+    // Insert new role (unless 'user' which is the default — no DB row needed)
+    if body.role != "user" {
+        sqlx::query(
+            "INSERT INTO auth.user_roles (user_id, role, granted_by) VALUES ($1, $2, $3)",
+        )
+        .bind(user_id)
+        .bind(&body.role)
+        .bind(auth.id())
+        .execute(&pool)
+        .await
+        .map_err(AppError::Database)?;
+    }
+
+    Ok(Json(ApiResponse::success(())))
+}
+
+pub async fn update_username(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Json(body): Json<UpdateUsernameRequest>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    if body.username.len() < 3 || body.username.len() > 50 {
+        return Err(AppError::BadRequest("Username must be 3–50 characters".into()));
+    }
+    if !body.username.chars().all(|c| c.is_alphanumeric() || c == '_') {
+        return Err(AppError::BadRequest("Username may only contain letters, numbers, and underscores".into()));
+    }
+
+    sqlx::query("UPDATE auth.users SET username = $1, updated_at = NOW() WHERE id = $2")
+        .bind(&body.username)
+        .bind(auth.id())
+        .execute(&pool)
+        .await
+        .map_err(|e| match e {
+            sqlx::Error::Database(db_err) if db_err.constraint() == Some("users_username_key") => {
+                AppError::Conflict("Username already taken".into())
+            }
+            other => AppError::Database(other),
+        })?;
+
+    Ok(Json(ApiResponse::success(serde_json::json!({ "username": body.username }))))
+}
+
+pub async fn change_password(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Json(body): Json<ChangePasswordRequest>,
+) -> AppResult<Json<ApiResponse<()>>> {
+    if body.new_password.len() < 8 {
+        return Err(AppError::BadRequest("New password must be at least 8 characters".into()));
+    }
+
+    let user = db::find_user_by_id(&pool, auth.id())
+        .await
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("User not found".into()))?;
+
+    let password_hash = user.password_hash
+        .as_deref()
+        .ok_or_else(|| AppError::BadRequest("This account uses social login — password cannot be changed".into()))?;
+
+    let valid = crypto::verify_password(&body.current_password, password_hash)
+        .map_err(AppError::Internal)?;
+    if !valid {
+        return Err(AppError::Unauthorized("Current password is incorrect".into()));
+    }
+
+    let new_hash = crypto::hash_password(&body.new_password)
+        .map_err(AppError::Internal)?;
+
+    db::update_password(&pool, auth.id(), &new_hash)
+        .await
+        .map_err(AppError::Database)?;
+
+    db::delete_refresh_tokens_for_user(&pool, auth.id())
+        .await
+        .map_err(AppError::Database)?;
+
+    Ok(Json(ApiResponse::success(())))
+}
+
+pub async fn delete_account(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Json(body): Json<DeleteAccountRequest>,
+) -> AppResult<Json<ApiResponse<()>>> {
+    let user = db::find_user_by_id(&pool, auth.id())
+        .await
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("User not found".into()))?;
+
+    if let Some(password_hash) = user.password_hash.as_deref() {
+        let provided = body.password.as_deref().unwrap_or("");
+        let valid = crypto::verify_password(provided, password_hash)
+            .map_err(AppError::Internal)?;
+        if !valid {
+            return Err(AppError::Unauthorized("Password is incorrect".into()));
+        }
+    }
+
+    db::delete_refresh_tokens_for_user(&pool, auth.id())
+        .await
+        .map_err(AppError::Database)?;
+
+    sqlx::query("DELETE FROM auth.users WHERE id = $1")
+        .bind(auth.id())
+        .execute(&pool)
+        .await
+        .map_err(AppError::Database)?;
+
+    Ok(Json(ApiResponse::success(())))
+}
+
+// ── Per-game roles ────────────────────────────────────────────────────────────
+
+#[derive(Debug, Serialize)]
+pub struct GameRoleEntry {
+    pub game_id: uuid::Uuid,
+    pub section_id: Option<uuid::Uuid>,
+    pub role: String,
+    pub granted_at: chrono::DateTime<Utc>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SetGameRoleRequest {
+    pub game_id: uuid::Uuid,
+    pub section_id: Option<uuid::Uuid>,
+    pub role: String,
+}
+
+pub async fn list_user_game_roles(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    axum::extract::Path(user_id): axum::extract::Path<uuid::Uuid>,
+) -> AppResult<Json<ApiResponse<Vec<GameRoleEntry>>>> {
+    if !auth.is_admin() && auth.id() != user_id {
+        return Err(AppError::Forbidden("Admin access required".into()));
+    }
+    let rows = sqlx::query(
+        "SELECT game_id, section_id, role, created_at \
+         FROM auth.user_roles WHERE user_id = $1 AND game_id IS NOT NULL \
+         ORDER BY created_at DESC",
+    )
+    .bind(user_id)
+    .fetch_all(&pool)
+    .await
+    .map_err(AppError::Database)?;
+
+    let entries: Vec<GameRoleEntry> = rows
+        .iter()
+        .map(|r| GameRoleEntry {
+            game_id: r.get("game_id"),
+            section_id: r.get("section_id"),
+            role: r.get("role"),
+            granted_at: r.get("created_at"),
+        })
+        .collect();
+
+    Ok(Json(ApiResponse::success(entries)))
+}
+
+pub async fn set_user_game_role(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    axum::extract::Path(user_id): axum::extract::Path<uuid::Uuid>,
+    Json(body): Json<SetGameRoleRequest>,
+) -> AppResult<Json<ApiResponse<()>>> {
+    if !auth.is_admin() {
+        return Err(AppError::Forbidden("Admin access required".into()));
+    }
+    let valid = ["game_admin", "game_editor", "section_editor", "contributor"];
+    if !valid.contains(&body.role.as_str()) {
+        return Err(AppError::BadRequest(format!(
+            "Invalid game role '{}'. Valid: {}",
+            body.role,
+            valid.join(", ")
+        )));
+    }
+
+    // Remove existing role for same game+section scope
+    match body.section_id {
+        Some(sid) => {
+            sqlx::query(
+                "DELETE FROM auth.user_roles WHERE user_id=$1 AND game_id=$2 AND section_id=$3",
+            )
+            .bind(user_id).bind(body.game_id).bind(sid)
+            .execute(&pool).await.map_err(AppError::Database)?;
+
+            sqlx::query(
+                "INSERT INTO auth.user_roles (user_id, game_id, section_id, role, granted_by) \
+                 VALUES ($1, $2, $3, $4, $5)",
+            )
+            .bind(user_id).bind(body.game_id).bind(sid).bind(&body.role).bind(auth.id())
+            .execute(&pool).await.map_err(AppError::Database)?;
+        }
+        None => {
+            sqlx::query(
+                "DELETE FROM auth.user_roles WHERE user_id=$1 AND game_id=$2 AND section_id IS NULL",
+            )
+            .bind(user_id).bind(body.game_id)
+            .execute(&pool).await.map_err(AppError::Database)?;
+
+            sqlx::query(
+                "INSERT INTO auth.user_roles (user_id, game_id, section_id, role, granted_by) \
+                 VALUES ($1, $2, NULL, $3, $4)",
+            )
+            .bind(user_id).bind(body.game_id).bind(&body.role).bind(auth.id())
+            .execute(&pool).await.map_err(AppError::Database)?;
+        }
+    }
+
+    Ok(Json(ApiResponse::success(())))
+}
+
+pub async fn remove_user_game_role(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    axum::extract::Path((user_id, game_id)): axum::extract::Path<(uuid::Uuid, uuid::Uuid)>,
+) -> AppResult<Json<ApiResponse<()>>> {
+    if !auth.is_admin() {
+        return Err(AppError::Forbidden("Admin access required".into()));
+    }
+    sqlx::query("DELETE FROM auth.user_roles WHERE user_id=$1 AND game_id=$2")
+        .bind(user_id)
+        .bind(game_id)
+        .execute(&pool)
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(())))
+}
+
+pub async fn get_user_by_username(
+    State(pool): State<PgPool>,
+    axum::extract::Path(username): axum::extract::Path<String>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    let row = sqlx::query(
+        "SELECT id, username, avatar_url, created_at FROM auth.users WHERE username = $1",
+    )
+    .bind(&username)
+    .fetch_optional(&pool)
+    .await
+    .map_err(AppError::Database)?
+    .ok_or_else(|| AppError::NotFound("User not found".into()))?;
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "id": row.get::<uuid::Uuid, _>("id"),
+        "username": row.get::<String, _>("username"),
+        "avatar_url": row.get::<Option<String>, _>("avatar_url"),
+        "created_at": row.get::<chrono::DateTime<Utc>, _>("created_at"),
+    }))))
+}
+
+pub async fn get_admin_stats(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    if !auth.is_admin() {
+        return Err(AppError::Forbidden("Admin access required".into()));
+    }
+
+    let (total, verified, google, new_30d): (i64, i64, i64, i64) = sqlx::query_as(
+        "SELECT
+            COUNT(*)::bigint,
+            COUNT(*) FILTER (WHERE email_verified = true)::bigint,
+            COUNT(*) FILTER (WHERE provider = 'google')::bigint,
+            COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::bigint
+         FROM auth.users",
+    )
+    .fetch_one(&pool)
+    .await
+    .map_err(AppError::Database)?;
+
+    let games: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM games.games")
+        .fetch_one(&pool).await.map_err(AppError::Database)?;
+    let sections: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM games.sections")
+        .fetch_one(&pool).await.map_err(AppError::Database)?;
+    let items: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM items.items")
+        .fetch_one(&pool).await.map_err(AppError::Database)?;
+    let tierlists: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tierlists.tier_lists")
+        .fetch_one(&pool).await.map_err(AppError::Database)?;
+    let public_tierlists: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tierlists.tier_lists WHERE is_public = TRUE")
+        .fetch_one(&pool).await.map_err(AppError::Database)?;
+    let collections: i64 = sqlx::query_scalar("SELECT COUNT(DISTINCT user_id) FROM collections.collection_entries")
+        .fetch_one(&pool).await.map_err(AppError::Database)?;
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "total_users":      total,
+        "verified_users":   verified,
+        "google_users":     google,
+        "new_users_30d":    new_30d,
+        "games":            games,
+        "sections":         sections,
+        "items":            items,
+        "tierlists":        tierlists,
+        "public_tierlists": public_tierlists,
+        "collectors":       collections,
     }))))
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-async fn issue_tokens(
+pub async fn issue_tokens(
     pool: &PgPool,
     user_id: &uuid::Uuid,
     email: &str,
@@ -283,8 +701,20 @@ async fn issue_tokens(
         .and_then(|v| v.parse().ok())
         .unwrap_or(7);
 
+    // Lookup global role (no DB row = default user)
+    let role: String = sqlx::query(
+        "SELECT role FROM auth.user_roles WHERE user_id = $1 AND game_id IS NULL AND section_id IS NULL LIMIT 1",
+    )
+    .bind(user_id)
+    .fetch_optional(pool)
+    .await
+    .ok()
+    .flatten()
+    .and_then(|r| r.try_get::<String, _>("role").ok())
+    .unwrap_or_else(|| "user".to_string());
+
     // Issue JWT
-    let claims = Claims::new(*user_id, email.to_string(), username.to_string(), expiry_seconds);
+    let claims = Claims::new(*user_id, email.to_string(), username.to_string(), role, expiry_seconds);
     let access_token = claims
         .encode(&jwt_secret)
         .map_err(|e| AppError::Internal(anyhow::anyhow!("Failed to sign JWT: {}", e)))?;

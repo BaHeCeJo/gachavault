@@ -10,23 +10,36 @@ use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+fn default_role() -> String {
+    "user".to_string()
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Claims {
     pub sub: String,
     pub email: String,
     pub username: String,
+    #[serde(default = "default_role")]
+    pub role: String,
     pub exp: usize,
     pub iat: usize,
     pub jti: String,
 }
 
 impl Claims {
-    pub fn new(user_id: Uuid, email: String, username: String, expiry_seconds: i64) -> Self {
+    pub fn new(
+        user_id: Uuid,
+        email: String,
+        username: String,
+        role: String,
+        expiry_seconds: i64,
+    ) -> Self {
         let now = Utc::now().timestamp() as usize;
         Self {
             sub: user_id.to_string(),
             email,
             username,
+            role,
             iat: now,
             exp: (Utc::now().timestamp() + expiry_seconds) as usize,
             jti: Uuid::new_v4().to_string(),
@@ -35,6 +48,10 @@ impl Claims {
 
     pub fn user_id(&self) -> Uuid {
         Uuid::parse_str(&self.sub).expect("Invalid UUID in JWT claims")
+    }
+
+    pub fn role(&self) -> &str {
+        &self.role
     }
 
     pub fn encode(&self, secret: &str) -> Result<String, jsonwebtoken::errors::Error> {
@@ -58,6 +75,15 @@ impl AuthUser {
     pub fn id(&self) -> Uuid { self.0.user_id() }
     pub fn email(&self) -> &str { &self.0.email }
     pub fn username(&self) -> &str { &self.0.username }
+    pub fn role(&self) -> &str { self.0.role() }
+
+    pub fn is_admin(&self) -> bool {
+        matches!(self.role(), "admin" | "superadmin")
+    }
+
+    pub fn can_edit(&self) -> bool {
+        matches!(self.role(), "admin" | "superadmin" | "editor")
+    }
 }
 
 #[async_trait]

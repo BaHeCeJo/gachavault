@@ -1,0 +1,272 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: gachavault
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: gachavault
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gachavault"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.11
+    restart: always
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
+      MEILI_ENV: production
+    volumes:
+      - meilisearch_data:/meili_data
+    networks:
+      - internal
+
+  api-gateway:
+    image: ghcr.io/${GHCR_OWNER}/gachavault/api-gateway:latest
+    restart: always
+    environment:
+      PORT: 3000
+      RUST_LOG: info
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SERVICE_URL: http://auth-service:3001
+      GAMES_SERVICE_URL: http://games-service:3002
+      ITEMS_SERVICE_URL: http://items-service:3003
+      COLLECTIONS_SERVICE_URL: http://collections-service:3004
+      TIERLISTS_SERVICE_URL: http://tierlists-service:3005
+      MEDIA_SERVICE_URL: http://media-service:3006
+      SEARCH_SERVICE_URL: http://search-service:3007
+      NOTIFICATIONS_SERVICE_URL: http://notifications-service:3008
+    depends_on:
+      - auth-service
+      - games-service
+      - items-service
+      - collections-service
+      - tierlists-service
+      - media-service
+      - search-service
+    networks:
+      - internal
+      - external
+
+  auth-service:
+    image: ghcr.io/${GHCR_OWNER}/gachavault/auth-service:latest
+    restart: always
+    environment:
+      PORT: 3001
+      RUST_LOG: info
+      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRY_SECONDS: 900
+      REFRESH_TOKEN_EXPIRY_DAYS: 7
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
+      BACKEND_URL: ${BACKEND_URL}
+      NOTIFICATIONS_SERVICE_URL: http://notifications-service:3008
+      INTERNAL_SECRET: ${INTERNAL_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+
+  games-service:
+    image: ghcr.io/${GHCR_OWNER}/gachavault/games-service:latest
+    restart: always
+    environment:
+      PORT: 3002
+      RUST_LOG: info
+      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+  items-service:
+    image: ghcr.io/${GHCR_OWNER}/gachavault/items-service:latest
+    restart: always
+    environment:
+      PORT: 3003
+      RUST_LOG: info
+      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
+      JWT_SECRET: ${JWT_SECRET}
+      SEARCH_SERVICE_URL: http://search-service:3007
+      INTERNAL_SECRET: ${INTERNAL_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+  collections-service:
+    image: ghcr.io/${GHCR_OWNER}/gachavault/collections-service:latest
+    restart: always
+    environment:
+      PORT: 3004
+      RUST_LOG: info
+      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+  tierlists-service:
+    image: ghcr.io/${GHCR_OWNER}/gachavault/tierlists-service:latest
+    restart: always
+    environment:
+      PORT: 3005
+      RUST_LOG: info
+      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+  media-service:
+    image: ghcr.io/${GHCR_OWNER}/gachavault/media-service:latest
+    restart: always
+    environment:
+      PORT: 3006
+      RUST_LOG: info
+      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
+      JWT_SECRET: ${JWT_SECRET}
+      UPLOAD_DIR: /app/uploads
+      MAX_FILE_SIZE_MB: 20
+      PUBLIC_BASE_URL: ${BACKEND_URL}
+    volumes:
+      - media_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+  search-service:
+    image: ghcr.io/${GHCR_OWNER}/gachavault/search-service:latest
+    restart: always
+    environment:
+      PORT: 3007
+      RUST_LOG: info
+      MEILISEARCH_URL: http://meilisearch:7700
+      MEILISEARCH_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - meilisearch
+    networks:
+      - internal
+
+  notifications-service:
+    image: ghcr.io/${GHCR_OWNER}/gachavault/notifications-service:latest
+    restart: always
+    environment:
+      PORT: 3008
+      RUST_LOG: info
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      FROM_EMAIL: ${FROM_EMAIL}
+      FRONTEND_URL: ${FRONTEND_URL}
+      INTERNAL_SECRET: ${INTERNAL_SECRET}
+    networks:
+      - internal
+
+  web:
+    image: ghcr.io/${GHCR_OWNER}/gachavault/web:latest
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: ${BACKEND_URL}
+      PORT: 3009
+    depends_on:
+      - api-gateway
+    networks:
+      - internal
+      - external
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - certbot_www:/var/www/certbot:ro
+      - certbot_conf:/etc/letsencrypt:ro
+    depends_on:
+      - api-gateway
+      - web
+    networks:
+      - external
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  db-backup:
+    image: postgres:16-alpine
+    restart: always
+    entrypoint: ["/bin/sh", "/scripts/db-backup.sh"]
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGHOST: postgres
+      PGUSER: gachavault
+      PGDATABASE: gachavault
+      KEEP_DAYS: 14
+      BACKUP_INTERVAL: 86400
+    volumes:
+      - ./scripts/db-backup.sh:/scripts/db-backup.sh:ro
+      - db_backups:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+volumes:
+  postgres_data:
+  redis_data:
+  meilisearch_data:
+  media_uploads:
+  db_backups:
+  certbot_www:
+  certbot_conf:
+
+networks:
+  internal:
+    driver: bridge
+  external:
+    driver: bridge

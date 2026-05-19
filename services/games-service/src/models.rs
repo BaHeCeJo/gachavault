@@ -66,3 +66,16 @@ pub struct CreateSchemaRequest {
     pub name: String,
     pub fields: serde_json::Value,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateSectionRequest {
+    pub name: Option<String>,
+    pub order: Option<i32>,
+    pub tabs: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateSchemaRequest {
+    pub name: Option<String>,
+    pub fields: Option<serde_json::Value>,
+}

@@ -4,6 +4,7 @@ target/
 # Environment files - never commit secrets
 .env
 .env.local
+.env.prod
 *.env.local
 
 # Node.js

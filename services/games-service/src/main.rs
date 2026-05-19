@@ -1,4 +1,4 @@
-use axum::{routing::{get, post, put}, Router};
+use axum::{routing::get, Router};
 use serde_json::json;
 use std::net::SocketAddr;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -20,14 +20,23 @@ async fn main() {
 
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL required");
     let pool = shared_db::create_pool(&database_url).await.expect("Failed to connect to database");
-    sqlx::migrate!("./migrations").run(&pool).await.expect("Failed to run migrations");
+    let mut migrator = sqlx::migrate!("./migrations");
+    migrator.ignore_missing = true;
+    migrator.run(&pool).await.expect("Failed to run migrations");
 
     let app = Router::new()
         .route("/health", get(health_check))
         .route("/api/v1/games", get(routes::list_games).post(routes::create_game))
         .route("/api/v1/games/:slug", get(routes::get_game).put(routes::update_game).delete(routes::delete_game))
+        .route("/api/v1/sections/:id", get(routes::get_section))
         .route("/api/v1/games/:slug/sections", get(routes::list_sections).post(routes::create_section))
+        .route("/api/v1/games/:slug/sections/:id", axum::routing::patch(routes::update_section).delete(routes::delete_section))
         .route("/api/v1/games/:slug/schemas", get(routes::list_schemas).post(routes::create_schema))
+        .route("/api/v1/games/:slug/schemas/:id", axum::routing::patch(routes::update_schema).delete(routes::delete_schema))
+        .route("/api/v1/games/:slug/attributes", get(routes::list_attributes).post(routes::create_attribute))
+        .route("/api/v1/games/:slug/attributes/:id", axum::routing::patch(routes::update_attribute).delete(routes::delete_attribute))
+        .route("/api/v1/games/:slug/translations", get(routes::list_game_translations))
+        .route("/api/v1/games/:slug/translations/:locale", axum::routing::put(routes::upsert_game_translation).delete(routes::delete_game_translation))
         .with_state(pool);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3002".to_string());

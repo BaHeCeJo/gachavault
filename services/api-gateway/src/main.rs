@@ -2,6 +2,7 @@ use axum::{body::Body, extract::State, http::StatusCode, response::Response, rou
 use reqwest::Client;
 use serde_json::json;
 use std::{net::SocketAddr, sync::Arc};
+use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[derive(Clone)]
@@ -14,6 +15,7 @@ struct AppState {
     tierlists_url: String,
     media_url: String,
     search_url: String,
+    users_url: String,
 }
 
 #[tokio::main]
@@ -27,9 +29,11 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer().json())
         .init();
 
+    let auth_url = std::env::var("AUTH_SERVICE_URL").expect("AUTH_SERVICE_URL required");
     let state = AppState {
         http_client: Arc::new(Client::new()),
-        auth_url: std::env::var("AUTH_SERVICE_URL").expect("AUTH_SERVICE_URL required"),
+        users_url: auth_url.clone(),
+        auth_url,
         games_url: std::env::var("GAMES_SERVICE_URL").expect("GAMES_SERVICE_URL required"),
         items_url: std::env::var("ITEMS_SERVICE_URL").expect("ITEMS_SERVICE_URL required"),
         collections_url: std::env::var("COLLECTIONS_SERVICE_URL").expect("COLLECTIONS_SERVICE_URL required"),
@@ -38,16 +42,33 @@ async fn main() {
         search_url: std::env::var("SEARCH_SERVICE_URL").expect("SEARCH_SERVICE_URL required"),
     };
 
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods(Any)
+        .allow_headers(Any);
+
     let app = Router::new()
         .route("/health", axum::routing::get(health_check))
-        .route("/api/v1/auth/*path", any(proxy_auth))
-        .route("/api/v1/games/*path", any(proxy_games))
-        .route("/api/v1/items/*path", any(proxy_items))
+        // Base routes (no trailing path segment)
+        .route("/api/v1/auth",        any(proxy_auth))
+        .route("/api/v1/games",       any(proxy_games))
+        .route("/api/v1/items",       any(proxy_items))
+        .route("/api/v1/collections", any(proxy_collections))
+        .route("/api/v1/tierlists",   any(proxy_tierlists))
+        .route("/api/v1/media",       any(proxy_media))
+        .route("/api/v1/search",      any(proxy_search))
+        .route("/api/v1/users",       any(proxy_users))
+        // Wildcard routes (with path segments)
+        .route("/api/v1/auth/*path",        any(proxy_auth))
+        .route("/api/v1/games/*path",       any(proxy_games))
+        .route("/api/v1/items/*path",       any(proxy_items))
         .route("/api/v1/collections/*path", any(proxy_collections))
-        .route("/api/v1/tierlists/*path", any(proxy_tierlists))
-        .route("/api/v1/media/*path", any(proxy_media))
-        .route("/api/v1/search/*path", any(proxy_search))
-        .with_state(state);
+        .route("/api/v1/tierlists/*path",   any(proxy_tierlists))
+        .route("/api/v1/media/*path",       any(proxy_media))
+        .route("/api/v1/search/*path",      any(proxy_search))
+        .route("/api/v1/users/*path",       any(proxy_users))
+        .with_state(state)
+        .layer(cors);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
     let addr: SocketAddr = format!("0.0.0.0:{}", port).parse().unwrap();
@@ -81,6 +102,9 @@ async fn proxy_media(State(s): State<AppState>, req: axum::extract::Request) -> 
 }
 async fn proxy_search(State(s): State<AppState>, req: axum::extract::Request) -> Result<Response, StatusCode> {
     proxy_request(&s.http_client, &s.search_url, req).await
+}
+async fn proxy_users(State(s): State<AppState>, req: axum::extract::Request) -> Result<Response, StatusCode> {
+    proxy_request(&s.http_client, &s.users_url, req).await
 }
 
 async fn proxy_request(client: &Client, base_url: &str, req: axum::extract::Request) -> Result<Response, StatusCode> {

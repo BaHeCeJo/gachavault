@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { clearTokens, getAccessToken, getRefreshToken, setTokens } from "./auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
@@ -7,16 +8,60 @@ export const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Attach JWT token from localStorage if present
 api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("access_token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-  }
+  const token = getAccessToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Auth endpoints
+// Refresh token on 401 — retry once
+let refreshing = false;
+let refreshQueue: Array<(token: string) => void> = [];
+
+api.interceptors.response.use(
+  (res) => res,
+  async (error: AxiosError) => {
+    const original = error.config as typeof error.config & { _retry?: boolean };
+
+    if (error.response?.status !== 401 || original?._retry) {
+      return Promise.reject(error);
+    }
+
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) {
+      clearTokens();
+      return Promise.reject(error);
+    }
+
+    if (refreshing) {
+      return new Promise((resolve) => {
+        refreshQueue.push((newToken) => {
+          original!.headers!.Authorization = `Bearer ${newToken}`;
+          resolve(api(original!));
+        });
+      });
+    }
+
+    original._retry = true;
+    refreshing = true;
+
+    try {
+      const res = await api.post("/auth/refresh", { refresh_token: refreshToken });
+      const { access_token, refresh_token: newRefresh } = res.data.data;
+      setTokens(access_token, newRefresh);
+      refreshQueue.forEach((cb) => cb(access_token));
+      refreshQueue = [];
+      original!.headers!.Authorization = `Bearer ${access_token}`;
+      return api(original!);
+    } catch {
+      clearTokens();
+      return Promise.reject(error);
+    } finally {
+      refreshing = false;
+    }
+  }
+);
+
 export const authApi = {
   register: (data: { email: string; username: string; password: string }) =>
     api.post("/auth/register", data),
@@ -30,47 +75,134 @@ export const authApi = {
   forgotPassword: (email: string) => api.post("/auth/forgot-password", { email }),
   resetPassword: (token: string, password: string) =>
     api.post("/auth/reset-password", { token, password }),
+  updateUsername: (username: string) => api.patch("/auth/me/username", { username }),
+  changePassword: (current_password: string, new_password: string) =>
+    api.post("/auth/me/password", { current_password, new_password }),
+  deleteAccount: (password?: string) => api.delete("/auth/me", { data: { password } }),
 };
 
-// Games endpoints
 export const gamesApi = {
-  list: () => api.get("/games"),
-  get: (slug: string) => api.get(`/games/${slug}`),
+  list: (includeInactive = false, locale?: string) =>
+    api.get("/games", { params: { include_inactive: includeInactive, ...(locale ? { locale } : {}) } }),
+  get: (slug: string, locale?: string) =>
+    api.get(`/games/${slug}`, { params: locale ? { locale } : {} }),
   getSections: (slug: string) => api.get(`/games/${slug}/sections`),
+  getSection: (id: string) => api.get(`/sections/${id}`),
+  listSchemas: (slug: string) => api.get(`/games/${slug}/schemas`),
+  getAttributes: (slug: string, attrType?: string) =>
+    api.get(`/games/${slug}/attributes`, { params: attrType ? { attr_type: attrType } : {} }),
+  listTranslations: (slug: string) => api.get(`/games/${slug}/translations`),
+  upsertTranslation: (slug: string, locale: string, data: { name: string; description?: string }) =>
+    api.put(`/games/${slug}/translations/${locale}`, data),
+  deleteTranslation: (slug: string, locale: string) =>
+    api.delete(`/games/${slug}/translations/${locale}`),
 };
 
-// Items endpoints
 export const itemsApi = {
-  listByGame: (gameSlug: string, params?: { page?: number; per_page?: number }) =>
+  listByGame: (gameSlug: string, params?: { game_id?: string; section_id?: string; limit?: number; offset?: number }) =>
     api.get(`/games/${gameSlug}/items`, { params }),
-  get: (id: string) => api.get(`/items/${id}`),
+  list: (params?: { game_id?: string; section_id?: string; limit?: number; offset?: number }) =>
+    api.get("/items", { params }),
+  get: (id: string, locale?: string) =>
+    api.get(`/items/${id}`, { params: locale ? { locale } : {} }),
   getSkills: (id: string) => api.get(`/items/${id}/skills`),
   getBuilds: (id: string) => api.get(`/items/${id}/builds`),
   getChangelog: (id: string) => api.get(`/items/${id}/changelog`),
+  listTranslations: (id: string) => api.get(`/items/${id}/translations`),
+  upsertTranslation: (id: string, locale: string, fields: Record<string, string>) =>
+    api.put(`/items/${id}/translations/${locale}`, { fields }),
+  deleteTranslation: (id: string, locale: string) =>
+    api.delete(`/items/${id}/translations/${locale}`),
 };
 
-// Collections endpoints
 export const collectionsApi = {
   getMyCollection: () => api.get("/collections"),
   getByGame: (gameId: string) => api.get(`/collections/${gameId}`),
+  getUserCollection: (userId: string) => api.get(`/users/${userId}/collections`),
   upsertEntry: (itemId: string, data: object) => api.post(`/collections/items/${itemId}`, data),
   deleteEntry: (itemId: string) => api.delete(`/collections/items/${itemId}`),
 };
 
-// Tier lists endpoints
 export const tierlistsApi = {
   list: () => api.get("/tierlists"),
+  listPublicForGame: (gameId: string) => api.get(`/tierlists/public`, { params: { game_id: gameId } }),
   get: (id: string) => api.get(`/tierlists/${id}`),
   getByShareSlug: (slug: string) => api.get(`/tierlists/share/${slug}`),
   create: (data: object) => api.post("/tierlists", data),
   update: (id: string, data: object) => api.put(`/tierlists/${id}`, data),
   delete: (id: string) => api.delete(`/tierlists/${id}`),
   upsertEntries: (id: string, entries: object[]) =>
-    api.post(`/tierlists/${id}/entries`, { entries }),
+    api.post(`/tierlists/${id}/entries`, entries),
+  upvote: (id: string) => api.post(`/tierlists/${id}/upvote`),
+  removeUpvote: (id: string) => api.delete(`/tierlists/${id}/upvote`),
+  listComments: (id: string) => api.get(`/tierlists/${id}/comments`),
+  createComment: (id: string, body: string) => api.post(`/tierlists/${id}/comments`, { body }),
+  deleteComment: (tierId: string, commentId: string) => api.delete(`/tierlists/${tierId}/comments/${commentId}`),
 };
 
-// Search endpoint
 export const searchApi = {
-  search: (q: string, params?: { game?: string; section?: string; page?: number }) =>
+  search: (q: string, params?: { game?: string; section?: string; page?: number; sort?: string }) =>
     api.get("/search", { params: { q, ...params } }),
+};
+
+export const mediaApi = {
+  list: () => api.get("/media"),
+  get: (id: string) => api.get(`/media/${id}`),
+  delete: (id: string) => api.delete(`/media/${id}`),
+  upload: (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return api.post("/media/upload", form, { headers: { "Content-Type": "multipart/form-data" } });
+  },
+  uploadAvatar: (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return api.post("/media/avatar", form, { headers: { "Content-Type": "multipart/form-data" } });
+  },
+};
+
+export const usersApi = {
+  list: () => api.get("/users"),
+  getPublicProfile: (username: string) => api.get(`/users/by-username/${username}`),
+  getAdminStats: () => api.get("/admin/stats"),
+};
+
+export const adminApi = {
+  games: {
+    list: () => api.get("/games", { params: { include_inactive: true } }),
+    create: (data: object) => api.post("/games", data),
+    update: (slug: string, data: object) => api.put(`/games/${slug}`, data),
+    delete: (slug: string) => api.delete(`/games/${slug}`),
+    createSection: (slug: string, data: object) => api.post(`/games/${slug}/sections`, data),
+    updateSection: (slug: string, id: string, data: object) => api.patch(`/games/${slug}/sections/${id}`, data),
+    deleteSection: (slug: string, id: string) => api.delete(`/games/${slug}/sections/${id}`),
+    listSchemas: (slug: string) => api.get(`/games/${slug}/schemas`),
+    createSchema: (slug: string, data: object) => api.post(`/games/${slug}/schemas`, data),
+    updateSchema: (slug: string, id: string, data: object) => api.patch(`/games/${slug}/schemas/${id}`, data),
+    deleteSchema: (slug: string, id: string) => api.delete(`/games/${slug}/schemas/${id}`),
+    listAttributes: (slug: string, attrType?: string) =>
+      api.get(`/games/${slug}/attributes`, { params: attrType ? { attr_type: attrType } : {} }),
+    createAttribute: (slug: string, data: object) => api.post(`/games/${slug}/attributes`, data),
+    updateAttribute: (slug: string, id: string, data: object) => api.patch(`/games/${slug}/attributes/${id}`, data),
+    deleteAttribute: (slug: string, id: string) => api.delete(`/games/${slug}/attributes/${id}`),
+  },
+  items: {
+    create: (data: object) => api.post("/items", data),
+    bulkImport: (items: object[]) => api.post("/items/bulk-import", items),
+    update: (id: string, data: object) => api.put(`/items/${id}`, data),
+    delete: (id: string) => api.delete(`/items/${id}`),
+    createSkill: (id: string, data: object) => api.post(`/items/${id}/skills`, data),
+    createBuild: (id: string, data: object) => api.post(`/items/${id}/builds`, data),
+    createChangelog: (id: string, data: object) => api.post(`/items/${id}/changelog`, data),
+  },
+  users: {
+    setRole: (userId: string, role: string) =>
+      api.patch(`/users/${userId}/role`, { role }),
+    listGameRoles: (userId: string) =>
+      api.get(`/users/${userId}/game-roles`),
+    setGameRole: (userId: string, gameId: string, role: string, sectionId?: string) =>
+      api.post(`/users/${userId}/game-roles`, { game_id: gameId, section_id: sectionId ?? null, role }),
+    removeGameRole: (userId: string, gameId: string) =>
+      api.delete(`/users/${userId}/game-roles/${gameId}`),
+  },
 };

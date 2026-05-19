@@ -2,6 +2,7 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
 #[derive(Debug, sqlx::FromRow)]
+#[allow(dead_code)]
 pub struct DbUser {
     pub id: Uuid,
     pub email: String,
@@ -16,6 +17,7 @@ pub struct DbUser {
 }
 
 #[derive(Debug, sqlx::FromRow)]
+#[allow(dead_code)]
 pub struct DbRefreshToken {
     pub id: Uuid,
     pub user_id: Uuid,

@@ -33,6 +33,7 @@ pub async fn find_item_by_id(pool: &PgPool, id: Uuid) -> Result<Option<DbItem>, 
         .await
 }
 
+#[allow(dead_code)]
 pub async fn find_item_by_game_slug(
     pool: &PgPool,
     game_id: Uuid,

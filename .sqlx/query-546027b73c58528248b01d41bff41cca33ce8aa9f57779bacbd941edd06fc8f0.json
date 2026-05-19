@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE auth.users SET google_id = $1, avatar_url = COALESCE(avatar_url, $2), provider = 'google', updated_at = NOW()\n         WHERE email = $3\n         RETURNING *",
+  "describe": {
+    "columns": [
+      { "ordinal": 0, "name": "id", "type_info": "Uuid" },
+      { "ordinal": 1, "name": "email", "type_info": "Varchar" },
+      { "ordinal": 2, "name": "username", "type_info": "Varchar" },
+      { "ordinal": 3, "name": "password_hash", "type_info": "Varchar" },
+      { "ordinal": 4, "name": "avatar_url", "type_info": "Text" },
+      { "ordinal": 5, "name": "email_verified", "type_info": "Bool" },
+      { "ordinal": 6, "name": "google_id", "type_info": "Varchar" },
+      { "ordinal": 7, "name": "provider", "type_info": "Varchar" },
+      { "ordinal": 8, "name": "created_at", "type_info": "Timestamptz" },
+      { "ordinal": 9, "name": "updated_at", "type_info": "Timestamptz" }
+    ],
+    "parameters": {
+      "Left": ["Varchar", "Text", "Varchar"]
+    },
+    "nullable": [false, false, false, true, true, false, true, false, false, false]
+  },
+  "hash": "546027b73c58528248b01d41bff41cca33ce8aa9f57779bacbd941edd06fc8f0"
+}

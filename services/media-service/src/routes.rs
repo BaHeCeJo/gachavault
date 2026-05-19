@@ -7,7 +7,7 @@ use serde::Serialize;
 use shared_auth::AuthUser;
 use shared_errors::{AppError, AppResult};
 use shared_types::ApiResponse;
-use sqlx::PgPool;
+use sqlx::{PgPool, Row};
 use std::path::PathBuf;
 use uuid::Uuid;
 
@@ -58,6 +58,39 @@ pub async fn get_asset(
     Ok(Json(ApiResponse::success(asset)))
 }
 
+pub async fn list_assets(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+) -> AppResult<Json<ApiResponse<Vec<DbAsset>>>> {
+    if !auth.is_admin() {
+        return Err(AppError::Forbidden("Admin access required".into()));
+    }
+    let rows = sqlx::query(
+        "SELECT id, filename, original_filename, mime_type, size_bytes, storage_path, public_url, uploaded_by, created_at \
+         FROM media.assets ORDER BY created_at DESC LIMIT 200",
+    )
+    .fetch_all(&pool)
+    .await
+    .map_err(AppError::Database)?;
+
+    let assets: Vec<DbAsset> = rows
+        .iter()
+        .map(|r| DbAsset {
+            id: r.get("id"),
+            filename: r.get("filename"),
+            original_filename: r.get("original_filename"),
+            mime_type: r.get("mime_type"),
+            size_bytes: r.get("size_bytes"),
+            storage_path: r.get("storage_path"),
+            public_url: r.get("public_url"),
+            uploaded_by: r.get("uploaded_by"),
+            created_at: r.get("created_at"),
+        })
+        .collect();
+
+    Ok(Json(ApiResponse::success(assets)))
+}
+
 pub async fn delete_asset(
     State(pool): State<PgPool>,
     auth: AuthUser,
@@ -69,8 +102,8 @@ pub async fn delete_asset(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound("Asset not found".into()))?;
 
-    // Only the uploader can delete (SuperAdmin override handled at gateway level)
-    if asset.uploaded_by != Some(auth.id()) {
+    // Admins can delete any asset; other users only their own
+    if !auth.is_admin() && asset.uploaded_by != Some(auth.id()) {
         return Err(AppError::Forbidden("You can only delete your own uploads".into()));
     }
 
