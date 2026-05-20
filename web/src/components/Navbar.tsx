@@ -1,11 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { Avatar } from "./Avatar";
 import { isAdmin } from "@/lib/auth";
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const pathname = usePathname();
+  const active = pathname === href || pathname.startsWith(href + "/");
+  return (
+    <Link
+      href={href}
+      className={`transition ${active ? "text-white" : "text-gray-400 hover:text-white"}`}
+    >
+      {children}
+    </Link>
+  );
+}
 
 export function Navbar() {
   const { user, isLoading, logout } = useAuth();
@@ -17,36 +30,24 @@ export function Navbar() {
   }
 
   return (
-    <header className="border-b border-gray-800 px-6 py-3">
+    <header className="sticky top-0 z-50 border-b border-gray-800 bg-background/80 backdrop-blur-md px-6 py-3">
       <nav className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="text-xl font-bold tracking-tight">
-          Hotarumi
+          <span className="text-indigo-400">H</span>otarumi
         </Link>
 
         <div className="flex items-center gap-6 text-sm">
           <LanguageSwitcher />
-          <Link href="/games" className="text-gray-400 hover:text-white transition">
-            Games
-          </Link>
-          <Link href="/search" className="text-gray-400 hover:text-white transition">
-            Search
-          </Link>
+          <NavLink href="/games">Games</NavLink>
+          <NavLink href="/search">Search</NavLink>
 
           {!isLoading && (
             <>
               {user ? (
                 <>
-                  <Link href="/collections" className="text-gray-400 hover:text-white transition">
-                    Collection
-                  </Link>
-                  <Link href="/tierlists" className="text-gray-400 hover:text-white transition">
-                    Tier Lists
-                  </Link>
-                  {isAdmin(user) && (
-                    <Link href="/admin" className="text-gray-400 hover:text-white transition">
-                      Admin
-                    </Link>
-                  )}
+                  <NavLink href="/collections">Collection</NavLink>
+                  <NavLink href="/tierlists">Tier Lists</NavLink>
+                  {isAdmin(user) && <NavLink href="/admin">Admin</NavLink>}
                   <div className="flex items-center gap-3 ml-2">
                     <Link
                       href="/profile"
@@ -70,7 +71,7 @@ export function Navbar() {
                   </Link>
                   <Link
                     href="/auth/register"
-                    className="px-4 py-1.5 bg-white text-black rounded-md font-medium text-sm hover:bg-gray-200 transition"
+                    className="px-4 py-1.5 bg-indigo-600 text-white rounded-md font-medium text-sm hover:bg-indigo-500 transition shadow-sm shadow-indigo-600/30"
                   >
                     Sign up
                   </Link>

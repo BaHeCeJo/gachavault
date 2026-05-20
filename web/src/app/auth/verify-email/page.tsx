@@ -40,7 +40,7 @@ function VerifyEmailContent() {
           <p className="text-gray-400">Your account is now active. You can sign in.</p>
           <Link
             href="/auth/login"
-            className="inline-block mt-4 px-6 py-2 bg-white text-black rounded-lg font-semibold hover:bg-gray-200 transition"
+            className="inline-block mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-500 transition"
           >
             Sign in
           </Link>

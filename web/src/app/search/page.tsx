@@ -130,7 +130,7 @@ function SearchContent() {
         </select>
         <button
           type="submit"
-          className="px-6 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-gray-200 transition"
+          className="px-6 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-500 transition"
         >
           Search
         </button>
