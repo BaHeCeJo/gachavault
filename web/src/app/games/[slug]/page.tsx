@@ -51,7 +51,7 @@ interface GameAttribute {
 
 type AttrMap = Record<string, Record<string, GameAttribute>>;
 
-const PALETTE = ["from-indigo-900 to-indigo-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
+const PALETTE = ["from-amber-900 to-amber-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
 function cardGradient(name: string) {
   return PALETTE[name.charCodeAt(0) % PALETTE.length];
 }
@@ -230,8 +230,8 @@ export default function GameDetailPage() {
               onClick={() => setActiveSection(s.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition ${
                 activeSection === s.id
-                  ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30"
-                  : "border border-gray-700 text-gray-300 hover:border-indigo-500/60 hover:text-indigo-300"
+                  ? "bg-amber-500 text-black shadow-sm shadow-amber-500/20"
+                  : "border border-gray-700 text-gray-300 hover:border-amber-500/60 hover:text-amber-300"
               }`}
             >
               {s.name}
@@ -280,7 +280,7 @@ export default function GameDetailPage() {
                 className={`flex flex-col rounded-lg border bg-gray-900 overflow-hidden transition-all duration-200 group hover:scale-[1.03] hover:shadow-lg ${
                   rarityStr && RARITY_BORDER[rarityStr]
                     ? `${RARITY_BORDER[rarityStr]} hover:shadow-lg ${RARITY_GLOW[rarityStr]}`
-                    : "border-gray-800 hover:border-indigo-600/60 hover:shadow-indigo-500/10"
+                    : "border-gray-800 hover:border-amber-500/60 hover:shadow-amber-500/10"
                 }`}
               >
                 <div className="relative h-28 w-full">
@@ -318,7 +318,7 @@ export default function GameDetailPage() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">Community Tier Lists</h2>
-            <Link href="/tierlists" className="text-sm text-gray-400 hover:text-indigo-300 transition">
+            <Link href="/tierlists" className="text-sm text-gray-400 hover:text-amber-300 transition">
               Create yours →
             </Link>
           </div>
@@ -327,7 +327,7 @@ export default function GameDetailPage() {
               <Link
                 key={tl.id}
                 href={`/tierlists/share/${tl.share_slug}`}
-                className="p-4 rounded-xl border border-gray-800 hover:border-indigo-600/50 hover:shadow-md hover:shadow-indigo-500/10 transition-all duration-200"
+                className="p-4 rounded-xl border border-gray-800 hover:border-amber-500/50 hover:shadow-md hover:shadow-amber-500/10 transition-all duration-200"
               >
                 <p className="font-medium truncate">{tl.title}</p>
                 <div className="flex items-center justify-between mt-1">
@@ -335,7 +335,7 @@ export default function GameDetailPage() {
                     Updated {new Date(tl.updated_at).toLocaleDateString()}
                   </p>
                   {tl.upvote_count > 0 && (
-                    <span className="text-xs text-indigo-400">△ {tl.upvote_count}</span>
+                    <span className="text-xs text-amber-400">△ {tl.upvote_count}</span>
                   )}
                 </div>
               </Link>

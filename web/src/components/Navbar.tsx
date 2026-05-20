@@ -33,7 +33,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-gray-800 bg-background/80 backdrop-blur-md px-6 py-3">
       <nav className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="text-xl font-bold tracking-tight">
-          <span className="text-indigo-400">H</span>otarumi
+          <span className="text-amber-400">H</span>otarumi
         </Link>
 
         <div className="flex items-center gap-6 text-sm">
@@ -71,7 +71,7 @@ export function Navbar() {
                   </Link>
                   <Link
                     href="/auth/register"
-                    className="px-4 py-1.5 bg-indigo-600 text-white rounded-md font-medium text-sm hover:bg-indigo-500 transition shadow-sm shadow-indigo-600/30"
+                    className="px-4 py-1.5 bg-amber-500 text-black rounded-md font-medium text-sm hover:bg-amber-400 transition shadow-sm shadow-amber-500/20"
                   >
                     Sign up
                   </Link>

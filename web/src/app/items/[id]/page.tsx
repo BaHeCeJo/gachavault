@@ -449,7 +449,7 @@ export default function ItemDetailPage() {
               ))}
               {saveError && <p className="text-red-400 text-xs">{saveError}</p>}
               <div className="flex gap-2">
-                <button onClick={submitSkill} disabled={saving} className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold disabled:opacity-50">
+                <button onClick={submitSkill} disabled={saving} className="px-4 py-2 bg-amber-500 text-black rounded-lg text-sm font-semibold disabled:opacity-50">
                   {saving ? "Saving…" : "Save"}
                 </button>
                 <button onClick={() => setAddingSkill(false)} className="px-4 py-2 border border-gray-700 rounded-lg text-sm">Cancel</button>
@@ -506,7 +506,7 @@ export default function ItemDetailPage() {
               </div>
               {saveError && <p className="text-red-400 text-xs">{saveError}</p>}
               <div className="flex gap-2">
-                <button onClick={submitBuild} disabled={saving} className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold disabled:opacity-50">
+                <button onClick={submitBuild} disabled={saving} className="px-4 py-2 bg-amber-500 text-black rounded-lg text-sm font-semibold disabled:opacity-50">
                   {saving ? "Saving…" : "Save"}
                 </button>
                 <button onClick={() => setAddingBuild(false)} className="px-4 py-2 border border-gray-700 rounded-lg text-sm">Cancel</button>
@@ -549,7 +549,7 @@ export default function ItemDetailPage() {
               />
               {saveError && <p className="text-red-400 text-xs">{saveError}</p>}
               <div className="flex gap-2">
-                <button onClick={saveLore} disabled={saving} className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold disabled:opacity-50">
+                <button onClick={saveLore} disabled={saving} className="px-4 py-2 bg-amber-500 text-black rounded-lg text-sm font-semibold disabled:opacity-50">
                   {saving ? "Saving…" : "Save"}
                 </button>
                 <button onClick={() => { setEditingLore(false); setLoreText((item?.data?.lore as string) ?? ""); }} className="px-4 py-2 border border-gray-700 rounded-lg text-sm">Cancel</button>
@@ -618,7 +618,7 @@ export default function ItemDetailPage() {
               </div>
               {saveError && <p className="text-red-400 text-xs">{saveError}</p>}
               <div className="flex gap-2">
-                <button onClick={submitChangelog} disabled={saving} className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold disabled:opacity-50">
+                <button onClick={submitChangelog} disabled={saving} className="px-4 py-2 bg-amber-500 text-black rounded-lg text-sm font-semibold disabled:opacity-50">
                   {saving ? "Saving…" : "Save"}
                 </button>
                 <button onClick={() => setAddingChangelog(false)} className="px-4 py-2 border border-gray-700 rounded-lg text-sm">Cancel</button>

@@ -266,7 +266,7 @@ export default function SharedTierListPage() {
               <button
                 type="submit"
                 disabled={!commentBody.trim() || submitting}
-                className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-500 transition disabled:opacity-50"
+                className="px-5 py-2 bg-amber-500 text-black rounded-lg text-sm font-semibold hover:bg-amber-400 transition disabled:opacity-50"
               >
                 {submitting ? "Posting…" : "Comment"}
               </button>

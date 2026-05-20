@@ -14,7 +14,7 @@ interface Game {
   banner_url: string | null;
 }
 
-const PALETTE = ["from-indigo-900 to-indigo-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
+const PALETTE = ["from-amber-900 to-amber-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
 function cardGradient(name: string) {
   return PALETTE[name.charCodeAt(0) % PALETTE.length];
 }
@@ -38,7 +38,7 @@ export default function HomePage() {
       <section className="relative flex flex-col items-center justify-center flex-1 px-6 py-20 text-center overflow-hidden">
         {/* radial glow */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="w-[600px] h-[400px] rounded-full bg-indigo-600/15 blur-[120px]" />
+          <div className="w-[600px] h-[400px] rounded-full bg-amber-500/15 blur-[120px]" />
         </div>
 
         <h1 className="relative text-5xl sm:text-6xl font-bold tracking-tight mb-4">{t("title")}</h1>
@@ -51,11 +51,11 @@ export default function HomePage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="flex-1 px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 text-sm transition"
+            className="flex-1 px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-500/50 text-sm transition"
           />
           <button
             type="submit"
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold text-sm hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/20"
+            className="px-6 py-3 bg-amber-500 text-black rounded-lg font-semibold text-sm hover:bg-amber-400 transition shadow-lg shadow-amber-500/20"
           >
             {t("searchButton")}
           </button>
@@ -64,13 +64,13 @@ export default function HomePage() {
         <div className="relative flex gap-4 mt-8">
           <Link
             href="/games"
-            className="px-5 py-2.5 border border-gray-700 rounded-lg text-sm font-medium hover:border-indigo-500 hover:text-indigo-300 transition"
+            className="px-5 py-2.5 border border-gray-700 rounded-lg text-sm font-medium hover:border-amber-400 hover:text-amber-300 transition"
           >
             {t("browseGames")}
           </Link>
           <Link
             href="/auth/register"
-            className="px-5 py-2.5 border border-gray-700 rounded-lg text-sm font-medium hover:border-indigo-500 hover:text-indigo-300 transition"
+            className="px-5 py-2.5 border border-gray-700 rounded-lg text-sm font-medium hover:border-amber-400 hover:text-amber-300 transition"
           >
             {t("createAccount")}
           </Link>
@@ -82,7 +82,7 @@ export default function HomePage() {
         <section className="max-w-7xl mx-auto w-full px-6 pb-16">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">{t("gamesSection")}</h2>
-            <Link href="/games" className="text-sm text-gray-400 hover:text-indigo-300 transition">
+            <Link href="/games" className="text-sm text-gray-400 hover:text-amber-300 transition">
               {t("viewAll")} →
             </Link>
           </div>
@@ -91,7 +91,7 @@ export default function HomePage() {
               <Link
                 key={g.id}
                 href={`/games/${g.slug}`}
-                className="group relative rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-indigo-600/60 hover:shadow-lg hover:shadow-indigo-500/10 hover:scale-[1.02] transition-all duration-200"
+                className="group relative rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-amber-500/60 hover:shadow-lg hover:shadow-amber-500/10 hover:scale-[1.02] transition-all duration-200"
               >
                 <div className="relative h-28 w-full">
                   <SafeImage
@@ -107,7 +107,7 @@ export default function HomePage() {
                   />
                 </div>
                 <div className="p-3">
-                  <p className="font-semibold text-sm group-hover:text-indigo-300 transition">
+                  <p className="font-semibold text-sm group-hover:text-amber-300 transition">
                     {g.name}
                   </p>
                 </div>

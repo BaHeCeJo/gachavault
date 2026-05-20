@@ -100,7 +100,7 @@ export default function TierListsPage() {
         <h1 className="text-3xl font-bold">My Tier Lists</h1>
         <button
           onClick={() => setCreating(true)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-500 transition"
+          className="px-4 py-2 bg-amber-500 text-black rounded-lg text-sm font-semibold hover:bg-amber-400 transition"
         >
           + New Tier List
         </button>

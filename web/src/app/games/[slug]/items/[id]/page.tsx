@@ -202,16 +202,16 @@ export default function ItemDetailPage() {
   const rarityBorder = rarityStr ? ({ SSR: "border-yellow-600/40", SR: "border-purple-600/40", UR: "border-yellow-600/40", S: "border-yellow-600/40", A: "border-purple-600/40" }[rarityStr] ?? "border-gray-800") : "border-gray-800";
   const rarityGlow = rarityStr ? ({ SSR: "shadow-yellow-500/15", SR: "shadow-purple-500/15", UR: "shadow-yellow-500/15" }[rarityStr] ?? "") : "";
 
-  const PALETTE = ["from-indigo-900 to-indigo-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
+  const PALETTE = ["from-amber-900 to-amber-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
   const cardGradient = (n: string) => PALETTE[n.charCodeAt(0) % PALETTE.length];
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-10">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-sm text-gray-400 flex-wrap">
-        <Link href="/games" className="hover:text-indigo-300 transition">Games</Link>
+        <Link href="/games" className="hover:text-amber-300 transition">Games</Link>
         <span className="text-gray-700">/</span>
-        <Link href={`/games/${slug}`} className="hover:text-indigo-300 transition">{gameName}</Link>
+        <Link href={`/games/${slug}`} className="hover:text-amber-300 transition">{gameName}</Link>
         {sectionName && (
           <>
             <span className="text-gray-700">/</span>
@@ -254,13 +254,13 @@ export default function ItemDetailPage() {
           <h1 className="text-3xl font-bold mb-1">{name}</h1>
           <div className="flex items-center gap-2 mb-6 flex-wrap">
             {sectionName && (
-              <span className="text-xs px-2 py-0.5 rounded bg-indigo-900/40 border border-indigo-700/40 text-indigo-300">{sectionName}</span>
+              <span className="text-xs px-2 py-0.5 rounded bg-amber-900/40 border border-amber-700/40 text-amber-300">{sectionName}</span>
             )}
             {item.data?.rarity !== undefined && <RarityStars value={item.data.rarity} />}
           </div>
 
           {typeof item.data?.description === "string" && item.data.description && (
-            <p className="text-gray-300 text-sm leading-relaxed mb-6 border-l-2 border-indigo-600/60 pl-4 italic">
+            <p className="text-gray-300 text-sm leading-relaxed mb-6 border-l-2 border-amber-500/60 pl-4 italic">
               {item.data.description}
             </p>
           )}
@@ -303,7 +303,7 @@ export default function ItemDetailPage() {
                 <Link
                   key={rel.id}
                   href={`/games/${slug}/items/${rel.id}`}
-                  className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-indigo-600/60 hover:shadow-md hover:shadow-indigo-500/10 hover:scale-[1.03] transition-all duration-200 group"
+                  className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-amber-500/60 hover:shadow-md hover:shadow-amber-500/10 hover:scale-[1.03] transition-all duration-200 group"
                 >
                   <div className="relative h-20">
                     <SafeImage src={relImg} alt={relName} fill className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={

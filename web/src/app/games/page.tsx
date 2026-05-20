@@ -12,7 +12,7 @@ interface Game {
   banner_url: string | null;
 }
 
-const PALETTE = ["from-indigo-900 to-indigo-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
+const PALETTE = ["from-amber-900 to-amber-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
 function cardGradient(name: string) {
   return PALETTE[name.charCodeAt(0) % PALETTE.length];
 }
@@ -44,7 +44,7 @@ export default function GamesPage() {
             <Link
               key={game.id}
               href={`/games/${game.slug}`}
-              className="group relative flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-indigo-600/60 hover:shadow-lg hover:shadow-indigo-500/10 hover:scale-[1.02] transition-all duration-200"
+              className="group relative flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-amber-500/60 hover:shadow-lg hover:shadow-amber-500/10 hover:scale-[1.02] transition-all duration-200"
             >
               <div className="relative h-32 w-full">
                 <SafeImage
@@ -60,7 +60,7 @@ export default function GamesPage() {
                 />
               </div>
               <div className="p-3">
-                <h2 className="font-semibold text-sm group-hover:text-indigo-300 transition">
+                <h2 className="font-semibold text-sm group-hover:text-amber-300 transition">
                   {game.name}
                 </h2>
                 {game.description && (

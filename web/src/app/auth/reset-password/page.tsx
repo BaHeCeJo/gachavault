@@ -78,7 +78,7 @@ function ResetPasswordContent() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-500 transition disabled:opacity-50"
+            className="w-full py-2 bg-amber-500 text-black rounded-lg font-semibold hover:bg-amber-400 transition disabled:opacity-50"
           >
             {loading ? "Updating…" : "Set new password"}
           </button>
