@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { collectionsApi, gamesApi, itemsApi, usersApi } from "@/lib/api";
+import { collectionsApi, gamesApi, usersApi } from "@/lib/api";
 import { Avatar } from "@/components/Avatar";
 
 interface PublicUser {

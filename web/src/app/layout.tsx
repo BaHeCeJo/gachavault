@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import { AuthProvider } from "@/context/AuthContext";
+import { Providers } from "@/components/Providers";
 import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "GachaVault",
-  description: "The complete gacha game database",
+  title: "Hotarumi",
+  description: "The complete gacha game wiki and database",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -20,10 +20,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} className="dark">
       <body className={`${inter.className} bg-background text-foreground min-h-screen`}>
         <NextIntlClientProvider messages={messages}>
-          <AuthProvider>
+          <Providers>
             <Navbar />
             {children}
-          </AuthProvider>
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

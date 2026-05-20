@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { searchApi, gamesApi } from "@/lib/api";
 import { Suspense } from "react";
+import { SafeImage } from "@/components/SafeImage";
 
 interface SearchHit {
   id: string;
@@ -183,13 +184,19 @@ function SearchContent() {
                   href={`/items/${hit.id}`}
                   className="group flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-600 transition"
                 >
-                  {imageUrl ? (
-                    <img src={imageUrl} alt={hit.name} className="h-28 w-full object-cover" />
-                  ) : (
-                    <div className="h-28 w-full bg-gray-800 flex items-center justify-center text-3xl font-bold text-gray-600">
-                      {hit.name[0]?.toUpperCase()}
-                    </div>
-                  )}
+                  <div className="relative h-28 w-full">
+                    <SafeImage
+                      src={imageUrl}
+                      alt={hit.name}
+                      fill
+                      className="object-cover"
+                      fallback={
+                        <div className="h-28 w-full bg-gray-800 flex items-center justify-center text-3xl font-bold text-gray-600">
+                          {hit.name[0]?.toUpperCase()}
+                        </div>
+                      }
+                    />
+                  </div>
                   <div className="p-3">
                     <p className="font-medium text-sm group-hover:text-white truncate">{hit.name}</p>
                     <p className="text-xs text-gray-500 mt-0.5">

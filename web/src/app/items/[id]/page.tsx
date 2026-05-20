@@ -6,6 +6,7 @@ import Link from "next/link";
 import { adminApi, collectionsApi, gamesApi, itemsApi } from "@/lib/api";
 import { canEdit, isAdmin } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
+import { SafeImage } from "@/components/SafeImage";
 
 interface Item {
   id: string;
@@ -284,13 +285,11 @@ export default function ItemDetailPage() {
     <main className="max-w-4xl mx-auto px-6 py-10">
       {/* Header */}
       <div className="flex gap-6 mb-8">
-        {imageUrl ? (
-          <img src={imageUrl} alt={name} className="w-32 h-32 rounded-xl object-cover flex-shrink-0" />
-        ) : (
+        <SafeImage src={imageUrl} alt={name} width={128} height={128} className="w-32 h-32 rounded-xl object-cover flex-shrink-0" fallback={
           <div className="w-32 h-32 rounded-xl bg-gray-800 flex items-center justify-center text-4xl font-bold text-gray-600 flex-shrink-0">
             {name[0]?.toUpperCase()}
           </div>
-        )}
+        } />
         <div className="flex-1">
           <div className="flex items-start justify-between gap-4">
             <h1 className="text-3xl font-bold">{name}</h1>
@@ -351,6 +350,7 @@ export default function ItemDetailPage() {
                         title={field.label}
                       >
                         {attr?.icon_url && (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img src={attr.icon_url} alt={attr.name} className="w-4 h-4 object-contain" />
                         )}
                         {attr ? attr.name : val}
@@ -641,13 +641,13 @@ export default function ItemDetailPage() {
                   href={`/items/${r.id}`}
                   className="group flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-600 transition"
                 >
-                  {rImage ? (
-                    <img src={rImage} alt={rName} className="h-20 w-full object-cover" />
-                  ) : (
-                    <div className="h-20 w-full bg-gray-800 flex items-center justify-center text-2xl font-bold text-gray-600">
-                      {rName[0]?.toUpperCase()}
-                    </div>
-                  )}
+                  <div className="relative h-20 w-full">
+                    <SafeImage src={rImage} alt={rName} fill className="object-cover" fallback={
+                      <div className="h-20 w-full bg-gray-800 flex items-center justify-center text-2xl font-bold text-gray-600">
+                        {rName[0]?.toUpperCase()}
+                      </div>
+                    } />
+                  </div>
                   <p className="px-2 py-1.5 text-xs font-medium truncate group-hover:text-white">{rName}</p>
                 </Link>
               );

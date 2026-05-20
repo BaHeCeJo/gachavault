@@ -6,6 +6,7 @@ import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ImageUploadField from "@/components/ImageUploadField";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface GameAttribute {
   id: string;
@@ -46,6 +47,7 @@ export default function AdminAttributesPage() {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<GameAttribute | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) router.replace(`/auth/login?redirect=/admin/games/${slug}/attributes`);
@@ -126,13 +128,15 @@ export default function AdminAttributesPage() {
     }
   };
 
-  const deleteAttr = async (attr: GameAttribute) => {
-    if (!confirm(`Delete "${attr.name}"?`)) return;
+  const confirmDeleteAttr = async () => {
+    if (!deleteTarget) return;
     try {
-      await adminApi.games.deleteAttribute(slug, attr.id);
-      setAttributes((prev) => prev.filter((a) => a.id !== attr.id));
+      await adminApi.games.deleteAttribute(slug, deleteTarget.id);
+      setAttributes((prev) => prev.filter((a) => a.id !== deleteTarget.id));
     } catch {
-      alert("Failed to delete attribute");
+      setError("Failed to delete attribute");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -168,7 +172,7 @@ export default function AdminAttributesPage() {
       </div>
       <p className="text-gray-400 text-sm mb-8">
         Game-wide property values (paths, elements, weapon types…). Schema fields of type
-        <code className="ml-1 text-gray-300">"attribute"</code> reference these by key.
+        <code className="ml-1 text-gray-300">&quot;attribute&quot;</code> reference these by key.
       </p>
 
       {loading ? (
@@ -209,6 +213,7 @@ export default function AdminAttributesPage() {
                         <tr key={a.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-900/50">
                           <td className="px-4 py-2">
                             {a.icon_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
                               <img src={a.icon_url} alt={a.name} className="w-7 h-7 object-contain" />
                             ) : (
                               <div
@@ -240,7 +245,7 @@ export default function AdminAttributesPage() {
                                 Edit
                               </button>
                               <button
-                                onClick={() => deleteAttr(a)}
+                                onClick={() => setDeleteTarget(a)}
                                 className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-red-900 text-red-400 transition"
                               >
                                 Delete
@@ -257,6 +262,16 @@ export default function AdminAttributesPage() {
           })}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete attribute"
+        description={`Delete "${deleteTarget?.name}"? This cannot be undone.`}
+        confirmLabel="Delete"
+        destructive
+        onConfirm={confirmDeleteAttr}
+        onCancel={() => setDeleteTarget(null)}
+      />
 
       {/* Modal */}
       {modal && (

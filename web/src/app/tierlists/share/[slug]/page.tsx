@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { tierlistsApi, itemsApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { SafeImage } from "@/components/SafeImage";
 
 interface CustomTier { key: string; name: string; color: string }
 interface TierEntry { item_id: string; tier: string }
@@ -191,13 +192,11 @@ export default function SharedTierListPage() {
                     const img = item.data?.image_url as string | undefined;
                     return (
                       <Link key={item.id} href={`/items/${item.id}`} title={name} className="group relative">
-                        {img ? (
-                          <img src={img} alt={name} className="w-14 h-14 rounded-lg object-cover" />
-                        ) : (
+                        <SafeImage src={img} alt={name} width={56} height={56} className="w-14 h-14 rounded-lg object-cover" fallback={
                           <div className="w-14 h-14 rounded-lg bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-400">
                             {name[0]?.toUpperCase()}
                           </div>
-                        )}
+                        } />
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-gray-900 border border-gray-700 rounded px-2 py-0.5 text-xs whitespace-nowrap z-10">
                           {name}
                         </div>

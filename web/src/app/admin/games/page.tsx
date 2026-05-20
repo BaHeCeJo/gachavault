@@ -6,6 +6,7 @@ import Link from "next/link";
 import { adminApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ImageUploadField from "@/components/ImageUploadField";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface Game {
   id: string;
@@ -51,6 +52,7 @@ export default function AdminGamesPage() {
   const [slugLocked, setSlugLocked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<Game | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) router.replace("/auth/login?redirect=/admin/games");
@@ -113,13 +115,15 @@ export default function AdminGamesPage() {
     }
   };
 
-  const deleteGame = async (slug: string) => {
-    if (!confirm(`Delete game "${slug}"? This cannot be undone.`)) return;
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await adminApi.games.delete(slug);
-      setGames((prev) => prev.filter((g) => g.slug !== slug));
+      await adminApi.games.delete(deleteTarget.slug);
+      setGames((prev) => prev.filter((g) => g.slug !== deleteTarget.slug));
     } catch {
-      alert("Failed to delete game");
+      setError("Failed to delete game");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -177,42 +181,12 @@ export default function AdminGamesPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex gap-2 justify-end">
-                      <Link
-                        href={`/admin/games/${g.slug}/sections`}
-                        className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition"
-                      >
-                        Sections
-                      </Link>
-                      <Link
-                        href={`/admin/games/${g.slug}/schemas`}
-                        className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition"
-                      >
-                        Schemas
-                      </Link>
-                      <Link
-                        href={`/admin/games/${g.slug}/attributes`}
-                        className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition"
-                      >
-                        Attributes
-                      </Link>
-                      <Link
-                        href={`/admin/games/${g.slug}/translations`}
-                        className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition"
-                      >
-                        Translations
-                      </Link>
-                      <button
-                        onClick={() => openEdit(g)}
-                        className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteGame(g.slug)}
-                        className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-red-900 text-red-400 transition"
-                      >
-                        Delete
-                      </button>
+                      <Link href={`/admin/games/${g.slug}/sections`} className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition">Sections</Link>
+                      <Link href={`/admin/games/${g.slug}/schemas`} className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition">Schemas</Link>
+                      <Link href={`/admin/games/${g.slug}/attributes`} className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition">Attributes</Link>
+                      <Link href={`/admin/games/${g.slug}/translations`} className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition">Translations</Link>
+                      <button onClick={() => openEdit(g)} className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition">Edit</button>
+                      <button onClick={() => setDeleteTarget(g)} className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-red-900 text-red-400 transition">Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -222,19 +196,13 @@ export default function AdminGamesPage() {
         </div>
       )}
 
-      {/* Modal */}
+      {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
+
+      {/* Edit/Create modal */}
       {modal && (
-        <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-          onClick={() => setModal(null)}
-        >
-          <div
-            className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-[480px] space-y-4 max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-semibold text-lg">
-              {modal.mode === "create" ? "Add Game" : "Edit Game"}
-            </h2>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50" onClick={() => setModal(null)}>
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-[480px] space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <h2 className="font-semibold text-lg">{modal.mode === "create" ? "Add Game" : "Edit Game"}</h2>
             <div>
               <label className="text-xs text-gray-400 block mb-1">Name</label>
               <input
@@ -242,11 +210,7 @@ export default function AdminGamesPage() {
                 value={form.name}
                 onChange={(e) => {
                   const name = e.target.value;
-                  setForm((f) => ({
-                    ...f,
-                    name,
-                    slug: slugLocked ? f.slug : toSlug(name),
-                  }));
+                  setForm((f) => ({ ...f, name, slug: slugLocked ? f.slug : toSlug(name) }));
                 }}
                 placeholder="Display name"
                 className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
@@ -258,16 +222,10 @@ export default function AdminGamesPage() {
                 {modal.mode === "create" && (
                   <span className="text-xs text-gray-500">
                     {slugLocked ? (
-                      <button
-                        type="button"
-                        onClick={() => { setSlugLocked(false); setForm((f) => ({ ...f, slug: toSlug(f.name) })); }}
-                        className="text-blue-400 hover:text-blue-300"
-                      >
+                      <button type="button" onClick={() => { setSlugLocked(false); setForm((f) => ({ ...f, slug: toSlug(f.name) })); }} className="text-blue-400 hover:text-blue-300">
                         reset to auto
                       </button>
-                    ) : (
-                      "auto from name"
-                    )}
+                    ) : "auto from name"}
                   </span>
                 )}
               </div>
@@ -290,49 +248,36 @@ export default function AdminGamesPage() {
                 className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
               />
             </div>
-            <ImageUploadField
-              label="Logo"
-              value={form.logo_url}
-              onChange={(url) => setForm((f) => ({ ...f, logo_url: url }))}
-              placeholder="https://… or upload →"
-              previewHeight="h-12"
-            />
-            <ImageUploadField
-              label="Banner"
-              value={form.banner_url}
-              onChange={(url) => setForm((f) => ({ ...f, banner_url: url }))}
-              placeholder="https://… or upload →"
-              previewHeight="h-24"
-            />
+            <ImageUploadField label="Logo" value={form.logo_url} onChange={(url) => setForm((f) => ({ ...f, logo_url: url }))} placeholder="https://… or upload →" previewHeight="h-12" />
+            <ImageUploadField label="Banner" value={form.banner_url} onChange={(url) => setForm((f) => ({ ...f, banner_url: url }))} placeholder="https://… or upload →" previewHeight="h-24" />
             {modal.mode === "edit" && (
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.is_active}
-                  onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.checked }))}
-                />
+                <input type="checkbox" checked={form.is_active} onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.checked }))} />
                 Active (visible to users)
               </label>
             )}
             {error && <p className="text-red-400 text-sm">{error}</p>}
             <div className="flex gap-3 pt-1">
-              <button
-                onClick={save}
-                disabled={saving}
-                className="flex-1 py-2 rounded-lg bg-white text-black text-sm font-semibold hover:bg-gray-200 transition disabled:opacity-50"
-              >
+              <button onClick={save} disabled={saving} className="flex-1 py-2 rounded-lg bg-white text-black text-sm font-semibold hover:bg-gray-200 transition disabled:opacity-50">
                 {saving ? "Saving…" : modal.mode === "create" ? "Create" : "Save"}
               </button>
-              <button
-                onClick={() => setModal(null)}
-                className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition"
-              >
+              <button onClick={() => setModal(null)} className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition">
                 Cancel
               </button>
             </div>
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete game"
+        description={`Delete "${deleteTarget?.name}"? This cannot be undone.`}
+        confirmLabel="Delete"
+        destructive
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </main>
   );
 }

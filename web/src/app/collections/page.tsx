@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { collectionsApi, gamesApi, itemsApi } from "@/lib/api";
-// Note: section_id is available on items from the API
 import { useAuth } from "@/context/AuthContext";
+import { SafeImage } from "@/components/SafeImage";
 
 interface Game { id: string; slug: string; name: string }
 interface CollectionEntry {
@@ -200,13 +200,19 @@ export default function CollectionsPage() {
                     className="relative flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden"
                   >
                     <Link href={`/items/${entry.item_id}`}>
-                      {imageUrl ? (
-                        <img src={imageUrl} alt={name} className="h-24 w-full object-cover" />
-                      ) : (
-                        <div className="h-24 w-full bg-gray-800 flex items-center justify-center text-2xl font-bold text-gray-600">
-                          {name[0]?.toUpperCase()}
-                        </div>
-                      )}
+                      <div className="relative h-24 w-full">
+                        <SafeImage
+                          src={imageUrl}
+                          alt={name}
+                          fill
+                          className="object-cover"
+                          fallback={
+                            <div className="h-24 w-full bg-gray-800 flex items-center justify-center text-2xl font-bold text-gray-600">
+                              {name[0]?.toUpperCase()}
+                            </div>
+                          }
+                        />
+                      </div>
                     </Link>
                     <div className="p-2 space-y-1">
                       <p className="text-xs font-medium truncate">{name}</p>

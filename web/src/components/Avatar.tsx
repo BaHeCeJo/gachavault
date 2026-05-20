@@ -10,6 +10,7 @@ interface AvatarProps {
 export function Avatar({ username, avatarUrl, size = 32, className = "" }: AvatarProps) {
   const diceBear = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(username)}&backgroundColor=374151&textColor=e5e7eb&fontSize=38`;
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={avatarUrl ?? diceBear}
       alt={username}

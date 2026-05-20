@@ -147,7 +147,7 @@ export default function UserDetailPage() {
       <section>
         <h2 className="text-lg font-semibold mb-1">Game Roles</h2>
         <p className="text-sm text-gray-400 mb-4">
-          Assign per-game permissions. These override the default "user" role for specific games.
+          Assign per-game permissions. These override the default &quot;user&quot; role for specific games.
           Global admins already have full access everywhere.
         </p>
 

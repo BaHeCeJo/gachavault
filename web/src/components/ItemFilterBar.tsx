@@ -148,6 +148,7 @@ export default function ItemFilterBar({
                     } : undefined}
                   >
                     {attr.icon_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img src={attr.icon_url} alt="" className="w-3.5 h-3.5 object-contain" />
                     ) : attr.color ? (
                       <span

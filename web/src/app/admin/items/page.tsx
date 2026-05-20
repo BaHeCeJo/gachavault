@@ -7,6 +7,8 @@ import { adminApi, gamesApi, itemsApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ImageUploadField from "@/components/ImageUploadField";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { SafeImage } from "@/components/SafeImage";
 
 interface Game { id: string; slug: string; name: string }
 interface Section { id: string; slug: string; name: string }
@@ -53,6 +55,7 @@ export default function AdminItemsPage() {
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [search, setSearch] = useState("");
 
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [modal, setModal] = useState<{ mode: "create" | "edit"; item?: Item } | null>(null);
   const [form, setForm] = useState({ slug: "", section_id: "", type_schema_id: "", dataJson: "{}" });
   const [slugLocked, setSlugLocked] = useState(false);
@@ -195,13 +198,15 @@ export default function AdminItemsPage() {
     }
   };
 
-  const deleteItem = async (id: string) => {
-    if (!confirm("Delete this item? This cannot be undone.")) return;
+  const confirmDeleteItem = async () => {
+    if (!deleteTarget) return;
     try {
-      await adminApi.items.delete(id);
-      setItems((prev) => prev.filter((i) => i.id !== id));
+      await adminApi.items.delete(deleteTarget);
+      setItems((prev) => prev.filter((i) => i.id !== deleteTarget));
     } catch {
-      alert("Failed to delete item");
+      setFormError("Failed to delete item");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -318,7 +323,11 @@ export default function AdminItemsPage() {
                     <tr key={item.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-900/50">
                       <td className="px-4 py-2">
                         {img ? (
-                          <img src={img} alt={name} className="w-10 h-10 rounded object-cover" />
+                          <SafeImage src={img} alt={name} width={40} height={40} className="w-10 h-10 rounded object-cover" fallback={
+                            <div className="w-10 h-10 rounded bg-gray-800 flex items-center justify-center text-gray-600 font-bold">
+                              {name[0]?.toUpperCase()}
+                            </div>
+                          } />
                         ) : (
                           <div className="w-10 h-10 rounded bg-gray-800 flex items-center justify-center text-gray-600 font-bold">
                             {name[0]?.toUpperCase()}
@@ -345,7 +354,7 @@ export default function AdminItemsPage() {
                             Edit
                           </button>
                           <button
-                            onClick={() => deleteItem(item.id)}
+                            onClick={() => setDeleteTarget(item.id)}
                             className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-red-900 text-red-400 transition"
                           >
                             Delete
@@ -360,6 +369,16 @@ export default function AdminItemsPage() {
           </table>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete item"
+        description="Delete this item? This cannot be undone."
+        confirmLabel="Delete"
+        destructive
+        onConfirm={confirmDeleteItem}
+        onCancel={() => setDeleteTarget(null)}
+      />
 
       {/* Modal */}
       {modal && (
@@ -458,6 +477,7 @@ export default function AdminItemsPage() {
                           <label className="text-xs text-gray-400 block mb-1">{field.label}</label>
                           <div className="flex items-center gap-2">
                             {selected?.icon_url && (
+                              // eslint-disable-next-line @next/next/no-img-element
                               <img src={selected.icon_url} alt={selected.name} className="w-6 h-6 object-contain flex-shrink-0" />
                             )}
                             {selected?.color && !selected.icon_url && (

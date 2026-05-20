@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { Avatar } from "./Avatar";
+import { isAdmin } from "@/lib/auth";
 
 export function Navbar() {
   const { user, isLoading, logout } = useAuth();
@@ -19,7 +20,7 @@ export function Navbar() {
     <header className="border-b border-gray-800 px-6 py-3">
       <nav className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="text-xl font-bold tracking-tight">
-          GachaVault
+          Hotarumi
         </Link>
 
         <div className="flex items-center gap-6 text-sm">
@@ -41,11 +42,16 @@ export function Navbar() {
                   <Link href="/tierlists" className="text-gray-400 hover:text-white transition">
                     Tier Lists
                   </Link>
-                  <Link href="/admin" className="text-gray-400 hover:text-white transition">
-                    Admin
-                  </Link>
+                  {isAdmin(user) && (
+                    <Link href="/admin" className="text-gray-400 hover:text-white transition">
+                      Admin
+                    </Link>
+                  )}
                   <div className="flex items-center gap-3 ml-2">
-                    <Link href="/profile" className="flex items-center gap-2 hover:opacity-80 transition">
+                    <Link
+                      href="/profile"
+                      className="flex items-center gap-2 hover:opacity-80 transition"
+                    >
                       <Avatar username={user.username} avatarUrl={user.avatar_url} size={28} />
                       <span className="text-white font-medium">{user.username}</span>
                     </Link>

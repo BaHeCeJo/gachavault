@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface GameInfo {
   slug: string;
@@ -40,6 +41,8 @@ export default function GameTranslationsPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", description: "" });
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/auth/login");
@@ -87,13 +90,15 @@ export default function GameTranslationsPage() {
     }
   };
 
-  const handleDelete = async (locale: string) => {
-    if (!confirm(`Remove ${SUPPORTED_LOCALES[locale] ?? locale} translation?`)) return;
+  const confirmDeleteTranslation = async () => {
+    if (!deleteTarget) return;
     try {
-      await gamesApi.deleteTranslation(slug as string, locale);
-      setTranslations((prev) => prev.filter((t) => t.locale !== locale));
+      await gamesApi.deleteTranslation(slug as string, deleteTarget);
+      setTranslations((prev) => prev.filter((t) => t.locale !== deleteTarget));
     } catch {
-      alert("Failed to delete translation");
+      setDeleteError("Failed to delete translation");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -158,7 +163,7 @@ export default function GameTranslationsPage() {
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(t.locale)}
+                        onClick={() => setDeleteTarget(t.locale)}
                         className="text-xs text-red-400 hover:text-red-300"
                       >
                         Remove
@@ -171,6 +176,18 @@ export default function GameTranslationsPage() {
           </table>
         </div>
       )}
+
+      {deleteError && <p className="text-red-400 text-sm">{deleteError}</p>}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Remove translation"
+        description={`Remove the ${SUPPORTED_LOCALES[deleteTarget ?? ""] ?? deleteTarget} translation? This cannot be undone.`}
+        confirmLabel="Remove"
+        destructive
+        onConfirm={confirmDeleteTranslation}
+        onCancel={() => setDeleteTarget(null)}
+      />
 
       {/* Add new locale */}
       <section className="rounded-xl border border-gray-800 bg-gray-900/50 p-5">

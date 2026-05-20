@@ -1,29 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { gamesApi } from "@/lib/api";
-
-interface Game {
-  id: string;
-  slug: string;
-  name: string;
-  banner_url: string | null;
-  logo_url: string | null;
-}
+import { useGames } from "@/hooks/queries";
+import { SafeImage } from "@/components/SafeImage";
 
 export default function HomePage() {
   const router = useRouter();
   const t = useTranslations("home");
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
-  const [games, setGames] = useState<Game[]>([]);
-
-  useEffect(() => {
-    gamesApi.list().then((res) => setGames(res.data.data?.slice(0, 8) ?? [])).catch(() => {});
-  }, []);
+  const { data: allGames = [] } = useGames();
+  const games = allGames.slice(0, 8);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,11 +25,8 @@ export default function HomePage() {
       {/* Hero */}
       <section className="flex flex-col items-center justify-center flex-1 px-6 py-20 text-center">
         <h1 className="text-5xl sm:text-6xl font-bold tracking-tight mb-4">{t("title")}</h1>
-        <p className="text-xl text-gray-400 mb-10 max-w-lg">
-          {t("subtitle")}
-        </p>
+        <p className="text-xl text-gray-400 mb-10 max-w-lg">{t("subtitle")}</p>
 
-        {/* Search bar */}
         <form onSubmit={handleSearch} className="w-full max-w-xl flex gap-2">
           <input
             ref={inputRef}
@@ -89,15 +76,23 @@ export default function HomePage() {
                 href={`/games/${g.slug}`}
                 className="group relative rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-600 transition"
               >
-                {g.banner_url ? (
-                  <img src={g.banner_url} alt={g.name} className="h-28 w-full object-cover" />
-                ) : (
-                  <div className="h-28 w-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-3xl font-bold text-gray-600">
-                    {g.name[0]}
-                  </div>
-                )}
+                <div className="relative h-28 w-full">
+                  <SafeImage
+                    src={g.banner_url}
+                    alt={g.name}
+                    fill
+                    className="object-cover"
+                    fallback={
+                      <div className="h-28 w-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-3xl font-bold text-gray-600">
+                        {g.name[0]}
+                      </div>
+                    }
+                  />
+                </div>
                 <div className="p-3">
-                  <p className="font-semibold text-sm group-hover:text-white transition">{g.name}</p>
+                  <p className="font-semibold text-sm group-hover:text-white transition">
+                    {g.name}
+                  </p>
                 </div>
               </Link>
             ))}

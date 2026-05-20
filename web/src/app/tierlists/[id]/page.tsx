@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { tierlistsApi, itemsApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { SafeImage } from "@/components/SafeImage";
 
 interface CustomTier { key: string; name: string; color: string }
 interface TierEntry { item_id: string; tier: string }
@@ -283,13 +284,11 @@ export default function TierListEditorPage() {
                         onClick={() => setItemTier(item.id, null)}
                         title={`Remove ${name} from tier`}
                       >
-                        {img ? (
-                          <img src={img} alt={name} className="w-12 h-12 rounded-lg object-cover" />
-                        ) : (
+                        <SafeImage src={img} alt={name} width={48} height={48} className="w-12 h-12 rounded-lg object-cover" fallback={
                           <div className="w-12 h-12 rounded-lg bg-gray-700 flex items-center justify-center text-lg font-bold text-gray-400">
                             {name[0]?.toUpperCase()}
                           </div>
-                        )}
+                        } />
                         <div className="absolute inset-0 rounded-lg bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-bold text-white transition">
                           ✕
                         </div>
@@ -324,13 +323,11 @@ export default function TierListEditorPage() {
             return (
               <div key={item.id} className="relative group">
                 <div title={name}>
-                  {img ? (
-                    <img src={img} alt={name} className="w-12 h-12 rounded-lg object-cover" />
-                  ) : (
+                  <SafeImage src={img} alt={name} width={48} height={48} className="w-12 h-12 rounded-lg object-cover" fallback={
                     <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center text-lg font-bold text-gray-600">
                       {name[0]?.toUpperCase()}
                     </div>
-                  )}
+                  } />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:flex gap-0.5 bg-gray-900 border border-gray-700 rounded-lg p-1 z-10">
                     {tiers.map((t) => (
                       <button

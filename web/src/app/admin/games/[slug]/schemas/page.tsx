@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface Section { id: string; slug: string; name: string }
 interface Schema {
@@ -39,6 +40,7 @@ export default function AdminGameSchemasPage() {
   const [form, setForm] = useState({ name: "", section_id: "", fields: DEFAULT_FIELDS });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<Schema | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) router.replace(`/auth/login?redirect=/admin/games/${slug}/schemas`);
@@ -113,13 +115,15 @@ export default function AdminGameSchemasPage() {
     }
   };
 
-  const deleteSchema = async (schema: Schema) => {
-    if (!confirm(`Delete schema "${schema.name}"? Items using this schema will be unaffected but lose their type reference.`)) return;
+  const confirmDeleteSchema = async () => {
+    if (!deleteTarget) return;
     try {
-      await adminApi.games.deleteSchema(slug, schema.id);
-      setSchemas((prev) => prev.filter((s) => s.id !== schema.id));
+      await adminApi.games.deleteSchema(slug, deleteTarget.id);
+      setSchemas((prev) => prev.filter((s) => s.id !== deleteTarget.id));
     } catch {
-      alert("Failed to delete schema");
+      setError("Failed to delete schema");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -204,7 +208,7 @@ export default function AdminGameSchemasPage() {
                         Edit
                       </button>
                       <button
-                        onClick={() => deleteSchema(s)}
+                        onClick={() => setDeleteTarget(s)}
                         className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-red-900 text-red-400 transition"
                       >
                         Delete
@@ -217,6 +221,16 @@ export default function AdminGameSchemasPage() {
           </table>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete schema"
+        description={`Delete schema "${deleteTarget?.name}"? Items using it will lose their type reference.`}
+        confirmLabel="Delete"
+        destructive
+        onConfirm={confirmDeleteSchema}
+        onCancel={() => setDeleteTarget(null)}
+      />
 
       {modal && (
         <div

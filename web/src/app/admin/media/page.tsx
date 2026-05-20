@@ -5,6 +5,7 @@ import Link from "next/link";
 import { mediaApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface Asset {
   id: string;
@@ -31,6 +32,7 @@ export default function AdminMediaPage() {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && (!user || (user.role !== "admin" && user.role !== "superadmin"))) {
@@ -47,16 +49,17 @@ export default function AdminMediaPage() {
       .finally(() => setLoading(false));
   }, [user]);
 
-  async function handleDelete(id: string) {
-    if (!confirm("Delete this file permanently?")) return;
-    setDeleting(id);
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    setDeleting(deleteTarget);
     try {
-      await mediaApi.delete(id);
-      setAssets((prev) => prev.filter((a) => a.id !== id));
+      await mediaApi.delete(deleteTarget);
+      setAssets((prev) => prev.filter((a) => a.id !== deleteTarget));
     } catch {
       setError("Failed to delete asset");
     } finally {
       setDeleting(null);
+      setDeleteTarget(null);
     }
   }
 
@@ -98,6 +101,7 @@ export default function AdminMediaPage() {
               className="group relative rounded-xl border border-gray-800 bg-gray-900 overflow-hidden"
             >
               {asset.mime_type.startsWith("image/") ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={asset.public_url}
                   alt={asset.original_filename}
@@ -129,7 +133,7 @@ export default function AdminMediaPage() {
                   View
                 </a>
                 <button
-                  onClick={() => handleDelete(asset.id)}
+                  onClick={() => setDeleteTarget(asset.id)}
                   disabled={deleting === asset.id}
                   className="rounded bg-red-900/80 px-2 py-0.5 text-xs text-red-200 hover:bg-red-800 disabled:opacity-50"
                 >
@@ -140,6 +144,15 @@ export default function AdminMediaPage() {
           ))}
         </div>
       )}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete file"
+        description="Delete this file permanently? This cannot be undone."
+        confirmLabel="Delete"
+        destructive
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </main>
   );
 }

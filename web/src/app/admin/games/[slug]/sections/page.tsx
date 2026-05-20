@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface Section { id: string; slug: string; name: string; order: number; tabs?: string[] }
 
@@ -33,6 +34,7 @@ export default function AdminGameSectionsPage() {
   const [form, setForm] = useState({ slug: "", name: "", order: "0", tabs: DEFAULT_TABS });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<Section | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) router.replace(`/auth/login?redirect=/admin/games/${slug}/sections`);
@@ -98,13 +100,15 @@ export default function AdminGameSectionsPage() {
     }
   };
 
-  const deleteSection = async (section: Section) => {
-    if (!confirm(`Delete section "${section.name}"? Items in this section will lose their section reference.`)) return;
+  const confirmDeleteSection = async () => {
+    if (!deleteTarget) return;
     try {
-      await adminApi.games.deleteSection(slug, section.id);
-      setSections((prev) => prev.filter((s) => s.id !== section.id));
+      await adminApi.games.deleteSection(slug, deleteTarget.id);
+      setSections((prev) => prev.filter((s) => s.id !== deleteTarget.id));
     } catch {
-      alert("Failed to delete section");
+      setError("Failed to delete section");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -173,7 +177,7 @@ export default function AdminGameSectionsPage() {
                         Edit
                       </button>
                       <button
-                        onClick={() => deleteSection(s)}
+                        onClick={() => setDeleteTarget(s)}
                         className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-red-900 text-red-400 transition"
                       >
                         Delete
@@ -186,6 +190,16 @@ export default function AdminGameSectionsPage() {
           </table>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete section"
+        description={`Delete section "${deleteTarget?.name}"? Items in this section will lose their section reference.`}
+        confirmLabel="Delete"
+        destructive
+        onConfirm={confirmDeleteSection}
+        onCancel={() => setDeleteTarget(null)}
+      />
 
       {modal && (
         <div

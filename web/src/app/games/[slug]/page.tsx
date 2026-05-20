@@ -6,6 +6,7 @@ import Link from "next/link";
 import { gamesApi, itemsApi, tierlistsApi } from "@/lib/api";
 import { getClientLocale } from "@/lib/locale";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
+import { SafeImage } from "@/components/SafeImage";
 
 interface Game {
   id: string;
@@ -80,6 +81,7 @@ function RarityBadge({ value }: { value: unknown }) {
 
 function AttrBadge({ attr }: { attr: GameAttribute }) {
   if (attr.icon_url) {
+    // eslint-disable-next-line @next/next/no-img-element
     return <img src={attr.icon_url} alt={attr.name} title={attr.name} className="w-5 h-5 object-contain" />;
   }
   return (
@@ -173,21 +175,23 @@ export default function GameDetailPage() {
   return (
     <main className="max-w-7xl mx-auto px-6 py-10">
       {/* Banner */}
-      {game.banner_url ? (
-        <img
+      <div className="relative w-full h-48 rounded-xl overflow-hidden mb-6">
+        <SafeImage
           src={game.banner_url}
           alt={game.name}
-          className="w-full h-48 object-cover rounded-xl mb-6"
+          fill
+          className="object-cover"
+          fallback={
+            <div className="w-full h-48 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-6xl font-bold text-gray-600">
+              {game.name[0]}
+            </div>
+          }
         />
-      ) : (
-        <div className="w-full h-48 rounded-xl bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-6xl font-bold text-gray-600 mb-6">
-          {game.name[0]}
-        </div>
-      )}
+      </div>
 
       <div className="flex items-center gap-4 mb-8">
         {game.logo_url && (
-          <img src={game.logo_url} alt="" className="w-14 h-14 rounded-lg object-cover" />
+          <SafeImage src={game.logo_url} alt="" width={56} height={56} className="w-14 h-14 rounded-lg object-cover" />
         )}
         <div>
           <h1 className="text-3xl font-bold">{game.name}</h1>
@@ -254,13 +258,17 @@ export default function GameDetailPage() {
                 className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-600 transition group"
               >
                 <div className="relative h-28 w-full">
-                  {imageUrl ? (
-                    <img src={imageUrl} alt={name} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200" />
-                  ) : (
-                    <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-2xl font-bold text-gray-500">
-                      {name[0]?.toUpperCase()}
-                    </div>
-                  )}
+                  <SafeImage
+                    src={imageUrl}
+                    alt={name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-200"
+                    fallback={
+                      <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-2xl font-bold text-gray-500">
+                        {name[0]?.toUpperCase()}
+                      </div>
+                    }
+                  />
                   {/* Element / primary attribute badge — top right */}
                   {(elementAttr || badgeAttrs[0]) && (
                     <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center backdrop-blur-sm">

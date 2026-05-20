@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { tierlistsApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface Game { id: string; slug: string; name: string }
 interface Section { id: string; slug: string; name: string }
@@ -31,6 +32,7 @@ export default function TierListsPage() {
   const [newSectionId, setNewSectionId] = useState("");
   const [newPublic, setNewPublic] = useState(true);
   const [createError, setCreateError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) router.replace("/auth/login?redirect=/tierlists");
@@ -75,10 +77,11 @@ export default function TierListsPage() {
     }
   };
 
-  const deleteTierList = async (id: string) => {
-    if (!confirm("Delete this tier list?")) return;
-    await tierlistsApi.delete(id);
-    setTierlists((prev) => prev.filter((t) => t.id !== id));
+  const confirmDeleteTierList = async () => {
+    if (!deleteTarget) return;
+    await tierlistsApi.delete(deleteTarget);
+    setTierlists((prev) => prev.filter((t) => t.id !== deleteTarget));
+    setDeleteTarget(null);
   };
 
   const gameMap = new Map(games.map((g) => [g.id, g.name]));
@@ -154,7 +157,7 @@ export default function TierListsPage() {
                   Edit
                 </Link>
                 <button
-                  onClick={() => deleteTierList(tl.id)}
+                  onClick={() => setDeleteTarget(tl.id)}
                   className="text-xs px-3 py-1.5 rounded-lg border border-gray-700 hover:border-red-900 text-red-400 transition"
                 >
                   Delete
@@ -164,6 +167,16 @@ export default function TierListsPage() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete tier list"
+        description="Delete this tier list? This cannot be undone."
+        confirmLabel="Delete"
+        destructive
+        onConfirm={confirmDeleteTierList}
+        onCancel={() => setDeleteTarget(null)}
+      />
 
       {/* Create modal */}
       {creating && (

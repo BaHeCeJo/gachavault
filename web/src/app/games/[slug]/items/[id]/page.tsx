@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { gamesApi, itemsApi } from "@/lib/api";
 import { getClientLocale } from "@/lib/locale";
+import { SafeImage } from "@/components/SafeImage";
 
 interface Item {
   id: string;
@@ -59,6 +60,7 @@ function AttrPill({ attr, value }: { attr: GameAttribute; value: string }) {
       }}
     >
       {attr.icon_url && (
+        // eslint-disable-next-line @next/next/no-img-element
         <img src={attr.icon_url} alt={attr.name} className="w-4 h-4 object-contain" />
       )}
       {attr.name || value}
@@ -218,9 +220,17 @@ export default function ItemDetailPage() {
         <div className="flex flex-col gap-4">
           <div className="rounded-xl overflow-hidden border border-gray-800 bg-gray-900">
             {imageUrl ? (
-              <img src={imageUrl} alt={name} className="w-full object-cover" />
+              <SafeImage src={imageUrl} alt={name} width={400} height={400} className="w-full object-cover" fallback={
+                <div className="h-64 flex items-center justify-center text-6xl font-bold text-gray-600">
+                  {name[0]?.toUpperCase()}
+                </div>
+              } />
             ) : iconUrl ? (
-              <img src={iconUrl} alt={name} className="w-full object-contain p-6" />
+              <SafeImage src={iconUrl} alt={name} width={400} height={400} className="w-full object-contain p-6" fallback={
+                <div className="h-64 flex items-center justify-center text-6xl font-bold text-gray-600">
+                  {name[0]?.toUpperCase()}
+                </div>
+              } />
             ) : (
               <div className="h-64 flex items-center justify-center text-6xl font-bold text-gray-600">
                 {name[0]?.toUpperCase()}
@@ -228,7 +238,7 @@ export default function ItemDetailPage() {
             )}
           </div>
           {iconUrl && imageUrl && (
-            <img src={iconUrl} alt={`${name} icon`} className="w-16 h-16 rounded-lg border border-gray-800 object-contain self-start" />
+            <SafeImage src={iconUrl} alt={`${name} icon`} width={64} height={64} className="w-16 h-16 rounded-lg border border-gray-800 object-contain self-start" />
           )}
         </div>
 
@@ -290,16 +300,15 @@ export default function ItemDetailPage() {
                   className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-600 transition group"
                 >
                   <div className="relative h-20">
-                    {relImg ? (
-                      <img src={relImg} alt={relName} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200" />
-                    ) : (
+                    <SafeImage src={relImg} alt={relName} fill className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
                       <div className="h-full bg-gray-800 flex items-center justify-center text-xl font-bold text-gray-600">
                         {relName[0]?.toUpperCase()}
                       </div>
-                    )}
+                    } />
                     {relElem && (
                       <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/50 flex items-center justify-center">
                         {relElem.icon_url
+                          // eslint-disable-next-line @next/next/no-img-element
                           ? <img src={relElem.icon_url} alt={relElem.name} className="w-3.5 h-3.5 object-contain" />
                           : <span className="w-3 h-3 rounded-full block" style={{ backgroundColor: relElem.color ?? "#888" }} />
                         }
