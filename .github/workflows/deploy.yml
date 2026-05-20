@@ -91,15 +91,13 @@ jobs:
           envs: GHCR_TOKEN,GHCR_ACTOR
           script: |
             set -e
+            export PATH=$PATH:/usr/bin:/usr/local/bin
             cd /opt/gachavault
 
-            # Pull latest compose file
             git pull origin main
 
-            # Log in to GHCR with the job token passed as env var
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_ACTOR" --password-stdin
 
-            # Pull new images and restart
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
