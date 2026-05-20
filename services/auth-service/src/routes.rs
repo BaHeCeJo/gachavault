@@ -111,7 +111,7 @@ pub async fn register(
         ));
     }
 
-    let password_hash = crypto::hash_password(&body.password).map_err(|e| AppError::Internal(e))?;
+    let password_hash = crypto::hash_password(&body.password).map_err(AppError::Internal)?;
 
     let user = db::create_user(
         &pool,
@@ -173,7 +173,7 @@ pub async fn login(
         .ok_or_else(|| AppError::Unauthorized("This account uses social login".into()))?;
 
     let valid = crypto::verify_password(&body.password, password_hash)
-        .map_err(|e| AppError::Internal(e))?;
+        .map_err(AppError::Internal)?;
 
     if !valid {
         return Err(AppError::Unauthorized("Invalid email or password".into()));
@@ -279,7 +279,7 @@ pub async fn reset_password(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::BadRequest("Invalid or expired reset token".into()))?;
 
-    let password_hash = crypto::hash_password(&body.password).map_err(|e| AppError::Internal(e))?;
+    let password_hash = crypto::hash_password(&body.password).map_err(AppError::Internal)?;
 
     db::update_password(&pool, user_id, &password_hash)
         .await
