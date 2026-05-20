@@ -1,11 +1,18 @@
 use axum::{
-    body::Body, extract::State, http::StatusCode, response::Response, routing::any, Router,
+    body::Body,
+    extract::State,
+    http::{
+        header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
+        StatusCode,
+    },
+    response::Response,
+    routing::any,
+    Router,
 };
 use reqwest::Client;
 use serde_json::json;
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::cors::{Any, CorsLayer};
-use axum::http::header::{AUTHORIZATION, CONTENT_TYPE, ACCEPT};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[derive(Clone)]
