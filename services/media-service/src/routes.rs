@@ -32,7 +32,7 @@ pub async fn upload(
     auth: AuthUser,
     multipart: Multipart,
 ) -> AppResult<Json<ApiResponse<DbAsset>>> {
-    let asset = handle_upload(pool, Some(auth.id()), multipart, false).await?;
+    let asset = handle_upload(pool, Some(auth.id()), multipart).await?;
     Ok(Json(ApiResponse::success(asset)))
 }
 
@@ -41,7 +41,7 @@ pub async fn upload_avatar(
     auth: AuthUser,
     multipart: Multipart,
 ) -> AppResult<Json<ApiResponse<DbAsset>>> {
-    let asset = handle_upload(pool, Some(auth.id()), multipart, true).await?;
+    let asset = handle_upload(pool, Some(auth.id()), multipart).await?;
     Ok(Json(ApiResponse::success(asset)))
 }
 
@@ -126,7 +126,6 @@ async fn handle_upload(
     pool: PgPool,
     user_id: Option<Uuid>,
     mut multipart: Multipart,
-    images_only: bool,
 ) -> AppResult<DbAsset> {
     let upload_dir = std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
     let public_base =
@@ -144,7 +143,7 @@ async fn handle_upload(
             .unwrap_or("application/octet-stream")
             .to_string();
 
-        if images_only && !ALLOWED_IMAGE_TYPES.contains(&mime_type.as_str()) {
+        if !ALLOWED_IMAGE_TYPES.contains(&mime_type.as_str()) {
             return Err(AppError::BadRequest(format!(
                 "Invalid file type '{}'. Allowed: jpeg, png, webp, gif",
                 mime_type
