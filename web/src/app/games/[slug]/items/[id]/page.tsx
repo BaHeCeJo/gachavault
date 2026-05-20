@@ -198,47 +198,54 @@ export default function ItemDetailPage() {
     ? fields.filter(f => !HIDDEN_IN_DETAILS.has(f.key)).map(f => ({ key: f.key, label: f.label }))
     : Object.keys(item.data).filter(k => !HIDDEN_IN_DETAILS.has(k)).map(k => ({ key: k, label: k.replace(/_/g, " ") }));
 
+  const rarityStr = typeof item.data?.rarity === "number" ? undefined : String(item.data?.rarity ?? "");
+  const rarityBorder = rarityStr ? ({ SSR: "border-yellow-600/40", SR: "border-purple-600/40", UR: "border-yellow-600/40", S: "border-yellow-600/40", A: "border-purple-600/40" }[rarityStr] ?? "border-gray-800") : "border-gray-800";
+  const rarityGlow = rarityStr ? ({ SSR: "shadow-yellow-500/15", SR: "shadow-purple-500/15", UR: "shadow-yellow-500/15" }[rarityStr] ?? "") : "";
+
+  const PALETTE = ["from-indigo-900 to-indigo-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
+  const cardGradient = (n: string) => PALETTE[n.charCodeAt(0) % PALETTE.length];
+
   return (
     <main className="max-w-5xl mx-auto px-6 py-10">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-sm text-gray-400 flex-wrap">
-        <Link href="/games" className="hover:text-white">Games</Link>
-        <span>/</span>
-        <Link href={`/games/${slug}`} className="hover:text-white">{gameName}</Link>
+        <Link href="/games" className="hover:text-indigo-300 transition">Games</Link>
+        <span className="text-gray-700">/</span>
+        <Link href={`/games/${slug}`} className="hover:text-indigo-300 transition">{gameName}</Link>
         {sectionName && (
           <>
-            <span>/</span>
-            <span className="text-gray-500">{sectionName}</span>
+            <span className="text-gray-700">/</span>
+            <span className="text-gray-400">{sectionName}</span>
           </>
         )}
-        <span>/</span>
+        <span className="text-gray-700">/</span>
         <span className="text-white">{name}</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8 mb-12">
         {/* Left: image */}
         <div className="flex flex-col gap-4">
-          <div className="rounded-xl overflow-hidden border border-gray-800 bg-gray-900">
+          <div className={`rounded-xl overflow-hidden border bg-gray-900 shadow-lg ${rarityBorder} ${rarityGlow}`}>
             {imageUrl ? (
               <SafeImage src={imageUrl} alt={name} width={400} height={400} className="w-full object-cover" fallback={
-                <div className="h-64 flex items-center justify-center text-6xl font-bold text-gray-600">
+                <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
                   {name[0]?.toUpperCase()}
                 </div>
               } />
             ) : iconUrl ? (
               <SafeImage src={iconUrl} alt={name} width={400} height={400} className="w-full object-contain p-6" fallback={
-                <div className="h-64 flex items-center justify-center text-6xl font-bold text-gray-600">
+                <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
                   {name[0]?.toUpperCase()}
                 </div>
               } />
             ) : (
-              <div className="h-64 flex items-center justify-center text-6xl font-bold text-gray-600">
+              <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
                 {name[0]?.toUpperCase()}
               </div>
             )}
           </div>
           {iconUrl && imageUrl && (
-            <SafeImage src={iconUrl} alt={`${name} icon`} width={64} height={64} className="w-16 h-16 rounded-lg border border-gray-800 object-contain self-start" />
+            <SafeImage src={iconUrl} alt={`${name} icon`} width={64} height={64} className="w-16 h-16 rounded-lg border border-gray-700 object-contain self-start" />
           )}
         </div>
 
@@ -247,20 +254,19 @@ export default function ItemDetailPage() {
           <h1 className="text-3xl font-bold mb-1">{name}</h1>
           <div className="flex items-center gap-2 mb-6 flex-wrap">
             {sectionName && (
-              <span className="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-400">{sectionName}</span>
+              <span className="text-xs px-2 py-0.5 rounded bg-indigo-900/40 border border-indigo-700/40 text-indigo-300">{sectionName}</span>
             )}
             {item.data?.rarity !== undefined && <RarityStars value={item.data.rarity} />}
           </div>
 
-          {/* Description — full width if present */}
           {typeof item.data?.description === "string" && item.data.description && (
-            <p className="text-gray-300 text-sm leading-relaxed mb-6 border-l-2 border-gray-700 pl-4">
+            <p className="text-gray-300 text-sm leading-relaxed mb-6 border-l-2 border-indigo-600/60 pl-4 italic">
               {item.data.description}
             </p>
           )}
 
           {/* Stats table */}
-          <div className="space-y-0 rounded-xl border border-gray-800 overflow-hidden">
+          <div className="rounded-xl border border-gray-800 overflow-hidden">
             {orderedFields.filter(f => f.key !== "description").map(({ key, label }, i) => {
               const value = item.data[key];
               if (value === undefined || value === null || value === "") return null;
@@ -269,7 +275,7 @@ export default function ItemDetailPage() {
                   key={key}
                   className={`flex items-start gap-4 px-4 py-3 ${i % 2 === 0 ? "bg-gray-900/60" : "bg-gray-900/30"}`}
                 >
-                  <span className="text-gray-500 text-sm w-32 shrink-0 capitalize pt-0.5">
+                  <span className="text-gray-400 text-sm w-32 shrink-0 capitalize pt-0.5">
                     {label}
                   </span>
                   <div className="flex-1">
@@ -297,11 +303,11 @@ export default function ItemDetailPage() {
                 <Link
                   key={rel.id}
                   href={`/games/${slug}/items/${rel.id}`}
-                  className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-600 transition group"
+                  className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-indigo-600/60 hover:shadow-md hover:shadow-indigo-500/10 hover:scale-[1.03] transition-all duration-200 group"
                 >
                   <div className="relative h-20">
                     <SafeImage src={relImg} alt={relName} fill className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
-                      <div className="h-full bg-gray-800 flex items-center justify-center text-xl font-bold text-gray-600">
+                      <div className={`h-full bg-gradient-to-br ${cardGradient(relName)} flex items-center justify-center text-xl font-bold text-white/50`}>
                         {relName[0]?.toUpperCase()}
                       </div>
                     } />

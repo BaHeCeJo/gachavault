@@ -51,6 +51,26 @@ interface GameAttribute {
 
 type AttrMap = Record<string, Record<string, GameAttribute>>;
 
+const PALETTE = ["from-indigo-900 to-indigo-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
+function cardGradient(name: string) {
+  return PALETTE[name.charCodeAt(0) % PALETTE.length];
+}
+
+const RARITY_GLOW: Record<string, string> = {
+  SSR: "shadow-yellow-500/20",
+  SR: "shadow-purple-500/20",
+  UR: "shadow-yellow-500/20",
+  S: "shadow-yellow-500/20",
+  A: "shadow-purple-500/20",
+};
+const RARITY_BORDER: Record<string, string> = {
+  SSR: "border-yellow-700/50",
+  SR: "border-purple-700/50",
+  UR: "border-yellow-700/50",
+  S: "border-yellow-700/50",
+  A: "border-purple-700/50",
+};
+
 function buildAttrMap(attrs: GameAttribute[]): AttrMap {
   const map: AttrMap = {};
   for (const a of attrs) {
@@ -155,7 +175,7 @@ export default function GameDetailPage() {
   if (loading) {
     return (
       <main className="max-w-7xl mx-auto px-6 py-10">
-        <div className="h-48 rounded-xl bg-gray-800 animate-pulse mb-6" />
+        <div className="h-56 rounded-xl bg-gray-800 animate-pulse mb-6" />
         <div className="h-8 w-48 bg-gray-800 animate-pulse rounded" />
       </main>
     );
@@ -174,24 +194,26 @@ export default function GameDetailPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-10">
-      {/* Banner */}
-      <div className="relative w-full h-48 rounded-xl overflow-hidden mb-6">
+      {/* Banner with gradient overlay */}
+      <div className="relative w-full h-56 rounded-xl overflow-hidden mb-6">
         <SafeImage
           src={game.banner_url}
           alt={game.name}
           fill
           className="object-cover"
           fallback={
-            <div className="w-full h-48 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-6xl font-bold text-gray-200">
+            <div className={`w-full h-full bg-gradient-to-br ${cardGradient(game.name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
               {game.name[0]}
             </div>
           }
         />
+        {/* Bottom fade to background */}
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
       </div>
 
       <div className="flex items-center gap-4 mb-8">
         {game.logo_url && (
-          <SafeImage src={game.logo_url} alt="" width={56} height={56} className="w-14 h-14 rounded-lg object-cover" />
+          <SafeImage src={game.logo_url} alt="" width={56} height={56} className="w-14 h-14 rounded-lg object-cover border border-gray-700" />
         )}
         <div>
           <h1 className="text-3xl font-bold">{game.name}</h1>
@@ -208,8 +230,8 @@ export default function GameDetailPage() {
               onClick={() => setActiveSection(s.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition ${
                 activeSection === s.id
-                  ? "bg-white text-black"
-                  : "border border-gray-700 text-gray-300 hover:border-gray-500"
+                  ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30"
+                  : "border border-gray-700 text-gray-300 hover:border-indigo-500/60 hover:text-indigo-300"
               }`}
             >
               {s.name}
@@ -244,7 +266,7 @@ export default function GameDetailPage() {
             const elementAttr = lookupAttr(attrMap, "element", item.data?.element)
               ?? lookupAttr(attrMap, "attribute", item.data?.element);
             const rarity = item.data?.rarity;
-            // find any attr_type that matches a field key
+            const rarityStr = typeof rarity === "number" ? undefined : String(rarity ?? "");
             const badgeAttrs = Object.keys(item.data ?? {})
               .filter(k => k !== "element" && attrMap[k] && typeof item.data[k] === "string")
               .slice(0, 1)
@@ -255,7 +277,11 @@ export default function GameDetailPage() {
               <Link
                 key={item.id}
                 href={`/games/${slug}/items/${item.id}`}
-                className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-600 transition group"
+                className={`flex flex-col rounded-lg border bg-gray-900 overflow-hidden transition-all duration-200 group hover:scale-[1.03] hover:shadow-lg ${
+                  rarityStr && RARITY_BORDER[rarityStr]
+                    ? `${RARITY_BORDER[rarityStr]} hover:shadow-lg ${RARITY_GLOW[rarityStr]}`
+                    : "border-gray-800 hover:border-indigo-600/60 hover:shadow-indigo-500/10"
+                }`}
               >
                 <div className="relative h-28 w-full">
                   <SafeImage
@@ -264,18 +290,16 @@ export default function GameDetailPage() {
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-200"
                     fallback={
-                      <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-2xl font-bold text-gray-200">
+                      <div className={`h-full w-full bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-2xl font-bold text-white/50`}>
                         {name[0]?.toUpperCase()}
                       </div>
                     }
                   />
-                  {/* Element / primary attribute badge — top right */}
                   {(elementAttr || badgeAttrs[0]) && (
                     <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center backdrop-blur-sm">
                       <AttrBadge attr={(elementAttr ?? badgeAttrs[0])!} />
                     </div>
                   )}
-                  {/* Rarity — bottom left */}
                   {rarity !== undefined && (
                     <div className="absolute bottom-1 left-1.5">
                       <RarityBadge value={rarity} />
@@ -294,7 +318,7 @@ export default function GameDetailPage() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">Community Tier Lists</h2>
-            <Link href="/tierlists" className="text-sm text-gray-400 hover:text-white">
+            <Link href="/tierlists" className="text-sm text-gray-400 hover:text-indigo-300 transition">
               Create yours →
             </Link>
           </div>
@@ -303,7 +327,7 @@ export default function GameDetailPage() {
               <Link
                 key={tl.id}
                 href={`/tierlists/share/${tl.share_slug}`}
-                className="p-4 rounded-xl border border-gray-800 hover:border-gray-600 transition"
+                className="p-4 rounded-xl border border-gray-800 hover:border-indigo-600/50 hover:shadow-md hover:shadow-indigo-500/10 transition-all duration-200"
               >
                 <p className="font-medium truncate">{tl.title}</p>
                 <div className="flex items-center justify-between mt-1">
@@ -311,7 +335,7 @@ export default function GameDetailPage() {
                     Updated {new Date(tl.updated_at).toLocaleDateString()}
                   </p>
                   {tl.upvote_count > 0 && (
-                    <span className="text-xs text-gray-400">△ {tl.upvote_count}</span>
+                    <span className="text-xs text-indigo-400">△ {tl.upvote_count}</span>
                   )}
                 </div>
               </Link>
