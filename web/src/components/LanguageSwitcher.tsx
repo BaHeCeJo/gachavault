@@ -36,7 +36,7 @@ export default function LanguageSwitcher() {
           className={`text-xs px-1.5 py-0.5 rounded transition ${
             current === l.code
               ? "text-white font-semibold"
-              : "text-gray-500 hover:text-gray-300"
+              : "text-gray-400 hover:text-gray-200"
           }`}
           title={l.flag}
         >
