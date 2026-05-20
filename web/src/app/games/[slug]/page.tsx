@@ -182,7 +182,7 @@ export default function GameDetailPage() {
           fill
           className="object-cover"
           fallback={
-            <div className="w-full h-48 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-6xl font-bold text-gray-600">
+            <div className="w-full h-48 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-6xl font-bold text-gray-200">
               {game.name[0]}
             </div>
           }
@@ -264,7 +264,7 @@ export default function GameDetailPage() {
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-200"
                     fallback={
-                      <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-2xl font-bold text-gray-500">
+                      <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center text-2xl font-bold text-gray-200">
                         {name[0]?.toUpperCase()}
                       </div>
                     }
@@ -307,11 +307,11 @@ export default function GameDetailPage() {
               >
                 <p className="font-medium truncate">{tl.title}</p>
                 <div className="flex items-center justify-between mt-1">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-400">
                     Updated {new Date(tl.updated_at).toLocaleDateString()}
                   </p>
                   {tl.upvote_count > 0 && (
-                    <span className="text-xs text-gray-500">△ {tl.upvote_count}</span>
+                    <span className="text-xs text-gray-400">△ {tl.upvote_count}</span>
                   )}
                 </div>
               </Link>

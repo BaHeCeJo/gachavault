@@ -174,7 +174,7 @@ function SearchContent() {
 
       {!loading && results.length > 0 && (
         <>
-          <p className="text-sm text-gray-500 mb-4">{results.length} result{results.length !== 1 ? "s" : ""}</p>
+          <p className="text-sm text-gray-400 mb-4">{results.length} result{results.length !== 1 ? "s" : ""}</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {results.map((hit) => {
               const imageUrl = hit.data?.image_url as string | undefined;
@@ -199,7 +199,7 @@ function SearchContent() {
                   </div>
                   <div className="p-3">
                     <p className="font-medium text-sm group-hover:text-white truncate">{hit.name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-xs text-gray-400 mt-0.5">
                       {hit.game_slug}{hit.section_slug ? ` · ${hit.section_slug}` : ""}
                     </p>
                   </div>
@@ -211,7 +211,7 @@ function SearchContent() {
       )}
 
       {!searched && (
-        <p className="text-gray-500 text-sm">Enter a search term above to find items across all games.</p>
+        <p className="text-gray-400 text-sm">Enter a search term above to find items across all games.</p>
       )}
     </main>
   );

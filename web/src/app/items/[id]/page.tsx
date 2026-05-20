@@ -569,9 +569,9 @@ export default function ItemDetailPage() {
             <div key={c.id} className="rounded-xl border border-gray-800 bg-gray-900 p-4">
               <div className="flex items-center gap-3 mb-1">
                 <span className="font-mono text-sm text-green-400">{c.version}</span>
-                {c.patch && <span className="text-xs text-gray-500">{c.patch}</span>}
+                {c.patch && <span className="text-xs text-gray-400">{c.patch}</span>}
                 {c.change_date && (
-                  <span className="text-xs text-gray-500 ml-auto">
+                  <span className="text-xs text-gray-400 ml-auto">
                     {new Date(c.change_date).toLocaleDateString()}
                   </span>
                 )}

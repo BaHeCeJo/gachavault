@@ -130,7 +130,7 @@ export default function CollectionsPage() {
       </div>
 
       {!selectedGame && (
-        <p className="text-gray-500 text-sm">Select a game above to view your collection for it.</p>
+        <p className="text-gray-400 text-sm">Select a game above to view your collection for it.</p>
       )}
 
       {loadingEntries && (
@@ -216,7 +216,7 @@ export default function CollectionsPage() {
                     </Link>
                     <div className="p-2 space-y-1">
                       <p className="text-xs font-medium truncate">{name}</p>
-                      <div className="flex gap-2 text-xs text-gray-500">
+                      <div className="flex gap-2 text-xs text-gray-400">
                         {entry.level && <span>Lv.{entry.level}</span>}
                         {entry.constellation_level != null && <span>C{entry.constellation_level}</span>}
                       </div>

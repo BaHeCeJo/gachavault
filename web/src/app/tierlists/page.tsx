@@ -131,12 +131,12 @@ export default function TierListsPage() {
             >
               <Link href={`/tierlists/${tl.id}`} className="flex-1 min-w-0">
                 <p className="font-medium truncate">{tl.title}</p>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <p className="text-sm text-gray-400 mt-0.5">
                   {gameMap.get(tl.game_id) ?? tl.game_id} ·{" "}
                   {tl.is_public ? (
                     <span className="text-green-400">Public</span>
                   ) : (
-                    <span className="text-gray-500">Private</span>
+                    <span className="text-gray-400">Private</span>
                   )}{" "}
                   · {new Date(tl.updated_at).toLocaleDateString()}
                 </p>
