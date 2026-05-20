@@ -5,6 +5,7 @@ use reqwest::Client;
 use serde_json::json;
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::cors::{Any, CorsLayer};
+use axum::http::header::{AUTHORIZATION, CONTENT_TYPE, ACCEPT};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[derive(Clone)]
@@ -49,7 +50,7 @@ async fn main() {
     let cors = CorsLayer::new()
         .allow_origin(Any)
         .allow_methods(Any)
-        .allow_headers(Any);
+        .allow_headers([AUTHORIZATION, CONTENT_TYPE, ACCEPT]);
 
     let app = Router::new()
         .route("/health", axum::routing::get(health_check))
