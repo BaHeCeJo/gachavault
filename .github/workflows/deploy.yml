@@ -7,7 +7,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: bahacejo
 
 jobs:
   build-and-push:
@@ -43,6 +42,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set image owner (lowercase)
+        run: echo "IMAGE_PREFIX=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
