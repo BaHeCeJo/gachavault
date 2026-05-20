@@ -67,6 +67,8 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/gachavault-${{ matrix.service.name }}:${{ github.sha }}
           labels: |
             org.opencontainers.image.source=https://github.com/BaHeCeJo/gachavault
+          build-args: |
+            ${{ matrix.service.name == 'web' && format('NEXT_PUBLIC_API_URL={0}', secrets.BACKEND_URL) || '' }}
           cache-from: type=gha,scope=${{ matrix.service.name }}
           cache-to: type=gha,scope=${{ matrix.service.name }},mode=max
 
