@@ -92,14 +92,15 @@ jobs:
           script: |
             set -e
             export PATH=$PATH:/usr/bin:/usr/local/bin
+            export GHCR_OWNER=$(echo "$GHCR_ACTOR" | tr '[:upper:]' '[:lower:]')
             cd /opt/gachavault
 
             git pull origin main
 
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_ACTOR" --password-stdin
 
-            docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            GHCR_OWNER=$GHCR_OWNER docker compose -f docker-compose.prod.yml pull
+            GHCR_OWNER=$GHCR_OWNER docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
             # Clean up old images
             docker image prune -f
