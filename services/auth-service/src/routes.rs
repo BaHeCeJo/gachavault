@@ -172,8 +172,8 @@ pub async fn login(
         .as_deref()
         .ok_or_else(|| AppError::Unauthorized("This account uses social login".into()))?;
 
-    let valid = crypto::verify_password(&body.password, password_hash)
-        .map_err(AppError::Internal)?;
+    let valid =
+        crypto::verify_password(&body.password, password_hash).map_err(AppError::Internal)?;
 
     if !valid {
         return Err(AppError::Unauthorized("Invalid email or password".into()));
