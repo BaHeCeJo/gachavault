@@ -132,7 +132,7 @@ async fn handle_upload(
     let public_base =
         std::env::var("PUBLIC_BASE_URL").unwrap_or_else(|_| "http://localhost:3006".to_string());
 
-    while let Some(field) = multipart
+    if let Some(field) = multipart
         .next_field()
         .await
         .map_err(|e| AppError::BadRequest(format!("Multipart error: {}", e)))?
