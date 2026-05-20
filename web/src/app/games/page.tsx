@@ -4,8 +4,16 @@ import Link from "next/link";
 import { useGames } from "@/hooks/queries";
 import { SafeImage } from "@/components/SafeImage";
 
+interface Game {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  banner_url: string | null;
+}
+
 export default function GamesPage() {
-  const { data: games = [], isLoading, isError } = useGames();
+  const { data: games = [] as Game[], isLoading, isError } = useGames();
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-10">
@@ -27,7 +35,7 @@ export default function GamesPage() {
 
       {!isLoading && games.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {games.map((game) => (
+          {games.map((game: Game) => (
             <Link
               key={game.id}
               href={`/games/${game.slug}`}

@@ -7,12 +7,19 @@ import { useTranslations } from "next-intl";
 import { useGames } from "@/hooks/queries";
 import { SafeImage } from "@/components/SafeImage";
 
+interface Game {
+  id: string;
+  slug: string;
+  name: string;
+  banner_url: string | null;
+}
+
 export default function HomePage() {
   const router = useRouter();
   const t = useTranslations("home");
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
-  const { data: allGames = [] } = useGames();
+  const { data: allGames = [] as Game[] } = useGames();
   const games = allGames.slice(0, 8);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -70,7 +77,7 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {games.map((g) => (
+            {games.map((g: Game) => (
               <Link
                 key={g.id}
                 href={`/games/${g.slug}`}
