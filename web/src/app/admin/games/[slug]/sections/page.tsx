@@ -9,6 +9,8 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface Section { id: string; slug: string; name: string; order: number; tabs?: string[] }
 
+function toSlug(s: string) { return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+
 const ALL_TABS = [
   { key: "skills",    label: "Skills / Abilities" },
   { key: "builds",    label: "Builds" },
@@ -32,6 +34,7 @@ export default function AdminGameSectionsPage() {
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<ModalState>(null);
   const [form, setForm] = useState({ slug: "", name: "", order: "0", tabs: DEFAULT_TABS });
+  const [slugLocked, setSlugLocked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Section | null>(null);
@@ -52,6 +55,7 @@ export default function AdminGameSectionsPage() {
 
   const openCreate = () => {
     setForm({ slug: "", name: "", order: "0", tabs: DEFAULT_TABS });
+    setSlugLocked(false);
     setError("");
     setModal({ mode: "create" });
   };
@@ -214,29 +218,39 @@ export default function AdminGameSectionsPage() {
               {modal.mode === "create" ? "Add Section" : "Edit Section"}
             </h2>
 
-            {modal.mode === "create" && (
-              <div>
-                <label className="text-xs text-gray-400 block mb-1">Slug</label>
-                <input
-                  type="text"
-                  value={form.slug}
-                  onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-                  placeholder="e.g. characters"
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
-                />
-              </div>
-            )}
-
             <div>
               <label className="text-xs text-gray-400 block mb-1">Name</label>
               <input
                 type="text"
                 value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                onChange={(e) => {
+                  const name = e.target.value;
+                  setForm((f) => ({ ...f, name, slug: slugLocked ? f.slug : toSlug(name) }));
+                }}
                 placeholder="e.g. Characters"
                 className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
               />
             </div>
+
+            {modal.mode === "create" && (
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-gray-400">Slug</label>
+                  {slugLocked ? (
+                    <button type="button" onClick={() => { setSlugLocked(false); setForm((f) => ({ ...f, slug: toSlug(f.name) })); }} className="text-xs text-amber-400 hover:text-amber-300">auto</button>
+                  ) : (
+                    <span className="text-xs text-gray-600">auto-generated</span>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  value={form.slug}
+                  onChange={(e) => { setSlugLocked(true); setForm((f) => ({ ...f, slug: e.target.value })); }}
+                  placeholder="e.g. characters"
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white font-mono"
+                />
+              </div>
+            )}
 
             <div>
               <label className="text-xs text-gray-400 block mb-1">Display order</label>
