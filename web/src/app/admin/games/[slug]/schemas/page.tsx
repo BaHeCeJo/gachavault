@@ -282,9 +282,9 @@ export default function AdminGameSchemasPage() {
                 className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-xs font-mono focus:outline-none focus:border-white resize-none"
               />
               <p className="text-gray-600 text-xs mt-1">
-                Each field: <code>{"{ key, label, type }"}</code> — types:{" "}
-                <code>text</code>, <code>number</code>, <code>url</code>, <code>textarea</code>, <code>select</code>, <code>attribute</code>, <code>date</code>,{" "}
-                <code>itemref</code> (add <code>item_section: &quot;slug&quot;</code> to filter by section)
+                Types: <code>text</code>, <code>number</code>, <code>url</code>, <code>textarea</code>, <code>select</code>, <code>attribute</code>, <code>date</code>,{" "}
+                <code>itemref</code>, <code>itemlist</code> (add <code>item_section</code> + optional <code>qty_range: true</code>),{" "}
+                <code>resistances</code> (add <code>attribute_type</code> to set which attributes define the rows)
               </p>
             </div>
 

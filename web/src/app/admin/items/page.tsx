@@ -15,10 +15,11 @@ interface Section { id: string; slug: string; name: string }
 interface SchemaField {
   key: string;
   label: string;
-  type: "text" | "number" | "url" | "textarea" | "select" | "attribute" | "date" | "itemref";
+  type: "text" | "number" | "url" | "textarea" | "select" | "attribute" | "date" | "itemref" | "itemlist" | "resistances";
   options?: string[];
   attribute_type?: string;
   item_section?: string;
+  qty_range?: boolean;
 }
 interface Schema { id: string; name: string; fields: SchemaField[] }
 interface GameAttribute {
@@ -162,6 +163,15 @@ export default function AdminItemsPage() {
       return v == null ? "" : String(v);
     } catch {
       return "";
+    }
+  };
+
+  const getRawFieldValue = (key: string): unknown => {
+    try {
+      const parsed = JSON.parse(form.dataJson) as Record<string, unknown>;
+      return parsed[key] ?? null;
+    } catch {
+      return null;
     }
   };
 
@@ -543,6 +553,130 @@ export default function AdminItemsPage() {
                             <p className="text-xs text-yellow-500 mt-1">
                               No items in &quot;{field.item_section}&quot; yet.
                             </p>
+                          )}
+                        </div>
+                      );
+                    }
+                    if (field.type === "itemlist") {
+                      type ItemEntry = { id: string; name: string; qty?: number; qty_min?: number; qty_max?: number };
+                      const raw = getRawFieldValue(field.key);
+                      const entries: ItemEntry[] = Array.isArray(raw) ? (raw as ItemEntry[]) : [];
+                      const refSection = field.item_section
+                        ? sections.find((s) => s.slug === field.item_section)
+                        : null;
+                      const refItems = refSection
+                        ? items.filter((i) => i.section_id === refSection.id)
+                        : items;
+                      const updateEntries = (next: ItemEntry[]) => setFieldValue(field.key, next);
+                      const addEntry = () => updateEntries([
+                        ...entries,
+                        field.qty_range ? { id: "", name: "", qty_min: 1, qty_max: 1 } : { id: "", name: "", qty: 1 },
+                      ]);
+                      const removeEntry = (idx: number) => updateEntries(entries.filter((_, i) => i !== idx));
+                      const patchEntry = (idx: number, patch: Partial<ItemEntry>) =>
+                        updateEntries(entries.map((e, i) => (i === idx ? { ...e, ...patch } : e)));
+                      const onSelectItem = (idx: number, itemId: string) => {
+                        const found = refItems.find((i) => i.id === itemId);
+                        patchEntry(idx, { id: itemId, name: found ? ((found.data?.name as string) ?? found.slug) : "" });
+                      };
+                      return (
+                        <div key={field.key}>
+                          <label className="text-xs text-gray-400 block mb-1">{field.label}</label>
+                          <div className="space-y-2">
+                            {entries.map((entry, idx) => (
+                              <div key={idx} className="flex items-center gap-2">
+                                <select
+                                  value={entry.id}
+                                  onChange={(e) => onSelectItem(idx, e.target.value)}
+                                  className="flex-1 px-2 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                                >
+                                  <option value="">— select —</option>
+                                  {refItems.map((i) => (
+                                    <option key={i.id} value={i.id}>{(i.data?.name as string) ?? i.slug}</option>
+                                  ))}
+                                </select>
+                                {field.qty_range ? (
+                                  <>
+                                    <input type="number" min={0} value={entry.qty_min ?? 1}
+                                      onChange={(e) => patchEntry(idx, { qty_min: Number(e.target.value) })}
+                                      className="w-14 px-2 py-1.5 rounded bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white text-center" />
+                                    <span className="text-gray-500 text-xs shrink-0">–</span>
+                                    <input type="number" min={0} value={entry.qty_max ?? 1}
+                                      onChange={(e) => patchEntry(idx, { qty_max: Number(e.target.value) })}
+                                      className="w-14 px-2 py-1.5 rounded bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white text-center" />
+                                  </>
+                                ) : (
+                                  <input type="number" min={1} value={entry.qty ?? 1}
+                                    onChange={(e) => patchEntry(idx, { qty: Number(e.target.value) })}
+                                    className="w-16 px-2 py-1.5 rounded bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white text-center" />
+                                )}
+                                <button type="button" onClick={() => removeEntry(idx)}
+                                  className="text-red-400 hover:text-red-300 text-sm px-1 shrink-0">✕</button>
+                              </div>
+                            ))}
+                            <button type="button" onClick={addEntry}
+                              className="text-xs text-gray-400 hover:text-white border border-dashed border-gray-700 hover:border-gray-500 rounded-lg px-3 py-1.5 w-full transition">
+                              + Add {field.label}
+                            </button>
+                          </div>
+                          {field.item_section && refItems.length === 0 && (
+                            <p className="text-xs text-yellow-500 mt-1">No items in &quot;{field.item_section}&quot; yet.</p>
+                          )}
+                        </div>
+                      );
+                    }
+                    if (field.type === "resistances") {
+                      const raw = getRawFieldValue(field.key);
+                      const resistances: Record<string, number | "immune"> =
+                        (raw && typeof raw === "object" && !Array.isArray(raw))
+                          ? (raw as Record<string, number | "immune">)
+                          : {};
+                      const attrType = field.attribute_type ?? "element";
+                      const attrs = attrsByType.get(attrType) ?? [];
+                      const updateRes = (key: string, val: number | "immune") =>
+                        setFieldValue(field.key, { ...resistances, [key]: val });
+                      return (
+                        <div key={field.key}>
+                          <label className="text-xs text-gray-400 block mb-1">{field.label}</label>
+                          {attrs.length === 0 ? (
+                            <p className="text-xs text-yellow-500">No &quot;{attrType}&quot; attributes defined yet.</p>
+                          ) : (
+                            <div className="space-y-1.5 rounded-lg border border-gray-700 p-3">
+                              {attrs.map((attr) => {
+                                const val = resistances[attr.key];
+                                const isImmune = val === "immune";
+                                return (
+                                  <div key={attr.key} className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1.5 w-28 shrink-0">
+                                      {attr.icon_url
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        ? <img src={attr.icon_url} alt={attr.name} className="w-4 h-4 object-contain" />
+                                        : attr.color && <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: attr.color }} />
+                                      }
+                                      <span className="text-xs text-gray-300">{attr.name}</span>
+                                    </div>
+                                    <input
+                                      type="number"
+                                      value={isImmune ? "" : (typeof val === "number" ? val : 10)}
+                                      onChange={(e) => updateRes(attr.key, e.target.value === "" ? 0 : Number(e.target.value))}
+                                      disabled={isImmune}
+                                      placeholder="10"
+                                      className="w-20 px-2 py-1 rounded bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white text-center disabled:opacity-40"
+                                    />
+                                    <span className="text-xs text-gray-500">%</span>
+                                    <label className="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer select-none">
+                                      <input
+                                        type="checkbox"
+                                        checked={isImmune}
+                                        onChange={(e) => updateRes(attr.key, e.target.checked ? "immune" : 10)}
+                                        className="rounded"
+                                      />
+                                      Immune
+                                    </label>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           )}
                         </div>
                       );

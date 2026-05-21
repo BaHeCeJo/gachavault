@@ -24,6 +24,7 @@ interface SchemaField {
   type: string;
   attribute_type?: string;
   item_section?: string;
+  qty_range?: boolean;
 }
 
 interface GameAttribute {
@@ -99,16 +100,77 @@ function RarityStars({ value }: { value: unknown }) {
 }
 
 function FieldValue({
-  fieldKey, value, attrMap, fieldType, resolvedRef, gameSlug,
+  fieldKey, value, attrMap, fieldType, fieldAttrType, resolvedRef, gameSlug,
 }: {
   fieldKey: string;
   value: unknown;
   attrMap: AttrMap;
   fieldType?: string;
+  fieldAttrType?: string;
   resolvedRef?: { id: string; name: string };
   gameSlug?: string;
 }) {
   if (value === null || value === undefined || value === "") return <span className="text-gray-600">—</span>;
+
+  if (fieldType === "itemlist") {
+    type ItemEntry = { id: string; name: string; qty?: number; qty_min?: number; qty_max?: number };
+    const entries: ItemEntry[] = Array.isArray(value) ? (value as ItemEntry[]) : [];
+    if (entries.length === 0) return <span className="text-gray-600">—</span>;
+    return (
+      <div className="flex flex-col gap-1">
+        {entries.map((entry, i) => (
+          <div key={i} className="flex items-center gap-2 text-sm">
+            {entry.id
+              ? <a href={`/items/${entry.id}`} className="text-amber-400 hover:text-amber-300 hover:underline transition">{entry.name || entry.id}</a>
+              : <span className="text-gray-300">{entry.name}</span>
+            }
+            <span className="text-gray-500 text-xs">
+              {entry.qty_min !== undefined
+                ? `×${entry.qty_min}–${entry.qty_max}`
+                : entry.qty !== undefined ? `×${entry.qty}` : ""}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (fieldType === "resistances" && fieldAttrType) {
+    const res = (value && typeof value === "object" && !Array.isArray(value))
+      ? (value as Record<string, number | string>)
+      : {};
+    const attrs = Object.values(attrMap[fieldAttrType] ?? {});
+    if (attrs.length === 0) return <span className="text-gray-600">—</span>;
+    return (
+      <div className="flex flex-wrap gap-1.5">
+        {attrs.map((attr) => {
+          const val = res[attr.key];
+          if (val === undefined) return null;
+          const isImmune = val === "immune";
+          const num = typeof val === "number" ? val : 0;
+          const color = isImmune ? "#888888"
+            : num >= 100 ? "#ef4444"
+            : num > 25 ? "#f97316"
+            : num > 0 ? (attr.color ?? "#aaaaaa")
+            : num < 0 ? "#22c55e"
+            : "#6b7280";
+          return (
+            <span key={attr.key}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium"
+              style={{ backgroundColor: `${color}20`, border: `1px solid ${color}50`, color }}
+            >
+              {attr.icon_url
+                // eslint-disable-next-line @next/next/no-img-element
+                ? <img src={attr.icon_url} alt={attr.name} className="w-3.5 h-3.5 object-contain" />
+                : <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: attr.color ?? color }} />
+              }
+              {isImmune ? `${attr.name}: Immune` : `${attr.name}: ${num > 0 ? "+" : ""}${num}%`}
+            </span>
+          );
+        })}
+      </div>
+    );
+  }
 
   if (fieldType === "date" && typeof value === "string" && value) {
     const d = new Date(value);
@@ -248,8 +310,8 @@ export default function ItemDetailPage() {
   const iconUrl = item.data?.icon_url as string | undefined;
 
   // Build ordered list of fields to show
-  const orderedFields: { key: string; label: string; type?: string }[] = fields.length > 0
-    ? fields.filter(f => !HIDDEN_IN_DETAILS.has(f.key)).map(f => ({ key: f.key, label: f.label, type: f.type }))
+  const orderedFields: { key: string; label: string; type?: string; attribute_type?: string }[] = fields.length > 0
+    ? fields.filter(f => !HIDDEN_IN_DETAILS.has(f.key)).map(f => ({ key: f.key, label: f.label, type: f.type, attribute_type: f.attribute_type }))
     : Object.keys(item.data).filter(k => !HIDDEN_IN_DETAILS.has(k)).map(k => ({ key: k, label: k.replace(/_/g, " ") }));
 
   const rarityStr = typeof item.data?.rarity === "number" ? undefined : String(item.data?.rarity ?? "");
@@ -321,7 +383,7 @@ export default function ItemDetailPage() {
 
           {/* Stats table */}
           <div className="rounded-xl border border-gray-800 overflow-hidden">
-            {orderedFields.filter(f => f.key !== "description").map(({ key, label, type }, i) => {
+            {orderedFields.filter(f => f.key !== "description").map(({ key, label, type, attribute_type }, i) => {
               const value = item.data[key];
               if (value === undefined || value === null || value === "") return null;
               return (
@@ -338,6 +400,7 @@ export default function ItemDetailPage() {
                       value={value}
                       attrMap={attrMap}
                       fieldType={type}
+                      fieldAttrType={attribute_type}
                       resolvedRef={type === "itemref" ? resolvedRefs.get(String(value)) : undefined}
                       gameSlug={slug}
                     />
