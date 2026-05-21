@@ -469,8 +469,9 @@ export default function AdminItemsPage() {
                   {/* Schema fields (excluding image_url) */}
                   {nonImageFields.map((field) => {
                     const currentVal = getFieldValue(field.key);
-                    if (field.type === "attribute" && field.attribute_type) {
-                      const opts = attrsByType.get(field.attribute_type) ?? [];
+                    if (field.type === "attribute") {
+                      const attrType = field.attribute_type ?? field.key;
+                      const opts = attrsByType.get(attrType) ?? [];
                       const selected = opts.find((a) => a.key === currentVal);
                       return (
                         <div key={field.key}>
@@ -488,7 +489,7 @@ export default function AdminItemsPage() {
                               onChange={(e) => setFieldValue(field.key, e.target.value)}
                               className="flex-1 px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
                             >
-                              <option value="">— select {field.attribute_type} —</option>
+                              <option value="">— select {field.attribute_type ?? field.key} —</option>
                               {opts.map((a) => (
                                 <option key={a.key} value={a.key}>{a.name}</option>
                               ))}
@@ -496,7 +497,7 @@ export default function AdminItemsPage() {
                           </div>
                           {opts.length === 0 && (
                             <p className="text-xs text-yellow-500 mt-1">
-                              No &quot;{field.attribute_type}&quot; attributes defined for this game yet.
+                              No &quot;{field.attribute_type ?? field.key}&quot; attributes defined for this game yet.
                             </p>
                           )}
                         </div>
