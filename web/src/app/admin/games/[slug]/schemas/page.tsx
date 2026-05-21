@@ -285,7 +285,7 @@ export default function AdminGameSchemasPage() {
                 Types: <code>text</code>, <code>number</code>, <code>url</code>, <code>textarea</code>, <code>select</code>, <code>attribute</code>, <code>date</code>,{" "}
                 <code>itemref</code>, <code>itemlist</code> (add <code>item_section</code> + optional <code>qty_range: true</code>),{" "}
                 <code>resistances</code> (add <code>attribute_type</code> to set which attributes define the rows),{" "}
-                <code>backref</code> (add <code>source_section</code> + <code>source_field</code> — automatically finds items in that section whose field references this item)
+                <code>backref</code> (single source: add <code>source_section</code> + <code>source_field</code>; multi-source: add <code>sources: [&#123;"source_section":"…","source_field":"…"&#125;]</code> — automatically finds items in those sections whose field references this item)
               </p>
             </div>
 

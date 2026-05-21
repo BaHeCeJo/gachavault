@@ -27,6 +27,7 @@ interface SchemaField {
   qty_range?: boolean;
   source_section?: string;
   source_field?: string;
+  sources?: { source_section: string; source_field: string }[];
 }
 
 interface GameAttribute {
@@ -292,10 +293,17 @@ export default function ItemDetailPage() {
         }
 
         // Resolve backref fields (computed back-references from other items)
-        const backrefFields = schemaFields.filter((f) => f.type === "backref" && f.source_section && f.source_field);
+        const getFieldSources = (f: SchemaField) =>
+          f.sources?.length
+            ? f.sources
+            : f.source_section && f.source_field
+              ? [{ source_section: f.source_section, source_field: f.source_field }]
+              : [];
+        const backrefFields = schemaFields.filter((f) => f.type === "backref" && getFieldSources(f).length > 0);
         if (backrefFields.length > 0) {
           const sections = sectionsRes.data.data ?? [];
-          const uniqueSlugs = Array.from(new Set(backrefFields.map((f) => f.source_section!)));
+          const allSources = backrefFields.flatMap(getFieldSources);
+          const uniqueSlugs = Array.from(new Set(allSources.map((s) => s.source_section)));
           Promise.all(
             uniqueSlugs.map(async (sectionSlug) => {
               const section = sections.find((s: { id: string; slug: string }) => s.slug === sectionSlug);
@@ -307,18 +315,23 @@ export default function ItemDetailPage() {
             const sectionItems = new Map<string, Item[]>(results);
             const newBackRefs = new Map<string, { id: string; name: string }[]>();
             for (const field of backrefFields) {
-              const sourceItems = sectionItems.get(field.source_section!) ?? [];
-              const matching = sourceItems.filter((sourceItem) => {
-                const fieldValue = sourceItem.data[field.source_field!];
-                if (Array.isArray(fieldValue)) {
-                  return (fieldValue as { id?: string }[]).some((entry) => entry.id === it.id);
+              const seen = new Set<string>();
+              const matching: { id: string; name: string }[] = [];
+              for (const src of getFieldSources(field)) {
+                const sourceItems = sectionItems.get(src.source_section) ?? [];
+                for (const sourceItem of sourceItems) {
+                  if (seen.has(sourceItem.id)) continue;
+                  const fieldValue = sourceItem.data[src.source_field];
+                  const matches = Array.isArray(fieldValue)
+                    ? (fieldValue as { id?: string }[]).some((entry) => entry.id === it.id)
+                    : fieldValue === it.id;
+                  if (matches) {
+                    seen.add(sourceItem.id);
+                    matching.push({ id: sourceItem.id, name: (sourceItem.data?.name as string) ?? sourceItem.slug });
+                  }
                 }
-                return fieldValue === it.id;
-              });
-              newBackRefs.set(field.key, matching.map((m) => ({
-                id: m.id,
-                name: (m.data?.name as string) ?? m.slug,
-              })));
+              }
+              newBackRefs.set(field.key, matching);
             }
             setBackRefs(newBackRefs);
           }).catch(() => {});

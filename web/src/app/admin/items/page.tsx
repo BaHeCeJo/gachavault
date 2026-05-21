@@ -22,6 +22,7 @@ interface SchemaField {
   qty_range?: boolean;
   source_section?: string;
   source_field?: string;
+  sources?: { source_section: string; source_field: string }[];
 }
 interface Schema { id: string; name: string; fields: SchemaField[] }
 interface GameAttribute {
