@@ -15,9 +15,10 @@ interface Section { id: string; slug: string; name: string }
 interface SchemaField {
   key: string;
   label: string;
-  type: "text" | "number" | "url" | "textarea" | "select" | "attribute";
+  type: "text" | "number" | "url" | "textarea" | "select" | "attribute" | "date" | "itemref";
   options?: string[];
   attribute_type?: string;
+  item_section?: string;
 }
 interface Schema { id: string; name: string; fields: SchemaField[] }
 interface GameAttribute {
@@ -498,6 +499,49 @@ export default function AdminItemsPage() {
                           {opts.length === 0 && (
                             <p className="text-xs text-yellow-500 mt-1">
                               No &quot;{field.attribute_type ?? field.key}&quot; attributes defined for this game yet.
+                            </p>
+                          )}
+                        </div>
+                      );
+                    }
+                    if (field.type === "date") {
+                      return (
+                        <div key={field.key}>
+                          <label className="text-xs text-gray-400 block mb-1">{field.label}</label>
+                          <input
+                            type="date"
+                            value={currentVal}
+                            onChange={(e) => setFieldValue(field.key, e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                          />
+                        </div>
+                      );
+                    }
+                    if (field.type === "itemref") {
+                      const refSection = field.item_section
+                        ? sections.find((s) => s.slug === field.item_section)
+                        : null;
+                      const refItems = refSection
+                        ? items.filter((i) => i.section_id === refSection.id)
+                        : items;
+                      return (
+                        <div key={field.key}>
+                          <label className="text-xs text-gray-400 block mb-1">{field.label}</label>
+                          <select
+                            value={currentVal}
+                            onChange={(e) => setFieldValue(field.key, e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                          >
+                            <option value="">— none —</option>
+                            {refItems.map((i) => (
+                              <option key={i.id} value={i.id}>
+                                {(i.data?.name as string) ?? i.slug}
+                              </option>
+                            ))}
+                          </select>
+                          {field.item_section && refItems.length === 0 && (
+                            <p className="text-xs text-yellow-500 mt-1">
+                              No items in &quot;{field.item_section}&quot; yet.
                             </p>
                           )}
                         </div>

@@ -22,6 +22,8 @@ interface SchemaField {
   key: string;
   label: string;
   type: string;
+  attribute_type?: string;
+  item_section?: string;
 }
 
 interface GameAttribute {
@@ -96,8 +98,35 @@ function RarityStars({ value }: { value: unknown }) {
   );
 }
 
-function FieldValue({ fieldKey, value, attrMap }: { fieldKey: string; value: unknown; attrMap: AttrMap }) {
+function FieldValue({
+  fieldKey, value, attrMap, fieldType, resolvedRef, gameSlug,
+}: {
+  fieldKey: string;
+  value: unknown;
+  attrMap: AttrMap;
+  fieldType?: string;
+  resolvedRef?: { id: string; name: string };
+  gameSlug?: string;
+}) {
   if (value === null || value === undefined || value === "") return <span className="text-gray-600">—</span>;
+
+  if (fieldType === "date" && typeof value === "string" && value) {
+    const d = new Date(value);
+    const formatted = isNaN(d.getTime()) ? value : d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+    return <span className="text-gray-200 text-sm">{formatted}</span>;
+  }
+
+  if (fieldType === "itemref") {
+    if (resolvedRef) {
+      const href = gameSlug ? `/games/${gameSlug}/items/${resolvedRef.id}` : `/items/${resolvedRef.id}`;
+      return (
+        <a href={href} className="text-amber-400 hover:text-amber-300 hover:underline text-sm transition">
+          {resolvedRef.name}
+        </a>
+      );
+    }
+    return <span className="text-gray-500 text-sm text-xs italic">Loading…</span>;
+  }
 
   // Check if this field has an attribute match
   const attr = lookupAttr(attrMap, fieldKey, value);
@@ -130,6 +159,7 @@ export default function ItemDetailPage() {
   const [gameName, setGameName] = useState(slug);
   const [sectionName, setSectionName] = useState("");
   const [relatedItems, setRelatedItems] = useState<Item[]>([]);
+  const [resolvedRefs, setResolvedRefs] = useState<Map<string, { id: string; name: string }>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -152,7 +182,31 @@ export default function ItemDetailPage() {
 
         const schemas = schemasRes.data.data ?? [];
         const schema = schemas.find((s: { id: string; fields: SchemaField[] }) => s.id === it.type_schema_id);
-        if (schema?.fields) setFields(schema.fields);
+        const schemaFields: SchemaField[] = schema?.fields ?? [];
+        if (schemaFields.length > 0) setFields(schemaFields);
+
+        // Resolve itemref fields
+        const itemrefIds = schemaFields
+          .filter((f) => f.type === "itemref")
+          .map((f) => it.data[f.key])
+          .filter((v): v is string => typeof v === "string" && v.length > 0);
+        if (itemrefIds.length > 0) {
+          Promise.all(itemrefIds.map((refId) => itemsApi.get(refId).catch(() => null)))
+            .then((results) => {
+              const map = new Map<string, { id: string; name: string }>();
+              results.forEach((r, i) => {
+                if (r?.data?.data) {
+                  const refItem = r.data.data;
+                  map.set(itemrefIds[i], {
+                    id: refItem.id,
+                    name: (refItem.data?.name as string) ?? refItem.slug,
+                  });
+                }
+              });
+              setResolvedRefs(map);
+            })
+            .catch(() => {});
+        }
 
         const sections = sectionsRes.data.data ?? [];
         const section = sections.find((s: { id: string; name: string }) => s.id === it.section_id);
@@ -194,8 +248,8 @@ export default function ItemDetailPage() {
   const iconUrl = item.data?.icon_url as string | undefined;
 
   // Build ordered list of fields to show
-  const orderedFields: { key: string; label: string }[] = fields.length > 0
-    ? fields.filter(f => !HIDDEN_IN_DETAILS.has(f.key)).map(f => ({ key: f.key, label: f.label }))
+  const orderedFields: { key: string; label: string; type?: string }[] = fields.length > 0
+    ? fields.filter(f => !HIDDEN_IN_DETAILS.has(f.key)).map(f => ({ key: f.key, label: f.label, type: f.type }))
     : Object.keys(item.data).filter(k => !HIDDEN_IN_DETAILS.has(k)).map(k => ({ key: k, label: k.replace(/_/g, " ") }));
 
   const rarityStr = typeof item.data?.rarity === "number" ? undefined : String(item.data?.rarity ?? "");
@@ -267,7 +321,7 @@ export default function ItemDetailPage() {
 
           {/* Stats table */}
           <div className="rounded-xl border border-gray-800 overflow-hidden">
-            {orderedFields.filter(f => f.key !== "description").map(({ key, label }, i) => {
+            {orderedFields.filter(f => f.key !== "description").map(({ key, label, type }, i) => {
               const value = item.data[key];
               if (value === undefined || value === null || value === "") return null;
               return (
@@ -279,7 +333,14 @@ export default function ItemDetailPage() {
                     {label}
                   </span>
                   <div className="flex-1">
-                    <FieldValue fieldKey={key} value={value} attrMap={attrMap} />
+                    <FieldValue
+                      fieldKey={key}
+                      value={value}
+                      attrMap={attrMap}
+                      fieldType={type}
+                      resolvedRef={type === "itemref" ? resolvedRefs.get(String(value)) : undefined}
+                      gameSlug={slug}
+                    />
                   </div>
                 </div>
               );
