@@ -25,6 +25,8 @@ interface SchemaField {
   attribute_type?: string;
   item_section?: string;
   qty_range?: boolean;
+  source_section?: string;
+  source_field?: string;
 }
 
 interface GameAttribute {
@@ -100,7 +102,7 @@ function RarityStars({ value }: { value: unknown }) {
 }
 
 function FieldValue({
-  fieldKey, value, attrMap, fieldType, fieldAttrType, resolvedRef, gameSlug,
+  fieldKey, value, attrMap, fieldType, fieldAttrType, resolvedRef, backRefItems, gameSlug,
 }: {
   fieldKey: string;
   value: unknown;
@@ -108,8 +110,26 @@ function FieldValue({
   fieldType?: string;
   fieldAttrType?: string;
   resolvedRef?: { id: string; name: string };
+  backRefItems?: { id: string; name: string }[];
   gameSlug?: string;
 }) {
+  if (fieldType === "backref") {
+    if (!backRefItems || backRefItems.length === 0) return <span className="text-gray-600">—</span>;
+    return (
+      <div className="flex flex-col gap-1">
+        {backRefItems.map((ref) => (
+          <a
+            key={ref.id}
+            href={gameSlug ? `/games/${gameSlug}/items/${ref.id}` : `/items/${ref.id}`}
+            className="text-amber-400 hover:text-amber-300 hover:underline text-sm transition"
+          >
+            {ref.name}
+          </a>
+        ))}
+      </div>
+    );
+  }
+
   if (value === null || value === undefined || value === "") return <span className="text-gray-600">—</span>;
 
   if (fieldType === "itemlist") {
@@ -222,6 +242,7 @@ export default function ItemDetailPage() {
   const [sectionName, setSectionName] = useState("");
   const [relatedItems, setRelatedItems] = useState<Item[]>([]);
   const [resolvedRefs, setResolvedRefs] = useState<Map<string, { id: string; name: string }>>(new Map());
+  const [backRefs, setBackRefs] = useState<Map<string, { id: string; name: string }[]>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -270,6 +291,39 @@ export default function ItemDetailPage() {
             .catch(() => {});
         }
 
+        // Resolve backref fields (computed back-references from other items)
+        const backrefFields = schemaFields.filter((f) => f.type === "backref" && f.source_section && f.source_field);
+        if (backrefFields.length > 0) {
+          const sections = sectionsRes.data.data ?? [];
+          const uniqueSlugs = Array.from(new Set(backrefFields.map((f) => f.source_section!)));
+          Promise.all(
+            uniqueSlugs.map(async (sectionSlug) => {
+              const section = sections.find((s: { id: string; slug: string }) => s.slug === sectionSlug);
+              if (!section) return [sectionSlug, []] as [string, Item[]];
+              const res = await itemsApi.list({ game_id: it.game_id, section_id: section.id, limit: 500, offset: 0 });
+              return [sectionSlug, res.data.data ?? []] as [string, Item[]];
+            })
+          ).then((results) => {
+            const sectionItems = new Map<string, Item[]>(results);
+            const newBackRefs = new Map<string, { id: string; name: string }[]>();
+            for (const field of backrefFields) {
+              const sourceItems = sectionItems.get(field.source_section!) ?? [];
+              const matching = sourceItems.filter((sourceItem) => {
+                const fieldValue = sourceItem.data[field.source_field!];
+                if (Array.isArray(fieldValue)) {
+                  return (fieldValue as { id?: string }[]).some((entry) => entry.id === it.id);
+                }
+                return fieldValue === it.id;
+              });
+              newBackRefs.set(field.key, matching.map((m) => ({
+                id: m.id,
+                name: (m.data?.name as string) ?? m.slug,
+              })));
+            }
+            setBackRefs(newBackRefs);
+          }).catch(() => {});
+        }
+
         const sections = sectionsRes.data.data ?? [];
         const section = sections.find((s: { id: string; name: string }) => s.id === it.section_id);
         if (section) setSectionName(section.name);
@@ -310,8 +364,8 @@ export default function ItemDetailPage() {
   const iconUrl = item.data?.icon_url as string | undefined;
 
   // Build ordered list of fields to show
-  const orderedFields: { key: string; label: string; type?: string; attribute_type?: string }[] = fields.length > 0
-    ? fields.filter(f => !HIDDEN_IN_DETAILS.has(f.key)).map(f => ({ key: f.key, label: f.label, type: f.type, attribute_type: f.attribute_type }))
+  const orderedFields: { key: string; label: string; type?: string; attribute_type?: string; source_section?: string; source_field?: string }[] = fields.length > 0
+    ? fields.filter(f => !HIDDEN_IN_DETAILS.has(f.key)).map(f => ({ key: f.key, label: f.label, type: f.type, attribute_type: f.attribute_type, source_section: f.source_section, source_field: f.source_field }))
     : Object.keys(item.data).filter(k => !HIDDEN_IN_DETAILS.has(k)).map(k => ({ key: k, label: k.replace(/_/g, " ") }));
 
   const rarityStr = typeof item.data?.rarity === "number" ? undefined : String(item.data?.rarity ?? "");
@@ -385,7 +439,8 @@ export default function ItemDetailPage() {
           <div className="rounded-xl border border-gray-800 overflow-hidden">
             {orderedFields.filter(f => f.key !== "description").map(({ key, label, type, attribute_type }, i) => {
               const value = item.data[key];
-              if (value === undefined || value === null || value === "") return null;
+              const isBackref = type === "backref";
+              if (!isBackref && (value === undefined || value === null || value === "")) return null;
               return (
                 <div
                   key={key}
@@ -402,6 +457,7 @@ export default function ItemDetailPage() {
                       fieldType={type}
                       fieldAttrType={attribute_type}
                       resolvedRef={type === "itemref" ? resolvedRefs.get(String(value)) : undefined}
+                      backRefItems={isBackref ? (backRefs.get(key) ?? []) : undefined}
                       gameSlug={slug}
                     />
                   </div>

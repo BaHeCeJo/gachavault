@@ -15,11 +15,13 @@ interface Section { id: string; slug: string; name: string }
 interface SchemaField {
   key: string;
   label: string;
-  type: "text" | "number" | "url" | "textarea" | "select" | "attribute" | "date" | "itemref" | "itemlist" | "resistances";
+  type: "text" | "number" | "url" | "textarea" | "select" | "attribute" | "date" | "itemref" | "itemlist" | "resistances" | "backref";
   options?: string[];
   attribute_type?: string;
   item_section?: string;
   qty_range?: boolean;
+  source_section?: string;
+  source_field?: string;
 }
 interface Schema { id: string; name: string; fields: SchemaField[] }
 interface GameAttribute {
@@ -711,6 +713,16 @@ export default function AdminItemsPage() {
                           {field.item_section && refItems.length === 0 && (
                             <p className="text-xs text-yellow-500 mt-1">No items in &quot;{field.item_section}&quot; yet.</p>
                           )}
+                        </div>
+                      );
+                    }
+                    if (field.type === "backref") {
+                      return (
+                        <div key={field.key}>
+                          <label className="text-xs text-gray-400 block mb-1">{field.label}</label>
+                          <p className="text-xs text-gray-600 italic px-3 py-2 rounded-lg bg-gray-800/50 border border-gray-800">
+                            Computed automatically from other items
+                          </p>
                         </div>
                       );
                     }
