@@ -37,6 +37,7 @@ export default function AdminAttributesPage() {
   const [attributes, setAttributes] = useState<GameAttribute[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<ModalState>(null);
+  const [keyLocked, setKeyLocked] = useState(false);
   const [form, setForm] = useState({
     attr_type: "",
     key: "",
@@ -74,6 +75,7 @@ export default function AdminAttributesPage() {
       color: "#888888",
       sort_order: "0",
     });
+    setKeyLocked(false);
     setError("");
     setModal({ mode: "create", prefillType });
   };
@@ -314,18 +316,19 @@ export default function AdminAttributesPage() {
             {/* key — editable only on create */}
             {modal.mode === "create" && (
               <div>
-                <label className="text-xs text-gray-400 block mb-1">
-                  Key <span className="text-gray-600">(unique identifier, e.g. the_hunt)</span>
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-gray-400">Key <span className="text-gray-600">(e.g. the_hunt)</span></label>
+                  {keyLocked
+                    ? <button type="button" onClick={() => { setKeyLocked(false); setForm((f) => ({ ...f, key: slugify(f.name) })); }} className="text-xs text-amber-400 hover:text-amber-300">auto</button>
+                    : <span className="text-xs text-gray-600">auto-generated</span>
+                  }
+                </div>
                 <input
                   type="text"
                   value={form.key}
-                  onChange={(e) => setForm((f) => ({ ...f, key: slugify(e.target.value) }))}
-                  onFocus={() => {
-                    if (!form.key && form.name) setForm((f) => ({ ...f, key: slugify(f.name) }));
-                  }}
+                  onChange={(e) => { setKeyLocked(true); setForm((f) => ({ ...f, key: slugify(e.target.value) })); }}
                   placeholder="e.g. the_hunt"
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white font-mono"
                 />
               </div>
             )}
@@ -341,7 +344,7 @@ export default function AdminAttributesPage() {
                   setForm((f) => ({
                     ...f,
                     name,
-                    key: modal.mode === "create" && !f.key ? slugify(name) : f.key,
+                    key: modal.mode === "create" && !keyLocked ? slugify(name) : f.key,
                   }));
                 }}
                 placeholder="e.g. The Hunt"
