@@ -65,6 +65,11 @@ export default function AdminItemsPage() {
   const [formError, setFormError] = useState("");
   const [showRawJson, setShowRawJson] = useState(false);
 
+  // Inline attribute creation
+  const [inlineAttrField, setInlineAttrField] = useState<string | null>(null);
+  const [inlineAttrName, setInlineAttrName] = useState("");
+  const [inlineAttrSaving, setInlineAttrSaving] = useState(false);
+
   useEffect(() => {
     if (!isLoading && !user) router.replace("/auth/login?redirect=/admin/items");
   }, [isLoading, user, router]);
@@ -172,6 +177,43 @@ export default function AdminItemsPage() {
       return parsed[key] ?? null;
     } catch {
       return null;
+    }
+  };
+
+  function slugifyAttrKey(s: string) {
+    return s.toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 32);
+  }
+
+  const saveInlineAttr = async (fieldKey: string, attrType: string) => {
+    const name = inlineAttrName.trim();
+    if (!name || !selectedGame) return;
+    const key = slugifyAttrKey(name);
+    if (!key) return;
+    setInlineAttrSaving(true);
+    try {
+      const res = await adminApi.games.createAttribute(selectedGame.slug, {
+        attr_type: attrType,
+        key,
+        name,
+        color: null,
+        icon_url: null,
+        sort_order: 999,
+      });
+      const created: GameAttribute = res.data.data;
+      setAttrList((prev) => [...prev, created]);
+      setAttrsByType((prev) => {
+        const next = new Map(prev);
+        const group = [...(next.get(attrType) ?? []), created];
+        next.set(attrType, group);
+        return next;
+      });
+      setFieldValue(fieldKey, created.key);
+      setInlineAttrField(null);
+      setInlineAttrName("");
+    } catch {
+      // silently fail — user can retry
+    } finally {
+      setInlineAttrSaving(false);
     }
   };
 
@@ -484,6 +526,7 @@ export default function AdminItemsPage() {
                       const attrType = field.attribute_type ?? field.key;
                       const opts = attrsByType.get(attrType) ?? [];
                       const selected = opts.find((a) => a.key === currentVal);
+                      const isCreating = inlineAttrField === field.key;
                       return (
                         <div key={field.key}>
                           <label className="text-xs text-gray-400 block mb-1">{field.label}</label>
@@ -500,16 +543,62 @@ export default function AdminItemsPage() {
                               onChange={(e) => setFieldValue(field.key, e.target.value)}
                               className="flex-1 px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
                             >
-                              <option value="">— select {field.attribute_type ?? field.key} —</option>
+                              <option value="">— select {field.label.toLowerCase()} —</option>
                               {opts.map((a) => (
                                 <option key={a.key} value={a.key}>{a.name}</option>
                               ))}
                             </select>
+                            <button
+                              type="button"
+                              title="Create new"
+                              onClick={() => {
+                                setInlineAttrField(isCreating ? null : field.key);
+                                setInlineAttrName("");
+                              }}
+                              className={`shrink-0 w-7 h-7 rounded-lg border text-sm font-bold transition flex items-center justify-center ${
+                                isCreating
+                                  ? "border-white text-white"
+                                  : "border-gray-700 text-gray-400 hover:border-gray-400 hover:text-white"
+                              }`}
+                            >
+                              +
+                            </button>
                           </div>
-                          {opts.length === 0 && (
-                            <p className="text-xs text-yellow-500 mt-1">
-                              No &quot;{field.attribute_type ?? field.key}&quot; attributes defined for this game yet.
-                            </p>
+                          {isCreating && (
+                            <div className="mt-2 flex items-center gap-2">
+                              <input
+                                autoFocus
+                                type="text"
+                                value={inlineAttrName}
+                                onChange={(e) => setInlineAttrName(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") saveInlineAttr(field.key, attrType);
+                                  if (e.key === "Escape") { setInlineAttrField(null); setInlineAttrName(""); }
+                                }}
+                                placeholder={`New ${field.label.toLowerCase()} name…`}
+                                className="flex-1 px-3 py-1.5 rounded-lg bg-gray-800 border border-amber-500/60 text-sm focus:outline-none focus:border-amber-400"
+                              />
+                              {inlineAttrName.trim() && (
+                                <span className="text-xs text-gray-500 shrink-0 font-mono">
+                                  key: {slugifyAttrKey(inlineAttrName)}
+                                </span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => saveInlineAttr(field.key, attrType)}
+                                disabled={inlineAttrSaving || !inlineAttrName.trim()}
+                                className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-500 text-black text-xs font-semibold disabled:opacity-40 hover:bg-amber-400 transition"
+                              >
+                                {inlineAttrSaving ? "…" : "Create"}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { setInlineAttrField(null); setInlineAttrName(""); }}
+                                className="shrink-0 text-gray-500 hover:text-white text-xs transition"
+                              >
+                                Cancel
+                              </button>
+                            </div>
                           )}
                         </div>
                       );
