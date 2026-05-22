@@ -170,12 +170,21 @@ fn extract_cookie_value(headers: &axum::http::HeaderMap, name: &str) -> Option<S
     })
 }
 
-async fn is_jti_revoked(client: &Arc<redis::Client>, jti: &str) -> bool {
+async fn is_token_revoked(client: &Arc<redis::Client>, jti: &str, iat: usize) -> bool {
     let Ok(mut conn) = client.get_multiplexed_async_connection().await else {
         return false;
     };
-    let result: redis::RedisResult<bool> = conn.exists(format!("revoked:{}", jti)).await;
-    result.unwrap_or(false)
+    let revoked: redis::RedisResult<bool> = conn.exists(format!("revoked:{}", jti)).await;
+    if revoked.unwrap_or(false) {
+        return true;
+    }
+    let cutoff: redis::RedisResult<Option<i64>> = conn.get("session_invalidation_cutoff").await;
+    if let Ok(Some(cutoff_ts)) = cutoff {
+        if (iat as i64) < cutoff_ts {
+            return true;
+        }
+    }
+    false
 }
 
 async fn proxy_request(
@@ -212,7 +221,7 @@ async fn proxy_request(
             if let Some(token) = auth_str.strip_prefix("Bearer ") {
                 if let Ok(claims) = Claims::decode(token, &state.jwt_secret) {
                     if let Some(redis_client) = &state.redis_client {
-                        if is_jti_revoked(redis_client, &claims.jti).await {
+                        if is_token_revoked(redis_client, &claims.jti, claims.iat).await {
                             return Err(StatusCode::UNAUTHORIZED);
                         }
                     }

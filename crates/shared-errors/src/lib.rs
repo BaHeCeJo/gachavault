@@ -26,6 +26,9 @@ pub enum AppError {
     #[error("Unprocessable entity: {0}")]
     UnprocessableEntity(String),
 
+    #[error("Too many requests: {0}")]
+    TooManyRequests(String),
+
     #[error("Internal server error")]
     Internal(#[from] anyhow::Error),
 
@@ -46,6 +49,9 @@ impl IntoResponse for AppError {
                 "UNPROCESSABLE_ENTITY",
                 msg.clone(),
             ),
+            AppError::TooManyRequests(msg) => {
+                (StatusCode::TOO_MANY_REQUESTS, "TOO_MANY_REQUESTS", msg.clone())
+            }
             AppError::Internal(e) => {
                 tracing::error!("Internal error: {:?}", e);
                 (

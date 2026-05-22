@@ -5,6 +5,7 @@ use axum::{
     Json,
 };
 use chrono::Utc;
+use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
 use shared_auth::{AuthUser, Claims};
 use shared_errors::{AppError, AppResult};
@@ -108,9 +109,9 @@ pub async fn register(
             "Username must be 3–50 characters".into(),
         ));
     }
-    if body.password.len() < 8 {
+    if body.password.len() < 12 {
         return Err(AppError::BadRequest(
-            "Password must be at least 8 characters".into(),
+            "Password must be at least 12 characters".into(),
         ));
     }
 
@@ -165,7 +166,11 @@ pub async fn login(
     State(pool): State<PgPool>,
     Json(body): Json<LoginRequest>,
 ) -> AppResult<impl IntoResponse> {
-    let user = db::find_user_by_email(&pool, &body.email.to_lowercase())
+    let email = body.email.to_lowercase();
+
+    check_login_throttle(&email).await?;
+
+    let user = db::find_user_by_email(&pool, &email)
         .await
         .map_err(AppError::Database)?;
 
@@ -181,13 +186,19 @@ pub async fn login(
     let valid =
         crypto::verify_password(&body.password, hash_to_check).map_err(AppError::Internal)?;
 
-    let user = user
-        .filter(|_| valid)
-        .ok_or_else(|| AppError::Unauthorized("Invalid email or password".into()))?;
+    let user = match user.filter(|_| valid) {
+        Some(u) => u,
+        None => {
+            record_login_failure(&email).await;
+            return Err(AppError::Unauthorized("Invalid email or password".into()));
+        }
+    };
 
     if user.password_hash.is_none() {
         return Err(AppError::Unauthorized("This account uses social login".into()));
     }
+
+    clear_login_failures(&email).await;
 
     let tokens = issue_tokens(&pool, &user.id, &user.email, &user.username).await?;
     let mut headers = HeaderMap::new();
@@ -294,9 +305,9 @@ pub async fn reset_password(
     State(pool): State<PgPool>,
     Json(body): Json<ResetPasswordRequest>,
 ) -> AppResult<Json<ApiResponse<()>>> {
-    if body.password.len() < 8 {
+    if body.password.len() < 12 {
         return Err(AppError::BadRequest(
-            "Password must be at least 8 characters".into(),
+            "Password must be at least 12 characters".into(),
         ));
     }
 
@@ -492,9 +503,9 @@ pub async fn change_password(
     auth: AuthUser,
     Json(body): Json<ChangePasswordRequest>,
 ) -> AppResult<impl IntoResponse> {
-    if body.new_password.len() < 8 {
+    if body.new_password.len() < 12 {
         return Err(AppError::BadRequest(
-            "New password must be at least 8 characters".into(),
+            "New password must be at least 12 characters".into(),
         ));
     }
 
@@ -788,6 +799,31 @@ pub async fn get_admin_stats(
     }))))
 }
 
+pub async fn revoke_all_sessions(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+) -> AppResult<Json<ApiResponse<()>>> {
+    if auth.role() != "superadmin" {
+        return Err(AppError::Forbidden("Superadmin access required".into()));
+    }
+
+    sqlx::query("DELETE FROM auth.refresh_tokens")
+        .execute(&pool)
+        .await
+        .map_err(AppError::Database)?;
+
+    if let Some(mut conn) = get_redis_conn().await {
+        let cutoff = Utc::now().timestamp();
+        let _: redis::RedisResult<()> = redis::cmd("SET")
+            .arg("session_invalidation_cutoff")
+            .arg(cutoff)
+            .query_async(&mut conn)
+            .await;
+    }
+
+    Ok(Json(ApiResponse::success(())))
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 fn is_valid_email(email: &str) -> bool {
@@ -851,6 +887,45 @@ fn extract_cookie(headers: &HeaderMap, name: &str) -> Option<String> {
         let (k, v) = part.trim().split_once('=')?;
         (k.trim() == name).then(|| v.trim().to_string())
     })
+}
+
+async fn get_redis_conn() -> Option<redis::aio::MultiplexedConnection> {
+    let url = std::env::var("REDIS_URL").ok()?;
+    let client = redis::Client::open(url).ok()?;
+    client.get_multiplexed_async_connection().await.ok()
+}
+
+async fn check_login_throttle(email: &str) -> AppResult<()> {
+    let Some(mut conn) = get_redis_conn().await else {
+        return Ok(()); // fail open if Redis unavailable
+    };
+    let key = format!("login_fail:{}", email);
+    let count: i64 = conn.get(&key).await.unwrap_or(0);
+    if count >= 10 {
+        return Err(AppError::TooManyRequests(
+            "Too many failed login attempts. Try again in 15 minutes.".into(),
+        ));
+    }
+    Ok(())
+}
+
+async fn record_login_failure(email: &str) {
+    let Some(mut conn) = get_redis_conn().await else {
+        return;
+    };
+    let key = format!("login_fail:{}", email);
+    let count: i64 = conn.incr(&key, 1i64).await.unwrap_or(1);
+    if count == 1 {
+        let _: redis::RedisResult<()> = conn.expire(&key, 900i64).await;
+    }
+}
+
+async fn clear_login_failures(email: &str) {
+    let Some(mut conn) = get_redis_conn().await else {
+        return;
+    };
+    let key = format!("login_fail:{}", email);
+    let _: redis::RedisResult<()> = conn.del(&key).await;
 }
 
 async fn revoke_jti(jti: &str, exp: usize) {

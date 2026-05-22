@@ -75,6 +75,10 @@ async fn main() {
             get(routes::get_user_by_username),
         )
         .route("/api/v1/admin/stats", get(routes::get_admin_stats))
+        .route(
+            "/api/v1/admin/sessions",
+            axum::routing::delete(routes::revoke_all_sessions),
+        )
         .with_state(pool);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3001".to_string());

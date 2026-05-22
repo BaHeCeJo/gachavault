@@ -11,12 +11,24 @@ use sqlx::{PgPool, Row};
 use uuid::Uuid;
 
 const MAX_FILE_SIZE: usize = 20 * 1024 * 1024; // 20 MB
-const ALLOWED_IMAGE_TYPES: &[(&str, &str)] = &[
-    ("image/jpeg", "jpg"),
-    ("image/png", "png"),
-    ("image/webp", "webp"),
-    ("image/gif", "gif"),
-];
+
+/// Detect image type from magic bytes — ignores the client-declared Content-Type.
+/// Returns (mime_type, extension) or None if the bytes don't match a supported image.
+fn detect_image_type(data: &[u8]) -> Option<(&'static str, &'static str)> {
+    if data.starts_with(&[0xFF, 0xD8, 0xFF]) {
+        return Some(("image/jpeg", "jpg"));
+    }
+    if data.starts_with(&[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]) {
+        return Some(("image/png", "png"));
+    }
+    if data.starts_with(b"GIF87a") || data.starts_with(b"GIF89a") {
+        return Some(("image/gif", "gif"));
+    }
+    if data.len() >= 12 && data.starts_with(b"RIFF") && &data[8..12] == b"WEBP" {
+        return Some(("image/webp", "webp"));
+    }
+    None
+}
 
 #[derive(Debug, Serialize, sqlx::FromRow)]
 pub struct DbAsset {
@@ -142,25 +154,6 @@ async fn handle_upload(
     {
         let original_filename = field.file_name().unwrap_or("upload").to_string();
 
-        let declared_mime = field
-            .content_type()
-            .unwrap_or("application/octet-stream")
-            .to_string();
-
-        let ext = ALLOWED_IMAGE_TYPES
-            .iter()
-            .find(|(mime, _)| *mime == declared_mime.as_str())
-            .map(|(_, ext)| *ext)
-            .ok_or_else(|| {
-                AppError::BadRequest(format!(
-                    "Invalid file type '{}'. Allowed: jpeg, png, webp, gif",
-                    declared_mime
-                ))
-            })?;
-
-        // Use the MIME-derived extension as the canonical type for storage
-        let mime_type = declared_mime;
-
         let data = field
             .bytes()
             .await
@@ -173,7 +166,15 @@ async fn handle_upload(
             )));
         }
 
-        let new_filename = format!("{}.{}", Uuid::new_v4(), ext); // ext is always MIME-derived
+        // Detect type from magic bytes — the client-declared Content-Type is not trusted.
+        let (mime_type, ext) =
+            detect_image_type(&data).ok_or_else(|| {
+                AppError::BadRequest(
+                    "File content is not a recognised image (jpeg, png, webp, gif)".into(),
+                )
+            })?;
+
+        let new_filename = format!("{}.{}", Uuid::new_v4(), ext);
         let storage_path = format!("{}/{}", upload_dir, new_filename);
         let public_url = format!("{}/uploads/{}", public_base, new_filename);
 
