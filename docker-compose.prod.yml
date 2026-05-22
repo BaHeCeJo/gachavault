@@ -45,7 +45,7 @@ services:
     image: ghcr.io/${GHCR_OWNER}/gachavault-api-gateway:latest
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health > /dev/null 2>&1 || exit 1"]
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/3000' 2>/dev/null || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
