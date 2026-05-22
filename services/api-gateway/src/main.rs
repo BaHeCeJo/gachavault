@@ -3,7 +3,7 @@ use axum::{
     extract::State,
     http::{
         header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
-        HeaderValue, StatusCode,
+        HeaderValue, Method, StatusCode,
     },
     response::Response,
     routing::any,
@@ -14,7 +14,7 @@ use reqwest::Client;
 use serde_json::json;
 use shared_auth::Claims;
 use std::{net::SocketAddr, sync::Arc};
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::CorsLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[derive(Clone)]
@@ -74,7 +74,14 @@ async fn main() {
 
     let cors = CorsLayer::new()
         .allow_origin(allowed_origins)
-        .allow_methods(Any)
+        .allow_methods([
+            Method::GET,
+            Method::POST,
+            Method::PUT,
+            Method::PATCH,
+            Method::DELETE,
+            Method::OPTIONS,
+        ])
         .allow_headers([AUTHORIZATION, CONTENT_TYPE, ACCEPT])
         .allow_credentials(true);
 
