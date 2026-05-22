@@ -370,10 +370,22 @@ pub async fn list_skills(
 
 pub async fn create_skill(
     State(state): State<AppState>,
-    _auth: AuthUser,
+    auth: AuthUser,
     Path(id): Path<Uuid>,
     Json(body): Json<CreateSkillRequest>,
 ) -> AppResult<Json<ApiResponse<DbSkill>>> {
+    if !auth.can_edit() {
+        let item = db::find_item_by_id(&state.pool, id)
+            .await
+            .map_err(AppError::Database)?
+            .ok_or_else(|| AppError::NotFound("Item not found".into()))?;
+        if !can_edit_game(&state.pool, auth.id(), item.game_id, Some(item.section_id)).await {
+            return Err(AppError::Forbidden(
+                "Editor, game_editor, or section_editor role required".into(),
+            ));
+        }
+    }
+
     if body.name.is_empty() {
         return Err(AppError::BadRequest("name is required".into()));
     }
@@ -410,6 +422,18 @@ pub async fn create_build(
     Path(id): Path<Uuid>,
     Json(body): Json<CreateBuildRequest>,
 ) -> AppResult<Json<ApiResponse<DbBuild>>> {
+    if !auth.can_edit() {
+        let item = db::find_item_by_id(&state.pool, id)
+            .await
+            .map_err(AppError::Database)?
+            .ok_or_else(|| AppError::NotFound("Item not found".into()))?;
+        if !can_edit_game(&state.pool, auth.id(), item.game_id, Some(item.section_id)).await {
+            return Err(AppError::Forbidden(
+                "Editor, game_editor, or section_editor role required".into(),
+            ));
+        }
+    }
+
     if body.title.is_empty() {
         return Err(AppError::BadRequest("title is required".into()));
     }
@@ -433,10 +457,22 @@ pub async fn list_changelog(
 
 pub async fn create_changelog(
     State(state): State<AppState>,
-    _auth: AuthUser,
+    auth: AuthUser,
     Path(id): Path<Uuid>,
     Json(body): Json<CreateChangelogRequest>,
 ) -> AppResult<Json<ApiResponse<DbChangelog>>> {
+    if !auth.can_edit() {
+        let item = db::find_item_by_id(&state.pool, id)
+            .await
+            .map_err(AppError::Database)?
+            .ok_or_else(|| AppError::NotFound("Item not found".into()))?;
+        if !can_edit_game(&state.pool, auth.id(), item.game_id, Some(item.section_id)).await {
+            return Err(AppError::Forbidden(
+                "Editor, game_editor, or section_editor role required".into(),
+            ));
+        }
+    }
+
     if body.version.is_empty() || body.changes.is_empty() {
         return Err(AppError::BadRequest(
             "version and changes are required".into(),
@@ -485,7 +521,7 @@ async fn lookup_slugs(
     let row = sqlx::query(
         "SELECT g.slug AS game_slug, s.slug AS section_slug \
          FROM games.games g \
-         JOIN games.game_sections s ON s.game_id = g.id \
+         JOIN games.sections s ON s.game_id = g.id \
          WHERE g.id = $1 AND s.id = $2",
     )
     .bind(game_id)
@@ -529,14 +565,27 @@ async fn index_item(state: &AppState, item: &DbItem) {
     });
 
     let url = format!("{}/api/v1/search/index", state.search_url);
-    if let Err(e) = state.http_client.post(&url).json(&payload).send().await {
+    if let Err(e) = state
+        .http_client
+        .post(&url)
+        .header("x-internal-secret", &state.internal_secret)
+        .json(&payload)
+        .send()
+        .await
+    {
         tracing::warn!("Failed to index item {} in search: {}", item.id, e);
     }
 }
 
 async fn remove_from_index(state: &AppState, item_id: Uuid) {
     let url = format!("{}/api/v1/search/index/{}", state.search_url, item_id);
-    if let Err(e) = state.http_client.delete(&url).send().await {
+    if let Err(e) = state
+        .http_client
+        .delete(&url)
+        .header("x-internal-secret", &state.internal_secret)
+        .send()
+        .await
+    {
         tracing::warn!("Failed to remove item {} from search index: {}", item_id, e);
     }
 }

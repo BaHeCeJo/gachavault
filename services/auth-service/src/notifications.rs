@@ -1,5 +1,9 @@
 use reqwest::Client;
 
+fn internal_secret() -> String {
+    std::env::var("INTERNAL_SECRET").unwrap_or_default()
+}
+
 pub async fn send_verification(
     notifications_url: String,
     to_email: String,
@@ -9,6 +13,7 @@ pub async fn send_verification(
     let client = Client::new();
     let result = client
         .post(format!("{}/internal/send-verification", notifications_url))
+        .header("x-internal-secret", internal_secret())
         .json(&serde_json::json!({
             "to_email": to_email,
             "username": username,
@@ -34,6 +39,7 @@ pub async fn send_password_reset(
             "{}/internal/send-password-reset",
             notifications_url
         ))
+        .header("x-internal-secret", internal_secret())
         .json(&serde_json::json!({
             "to_email": to_email,
             "username": username,

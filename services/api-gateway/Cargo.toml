@@ -23,3 +23,5 @@ dotenvy = { workspace = true }
 anyhow = { workspace = true }
 reqwest = { workspace = true }
 uuid = { workspace = true }
+jsonwebtoken = { workspace = true }
+redis = { workspace = true }

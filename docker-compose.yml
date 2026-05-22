@@ -53,6 +53,7 @@ services:
       PORT: 3000
       RUST_LOG: info
       JWT_SECRET: ${JWT_SECRET}
+      REDIS_URL: redis://redis:6379
       AUTH_SERVICE_URL: http://auth-service:3001
       GAMES_SERVICE_URL: http://games-service:3002
       ITEMS_SERVICE_URL: http://items-service:3003
@@ -62,13 +63,22 @@ services:
       SEARCH_SERVICE_URL: http://search-service:3007
       NOTIFICATIONS_SERVICE_URL: http://notifications-service:3008
     depends_on:
-      - auth-service
-      - games-service
-      - items-service
-      - collections-service
-      - tierlists-service
-      - media-service
-      - search-service
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      games-service:
+        condition: service_started
+      items-service:
+        condition: service_started
+      collections-service:
+        condition: service_started
+      tierlists-service:
+        condition: service_started
+      media-service:
+        condition: service_started
+      search-service:
+        condition: service_started
 
   auth-service:
     build:
@@ -190,6 +200,7 @@ services:
       MEILISEARCH_URL: http://meilisearch:7700
       MEILISEARCH_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
       JWT_SECRET: ${JWT_SECRET}
+      INTERNAL_SECRET: ${INTERNAL_SECRET}
     depends_on:
       - meilisearch
 

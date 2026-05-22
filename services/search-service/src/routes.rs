@@ -45,13 +45,24 @@ pub async fn search(
         "offset": page * per_page,
     });
 
-    // Build filter expression for Meilisearch
+    // Build filter expression for Meilisearch.
+    // Slugs are whitelisted to alphanumeric + hyphens so filter-injection is impossible.
+    fn is_valid_slug(s: &str) -> bool {
+        !s.is_empty() && s.len() <= 100 && s.chars().all(|c| c.is_ascii_alphanumeric() || c == '-')
+    }
+
     let mut filters: Vec<String> = Vec::new();
     if let Some(game) = &params.game {
-        filters.push(format!("game_slug = \"{}\"", game.replace('"', "")));
+        if !is_valid_slug(game) {
+            return Err(AppError::BadRequest("Invalid game filter".into()));
+        }
+        filters.push(format!("game_slug = \"{}\"", game));
     }
     if let Some(section) = &params.section {
-        filters.push(format!("section_slug = \"{}\"", section.replace('"', "")));
+        if !is_valid_slug(section) {
+            return Err(AppError::BadRequest("Invalid section filter".into()));
+        }
+        filters.push(format!("section_slug = \"{}\"", section));
     }
     if !filters.is_empty() {
         body["filter"] = serde_json::Value::String(filters.join(" AND "));

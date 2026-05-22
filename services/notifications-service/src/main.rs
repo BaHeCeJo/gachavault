@@ -1,4 +1,7 @@
 use axum::{
+    extract::{Request, State},
+    middleware::{self, Next},
+    response::{IntoResponse, Response},
     routing::{get, post},
     Router,
 };
@@ -45,8 +48,7 @@ async fn main() {
         internal_secret: std::env::var("INTERNAL_SECRET").expect("INTERNAL_SECRET required"),
     };
 
-    let app = Router::new()
-        .route("/health", get(health_check))
+    let internal_routes = Router::new()
         .route(
             "/internal/send-verification",
             post(routes::send_verification),
@@ -56,6 +58,14 @@ async fn main() {
             post(routes::send_password_reset),
         )
         .route("/internal/send-welcome", post(routes::send_welcome))
+        .route_layer(middleware::from_fn_with_state(
+            state.clone(),
+            verify_internal_secret,
+        ));
+
+    let app = Router::new()
+        .route("/health", get(health_check))
+        .merge(internal_routes)
         .with_state(state);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3008".to_string());
@@ -64,6 +74,22 @@ async fn main() {
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
+}
+
+async fn verify_internal_secret(
+    State(state): State<AppState>,
+    request: Request,
+    next: Next,
+) -> Response {
+    let secret = request
+        .headers()
+        .get("x-internal-secret")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    if secret != state.internal_secret {
+        return axum::http::StatusCode::UNAUTHORIZED.into_response();
+    }
+    next.run(request).await
 }
 
 async fn health_check() -> axum::Json<serde_json::Value> {

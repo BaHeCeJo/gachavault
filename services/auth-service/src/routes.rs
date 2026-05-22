@@ -68,6 +68,9 @@ pub struct ChangePasswordRequest {
 #[derive(Debug, Deserialize)]
 pub struct DeleteAccountRequest {
     pub password: Option<String>,
+    /// For OAuth accounts (no password), the user must supply their own email
+    /// address as an explicit confirmation that they intend to delete the account.
+    pub confirm_email: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -97,8 +100,11 @@ pub async fn register(
     Json(body): Json<RegisterRequest>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
     // Basic validation
-    if body.email.is_empty() || !body.email.contains('@') {
-        return Err(AppError::BadRequest("Invalid email address".into()));
+    {
+        use validator::ValidateEmail;
+        if !body.email.validate_email() {
+            return Err(AppError::BadRequest("Invalid email address".into()));
+        }
     }
     if body.username.len() < 3 || body.username.len() > 50 {
         return Err(AppError::BadRequest(
@@ -210,6 +216,7 @@ pub async fn logout(
     db::delete_refresh_tokens_for_user(&pool, auth.id())
         .await
         .map_err(AppError::Database)?;
+    revoke_jti(&auth.0.jti, auth.0.exp).await;
     Ok(Json(ApiResponse::success(())))
 }
 
@@ -380,6 +387,10 @@ pub async fn set_user_role(
     if !auth.is_admin() {
         return Err(AppError::Forbidden("Admin access required".into()));
     }
+    // Prevent self-promotion
+    if auth.id() == user_id {
+        return Err(AppError::Forbidden("Cannot change your own role".into()));
+    }
     let valid_roles = ["user", "editor", "admin", "superadmin"];
     if !valid_roles.contains(&body.role.as_str()) {
         return Err(AppError::BadRequest(format!(
@@ -387,6 +398,12 @@ pub async fn set_user_role(
             body.role,
             valid_roles.join(", ")
         )));
+    }
+    // Only superadmins may grant the superadmin role
+    if body.role == "superadmin" && auth.role() != "superadmin" {
+        return Err(AppError::Forbidden(
+            "Only superadmins may grant the superadmin role".into(),
+        ));
     }
 
     // Remove any existing global role
@@ -486,6 +503,7 @@ pub async fn change_password(
     db::delete_refresh_tokens_for_user(&pool, auth.id())
         .await
         .map_err(AppError::Database)?;
+    revoke_jti(&auth.0.jti, auth.0.exp).await;
 
     Ok(Json(ApiResponse::success(())))
 }
@@ -506,11 +524,20 @@ pub async fn delete_account(
         if !valid {
             return Err(AppError::Unauthorized("Password is incorrect".into()));
         }
+    } else {
+        // OAuth account — require the user to confirm their email address
+        let confirmed = body.confirm_email.as_deref().unwrap_or("");
+        if confirmed != user.email {
+            return Err(AppError::BadRequest(
+                "Please confirm your email address to delete your account".into(),
+            ));
+        }
     }
 
     db::delete_refresh_tokens_for_user(&pool, auth.id())
         .await
         .map_err(AppError::Database)?;
+    revoke_jti(&auth.0.jti, auth.0.exp).await;
 
     sqlx::query("DELETE FROM auth.users WHERE id = $1")
         .bind(auth.id())
@@ -717,7 +744,7 @@ pub async fn get_admin_stats(
             .await
             .map_err(AppError::Database)?;
     let collections: i64 =
-        sqlx::query_scalar("SELECT COUNT(DISTINCT user_id) FROM collections.collection_entries")
+        sqlx::query_scalar("SELECT COUNT(DISTINCT user_id) FROM collections.entries")
             .fetch_one(&pool)
             .await
             .map_err(AppError::Database)?;
@@ -737,6 +764,28 @@ pub async fn get_admin_stats(
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+
+async fn revoke_jti(jti: &str, exp: usize) {
+    let Ok(redis_url) = std::env::var("REDIS_URL") else {
+        return;
+    };
+    let Ok(client) = redis::Client::open(redis_url) else {
+        return;
+    };
+    let Ok(mut conn) = client.get_multiplexed_async_connection().await else {
+        return;
+    };
+    let remaining = (exp as i64) - chrono::Utc::now().timestamp();
+    if remaining > 0 {
+        let _: redis::RedisResult<()> = redis::cmd("SET")
+            .arg(format!("revoked:{}", jti))
+            .arg(1i32)
+            .arg("EX")
+            .arg(remaining)
+            .query_async(&mut conn)
+            .await;
+    }
+}
 
 pub async fn issue_tokens(
     pool: &PgPool,

@@ -9,8 +9,10 @@ use axum::{
     routing::any,
     Router,
 };
+use redis::AsyncCommands;
 use reqwest::Client;
 use serde_json::json;
+use shared_auth::Claims;
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -26,6 +28,8 @@ struct AppState {
     media_url: String,
     search_url: String,
     users_url: String,
+    jwt_secret: String,
+    redis_client: Option<Arc<redis::Client>>,
 }
 
 #[tokio::main]
@@ -40,6 +44,12 @@ async fn main() {
         .init();
 
     let auth_url = std::env::var("AUTH_SERVICE_URL").expect("AUTH_SERVICE_URL required");
+    let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET required");
+    let redis_client = std::env::var("REDIS_URL")
+        .ok()
+        .and_then(|url| redis::Client::open(url).ok())
+        .map(Arc::new);
+
     let state = AppState {
         http_client: Arc::new(Client::new()),
         users_url: auth_url.clone(),
@@ -52,6 +62,8 @@ async fn main() {
             .expect("TIERLISTS_SERVICE_URL required"),
         media_url: std::env::var("MEDIA_SERVICE_URL").expect("MEDIA_SERVICE_URL required"),
         search_url: std::env::var("SEARCH_SERVICE_URL").expect("SEARCH_SERVICE_URL required"),
+        jwt_secret,
+        redis_client,
     };
 
     let cors = CorsLayer::new()
@@ -98,53 +110,61 @@ async fn proxy_auth(
     State(s): State<AppState>,
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
-    proxy_request(&s.http_client, &s.auth_url, req).await
+    proxy_request(&s, &s.auth_url.clone(), req).await
 }
 async fn proxy_games(
     State(s): State<AppState>,
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
-    proxy_request(&s.http_client, &s.games_url, req).await
+    proxy_request(&s, &s.games_url.clone(), req).await
 }
 async fn proxy_items(
     State(s): State<AppState>,
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
-    proxy_request(&s.http_client, &s.items_url, req).await
+    proxy_request(&s, &s.items_url.clone(), req).await
 }
 async fn proxy_collections(
     State(s): State<AppState>,
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
-    proxy_request(&s.http_client, &s.collections_url, req).await
+    proxy_request(&s, &s.collections_url.clone(), req).await
 }
 async fn proxy_tierlists(
     State(s): State<AppState>,
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
-    proxy_request(&s.http_client, &s.tierlists_url, req).await
+    proxy_request(&s, &s.tierlists_url.clone(), req).await
 }
 async fn proxy_media(
     State(s): State<AppState>,
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
-    proxy_request(&s.http_client, &s.media_url, req).await
+    proxy_request(&s, &s.media_url.clone(), req).await
 }
 async fn proxy_search(
     State(s): State<AppState>,
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
-    proxy_request(&s.http_client, &s.search_url, req).await
+    proxy_request(&s, &s.search_url.clone(), req).await
 }
 async fn proxy_users(
     State(s): State<AppState>,
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
-    proxy_request(&s.http_client, &s.users_url, req).await
+    proxy_request(&s, &s.users_url.clone(), req).await
+}
+
+async fn is_jti_revoked(client: &Arc<redis::Client>, jti: &str) -> bool {
+    let Ok(mut conn) = client.get_multiplexed_async_connection().await else {
+        return false;
+    };
+    let result: redis::RedisResult<bool> = conn.exists(format!("revoked:{}", jti)).await;
+    result.unwrap_or(false)
 }
 
 async fn proxy_request(
-    client: &Client,
+    state: &AppState,
     base_url: &str,
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
@@ -157,12 +177,35 @@ async fn proxy_request(
     let method = reqwest::Method::from_bytes(req.method().as_str().as_bytes())
         .map_err(|_| StatusCode::BAD_REQUEST)?;
     let headers = req.headers().clone();
+
+    // If the request carries a JWT, verify it is not in the revocation blocklist.
+    // Fail open (allow the request through) only when Redis is unavailable so that
+    // a Redis outage does not take down the whole API.
+    if let Some(auth_val) = headers.get("authorization") {
+        if let Ok(auth_str) = auth_val.to_str() {
+            if let Some(token) = auth_str.strip_prefix("Bearer ") {
+                if let Ok(claims) = Claims::decode(token, &state.jwt_secret) {
+                    if let Some(redis_client) = &state.redis_client {
+                        if is_jti_revoked(redis_client, &claims.jti).await {
+                            return Err(StatusCode::UNAUTHORIZED);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     let body = axum::body::to_bytes(req.into_body(), usize::MAX)
         .await
         .map_err(|_| StatusCode::BAD_REQUEST)?;
 
-    let mut builder = client.request(method, &target_url);
+    let mut builder = state.http_client.request(method, &target_url);
     for (k, v) in &headers {
+        // Never forward internal trust headers — an external client supplying
+        // x-internal-secret would otherwise bypass service-level auth guards.
+        if k.as_str().eq_ignore_ascii_case("x-internal-secret") {
+            continue;
+        }
         builder = builder.header(k, v);
     }
 

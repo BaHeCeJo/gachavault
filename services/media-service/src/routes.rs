@@ -8,11 +8,15 @@ use shared_auth::AuthUser;
 use shared_errors::{AppError, AppResult};
 use shared_types::ApiResponse;
 use sqlx::{PgPool, Row};
-use std::path::PathBuf;
 use uuid::Uuid;
 
 const MAX_FILE_SIZE: usize = 20 * 1024 * 1024; // 20 MB
-const ALLOWED_IMAGE_TYPES: &[&str] = &["image/jpeg", "image/png", "image/webp", "image/gif"];
+const ALLOWED_IMAGE_TYPES: &[(&str, &str)] = &[
+    ("image/jpeg", "jpg"),
+    ("image/png", "png"),
+    ("image/webp", "webp"),
+    ("image/gif", "gif"),
+];
 
 #[derive(Debug, Serialize, sqlx::FromRow)]
 pub struct DbAsset {
@@ -138,17 +142,24 @@ async fn handle_upload(
     {
         let original_filename = field.file_name().unwrap_or("upload").to_string();
 
-        let mime_type = field
+        let declared_mime = field
             .content_type()
             .unwrap_or("application/octet-stream")
             .to_string();
 
-        if !ALLOWED_IMAGE_TYPES.contains(&mime_type.as_str()) {
-            return Err(AppError::BadRequest(format!(
-                "Invalid file type '{}'. Allowed: jpeg, png, webp, gif",
-                mime_type
-            )));
-        }
+        let ext = ALLOWED_IMAGE_TYPES
+            .iter()
+            .find(|(mime, _)| *mime == declared_mime.as_str())
+            .map(|(_, ext)| *ext)
+            .ok_or_else(|| {
+                AppError::BadRequest(format!(
+                    "Invalid file type '{}'. Allowed: jpeg, png, webp, gif",
+                    declared_mime
+                ))
+            })?;
+
+        // Use the MIME-derived extension as the canonical type for storage
+        let mime_type = declared_mime;
 
         let data = field
             .bytes()
@@ -162,13 +173,7 @@ async fn handle_upload(
             )));
         }
 
-        let ext = PathBuf::from(&original_filename)
-            .extension()
-            .and_then(|e| e.to_str())
-            .unwrap_or("bin")
-            .to_lowercase();
-
-        let new_filename = format!("{}.{}", Uuid::new_v4(), ext);
+        let new_filename = format!("{}.{}", Uuid::new_v4(), ext); // ext is always MIME-derived
         let storage_path = format!("{}/{}", upload_dir, new_filename);
         let public_url = format!("{}/uploads/{}", public_base, new_filename);
 

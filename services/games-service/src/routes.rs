@@ -727,9 +727,9 @@ pub async fn delete_game_translation(
 }
 
 fn ensure_admin(auth: &AuthUser) -> AppResult<()> {
-    if auth.can_edit() {
+    if auth.is_admin() {
         Ok(())
     } else {
-        Err(AppError::Forbidden("Editor or admin role required".into()))
+        Err(AppError::Forbidden("Admin role required".into()))
     }
 }

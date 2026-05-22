@@ -13,6 +13,7 @@ pub struct AppState {
     pub pool: sqlx::PgPool,
     pub http_client: Arc<Client>,
     pub search_url: String,
+    pub internal_secret: String,
 }
 
 #[tokio::main]
@@ -39,6 +40,7 @@ async fn main() {
         http_client: Arc::new(Client::new()),
         search_url: std::env::var("SEARCH_SERVICE_URL")
             .unwrap_or_else(|_| "http://localhost:3007".to_string()),
+        internal_secret: std::env::var("INTERNAL_SECRET").expect("INTERNAL_SECRET required"),
     };
 
     let app = Router::new()

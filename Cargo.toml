@@ -59,6 +59,9 @@ argon2 = "0.5"
 # Validation
 validator = { version = "0.18", features = ["derive"] }
 
+# Redis
+redis = { version = "0.27", features = ["tokio-comp"] }
+
 # Shared crates
 shared-types = { path = "crates/shared-types" }
 shared-auth = { path = "crates/shared-auth" }

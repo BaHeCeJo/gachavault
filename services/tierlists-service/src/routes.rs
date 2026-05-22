@@ -405,8 +405,28 @@ pub async fn remove_upvote(
 
 pub async fn list_comments(
     State(pool): State<PgPool>,
+    OptionalAuthUser(claims): OptionalAuthUser,
     Path(id): Path<Uuid>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    // Enforce the same visibility rules as get_tierlist
+    let tl = sqlx::query(
+        "SELECT user_id, is_public FROM tierlists.tier_lists WHERE id = $1",
+    )
+    .bind(id)
+    .fetch_optional(&pool)
+    .await
+    .map_err(AppError::Database)?
+    .ok_or_else(|| AppError::NotFound("Tier list not found".into()))?;
+
+    let is_public: bool = tl.get("is_public");
+    let owner_id: Uuid = tl.get("user_id");
+    if !is_public {
+        let viewer = claims.as_ref().map(|c| c.user_id());
+        if viewer != Some(owner_id) {
+            return Err(AppError::Forbidden("This tier list is private".into()));
+        }
+    }
+
     let rows = sqlx::query(
         "SELECT id, tierlist_id, user_id, username, body, created_at \
          FROM tierlists.comments WHERE tierlist_id = $1 ORDER BY created_at ASC LIMIT 100",

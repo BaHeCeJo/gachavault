@@ -1,4 +1,7 @@
 use axum::{
+    extract::{Request, State},
+    middleware::{self, Next},
+    response::{IntoResponse, Response},
     routing::{delete, get, post},
     Router,
 };
@@ -14,6 +17,7 @@ pub struct AppState {
     pub meilisearch_url: String,
     pub meilisearch_key: String,
     pub http_client: Arc<Client>,
+    pub internal_secret: String,
 }
 
 #[tokio::main]
@@ -32,18 +36,26 @@ async fn main() {
         meilisearch_key: std::env::var("MEILISEARCH_MASTER_KEY")
             .expect("MEILISEARCH_MASTER_KEY required"),
         http_client: Arc::new(Client::new()),
+        internal_secret: std::env::var("INTERNAL_SECRET").expect("INTERNAL_SECRET required"),
     };
 
     init_meilisearch_index(&state).await;
 
-    let app = Router::new()
-        .route("/health", get(health_check))
-        .route("/api/v1/search", get(routes::search))
+    let index_routes = Router::new()
         .route("/api/v1/search/index", post(routes::index_item))
         .route(
             "/api/v1/search/index/:id",
             delete(routes::remove_from_index),
         )
+        .route_layer(middleware::from_fn_with_state(
+            state.clone(),
+            verify_internal_secret,
+        ));
+
+    let app = Router::new()
+        .route("/health", get(health_check))
+        .route("/api/v1/search", get(routes::search))
+        .merge(index_routes)
         .with_state(state);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3007".to_string());
@@ -52,6 +64,22 @@ async fn main() {
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
+}
+
+async fn verify_internal_secret(
+    State(state): State<AppState>,
+    request: Request,
+    next: Next,
+) -> Response {
+    let secret = request
+        .headers()
+        .get("x-internal-secret")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    if secret != state.internal_secret {
+        return axum::http::StatusCode::UNAUTHORIZED.into_response();
+    }
+    next.run(request).await
 }
 
 async fn health_check() -> axum::Json<serde_json::Value> {

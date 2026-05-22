@@ -2,8 +2,10 @@ use axum::{
     extract::{Query, State},
     response::Redirect,
 };
+use rand::Rng;
 use reqwest::Client;
 use serde::Deserialize;
+use sha2::{Digest, Sha256};
 use shared_errors::{AppError, AppResult};
 use sqlx::PgPool;
 
@@ -14,11 +16,34 @@ const GOOGLE_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
 const GOOGLE_USERINFO_URL: &str = "https://www.googleapis.com/oauth2/v2/userinfo";
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code)]
 pub struct CallbackParams {
     pub code: Option<String>,
     pub error: Option<String>,
     pub state: Option<String>,
+}
+
+fn generate_oauth_state(secret: &str) -> String {
+    let nonce: [u8; 16] = rand::thread_rng().gen();
+    let nonce_hex = hex::encode(nonce);
+    let mut hasher = Sha256::new();
+    hasher.update(secret.as_bytes());
+    hasher.update(b":");
+    hasher.update(nonce_hex.as_bytes());
+    let sig = hex::encode(hasher.finalize());
+    format!("{}.{}", nonce_hex, sig)
+}
+
+fn verify_oauth_state(secret: &str, state_param: &str) -> bool {
+    let mut parts = state_param.splitn(2, '.');
+    let (nonce, sig) = match (parts.next(), parts.next()) {
+        (Some(n), Some(s)) => (n, s),
+        _ => return false,
+    };
+    let mut hasher = Sha256::new();
+    hasher.update(secret.as_bytes());
+    hasher.update(b":");
+    hasher.update(nonce.as_bytes());
+    hex::encode(hasher.finalize()) == sig
 }
 
 #[derive(Debug, Deserialize)]
@@ -39,13 +64,17 @@ struct GoogleUserInfo {
 pub async fn google_redirect() -> AppResult<Redirect> {
     let client_id = std::env::var("GOOGLE_CLIENT_ID")
         .map_err(|_| AppError::Internal(anyhow::anyhow!("GOOGLE_CLIENT_ID not configured")))?;
+    let jwt_secret = std::env::var("JWT_SECRET")
+        .map_err(|_| AppError::Internal(anyhow::anyhow!("JWT_SECRET not configured")))?;
     let redirect_uri = google_redirect_uri();
+    let state = generate_oauth_state(&jwt_secret);
 
     let url = format!(
-        "{}?client_id={}&redirect_uri={}&response_type=code&scope=openid%20email%20profile&access_type=offline",
+        "{}?client_id={}&redirect_uri={}&response_type=code&scope=openid%20email%20profile&access_type=offline&state={}",
         GOOGLE_AUTH_URL,
         urlencoding::encode(&client_id),
         urlencoding::encode(&redirect_uri),
+        urlencoding::encode(&state),
     );
 
     Ok(Redirect::temporary(&url))
@@ -57,12 +86,22 @@ pub async fn google_callback(
 ) -> AppResult<Redirect> {
     let frontend_url =
         std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3009".into());
+    let jwt_secret = std::env::var("JWT_SECRET")
+        .map_err(|_| AppError::Internal(anyhow::anyhow!("JWT_SECRET not configured")))?;
 
     if let Some(err) = params.error {
         return Ok(Redirect::temporary(&format!(
             "{}/auth/login?error={}",
-            frontend_url, err
+            frontend_url,
+            urlencoding::encode(&err),
         )));
+    }
+
+    let state_param = params
+        .state
+        .ok_or_else(|| AppError::BadRequest("Missing OAuth state parameter".into()))?;
+    if !verify_oauth_state(&jwt_secret, &state_param) {
+        return Err(AppError::BadRequest("Invalid OAuth state parameter".into()));
     }
 
     let code = params
@@ -119,9 +158,9 @@ pub async fn google_callback(
     // Issue tokens
     let tokens = issue_tokens(&pool, &user.id, &user.email, &user.username).await?;
 
-    // Redirect to frontend with tokens in query params
+    // Use a URL fragment so tokens are never sent to servers or logged by proxies
     let redirect = format!(
-        "{}/auth/google/callback?access_token={}&refresh_token={}",
+        "{}/auth/google/callback#access_token={}&refresh_token={}",
         frontend_url, tokens.access_token, tokens.refresh_token
     );
 

@@ -14,15 +14,11 @@ export function getRefreshToken(): string | null {
 export function setTokens(accessToken: string, refreshToken: string): void {
   localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
   localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-  const isSecure = location.protocol === "https:";
-  const secure = isSecure ? "; Secure" : "";
-  document.cookie = `access_token=${accessToken}; path=/; max-age=900; SameSite=Lax${secure}`;
 }
 
 export function clearTokens(): void {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
-  document.cookie = "access_token=; path=/; max-age=0; SameSite=Lax";
 }
 
 export interface User {
