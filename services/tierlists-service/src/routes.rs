@@ -409,14 +409,12 @@ pub async fn list_comments(
     Path(id): Path<Uuid>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
     // Enforce the same visibility rules as get_tierlist
-    let tl = sqlx::query(
-        "SELECT user_id, is_public FROM tierlists.tier_lists WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_optional(&pool)
-    .await
-    .map_err(AppError::Database)?
-    .ok_or_else(|| AppError::NotFound("Tier list not found".into()))?;
+    let tl = sqlx::query("SELECT user_id, is_public FROM tierlists.tier_lists WHERE id = $1")
+        .bind(id)
+        .fetch_optional(&pool)
+        .await
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("Tier list not found".into()))?;
 
     let is_public: bool = tl.get("is_public");
     let owner_id: Uuid = tl.get("user_id");
