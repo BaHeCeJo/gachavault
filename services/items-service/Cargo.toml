@@ -25,4 +25,3 @@ tower-http = { workspace = true }
 dotenvy = { workspace = true }
 anyhow = { workspace = true }
 reqwest = { workspace = true }
-validator = { workspace = true }

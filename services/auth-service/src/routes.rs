@@ -100,11 +100,8 @@ pub async fn register(
     Json(body): Json<RegisterRequest>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
     // Basic validation
-    {
-        use validator::ValidateEmail;
-        if !body.email.validate_email() {
-            return Err(AppError::BadRequest("Invalid email address".into()));
-        }
+    if !is_valid_email(&body.email) {
+        return Err(AppError::BadRequest("Invalid email address".into()));
     }
     if body.username.len() < 3 || body.username.len() > 50 {
         return Err(AppError::BadRequest(
@@ -764,6 +761,29 @@ pub async fn get_admin_stats(
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+
+fn is_valid_email(email: &str) -> bool {
+    let email = email.trim();
+    if email.len() > 254 {
+        return false;
+    }
+    // Must have exactly one '@' with a non-empty local part
+    let at = match email.rfind('@') {
+        Some(i) if i > 0 => i,
+        _ => return false,
+    };
+    let (local, domain) = (&email[..at], &email[at + 1..]);
+    if local.is_empty() || local.len() > 64 {
+        return false;
+    }
+    // Domain must have at least one dot and no leading/trailing dots or hyphens
+    domain.contains('.')
+        && !domain.starts_with('.')
+        && !domain.ends_with('.')
+        && !domain.starts_with('-')
+        && !domain.ends_with('-')
+        && !domain.is_empty()
+}
 
 async fn revoke_jti(jti: &str, exp: usize) {
     let Ok(redis_url) = std::env::var("REDIS_URL") else {

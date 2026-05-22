@@ -1,0 +1,9 @@
+[advisories]
+ignore = [
+    # RUSTSEC-2023-0071: Marvin Attack timing side-channel in the `rsa` crate.
+    # No fixed version is available. `rsa` is pulled in only by `sqlx-mysql`
+    # (a transitive dependency of sqlx's macro infrastructure). This project
+    # uses PostgreSQL exclusively and never opens a MySQL connection, so the
+    # vulnerable RSA code paths are never executed.
+    "RUSTSEC-2023-0071",
+]

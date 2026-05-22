@@ -56,9 +56,6 @@ reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-feature
 jsonwebtoken = "9"
 argon2 = "0.5"
 
-# Validation
-validator = { version = "0.18", features = ["derive"] }
-
 # Redis
 redis = { version = "0.27", features = ["tokio-comp"] }
 
