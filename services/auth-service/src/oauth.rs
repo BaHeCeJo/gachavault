@@ -4,7 +4,6 @@ use axum::{
     http::{header::LOCATION, StatusCode},
     response::{IntoResponse, Redirect, Response},
 };
-use chrono;
 use rand::Rng;
 use reqwest::Client;
 use serde::Deserialize;
@@ -57,7 +56,7 @@ fn verify_oauth_state(secret: &str, state_param: &str) -> bool {
         Err(_) => return false,
     };
     let age = chrono::Utc::now().timestamp() - ts;
-    if age < 0 || age > OAUTH_STATE_TTL_SECS {
+    if !(0..=OAUTH_STATE_TTL_SECS).contains(&age) {
         return false;
     }
     let mut hasher = Sha256::new();
