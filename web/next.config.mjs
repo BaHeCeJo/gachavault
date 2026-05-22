@@ -26,31 +26,16 @@ const nextConfig = {
     ],
   },
   async headers() {
-    const isDev = process.env.NODE_ENV === "development";
-    // connect-src allows the API gateway origin so fetch calls work.
-    // unsafe-inline is required for Next.js App Router (inline event handlers & style tags).
-    const csp = [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
-      "style-src 'self' 'unsafe-inline'",
-      `img-src 'self' data: https: http:`,
-      `connect-src 'self' ${apiUrl}`,
-      "font-src 'self'",
-      "object-src 'none'",
-      "base-uri 'self'",
-      "frame-ancestors 'none'",
-      isDev ? "" : "upgrade-insecure-requests",
-    ]
-      .filter(Boolean)
-      .join("; ");
-
+    // CSP is generated per-request in middleware.ts with a unique nonce so that
+    // 'unsafe-inline' is no longer needed for scripts.  The headers here are
+    // static security headers that don't need to change per request.
     return [
       {
         source: "/(.*)",
         headers: [
-          { key: "Content-Security-Policy", value: csp },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          // DENY is consistent with frame-ancestors 'none' in the CSP (middleware).
+          { key: "X-Frame-Options", value: "DENY" },
           { key: "X-XSS-Protection", value: "1; mode=block" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
