@@ -14,11 +14,16 @@ export function getRefreshToken(): string | null {
 export function setTokens(accessToken: string, refreshToken: string): void {
   localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
   localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  // Also set a cookie so the Next.js Edge middleware can check auth on protected routes.
+  // SameSite=Strict prevents it being sent on cross-site navigations.
+  const secure = location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `access_token=${accessToken}; path=/; max-age=900; SameSite=Strict${secure}`;
 }
 
 export function clearTokens(): void {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
+  document.cookie = "access_token=; path=/; max-age=0; SameSite=Strict";
 }
 
 export interface User {
