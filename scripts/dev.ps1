@@ -13,7 +13,7 @@ if (-not (Test-Path ".env")) {
 }
 
 Write-Host "==> Starting infrastructure..." -ForegroundColor Cyan
-docker compose up -d postgres redis meilisearch
+docker compose -f "$root/docker-compose.dev.yml" up -d postgres redis meilisearch
 
 Write-Host "==> Waiting for postgres..." -ForegroundColor Cyan
 $retries = 30

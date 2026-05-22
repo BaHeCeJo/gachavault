@@ -8,6 +8,7 @@ use rand::Rng;
 use reqwest::Client;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
+use chrono;
 use shared_errors::{AppError, AppResult};
 use sqlx::PgPool;
 
@@ -24,27 +25,44 @@ pub struct CallbackParams {
     pub state: Option<String>,
 }
 
+const OAUTH_STATE_TTL_SECS: i64 = 600; // 10 minutes
+
 fn generate_oauth_state(secret: &str) -> String {
     let nonce: [u8; 16] = rand::thread_rng().gen();
     let nonce_hex = hex::encode(nonce);
+    let ts = chrono::Utc::now().timestamp();
+    let ts_hex = format!("{:x}", ts);
     let mut hasher = Sha256::new();
     hasher.update(secret.as_bytes());
     hasher.update(b":");
     hasher.update(nonce_hex.as_bytes());
+    hasher.update(b":");
+    hasher.update(ts_hex.as_bytes());
     let sig = hex::encode(hasher.finalize());
-    format!("{}.{}", nonce_hex, sig)
+    format!("{}.{}.{}", nonce_hex, ts_hex, sig)
 }
 
 fn verify_oauth_state(secret: &str, state_param: &str) -> bool {
-    let mut parts = state_param.splitn(2, '.');
-    let (nonce, sig) = match (parts.next(), parts.next()) {
-        (Some(n), Some(s)) => (n, s),
+    let mut parts = state_param.splitn(3, '.');
+    let (nonce, ts_hex, sig) = match (parts.next(), parts.next(), parts.next()) {
+        (Some(n), Some(t), Some(s)) => (n, t, s),
         _ => return false,
     };
+    // Reject states older than TTL
+    let ts = match i64::from_str_radix(ts_hex, 16) {
+        Ok(t) => t,
+        Err(_) => return false,
+    };
+    let age = chrono::Utc::now().timestamp() - ts;
+    if age < 0 || age > OAUTH_STATE_TTL_SECS {
+        return false;
+    }
     let mut hasher = Sha256::new();
     hasher.update(secret.as_bytes());
     hasher.update(b":");
     hasher.update(nonce.as_bytes());
+    hasher.update(b":");
+    hasher.update(ts_hex.as_bytes());
     hex::encode(hasher.finalize()) == sig
 }
 

@@ -361,6 +361,11 @@ pub async fn update_avatar(
     if body.avatar_url.len() > 2048 {
         return Err(AppError::BadRequest("avatar_url too long".into()));
     }
+    if !body.avatar_url.starts_with("https://") {
+        return Err(AppError::BadRequest(
+            "avatar_url must be an https:// URL".into(),
+        ));
+    }
 
     sqlx::query("UPDATE auth.users SET avatar_url = $1, updated_at = NOW() WHERE id = $2")
         .bind(&body.avatar_url)

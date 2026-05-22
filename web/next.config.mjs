@@ -8,6 +8,7 @@ const apiHost = new URL(apiUrl).hostname;
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  productionBrowserSourceMaps: false,
   eslint: { ignoreDuringBuilds: true },
   images: {
     remotePatterns: [

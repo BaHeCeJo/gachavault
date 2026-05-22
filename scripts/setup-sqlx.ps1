@@ -11,13 +11,13 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
 
-Write-Host "==> Starting postgres (docker-compose)..." -ForegroundColor Cyan
-docker compose up -d postgres
+Write-Host "==> Starting postgres (docker-compose.dev.yml)..." -ForegroundColor Cyan
+docker compose -f "$root/docker-compose.dev.yml" up -d postgres
 
 Write-Host "==> Waiting for postgres to be healthy..." -ForegroundColor Cyan
 $retries = 30
 for ($i = 0; $i -lt $retries; $i++) {
-    $health = docker inspect --format="{{.State.Health.Status}}" (docker compose ps -q postgres) 2>$null
+    $health = docker inspect --format="{{.State.Health.Status}}" (docker compose -f "$root/docker-compose.dev.yml" ps -q postgres) 2>$null
     if ($health -eq "healthy") { break }
     if ($i -eq $retries - 1) { Write-Error "Postgres did not become healthy in time"; exit 1 }
     Start-Sleep 2
@@ -62,6 +62,6 @@ Write-Host "==> You can now build without a database: cargo build" -ForegroundCo
 # Optionally stop postgres
 $stop = Read-Host "Stop postgres container? [y/N]"
 if ($stop -eq "y" -or $stop -eq "Y") {
-    docker compose stop postgres
+    docker compose -f "$root/docker-compose.dev.yml" stop postgres
     Write-Host "==> Postgres stopped." -ForegroundColor Yellow
 }
