@@ -3,7 +3,7 @@ use axum::{
     extract::State,
     http::{
         header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
-        StatusCode,
+        HeaderValue, StatusCode,
     },
     response::Response,
     routing::any,
@@ -66,10 +66,17 @@ async fn main() {
         redis_client,
     };
 
+    let allowed_origins: Vec<HeaderValue> = std::env::var("ALLOWED_ORIGINS")
+        .unwrap_or_else(|_| "http://localhost:3009".into())
+        .split(',')
+        .filter_map(|s| s.trim().parse().ok())
+        .collect();
+
     let cors = CorsLayer::new()
-        .allow_origin(Any)
+        .allow_origin(allowed_origins)
         .allow_methods(Any)
-        .allow_headers([AUTHORIZATION, CONTENT_TYPE, ACCEPT]);
+        .allow_headers([AUTHORIZATION, CONTENT_TYPE, ACCEPT])
+        .allow_credentials(true);
 
     let app = Router::new()
         .route("/health", axum::routing::get(health_check))
@@ -155,6 +162,14 @@ async fn proxy_users(
     proxy_request(&s, &s.users_url.clone(), req).await
 }
 
+fn extract_cookie_value(headers: &axum::http::HeaderMap, name: &str) -> Option<String> {
+    let cookie_str = headers.get("cookie")?.to_str().ok()?;
+    cookie_str.split(';').find_map(|part| {
+        let (k, v) = part.trim().split_once('=')?;
+        (k.trim() == name).then(|| v.trim().to_string())
+    })
+}
+
 async fn is_jti_revoked(client: &Arc<redis::Client>, jti: &str) -> bool {
     let Ok(mut conn) = client.get_multiplexed_async_connection().await else {
         return false;
@@ -176,7 +191,18 @@ async fn proxy_request(
     let target_url = format!("{}{}", base_url, path);
     let method = reqwest::Method::from_bytes(req.method().as_str().as_bytes())
         .map_err(|_| StatusCode::BAD_REQUEST)?;
-    let headers = req.headers().clone();
+    let mut headers = req.headers().clone();
+
+    // Cookie-to-Bearer: if no explicit Authorization header is present, extract the
+    // access_token HttpOnly cookie and inject a Bearer token so downstream services
+    // can use standard JWT authentication without knowing about cookies.
+    if !headers.contains_key(AUTHORIZATION) {
+        if let Some(token) = extract_cookie_value(&headers, "access_token") {
+            if let Ok(value) = format!("Bearer {}", token).parse::<axum::http::HeaderValue>() {
+                headers.insert(AUTHORIZATION, value);
+            }
+        }
+    }
 
     // If the request carries a JWT, verify it is not in the revocation blocklist.
     // Fail open (allow the request through) only when Redis is unavailable so that

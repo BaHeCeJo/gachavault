@@ -2,7 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { authApi } from "@/lib/api";
-import { clearTokens, getAccessToken, setTokens, User } from "@/lib/auth";
+import { User } from "@/lib/auth";
 
 interface AuthContextType {
   user: User | null;
@@ -19,16 +19,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshUser = useCallback(async () => {
-    if (!getAccessToken()) {
-      setUser(null);
-      return;
-    }
     try {
       const res = await authApi.me();
       setUser(res.data.data);
     } catch {
       setUser(null);
-      clearTokens();
     }
   }, []);
 
@@ -37,9 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refreshUser]);
 
   const login = useCallback(async (email: string, password: string) => {
-    const res = await authApi.login({ email, password });
-    const { access_token, refresh_token } = res.data.data;
-    setTokens(access_token, refresh_token);
+    await authApi.login({ email, password });
     const me = await authApi.me();
     setUser(me.data.data);
   }, []);
@@ -48,9 +41,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await authApi.logout();
     } catch {
-      // ignore — clear tokens regardless
+      // ignore — server clears cookies regardless
     }
-    clearTokens();
     setUser(null);
   }, []);
 

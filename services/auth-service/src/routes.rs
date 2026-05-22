@@ -1,4 +1,9 @@
-use axum::{extract::State, Json};
+use axum::{
+    extract::State,
+    http::{header::SET_COOKIE, HeaderMap},
+    response::IntoResponse,
+    Json,
+};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use shared_auth::{AuthUser, Claims};
@@ -21,11 +26,6 @@ pub struct RegisterRequest {
 pub struct LoginRequest {
     pub email: String,
     pub password: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct RefreshRequest {
-    pub refresh_token: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -164,7 +164,7 @@ pub async fn register(
 pub async fn login(
     State(pool): State<PgPool>,
     Json(body): Json<LoginRequest>,
-) -> AppResult<Json<ApiResponse<AuthTokens>>> {
+) -> AppResult<impl IntoResponse> {
     let user = db::find_user_by_email(&pool, &body.email.to_lowercase())
         .await
         .map_err(AppError::Database)?
@@ -183,14 +183,24 @@ pub async fn login(
     }
 
     let tokens = issue_tokens(&pool, &user.id, &user.email, &user.username).await?;
-    Ok(Json(ApiResponse::success(tokens)))
+    let mut headers = HeaderMap::new();
+    set_auth_cookie_headers(&mut headers, &tokens);
+    Ok((
+        headers,
+        Json(ApiResponse::success(serde_json::json!({
+            "message": "Login successful"
+        }))),
+    ))
 }
 
 pub async fn refresh(
     State(pool): State<PgPool>,
-    Json(body): Json<RefreshRequest>,
-) -> AppResult<Json<ApiResponse<AuthTokens>>> {
-    let token_hash = crypto::hash_token(&body.refresh_token);
+    headers: HeaderMap,
+) -> AppResult<impl IntoResponse> {
+    let refresh_token_val = extract_cookie(&headers, "refresh_token")
+        .ok_or_else(|| AppError::Unauthorized("No refresh token".into()))?;
+
+    let token_hash = crypto::hash_token(&refresh_token_val);
 
     let stored = db::find_and_delete_refresh_token(&pool, &token_hash)
         .await
@@ -203,18 +213,25 @@ pub async fn refresh(
         .ok_or_else(|| AppError::Unauthorized("User not found".into()))?;
 
     let tokens = issue_tokens(&pool, &user.id, &user.email, &user.username).await?;
-    Ok(Json(ApiResponse::success(tokens)))
+    let mut resp_headers = HeaderMap::new();
+    set_auth_cookie_headers(&mut resp_headers, &tokens);
+    Ok((
+        resp_headers,
+        Json(ApiResponse::success(serde_json::json!({ "message": "ok" }))),
+    ))
 }
 
 pub async fn logout(
     State(pool): State<PgPool>,
     auth: AuthUser,
-) -> AppResult<Json<ApiResponse<()>>> {
+) -> AppResult<impl IntoResponse> {
     db::delete_refresh_tokens_for_user(&pool, auth.id())
         .await
         .map_err(AppError::Database)?;
     revoke_jti(&auth.0.jti, auth.0.exp).await;
-    Ok(Json(ApiResponse::success(())))
+    let mut headers = HeaderMap::new();
+    clear_auth_cookie_headers(&mut headers);
+    Ok((headers, Json(ApiResponse::success(()))))
 }
 
 pub async fn verify_email(
@@ -467,7 +484,7 @@ pub async fn change_password(
     State(pool): State<PgPool>,
     auth: AuthUser,
     Json(body): Json<ChangePasswordRequest>,
-) -> AppResult<Json<ApiResponse<()>>> {
+) -> AppResult<impl IntoResponse> {
     if body.new_password.len() < 8 {
         return Err(AppError::BadRequest(
             "New password must be at least 8 characters".into(),
@@ -502,14 +519,16 @@ pub async fn change_password(
         .map_err(AppError::Database)?;
     revoke_jti(&auth.0.jti, auth.0.exp).await;
 
-    Ok(Json(ApiResponse::success(())))
+    let mut headers = HeaderMap::new();
+    clear_auth_cookie_headers(&mut headers);
+    Ok((headers, Json(ApiResponse::success(()))))
 }
 
 pub async fn delete_account(
     State(pool): State<PgPool>,
     auth: AuthUser,
     Json(body): Json<DeleteAccountRequest>,
-) -> AppResult<Json<ApiResponse<()>>> {
+) -> AppResult<impl IntoResponse> {
     let user = db::find_user_by_id(&pool, auth.id())
         .await
         .map_err(AppError::Database)?
@@ -542,7 +561,9 @@ pub async fn delete_account(
         .await
         .map_err(AppError::Database)?;
 
-    Ok(Json(ApiResponse::success(())))
+    let mut headers = HeaderMap::new();
+    clear_auth_cookie_headers(&mut headers);
+    Ok((headers, Json(ApiResponse::success(()))))
 }
 
 // ── Per-game roles ────────────────────────────────────────────────────────────
@@ -783,6 +804,46 @@ fn is_valid_email(email: &str) -> bool {
         && !domain.starts_with('-')
         && !domain.ends_with('-')
         && !domain.is_empty()
+}
+
+// ── Cookie helpers ────────────────────────────────────────────────────────────
+
+pub fn set_auth_cookie_headers(headers: &mut HeaderMap, tokens: &AuthTokens) {
+    let access = format!(
+        "access_token={}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=900",
+        tokens.access_token
+    );
+    let refresh = format!(
+        "refresh_token={}; HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth/refresh; Max-Age=604800",
+        tokens.refresh_token
+    );
+    if let Ok(v) = access.parse() {
+        headers.append(SET_COOKIE, v);
+    }
+    if let Ok(v) = refresh.parse() {
+        headers.append(SET_COOKIE, v);
+    }
+}
+
+pub fn clear_auth_cookie_headers(headers: &mut HeaderMap) {
+    let clear_access =
+        "access_token=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0";
+    let clear_refresh =
+        "refresh_token=; HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth/refresh; Max-Age=0";
+    if let Ok(v) = clear_access.parse() {
+        headers.append(SET_COOKIE, v);
+    }
+    if let Ok(v) = clear_refresh.parse() {
+        headers.append(SET_COOKIE, v);
+    }
+}
+
+fn extract_cookie(headers: &HeaderMap, name: &str) -> Option<String> {
+    let cookie_str = headers.get("cookie")?.to_str().ok()?;
+    cookie_str.split(';').find_map(|part| {
+        let (k, v) = part.trim().split_once('=')?;
+        (k.trim() == name).then(|| v.trim().to_string())
+    })
 }
 
 async fn revoke_jti(jti: &str, exp: usize) {

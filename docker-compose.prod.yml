@@ -49,6 +49,7 @@ services:
       RUST_LOG: info
       JWT_SECRET: ${JWT_SECRET}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      ALLOWED_ORIGINS: ${FRONTEND_URL}
       AUTH_SERVICE_URL: http://auth-service:3001
       GAMES_SERVICE_URL: http://games-service:3002
       ITEMS_SERVICE_URL: http://items-service:3003

@@ -2,25 +2,15 @@
 
 import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { setTokens } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
 
 function GoogleCallbackContent() {
   const router = useRouter();
+  const { refreshUser } = useAuth();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.hash.substring(1));
-    const access_token = params.get("access_token");
-    const refresh_token = params.get("refresh_token");
-    const error = params.get("error");
-
-    if (error || !access_token || !refresh_token) {
-      router.replace(`/auth/login?error=${error ?? "oauth_failed"}`);
-      return;
-    }
-
-    setTokens(access_token, refresh_token);
-    router.replace("/");
-  }, [router]);
+    refreshUser().then(() => router.replace("/"));
+  }, [refreshUser, router]);
 
   return (
     <main className="flex min-h-[calc(100vh-57px)] items-center justify-center">

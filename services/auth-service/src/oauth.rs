@@ -1,6 +1,8 @@
 use axum::{
+    body::Body,
     extract::{Query, State},
-    response::Redirect,
+    http::{header::LOCATION, StatusCode},
+    response::{IntoResponse, Redirect, Response},
 };
 use rand::Rng;
 use reqwest::Client;
@@ -9,7 +11,7 @@ use sha2::{Digest, Sha256};
 use shared_errors::{AppError, AppResult};
 use sqlx::PgPool;
 
-use crate::{db, routes::issue_tokens};
+use crate::{db, routes::{issue_tokens, set_auth_cookie_headers}};
 
 const GOOGLE_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
@@ -83,7 +85,7 @@ pub async fn google_redirect() -> AppResult<Redirect> {
 pub async fn google_callback(
     State(pool): State<PgPool>,
     Query(params): Query<CallbackParams>,
-) -> AppResult<Redirect> {
+) -> AppResult<Response> {
     let frontend_url =
         std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3009".into());
     let jwt_secret = std::env::var("JWT_SECRET")
@@ -94,7 +96,8 @@ pub async fn google_callback(
             "{}/auth/login?error={}",
             frontend_url,
             urlencoding::encode(&err),
-        )));
+        ))
+        .into_response());
     }
 
     let state_param = params
@@ -155,16 +158,27 @@ pub async fn google_callback(
     .await
     .map_err(AppError::Database)?;
 
-    // Issue tokens
+    // Issue tokens and deliver them as HttpOnly cookies, then redirect to the frontend.
+    // Tokens are never exposed in URLs, headers the client can read, or JavaScript.
     let tokens = issue_tokens(&pool, &user.id, &user.email, &user.username).await?;
 
-    // Use a URL fragment so tokens are never sent to servers or logged by proxies
-    let redirect = format!(
-        "{}/auth/google/callback#access_token={}&refresh_token={}",
-        frontend_url, tokens.access_token, tokens.refresh_token
-    );
+    let mut cookie_headers = axum::http::HeaderMap::new();
+    set_auth_cookie_headers(&mut cookie_headers, &tokens);
 
-    Ok(Redirect::temporary(&redirect))
+    let location = format!("{}/", frontend_url)
+        .parse::<axum::http::HeaderValue>()
+        .map_err(|e| AppError::Internal(anyhow::anyhow!("Bad redirect URL: {}", e)))?;
+
+    let mut builder = Response::builder().status(StatusCode::SEE_OTHER);
+    for (k, v) in &cookie_headers {
+        builder = builder.header(k, v);
+    }
+    let response = builder
+        .header(LOCATION, location)
+        .body(Body::empty())
+        .map_err(|e| AppError::Internal(anyhow::anyhow!("Response build error: {}", e)))?;
+
+    Ok(response)
 }
 
 fn google_redirect_uri() -> String {

@@ -1,22 +1,17 @@
 import axios, { AxiosError } from "axios";
-import { clearTokens, getAccessToken, getRefreshToken, setTokens } from "./auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
   headers: { "Content-Type": "application/json" },
+  withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
-  const token = getAccessToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-// Refresh token on 401 — retry once
+// Transparent token refresh on 401 — cookies are managed by the browser/server,
+// we just need to call /auth/refresh and retry the original request.
 let refreshing = false;
-let refreshQueue: Array<(token: string) => void> = [];
+let refreshQueue: Array<() => void> = [];
 
 api.interceptors.response.use(
   (res) => res,
@@ -27,34 +22,22 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      clearTokens();
-      return Promise.reject(error);
-    }
-
     if (refreshing) {
-      return new Promise((resolve) => {
-        refreshQueue.push((newToken) => {
-          original!.headers!.Authorization = `Bearer ${newToken}`;
-          resolve(api(original!));
-        });
-      });
+      return new Promise<void>((resolve) => {
+        refreshQueue.push(resolve);
+      }).then(() => api(original!));
     }
 
     original._retry = true;
     refreshing = true;
 
     try {
-      const res = await api.post("/auth/refresh", { refresh_token: refreshToken });
-      const { access_token, refresh_token: newRefresh } = res.data.data;
-      setTokens(access_token, newRefresh);
-      refreshQueue.forEach((cb) => cb(access_token));
+      await api.post("/auth/refresh");
+      refreshQueue.forEach((resolve) => resolve());
       refreshQueue = [];
-      original!.headers!.Authorization = `Bearer ${access_token}`;
       return api(original!);
     } catch {
-      clearTokens();
+      refreshQueue = [];
       return Promise.reject(error);
     } finally {
       refreshing = false;
@@ -67,8 +50,6 @@ export const authApi = {
     api.post("/auth/register", data),
   login: (data: { email: string; password: string }) =>
     api.post("/auth/login", data),
-  refresh: (refreshToken: string) =>
-    api.post("/auth/refresh", { refresh_token: refreshToken }),
   logout: () => api.post("/auth/logout"),
   me: () => api.get("/auth/me"),
   verifyEmail: (token: string) => api.post("/auth/verify-email", { token }),
