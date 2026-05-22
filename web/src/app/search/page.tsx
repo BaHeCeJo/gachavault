@@ -181,7 +181,7 @@ function SearchContent() {
               return (
                 <Link
                   key={hit.id}
-                  href={`/items/${hit.id}`}
+                  href={hit.game_slug && hit.section_slug && hit.slug ? `/games/${hit.game_slug}/${hit.section_slug}/${hit.slug}` : `/items/${hit.id}`}
                   className="group flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-600 transition"
                 >
                   <div className="relative h-28 w-full">

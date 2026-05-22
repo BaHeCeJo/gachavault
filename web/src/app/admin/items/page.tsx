@@ -37,7 +37,9 @@ interface Item {
   id: string;
   slug: string;
   game_id: string;
+  game_slug?: string;
   section_id: string;
+  section_slug?: string;
   type_schema_id: string;
   data: Record<string, unknown>;
   version: number;
@@ -398,7 +400,7 @@ export default function AdminItemsPage() {
                       <td className="px-4 py-3 text-right">
                         <div className="flex gap-2 justify-end">
                           <Link
-                            href={`/items/${item.id}`}
+                            href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/items/${item.id}`}
                             className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition"
                           >
                             View

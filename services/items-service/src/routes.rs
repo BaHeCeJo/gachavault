@@ -9,7 +9,7 @@ use shared_types::ApiResponse;
 use sqlx::Row;
 use uuid::Uuid;
 
-use crate::{db, models::*, AppState};
+use crate::{db, models::DbItemFull, models::*, AppState};
 
 #[derive(Debug, Deserialize)]
 pub struct LocaleQuery {
@@ -63,8 +63,8 @@ async fn can_edit_game(
 pub async fn list_items(
     State(state): State<AppState>,
     Query(query): Query<ListItemsQuery>,
-) -> AppResult<Json<ApiResponse<Vec<DbItem>>>> {
-    let items = db::list_items(
+) -> AppResult<Json<ApiResponse<Vec<DbItemFull>>>> {
+    let items = db::list_items_full(
         &state.pool,
         query.game_id,
         query.section_id,
@@ -80,8 +80,8 @@ pub async fn list_items_by_game(
     State(state): State<AppState>,
     Path(_game_slug): Path<String>,
     Query(query): Query<ListItemsQuery>,
-) -> AppResult<Json<ApiResponse<Vec<DbItem>>>> {
-    let items = db::list_items(
+) -> AppResult<Json<ApiResponse<Vec<DbItemFull>>>> {
+    let items = db::list_items_full(
         &state.pool,
         query.game_id,
         query.section_id,
@@ -104,7 +104,27 @@ pub async fn get_item(
         .ok_or_else(|| AppError::NotFound("Item not found".into()))?;
 
     let locale = query.locale.as_deref().unwrap_or("en");
-    let translated = apply_item_translation(&state.pool, item, locale).await;
+    let (game_slug, section_slug) = lookup_slugs(&state.pool, item.game_id, item.section_id)
+        .await
+        .unwrap_or_default();
+    let translated =
+        apply_item_translation(&state.pool, item, locale, &game_slug, &section_slug).await;
+    Ok(Json(ApiResponse::success(translated)))
+}
+
+pub async fn get_item_by_slugs(
+    State(state): State<AppState>,
+    Path((game_slug, section_slug, item_slug)): Path<(String, String, String)>,
+    Query(query): Query<LocaleQuery>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    let item = db::find_item_by_slugs(&state.pool, &game_slug, &section_slug, &item_slug)
+        .await
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("Item not found".into()))?;
+
+    let locale = query.locale.as_deref().unwrap_or("en");
+    let translated =
+        apply_item_translation(&state.pool, item, locale, &game_slug, &section_slug).await;
     Ok(Json(ApiResponse::success(translated)))
 }
 
@@ -112,6 +132,8 @@ async fn apply_item_translation(
     pool: &sqlx::PgPool,
     item: DbItem,
     locale: &str,
+    game_slug: &str,
+    section_slug: &str,
 ) -> serde_json::Value {
     let mut data = item.data.clone();
 
@@ -139,7 +161,9 @@ async fn apply_item_translation(
     serde_json::json!({
         "id":             item.id,
         "game_id":        item.game_id,
+        "game_slug":      game_slug,
         "section_id":     item.section_id,
+        "section_slug":   section_slug,
         "type_schema_id": item.type_schema_id,
         "slug":           item.slug,
         "data":           data,

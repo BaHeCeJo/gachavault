@@ -17,7 +17,7 @@ interface CollectionEntry {
   ascension: number | null;
   constellation_level: number | null;
 }
-interface Item { id: string; slug: string; section_id: string; data: Record<string, unknown> }
+interface Item { id: string; slug: string; section_id: string; game_slug?: string; section_slug?: string; data: Record<string, unknown> }
 interface Section { id: string; slug: string; name: string }
 
 export default function CollectionsPage() {
@@ -199,7 +199,7 @@ export default function CollectionsPage() {
                     key={entry.id}
                     className="relative flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden"
                   >
-                    <Link href={`/items/${entry.item_id}`}>
+                    <Link href={item?.game_slug && item?.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/items/${entry.item_id}`}>
                       <div className="relative h-24 w-full">
                         <SafeImage
                           src={imageUrl}

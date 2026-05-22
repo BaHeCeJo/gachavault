@@ -54,6 +54,10 @@ async fn main() {
             axum::routing::post(routes::bulk_import),
         )
         .route(
+            "/api/v1/items/by-slug/:game_slug/:section_slug/:item_slug",
+            get(routes::get_item_by_slugs),
+        )
+        .route(
             "/api/v1/items/:id",
             get(routes::get_item)
                 .put(routes::update_item)

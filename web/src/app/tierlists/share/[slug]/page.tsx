@@ -21,7 +21,7 @@ interface TierList {
   entries: TierEntry[];
   user_upvoted: boolean;
 }
-interface Item { id: string; slug: string; data: Record<string, unknown> }
+interface Item { id: string; slug: string; game_slug?: string; section_slug?: string; data: Record<string, unknown> }
 interface Comment {
   id: string;
   user_id: string;
@@ -191,7 +191,7 @@ export default function SharedTierListPage() {
                     const name = (item.data?.name as string) ?? item.slug;
                     const img = item.data?.image_url as string | undefined;
                     return (
-                      <Link key={item.id} href={`/items/${item.id}`} title={name} className="group relative">
+                      <Link key={item.id} href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/items/${item.id}`} title={name} className="group relative">
                         <SafeImage src={img} alt={name} width={56} height={56} className="w-14 h-14 rounded-lg object-cover" fallback={
                           <div className="w-14 h-14 rounded-lg bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-400">
                             {name[0]?.toUpperCase()}

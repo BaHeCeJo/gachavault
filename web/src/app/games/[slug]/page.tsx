@@ -28,6 +28,8 @@ interface Section {
 interface Item {
   id: string;
   slug: string;
+  game_slug?: string;
+  section_slug?: string;
   data: Record<string, unknown>;
 }
 
@@ -276,7 +278,7 @@ export default function GameDetailPage() {
             return (
               <Link
                 key={item.id}
-                href={`/games/${slug}/items/${item.id}`}
+                href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/games/${slug}/items/${item.id}`}
                 className={`flex flex-col rounded-lg border bg-gray-900 overflow-hidden transition-all duration-200 group hover:scale-[1.03] hover:shadow-lg ${
                   rarityStr && RARITY_BORDER[rarityStr]
                     ? `${RARITY_BORDER[rarityStr]} hover:shadow-lg ${RARITY_GLOW[rarityStr]}`

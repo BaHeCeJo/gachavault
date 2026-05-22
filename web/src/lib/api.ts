@@ -90,6 +90,8 @@ export const itemsApi = {
     api.get("/items", { params }),
   get: (id: string, locale?: string) =>
     api.get(`/items/${id}`, { params: locale ? { locale } : {} }),
+  getBySlug: (gameSlug: string, sectionSlug: string, itemSlug: string, locale?: string) =>
+    api.get(`/items/by-slug/${gameSlug}/${sectionSlug}/${itemSlug}`, { params: locale ? { locale } : {} }),
   getSkills: (id: string) => api.get(`/items/${id}/skills`),
   getBuilds: (id: string) => api.get(`/items/${id}/builds`),
   getChangelog: (id: string) => api.get(`/items/${id}/changelog`),

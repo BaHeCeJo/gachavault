@@ -2,8 +2,9 @@ use chrono::NaiveDate;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::models::{DbBuild, DbChangelog, DbItem, DbSkill};
+use crate::models::{DbBuild, DbChangelog, DbItem, DbItemFull, DbSkill};
 
+#[allow(dead_code)]
 pub async fn list_items(
     pool: &PgPool,
     game_id: Option<Uuid>,
@@ -31,6 +32,54 @@ pub async fn find_item_by_id(pool: &PgPool, id: Uuid) -> Result<Option<DbItem>, 
     sqlx::query_as!(DbItem, "SELECT * FROM items.items WHERE id = $1", id)
         .fetch_optional(pool)
         .await
+}
+
+pub async fn find_item_by_slugs(
+    pool: &PgPool,
+    game_slug: &str,
+    section_slug: &str,
+    item_slug: &str,
+) -> Result<Option<DbItem>, sqlx::Error> {
+    sqlx::query_as::<_, DbItem>(
+        "SELECT i.id, i.game_id, i.section_id, i.type_schema_id, i.slug, i.data, i.version,
+                i.created_by, i.created_at, i.updated_at
+         FROM items.items i
+         JOIN games.games g ON g.id = i.game_id
+         JOIN games.sections s ON s.id = i.section_id
+         WHERE g.slug = $1 AND s.slug = $2 AND i.slug = $3",
+    )
+    .bind(game_slug)
+    .bind(section_slug)
+    .bind(item_slug)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn list_items_full(
+    pool: &PgPool,
+    game_id: Option<Uuid>,
+    section_id: Option<Uuid>,
+    limit: i64,
+    offset: i64,
+) -> Result<Vec<DbItemFull>, sqlx::Error> {
+    sqlx::query_as::<_, DbItemFull>(
+        "SELECT i.id, i.game_id, i.section_id, i.type_schema_id, i.slug, i.data, i.version,
+                i.created_by, i.created_at, i.updated_at,
+                g.slug AS game_slug, s.slug AS section_slug
+         FROM items.items i
+         JOIN games.games g ON g.id = i.game_id
+         JOIN games.sections s ON s.id = i.section_id
+         WHERE ($1::uuid IS NULL OR i.game_id = $1)
+           AND ($2::uuid IS NULL OR i.section_id = $2)
+         ORDER BY i.slug ASC
+         LIMIT $3 OFFSET $4",
+    )
+    .bind(game_id)
+    .bind(section_id)
+    .bind(limit)
+    .bind(offset)
+    .fetch_all(pool)
+    .await
 }
 
 #[allow(dead_code)]

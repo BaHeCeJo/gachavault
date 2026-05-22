@@ -16,6 +16,22 @@ pub struct DbItem {
     pub updated_at: DateTime<Utc>,
 }
 
+#[derive(Debug, Clone, Serialize, sqlx::FromRow)]
+pub struct DbItemFull {
+    pub id: Uuid,
+    pub game_id: Uuid,
+    pub section_id: Uuid,
+    pub type_schema_id: Uuid,
+    pub slug: String,
+    pub data: serde_json::Value,
+    pub version: i32,
+    pub created_by: Uuid,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    pub game_slug: String,
+    pub section_slug: String,
+}
+
 #[derive(Debug, Serialize, sqlx::FromRow)]
 pub struct DbSkill {
     pub id: Uuid,
