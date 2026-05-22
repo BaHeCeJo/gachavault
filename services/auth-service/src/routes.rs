@@ -167,19 +167,26 @@ pub async fn login(
 ) -> AppResult<impl IntoResponse> {
     let user = db::find_user_by_email(&pool, &body.email.to_lowercase())
         .await
-        .map_err(AppError::Database)?
-        .ok_or_else(|| AppError::Unauthorized("Invalid email or password".into()))?;
+        .map_err(AppError::Database)?;
 
-    let password_hash = user
-        .password_hash
-        .as_deref()
-        .ok_or_else(|| AppError::Unauthorized("This account uses social login".into()))?;
+    // Always run argon2 even when the user doesn't exist so that response time
+    // doesn't reveal whether an email address is registered (timing oracle).
+    let dummy_hash = "$argon2id$v=19$m=19456,t=2,p=1$\
+        AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+    let hash_to_check = user
+        .as_ref()
+        .and_then(|u| u.password_hash.as_deref())
+        .unwrap_or(dummy_hash);
 
     let valid =
-        crypto::verify_password(&body.password, password_hash).map_err(AppError::Internal)?;
+        crypto::verify_password(&body.password, hash_to_check).map_err(AppError::Internal)?;
 
-    if !valid {
-        return Err(AppError::Unauthorized("Invalid email or password".into()));
+    let user = user
+        .filter(|_| valid)
+        .ok_or_else(|| AppError::Unauthorized("Invalid email or password".into()))?;
+
+    if user.password_hash.is_none() {
+        return Err(AppError::Unauthorized("This account uses social login".into()));
     }
 
     let tokens = issue_tokens(&pool, &user.id, &user.email, &user.username).await?;

@@ -20,7 +20,11 @@ function LoginContent() {
     setLoading(true);
     try {
       await login(email, password);
-      const redirect = searchParams.get("redirect") ?? "/";
+      const raw = searchParams.get("redirect") ?? "/";
+      // Only follow same-origin relative paths — reject anything that starts
+      // with "//" (protocol-relative) or contains a scheme (open redirect).
+      const redirect =
+        raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
       router.push(redirect);
     } catch (err: unknown) {
       const msg =
