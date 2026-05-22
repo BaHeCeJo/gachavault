@@ -222,7 +222,7 @@ services:
     image: ghcr.io/${GHCR_OWNER}/gachavault-web:latest
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3009/ > /dev/null 2>&1 || exit 1"]
+      test: ["CMD-SHELL", "nc -z localhost 3009 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
