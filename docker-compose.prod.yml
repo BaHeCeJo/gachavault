@@ -44,6 +44,12 @@ services:
   api-gateway:
     image: ghcr.io/${GHCR_OWNER}/gachavault-api-gateway:latest
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health > /dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     environment:
       PORT: 3000
       RUST_LOG: info
@@ -215,6 +221,12 @@ services:
   web:
     image: ghcr.io/${GHCR_OWNER}/gachavault-web:latest
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3009/ > /dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     environment:
       NEXT_PUBLIC_API_URL: ${BACKEND_URL}
       HOSTNAME: "0.0.0.0"
@@ -237,8 +249,10 @@ services:
       - certbot_www:/var/www/certbot:ro
       - certbot_conf:/etc/letsencrypt:ro
     depends_on:
-      - api-gateway
-      - web
+      api-gateway:
+        condition: service_healthy
+      web:
+        condition: service_healthy
     networks:
       - external
 
