@@ -195,7 +195,9 @@ pub async fn login(
     };
 
     if user.password_hash.is_none() {
-        return Err(AppError::Unauthorized("This account uses social login".into()));
+        return Err(AppError::Unauthorized(
+            "This account uses social login".into(),
+        ));
     }
 
     clear_login_failures(&email).await;
@@ -239,10 +241,7 @@ pub async fn refresh(
     ))
 }
 
-pub async fn logout(
-    State(pool): State<PgPool>,
-    auth: AuthUser,
-) -> AppResult<impl IntoResponse> {
+pub async fn logout(State(pool): State<PgPool>, auth: AuthUser) -> AppResult<impl IntoResponse> {
     db::delete_refresh_tokens_for_user(&pool, auth.id())
         .await
         .map_err(AppError::Database)?;
@@ -874,8 +873,7 @@ pub fn set_auth_cookie_headers(headers: &mut HeaderMap, tokens: &AuthTokens) {
 }
 
 pub fn clear_auth_cookie_headers(headers: &mut HeaderMap) {
-    let clear_access =
-        "access_token=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0";
+    let clear_access = "access_token=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0";
     let clear_refresh =
         "refresh_token=; HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth/refresh; Max-Age=0";
     if let Ok(v) = clear_access.parse() {

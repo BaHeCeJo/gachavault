@@ -49,9 +49,11 @@ impl IntoResponse for AppError {
                 "UNPROCESSABLE_ENTITY",
                 msg.clone(),
             ),
-            AppError::TooManyRequests(msg) => {
-                (StatusCode::TOO_MANY_REQUESTS, "TOO_MANY_REQUESTS", msg.clone())
-            }
+            AppError::TooManyRequests(msg) => (
+                StatusCode::TOO_MANY_REQUESTS,
+                "TOO_MANY_REQUESTS",
+                msg.clone(),
+            ),
             AppError::Internal(e) => {
                 tracing::error!("Internal error: {:?}", e);
                 (

@@ -167,12 +167,11 @@ async fn handle_upload(
         }
 
         // Detect type from magic bytes — the client-declared Content-Type is not trusted.
-        let (mime_type, ext) =
-            detect_image_type(&data).ok_or_else(|| {
-                AppError::BadRequest(
-                    "File content is not a recognised image (jpeg, png, webp, gif)".into(),
-                )
-            })?;
+        let (mime_type, ext) = detect_image_type(&data).ok_or_else(|| {
+            AppError::BadRequest(
+                "File content is not a recognised image (jpeg, png, webp, gif)".into(),
+            )
+        })?;
 
         let new_filename = format!("{}.{}", Uuid::new_v4(), ext);
         let storage_path = format!("{}/{}", upload_dir, new_filename);

@@ -4,15 +4,18 @@ use axum::{
     http::{header::LOCATION, StatusCode},
     response::{IntoResponse, Redirect, Response},
 };
+use chrono;
 use rand::Rng;
 use reqwest::Client;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
-use chrono;
 use shared_errors::{AppError, AppResult};
 use sqlx::PgPool;
 
-use crate::{db, routes::{issue_tokens, set_auth_cookie_headers}};
+use crate::{
+    db,
+    routes::{issue_tokens, set_auth_cookie_headers},
+};
 
 const GOOGLE_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
