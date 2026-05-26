@@ -70,7 +70,16 @@ jobs:
           build-args: |
             ${{ matrix.service.name == 'web' && format('NEXT_PUBLIC_API_URL={0}', secrets.BACKEND_URL) || '' }}
           cache-from: type=gha,scope=${{ matrix.service.name }}
-          cache-to: type=gha,scope=${{ matrix.service.name }},mode=max
+          # mode=max exports every intermediate layer, which fills the GHA
+          # cache quota (10 GB total across all caches) in only a handful of
+          # builds across 10 services. mode=min exports only the final stage
+          # — cuts cache size by ~5–10x and cuts the cache-export step time
+          # too. Speed difference on actual builds is negligible since the
+          # things rebuilt across pushes are the source layers, not the deps.
+          cache-to: type=gha,scope=${{ matrix.service.name }},mode=min
+          # Skip the SLSA provenance attestation; we're not consuming it
+          # downstream and it adds 30–60s per service push.
+          provenance: false
 
   deploy:
     name: Deploy to VPS
