@@ -40,7 +40,7 @@ function LoginContent() {
     <main className="flex min-h-[calc(100vh-57px)] items-center justify-center p-8">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Sign in to GachaVault</h1>
+          <h1 className="text-2xl font-bold">Sign in to Hotarumi</h1>
         </div>
 
         {error && (
