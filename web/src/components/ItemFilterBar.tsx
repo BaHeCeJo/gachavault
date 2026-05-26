@@ -124,11 +124,12 @@ export default function ItemFilterBar({
           .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name));
         const active = activeFilters[attrType] ?? new Set();
         return (
-          <div key={attrType} className="flex items-start gap-3 flex-wrap">
-            <span className="text-xs text-gray-500 w-20 shrink-0 pt-1.5 capitalize">
+          <div key={attrType} className="flex items-start gap-3">
+            <span className="text-xs text-gray-500 w-20 shrink-0 pt-2 capitalize">
               {typeLabel(attrType)}
             </span>
-            <div className="flex flex-wrap gap-1.5">
+            {/* Mobile: horizontal scroll strip — desktop: wrapped rows */}
+            <div className="flex gap-1.5 overflow-x-auto sm:flex-wrap min-w-0 -mx-1 px-1 scrollbar-thin">
               {opts.map(attr => {
                 const isActive = active.has(attr.key.toLowerCase());
                 return (
@@ -136,7 +137,7 @@ export default function ItemFilterBar({
                     key={attr.key}
                     onClick={() => onFilterToggle(attrType, attr.key.toLowerCase())}
                     title={attr.name}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs border transition-all ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-all shrink-0 ${
                       isActive
                         ? "border-transparent text-white shadow-sm"
                         : "border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200 bg-transparent"

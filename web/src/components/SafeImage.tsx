@@ -22,12 +22,11 @@ interface SafeImageProps {
   quality?: number;
 }
 
-// NOTE: `unoptimized` is still on because the standalone Docker runtime does
-// not bundle sharp yet. Flipping it off (and adding sharp to package.json +
-// the runtime stage of web/Dockerfile) is the rest of the perf budget item:
-// remote images then get transcoded to WebP/AVIF and width-variant srcsets.
-// Until then we at least pass through sizes/priority/loading so callers can
-// hint correctly and the markup is ready when the optimizer is enabled.
+// The Next image optimizer (powered by sharp in the standalone runtime — see
+// web/Dockerfile) handles AVIF/WebP transcoding and width-variant srcsets.
+// We pass sizes/priority/loading through so callers hint correctly. Set
+// `unoptimized` per-call only if the source serves a format the optimizer
+// can't handle (svg, animated gif).
 export function SafeImage({
   src,
   alt,
@@ -57,7 +56,6 @@ export function SafeImage({
       alt={alt}
       className={className}
       onError={() => setError(true)}
-      unoptimized
       sizes={sizes}
       priority={priority}
       loading={priority ? undefined : (loading ?? "lazy")}

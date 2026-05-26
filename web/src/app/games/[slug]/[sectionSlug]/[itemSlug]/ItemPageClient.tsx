@@ -392,9 +392,9 @@ export default function ItemPageClient({ initial }: ClientProps) {
         <span className="text-white">{name}</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8 mb-12">
-        {/* Left: image */}
-        <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6 md:gap-8 mb-12">
+        {/* Left: image — capped width and centered on mobile so the stats block stays above the fold */}
+        <div className="flex flex-col gap-4 w-full max-w-[220px] mx-auto md:mx-0 md:max-w-none">
           <div className={`rounded-xl overflow-hidden border bg-gray-900 shadow-lg ${rarityBorder} ${rarityGlow}`}>
             {imageUrl ? (
               <SafeImage src={imageUrl} alt={name} width={400} height={400} priority sizes="(min-width: 768px) 280px, 100vw" className="w-full object-cover" fallback={
@@ -440,7 +440,7 @@ export default function ItemPageClient({ initial }: ClientProps) {
                   key={key}
                   className={`flex items-start gap-4 px-4 py-3 ${i % 2 === 0 ? "bg-gray-900/60" : "bg-gray-900/30"}`}
                 >
-                  <span className="text-gray-400 text-sm w-32 shrink-0 capitalize pt-0.5">
+                  <span className="text-gray-400 text-sm w-24 sm:w-32 shrink-0 capitalize pt-0.5">
                     {label}
                   </span>
                   <div className="flex-1">

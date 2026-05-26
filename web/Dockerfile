@@ -12,5 +12,10 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+# Sharp powers /_next/image at runtime. Next traces it into the standalone
+# bundle when it's a direct dep, but we copy it explicitly so a missed trace
+# never silently downgrades the image optimizer to identity-passthrough.
+COPY --from=builder /app/node_modules/sharp ./node_modules/sharp
+COPY --from=builder /app/node_modules/@img ./node_modules/@img
 EXPOSE 3009
 CMD ["node", "server.js"]
