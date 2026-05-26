@@ -73,7 +73,25 @@
     "noGames": "Aucun jeu pour l'instant — revenez bientôt.",
     "noItems": "Aucun élément dans cette section pour l'instant.",
     "communityTierlists": "Tier Lists de la communauté",
-    "createYours": "Créer la vôtre"
+    "createYours": "Créer la vôtre",
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "sections": "Sections",
+      "tierlists": "Tier Lists",
+      "collection": "Collection"
+    },
+    "overview": {
+      "sectionsTitle": "Parcourir par section",
+      "tierlistsTitle": "Meilleures tier lists de la communauté",
+      "noTierlists": "Aucune tier list pour l'instant.",
+      "viewAll": "Voir tout"
+    },
+    "collection": {
+      "signInCTA": "Connectez-vous pour commencer le suivi",
+      "signInDesc": "Marquez ce que vous possédez, indiquez les niveaux, visualisez votre progression — synchronisé sur tous vos appareils.",
+      "summary": "{owned} sur {total} possédés",
+      "empty": "Vous n'avez encore rien ajouté pour ce jeu. Ouvrez un personnage pour l'ajouter."
+    }
   },
   "items": {
     "addToCollection": "+ Ajouter à la collection",

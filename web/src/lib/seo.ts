@@ -165,13 +165,13 @@ export function listAttributes(gameSlug: string) {
   return apiGet<SeoGameAttribute[]>(`/games/${encodeURIComponent(gameSlug)}/attributes`);
 }
 
-async function listItemsForSection(gameId: string, sectionId: string): Promise<SeoItem[]> {
+async function listItemsForGame(gameId: string): Promise<SeoItem[]> {
   const PAGE = 200;
   const all: SeoItem[] = [];
   let offset = 0;
   while (all.length < 100_000) {
     const page = await apiGet<SeoItem[]>(
-      `/items?game_id=${encodeURIComponent(gameId)}&section_id=${encodeURIComponent(sectionId)}&limit=${PAGE}&offset=${offset}`,
+      `/items?game_id=${encodeURIComponent(gameId)}&limit=${PAGE}&offset=${offset}`,
     );
     if (!page || page.length === 0) break;
     all.push(...page);
@@ -187,6 +187,8 @@ export interface GamePageBundle {
   attributes: SeoGameAttribute[];
   initialSectionId: string | null;
   initialItems: SeoItem[];
+  itemCountsBySection: Record<string, number>;
+  totalItems: number;
   locale: string;
 }
 
@@ -202,8 +204,15 @@ export async function getGamePageBundle(
   if (!game) return null;
   const sortedSections = (sections ?? []).slice().sort((a, b) => a.display_order - b.display_order);
   const firstSection = sortedSections[0] ?? null;
+  // One fetch for the whole game — gives us per-section counts for the
+  // Overview tab and the initial Sections-tab items in a single pass.
+  const allItems = await listItemsForGame(game.id);
+  const itemCountsBySection: Record<string, number> = {};
+  for (const item of allItems) {
+    itemCountsBySection[item.section_id] = (itemCountsBySection[item.section_id] ?? 0) + 1;
+  }
   const initialItems = firstSection
-    ? await listItemsForSection(game.id, firstSection.id)
+    ? allItems.filter((it) => it.section_id === firstSection.id)
     : [];
   return {
     game,
@@ -211,6 +220,8 @@ export async function getGamePageBundle(
     attributes: attributes ?? [],
     initialSectionId: firstSection?.id ?? null,
     initialItems,
+    itemCountsBySection,
+    totalItems: allItems.length,
     locale,
   };
 }

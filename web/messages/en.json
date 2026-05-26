@@ -73,7 +73,25 @@
     "noGames": "No games yet — check back soon.",
     "noItems": "No items in this section yet.",
     "communityTierlists": "Community Tier Lists",
-    "createYours": "Create yours"
+    "createYours": "Create yours",
+    "tabs": {
+      "overview": "Overview",
+      "sections": "Sections",
+      "tierlists": "Tier Lists",
+      "collection": "Collection"
+    },
+    "overview": {
+      "sectionsTitle": "Browse by section",
+      "tierlistsTitle": "Top community tier lists",
+      "noTierlists": "No community tier lists yet.",
+      "viewAll": "View all"
+    },
+    "collection": {
+      "signInCTA": "Sign in to start tracking",
+      "signInDesc": "Mark what you own, set levels, see completion at a glance — and it syncs across devices.",
+      "summary": "{owned} of {total} owned",
+      "empty": "You haven't added anything from this game yet. Open any character to add it."
+    }
   },
   "items": {
     "addToCollection": "+ Add to Collection",
