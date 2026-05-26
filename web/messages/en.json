@@ -12,14 +12,22 @@
   },
   "home": {
     "title": "Hotarumi",
-    "subtitle": "Characters, items, tier lists and collection tracking across multiple gacha games.",
+    "subtitle": "Track every character you own across multiple gacha games — in one place, on every device.",
     "searchPlaceholder": "Search characters, weapons, items…",
     "searchButton": "Search",
     "browseGames": "Browse Games",
-    "createAccount": "Create Account",
-    "createAccountHint": "Sync your collection and save tier lists across devices.",
-    "gamesSection": "Games",
-    "viewAll": "View all"
+    "createAccount": "Start Tracking",
+    "createAccountHint": "Free account · sync across devices · no install.",
+    "gamesSection": "Tracked games",
+    "viewAll": "View all",
+    "charactersCount": "{count, plural, =0 {No characters yet} one {# character} other {# characters}}",
+    "featuresTitle": "Built for gacha players",
+    "featureRosterTitle": "Track your roster",
+    "featureRosterDesc": "Mark what you own, set levels and constellations, see completion at a glance — across every game.",
+    "featureTierTitle": "Build tier lists",
+    "featureTierDesc": "Drag-and-drop tier lists for any game. Save them privately or publish a shareable link.",
+    "featureShareTitle": "Share with friends",
+    "featureShareDesc": "Public profile shows your collection. Send a friend your tier list and they can comment without signing up."
   },
   "auth": {
     "login": {

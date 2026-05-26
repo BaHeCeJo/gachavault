@@ -48,14 +48,14 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-6 text-sm">
           <LanguageSwitcher />
           <NavLink href="/games">Games</NavLink>
+          <NavLink href="/collections">Collection</NavLink>
+          <NavLink href="/tierlists">Tier Lists</NavLink>
           <NavLink href="/search">Search</NavLink>
 
           {!isLoading && (
             <>
               {user ? (
                 <>
-                  <NavLink href="/collections">Collection</NavLink>
-                  <NavLink href="/tierlists">Tier Lists</NavLink>
                   {isAdmin(user) && <NavLink href="/admin">Admin</NavLink>}
                   <div className="flex items-center gap-3 ml-2">
                     <Link
@@ -122,23 +122,19 @@ export function Navbar() {
             <NavLink href="/games" onClick={closeMenu}>
               <span className="block px-2 py-3">Games</span>
             </NavLink>
+            <NavLink href="/collections" onClick={closeMenu}>
+              <span className="block px-2 py-3">Collection</span>
+            </NavLink>
+            <NavLink href="/tierlists" onClick={closeMenu}>
+              <span className="block px-2 py-3">Tier Lists</span>
+            </NavLink>
             <NavLink href="/search" onClick={closeMenu}>
               <span className="block px-2 py-3">Search</span>
             </NavLink>
-            {!isLoading && user && (
-              <>
-                <NavLink href="/collections" onClick={closeMenu}>
-                  <span className="block px-2 py-3">Collection</span>
-                </NavLink>
-                <NavLink href="/tierlists" onClick={closeMenu}>
-                  <span className="block px-2 py-3">Tier Lists</span>
-                </NavLink>
-                {isAdmin(user) && (
-                  <NavLink href="/admin" onClick={closeMenu}>
-                    <span className="block px-2 py-3">Admin</span>
-                  </NavLink>
-                )}
-              </>
+            {!isLoading && user && isAdmin(user) && (
+              <NavLink href="/admin" onClick={closeMenu}>
+                <span className="block px-2 py-3">Admin</span>
+              </NavLink>
             )}
             <div className="h-px bg-gray-800 my-1" />
             {!isLoading && (

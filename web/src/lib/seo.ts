@@ -280,6 +280,32 @@ export interface PublicProfileBundle {
   totalOwned: number;
 }
 
+export interface HomeGameStat {
+  game: SeoGame;
+  characterCount: number;
+}
+
+export interface HomePageBundle {
+  stats: HomeGameStat[];
+  totalCharacters: number;
+}
+
+export async function getHomePageBundle(): Promise<HomePageBundle> {
+  const [games, items] = await Promise.all([listGames(), listAllItems()]);
+  const gameList = games ?? [];
+  const countsByGame = new Map<string, number>();
+  for (const item of items) {
+    countsByGame.set(item.game_id, (countsByGame.get(item.game_id) ?? 0) + 1);
+  }
+  const stats = gameList.map((g) => ({
+    game: g,
+    characterCount: countsByGame.get(g.id) ?? 0,
+  }));
+  // Sort by character count desc so the homepage features the heaviest games first.
+  stats.sort((a, b) => b.characterCount - a.characterCount);
+  return { stats, totalCharacters: items.length };
+}
+
 export async function getPublicProfileBundle(username: string): Promise<PublicProfileBundle | null> {
   const user = await getPublicUserByUsername(username);
   if (!user) return null;
