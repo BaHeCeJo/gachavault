@@ -1,20 +1,30 @@
 import type { Metadata } from "next";
-import { getGame, truncate } from "@/lib/seo";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
+import { getGamePageBundle, truncate } from "@/lib/seo";
 import GamePageClient from "./GamePageClient";
 
 interface RouteParams {
   params: Promise<{ slug: string }>;
 }
 
+async function readLocale(): Promise<string> {
+  const store = await cookies();
+  const raw = store.get("locale")?.value ?? "en";
+  return raw === "fr" ? "fr" : "en";
+}
+
 export async function generateMetadata({ params }: RouteParams): Promise<Metadata> {
   const { slug } = await params;
-  const game = await getGame(slug);
-  if (!game) {
+  const locale = await readLocale();
+  const bundle = await getGamePageBundle(slug, locale);
+  if (!bundle) {
     return {
       title: "Game not found",
       robots: { index: false, follow: false },
     };
   }
+  const { game } = bundle;
   const title = game.name;
   const description =
     truncate(game.description) ??
@@ -41,6 +51,10 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
   };
 }
 
-export default function Page() {
-  return <GamePageClient />;
+export default async function Page({ params }: RouteParams) {
+  const { slug } = await params;
+  const locale = await readLocale();
+  const bundle = await getGamePageBundle(slug, locale);
+  if (!bundle) notFound();
+  return <GamePageClient initial={bundle} />;
 }

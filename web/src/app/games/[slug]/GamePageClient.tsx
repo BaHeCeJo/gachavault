@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
-import { gamesApi, itemsApi, tierlistsApi } from "@/lib/api";
-import { getClientLocale } from "@/lib/locale";
+import { itemsApi, tierlistsApi } from "@/lib/api";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
 import { SafeImage } from "@/components/SafeImage";
+import type { GamePageBundle } from "@/lib/seo";
 
 interface Game {
   id: string;
@@ -115,49 +114,46 @@ function AttrBadge({ attr }: { attr: GameAttribute }) {
   );
 }
 
-export default function GamePageClient() {
-  const { slug } = useParams<{ slug: string }>();
-  const [game, setGame] = useState<Game | null>(null);
-  const [sections, setSections] = useState<Section[]>([]);
-  const [items, setItems] = useState<Item[]>([]);
+interface ClientProps {
+  initial: GamePageBundle;
+}
+
+export default function GamePageClient({ initial }: ClientProps) {
+  const game = initial.game as Game;
+  const sections = initial.sections as Section[];
+  const attrList = initial.attributes as GameAttribute[];
+  const attrMap = useMemo(() => buildAttrMap(attrList), [attrList]);
+
+  const [activeSection, setActiveSection] = useState<string | null>(initial.initialSectionId);
+  const [items, setItems] = useState<Item[]>(initial.initialItems as Item[]);
   const [tierlists, setTierlists] = useState<TierList[]>([]);
-  const [attrMap, setAttrMap] = useState<AttrMap>({});
-  const [attrList, setAttrList] = useState<GameAttribute[]>([]);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    const locale = getClientLocale();
-    Promise.all([gamesApi.get(slug, locale), gamesApi.getSections(slug), gamesApi.getAttributes(slug)])
-      .then(([gameRes, sectionsRes, attrsRes]) => {
-        const g: Game = gameRes.data.data;
-        setGame(g);
-        const secs: Section[] = sectionsRes.data.data ?? [];
-        setSections(secs);
-        if (secs.length > 0) setActiveSection(secs[0].id);
-        const attrs: GameAttribute[] = attrsRes.data.data ?? [];
-        setAttrList(attrs);
-        setAttrMap(buildAttrMap(attrs));
-        tierlistsApi.listPublicForGame(g.id)
-          .then((r) => setTierlists(r.data.data ?? []))
-          .catch(() => {});
-      })
-      .catch(() => setError("Failed to load game"))
-      .finally(() => setLoading(false));
-  }, [slug]);
+    if (!game.id) return;
+    tierlistsApi
+      .listPublicForGame(game.id)
+      .then((r) => setTierlists(r.data.data ?? []))
+      .catch(() => {});
+  }, [game.id]);
 
+  // Skip the fetch on first render — the server already shipped items for
+  // the initial section. Subsequent section switches do a client-side fetch.
+  const skipFirstSectionFetch = useRef(true);
   useEffect(() => {
-    if (!game || !activeSection) return;
+    if (!activeSection) return;
+    if (skipFirstSectionFetch.current && activeSection === initial.initialSectionId) {
+      skipFirstSectionFetch.current = false;
+      return;
+    }
     setActiveFilters({});
     setSearch("");
     itemsApi
       .listAll<Item>({ game_id: game.id, section_id: activeSection })
       .then((all) => setItems(all))
       .catch(() => setItems([]));
-  }, [game, activeSection]);
+  }, [game.id, activeSection, initial.initialSectionId]);
 
   const visibleItems = useMemo(
     () => filterItems(items, activeFilters, search),
@@ -172,26 +168,6 @@ export default function GamePageClient() {
       next[attrType] = cur;
       return next;
     });
-  }
-
-  if (loading) {
-    return (
-      <main className="max-w-7xl mx-auto px-6 py-10">
-        <div className="h-56 rounded-xl bg-gray-800 animate-pulse mb-6" />
-        <div className="h-8 w-48 bg-gray-800 animate-pulse rounded" />
-      </main>
-    );
-  }
-
-  if (error || !game) {
-    return (
-      <main className="max-w-7xl mx-auto px-6 py-10">
-        <p className="text-red-400">{error || "Game not found"}</p>
-        <Link href="/games" className="text-sm text-gray-400 hover:text-white mt-4 inline-block">
-          ← Back to games
-        </Link>
-      </main>
-    );
   }
 
   return (
@@ -278,7 +254,7 @@ export default function GamePageClient() {
             return (
               <Link
                 key={item.id}
-                href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/games/${slug}/items/${item.id}`}
+                href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/games/${game.slug}/items/${item.id}`}
                 className={`flex flex-col rounded-lg border bg-gray-900 overflow-hidden transition-all duration-200 group hover:scale-[1.03] hover:shadow-lg ${
                   rarityStr && RARITY_BORDER[rarityStr]
                     ? `${RARITY_BORDER[rarityStr]} hover:shadow-lg ${RARITY_GLOW[rarityStr]}`

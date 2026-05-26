@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { gamesApi, itemsApi } from "@/lib/api";
-import { getClientLocale } from "@/lib/locale";
 import { SafeImage } from "@/components/SafeImage";
+import type { ItemPageBundle } from "@/lib/seo";
 
 interface Item {
   id: string;
@@ -16,8 +15,8 @@ interface Item {
   section_slug: string;
   type_schema_id: string | null;
   data: Record<string, unknown>;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface ItemFull {
@@ -250,151 +249,116 @@ function FieldValue({
 
 const HIDDEN_IN_DETAILS = new Set(["image_url", "icon_url", "name"]);
 
-export default function ItemPageClient() {
-  const { slug, sectionSlug, itemSlug } = useParams<{ slug: string; sectionSlug: string; itemSlug: string }>();
-  const [item, setItem] = useState<Item | null>(null);
-  const [fields, setFields] = useState<SchemaField[]>([]);
-  const [attrMap, setAttrMap] = useState<AttrMap>({});
-  const [gameName, setGameName] = useState(slug);
-  const [sectionName, setSectionName] = useState("");
+interface ClientProps {
+  initial: ItemPageBundle;
+}
+
+export default function ItemPageClient({ initial }: ClientProps) {
+  const item = initial.item as Item;
+  const slug = item.game_slug;
+  const itemSlug = item.slug;
+  const gameName = initial.game?.name ?? slug;
+  const sectionName = initial.sectionName;
+  const fields = initial.fields as SchemaField[];
+  const attrMap = useMemo(() => buildAttrMap(initial.attributes), [initial.attributes]);
+
   const [relatedItems, setRelatedItems] = useState<ItemFull[]>([]);
   const [resolvedRefs, setResolvedRefs] = useState<Map<string, { id: string; slug: string; name: string; game_slug?: string; section_slug?: string }>>(new Map());
   const [backRefs, setBackRefs] = useState<Map<string, { id: string; slug: string; name: string; game_slug?: string; section_slug?: string }[]>>(new Map());
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    const locale = getClientLocale();
-    Promise.all([
-      itemsApi.getBySlug(slug, sectionSlug, itemSlug, locale),
-      gamesApi.get(slug, locale),
-      gamesApi.getAttributes(slug),
-      gamesApi.listSchemas(slug),
-      gamesApi.getSections(slug),
-    ])
-      .then(([itemRes, gameRes, attrsRes, schemasRes, sectionsRes]) => {
-        const it: Item = itemRes.data.data;
-        setItem(it);
-        setGameName(gameRes.data.data.name);
+    // Primary data is already server-rendered via initial. This effect only
+    // hydrates secondary data the SSR pass intentionally skips: cross-item
+    // refs, backrefs (which require scanning whole sections), and the
+    // related-items grid.
+    const it = item;
 
-        const attrs: GameAttribute[] = attrsRes.data.data ?? [];
-        setAttrMap(buildAttrMap(attrs));
-
-        const schemas = schemasRes.data.data ?? [];
-        const schema = schemas.find((s: { id: string; fields: SchemaField[] }) => s.id === it.type_schema_id);
-        const schemaFields: SchemaField[] = schema?.fields ?? [];
-        if (schemaFields.length > 0) setFields(schemaFields);
-
-        const sections = sectionsRes.data.data ?? [];
-        const section = sections.find((s: { id: string; name: string }) => s.id === it.section_id);
-        if (section) setSectionName(section.name);
-
-        // Resolve itemref fields
-        const itemrefIds = schemaFields
-          .filter((f) => f.type === "itemref")
-          .map((f) => it.data[f.key])
-          .filter((v): v is string => typeof v === "string" && v.length > 0);
-        if (itemrefIds.length > 0) {
-          Promise.all(itemrefIds.map((refId) => itemsApi.get(refId).catch(() => null)))
-            .then((results) => {
-              const map = new Map<string, { id: string; slug: string; name: string; game_slug?: string; section_slug?: string }>();
-              results.forEach((r, i) => {
-                if (r?.data?.data) {
-                  const refItem = r.data.data;
-                  map.set(itemrefIds[i], {
-                    id: refItem.id,
-                    slug: refItem.slug,
-                    name: (refItem.data?.name as string) ?? refItem.slug,
-                    game_slug: refItem.game_slug,
-                    section_slug: refItem.section_slug,
-                  });
-                }
+    const itemrefIds = fields
+      .filter((f) => f.type === "itemref")
+      .map((f) => it.data[f.key])
+      .filter((v): v is string => typeof v === "string" && v.length > 0);
+    if (itemrefIds.length > 0) {
+      Promise.all(itemrefIds.map((refId) => itemsApi.get(refId).catch(() => null)))
+        .then((results) => {
+          const map = new Map<string, { id: string; slug: string; name: string; game_slug?: string; section_slug?: string }>();
+          results.forEach((r, i) => {
+            if (r?.data?.data) {
+              const refItem = r.data.data;
+              map.set(itemrefIds[i], {
+                id: refItem.id,
+                slug: refItem.slug,
+                name: (refItem.data?.name as string) ?? refItem.slug,
+                game_slug: refItem.game_slug,
+                section_slug: refItem.section_slug,
               });
-              setResolvedRefs(map);
-            })
-            .catch(() => {});
-        }
-
-        // Resolve backref fields
-        const getFieldSources = (f: SchemaField) =>
-          f.sources?.length
-            ? f.sources
-            : f.source_section && f.source_field
-              ? [{ source_section: f.source_section, source_field: f.source_field }]
-              : [];
-        const backrefFields = schemaFields.filter((f) => f.type === "backref" && getFieldSources(f).length > 0);
-        if (backrefFields.length > 0) {
-          const allSources = backrefFields.flatMap(getFieldSources);
-          const uniqueSlugs = Array.from(new Set(allSources.map((s) => s.source_section)));
-          Promise.all(
-            uniqueSlugs.map(async (secSlug) => {
-              const section = sections.find((s: { id: string; slug: string }) => s.slug === secSlug);
-              if (!section) return [secSlug, []] as [string, ItemFull[]];
-              const sourceItems = await itemsApi.listAll<ItemFull>({ game_id: it.game_id, section_id: section.id });
-              return [secSlug, sourceItems] as [string, ItemFull[]];
-            })
-          ).then((results) => {
-            const sectionItems = new Map<string, ItemFull[]>(results);
-            const newBackRefs = new Map<string, { id: string; slug: string; name: string; game_slug?: string; section_slug?: string }[]>();
-            for (const field of backrefFields) {
-              const seen = new Set<string>();
-              const matching: { id: string; slug: string; name: string; game_slug?: string; section_slug?: string }[] = [];
-              for (const src of getFieldSources(field)) {
-                const sourceItems = sectionItems.get(src.source_section) ?? [];
-                for (const sourceItem of sourceItems) {
-                  if (seen.has(sourceItem.id)) continue;
-                  const fieldValue = sourceItem.data[src.source_field];
-                  const matches = Array.isArray(fieldValue)
-                    ? (fieldValue as { id?: string }[]).some((entry) => entry.id === it.id)
-                    : fieldValue === it.id;
-                  if (matches) {
-                    seen.add(sourceItem.id);
-                    matching.push({
-                      id: sourceItem.id,
-                      slug: sourceItem.slug,
-                      name: (sourceItem.data?.name as string) ?? sourceItem.slug,
-                      game_slug: sourceItem.game_slug,
-                      section_slug: sourceItem.section_slug,
-                    });
-                  }
-                }
-              }
-              newBackRefs.set(field.key, matching);
             }
-            setBackRefs(newBackRefs);
-          }).catch(() => {});
-        }
+          });
+          setResolvedRefs(map);
+        })
+        .catch(() => {});
+    }
 
-        // Load related items
-        return itemsApi.list({ game_id: it.game_id, section_id: it.section_id, limit: 12, offset: 0 });
-      })
+    const getFieldSources = (f: SchemaField) =>
+      f.sources?.length
+        ? f.sources
+        : f.source_section && f.source_field
+          ? [{ source_section: f.source_section, source_field: f.source_field }]
+          : [];
+    const backrefFields = fields.filter((f) => f.type === "backref" && getFieldSources(f).length > 0);
+    if (backrefFields.length > 0) {
+      const allSources = backrefFields.flatMap(getFieldSources);
+      const uniqueSlugs = Array.from(new Set(allSources.map((s) => s.source_section)));
+      (async () => {
+        const sectionsRes = await gamesApi.getSections(slug).catch(() => null);
+        const sections: Array<{ id: string; slug: string }> = sectionsRes?.data?.data ?? [];
+        const results = await Promise.all(
+          uniqueSlugs.map(async (secSlug) => {
+            const section = sections.find((s) => s.slug === secSlug);
+            if (!section) return [secSlug, []] as [string, ItemFull[]];
+            const sourceItems = await itemsApi.listAll<ItemFull>({ game_id: it.game_id, section_id: section.id });
+            return [secSlug, sourceItems] as [string, ItemFull[]];
+          })
+        );
+        const sectionItems = new Map<string, ItemFull[]>(results);
+        const newBackRefs = new Map<string, { id: string; slug: string; name: string; game_slug?: string; section_slug?: string }[]>();
+        for (const field of backrefFields) {
+          const seen = new Set<string>();
+          const matching: { id: string; slug: string; name: string; game_slug?: string; section_slug?: string }[] = [];
+          for (const src of getFieldSources(field)) {
+            const sourceItems = sectionItems.get(src.source_section) ?? [];
+            for (const sourceItem of sourceItems) {
+              if (seen.has(sourceItem.id)) continue;
+              const fieldValue = sourceItem.data[src.source_field];
+              const matches = Array.isArray(fieldValue)
+                ? (fieldValue as { id?: string }[]).some((entry) => entry.id === it.id)
+                : fieldValue === it.id;
+              if (matches) {
+                seen.add(sourceItem.id);
+                matching.push({
+                  id: sourceItem.id,
+                  slug: sourceItem.slug,
+                  name: (sourceItem.data?.name as string) ?? sourceItem.slug,
+                  game_slug: sourceItem.game_slug,
+                  section_slug: sourceItem.section_slug,
+                });
+              }
+            }
+          }
+          newBackRefs.set(field.key, matching);
+        }
+        setBackRefs(newBackRefs);
+      })().catch(() => {});
+    }
+
+    itemsApi
+      .list({ game_id: it.game_id, section_id: it.section_id, limit: 12, offset: 0 })
       .then((relRes) => {
         if (relRes?.data?.data) {
           setRelatedItems((relRes.data.data as ItemFull[]).filter((r: ItemFull) => r.slug !== itemSlug));
         }
       })
-      .catch(() => setError("Failed to load item"))
-      .finally(() => setLoading(false));
-  }, [slug, sectionSlug, itemSlug]);
-
-  if (loading) {
-    return (
-      <main className="max-w-5xl mx-auto px-6 py-10">
-        <div className="h-64 rounded-xl bg-gray-800 animate-pulse mb-6" />
-      </main>
-    );
-  }
-
-  if (error || !item) {
-    return (
-      <main className="max-w-5xl mx-auto px-6 py-10">
-        <p className="text-red-400">{error || "Item not found"}</p>
-        <Link href={`/games/${slug}`} className="text-sm text-gray-400 hover:text-white mt-4 inline-block">
-          ← Back to {gameName}
-        </Link>
-      </main>
-    );
-  }
+      .catch(() => {});
+  }, [item, fields, slug, itemSlug]);
 
   const name = (item.data?.name as string) ?? item.slug;
   const imageUrl = item.data?.image_url as string | undefined;

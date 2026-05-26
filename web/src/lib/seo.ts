@@ -11,6 +11,12 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://hotarumi.co
 
 type ApiEnvelope<T> = { success: boolean; data: T };
 
+function withLocale(path: string, locale?: string): string {
+  if (!locale) return path;
+  const sep = path.includes("?") ? "&" : "?";
+  return `${path}${sep}locale=${encodeURIComponent(locale)}`;
+}
+
 async function apiGet<T>(path: string, revalidate = 300): Promise<T | null> {
   try {
     const res = await fetch(`${API_BASE}/api/v1${path}`, {
@@ -41,6 +47,7 @@ export interface SeoItem {
   game_slug?: string;
   section_id: string;
   section_slug?: string;
+  type_schema_id: string | null;
   data: Record<string, unknown>;
 }
 
@@ -58,14 +65,156 @@ export interface SeoPublicUser {
   created_at: string;
 }
 
-export function getGame(slug: string) {
-  return apiGet<SeoGame>(`/games/${encodeURIComponent(slug)}`);
+export function getGame(slug: string, locale?: string) {
+  return apiGet<SeoGame>(withLocale(`/games/${encodeURIComponent(slug)}`, locale));
 }
 
-export function getItemBySlugs(gameSlug: string, sectionSlug: string, itemSlug: string) {
+export function getItemBySlugs(
+  gameSlug: string,
+  sectionSlug: string,
+  itemSlug: string,
+  locale?: string,
+) {
   return apiGet<SeoItem>(
-    `/items/by-slug/${encodeURIComponent(gameSlug)}/${encodeURIComponent(sectionSlug)}/${encodeURIComponent(itemSlug)}`,
+    withLocale(
+      `/items/by-slug/${encodeURIComponent(gameSlug)}/${encodeURIComponent(sectionSlug)}/${encodeURIComponent(itemSlug)}`,
+      locale,
+    ),
   );
+}
+
+export interface SeoSection {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  display_order: number;
+}
+
+export interface SeoSchemaField {
+  key: string;
+  label: string;
+  type: string;
+  attribute_type?: string;
+  item_section?: string;
+  qty_range?: boolean;
+  source_section?: string;
+  source_field?: string;
+  sources?: { source_section: string; source_field: string }[];
+  options?: string[];
+}
+
+export interface SeoSchema {
+  id: string;
+  name: string;
+  fields: SeoSchemaField[];
+}
+
+export interface SeoGameAttribute {
+  id: string;
+  attr_type: string;
+  key: string;
+  name: string;
+  icon_url: string | null;
+  color: string | null;
+}
+
+export function listSections(gameSlug: string) {
+  return apiGet<SeoSection[]>(`/games/${encodeURIComponent(gameSlug)}/sections`);
+}
+
+export function listSchemas(gameSlug: string) {
+  return apiGet<SeoSchema[]>(`/games/${encodeURIComponent(gameSlug)}/schemas`);
+}
+
+export function listAttributes(gameSlug: string) {
+  return apiGet<SeoGameAttribute[]>(`/games/${encodeURIComponent(gameSlug)}/attributes`);
+}
+
+async function listItemsForSection(gameId: string, sectionId: string): Promise<SeoItem[]> {
+  const PAGE = 200;
+  const all: SeoItem[] = [];
+  let offset = 0;
+  while (all.length < 100_000) {
+    const page = await apiGet<SeoItem[]>(
+      `/items?game_id=${encodeURIComponent(gameId)}&section_id=${encodeURIComponent(sectionId)}&limit=${PAGE}&offset=${offset}`,
+    );
+    if (!page || page.length === 0) break;
+    all.push(...page);
+    if (page.length < PAGE) break;
+    offset += PAGE;
+  }
+  return all;
+}
+
+export interface GamePageBundle {
+  game: SeoGame;
+  sections: SeoSection[];
+  attributes: SeoGameAttribute[];
+  initialSectionId: string | null;
+  initialItems: SeoItem[];
+  locale: string;
+}
+
+export async function getGamePageBundle(
+  gameSlug: string,
+  locale: string,
+): Promise<GamePageBundle | null> {
+  const [game, sections, attributes] = await Promise.all([
+    getGame(gameSlug, locale),
+    listSections(gameSlug),
+    listAttributes(gameSlug),
+  ]);
+  if (!game) return null;
+  const sortedSections = (sections ?? []).slice().sort((a, b) => a.display_order - b.display_order);
+  const firstSection = sortedSections[0] ?? null;
+  const initialItems = firstSection
+    ? await listItemsForSection(game.id, firstSection.id)
+    : [];
+  return {
+    game,
+    sections: sortedSections,
+    attributes: attributes ?? [],
+    initialSectionId: firstSection?.id ?? null,
+    initialItems,
+    locale,
+  };
+}
+
+export interface ItemPageBundle {
+  item: SeoItem;
+  game: SeoGame | null;
+  fields: SeoSchemaField[];
+  attributes: SeoGameAttribute[];
+  sectionName: string;
+  locale: string;
+}
+
+export async function getItemPageBundle(
+  gameSlug: string,
+  sectionSlug: string,
+  itemSlug: string,
+  locale: string,
+): Promise<ItemPageBundle | null> {
+  const [item, game, sections, schemas, attributes] = await Promise.all([
+    getItemBySlugs(gameSlug, sectionSlug, itemSlug, locale),
+    getGame(gameSlug, locale),
+    listSections(gameSlug),
+    listSchemas(gameSlug),
+    listAttributes(gameSlug),
+  ]);
+  if (!item) return null;
+  const schema = schemas?.find((s) => s.id === item.type_schema_id);
+  const fields = schema?.fields ?? [];
+  const section = sections?.find((s) => s.id === item.section_id);
+  return {
+    item,
+    game,
+    fields,
+    attributes: attributes ?? [],
+    sectionName: section?.name ?? "",
+    locale,
+  };
 }
 
 export function getTierListByShareSlug(slug: string) {
