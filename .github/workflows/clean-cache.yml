@@ -1,0 +1,90 @@
+name: Clean Actions Cache
+
+# Manual trigger only. Useful when the 10 GB cache quota starts blocking
+# new runs from being queued, or to wipe stale caches when changing the
+# cache-to mode/scope. mode=min on deploy.yml keeps growth slow but old
+# mode=max caches stick around until they age out or are deleted here.
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "Optional cache key prefix (empty = all caches)"
+        required: false
+        default: ""
+      dry_run:
+        description: "List only, don't delete"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List + delete caches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PREFIX: ${{ inputs.scope }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "$PREFIX" ]; then
+            echo "Filtering on prefix: $PREFIX"
+            query="/repos/${{ github.repository }}/actions/caches?key=$PREFIX&per_page=100"
+          else
+            echo "Listing all caches"
+            query="/repos/${{ github.repository }}/actions/caches?per_page=100"
+          fi
+
+          # Pull id + size + key so the summary shows what we're touching.
+          gh api --paginate "$query" \
+            -q '.actions_caches[] | [.id, .size_in_bytes, .key] | @tsv' \
+            > /tmp/caches.tsv
+
+          total=$(wc -l < /tmp/caches.tsv || echo 0)
+          # Bytes are big numbers, so use awk for the sum.
+          total_bytes=$(awk -F'\t' '{s += $2} END { print (s+0) }' /tmp/caches.tsv)
+          total_mb=$(( total_bytes / 1024 / 1024 ))
+          echo "Found $total cache(s), totaling ${total_mb} MB"
+
+          {
+            echo "## Cache cleanup"
+            echo ""
+            echo "- Filter: \`${PREFIX:-<all>}\`"
+            echo "- Dry run: \`$DRY_RUN\`"
+            echo "- Caches matched: **$total** (${total_mb} MB)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$total" -eq 0 ]; then
+            echo "Nothing to do."
+            exit 0
+          fi
+
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "Dry run — skipping deletes. First 20 entries:"
+            head -20 /tmp/caches.tsv
+            exit 0
+          fi
+
+          deleted=0
+          failed=0
+          while IFS=$'\t' read -r id size key; do
+            if gh api -X DELETE "/repos/${{ github.repository }}/actions/caches/$id" >/dev/null 2>&1; then
+              deleted=$((deleted + 1))
+            else
+              failed=$((failed + 1))
+              echo "Failed to delete cache $id ($key)"
+            fi
+          done < /tmp/caches.tsv
+
+          echo "Deleted $deleted, failed $failed"
+          {
+            echo "- Deleted: **$deleted**"
+            echo "- Failed: **$failed**"
+          } >> "$GITHUB_STEP_SUMMARY"
