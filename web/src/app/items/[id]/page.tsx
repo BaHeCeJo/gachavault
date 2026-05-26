@@ -328,37 +328,42 @@ export default function ItemDetailPage() {
             <div className="flex flex-wrap gap-2 mt-3">
               {schemaFields
                 .filter((f) => !["name", "image_url", "description"].includes(f.key))
-                .map((field) => {
+                .flatMap((field) => {
                   const raw = item.data?.[field.key];
-                  if (raw == null || raw === "") return null;
-                  const val = String(raw);
+                  if (raw == null || raw === "") return [];
 
                   if (field.type === "attribute" && field.attribute_type) {
-                    const attr = attrsByType.get(field.attribute_type)?.get(val);
-                    if (!attr && !val) return null;
-                    return (
-                      <span
-                        key={field.key}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs"
-                        style={{
-                          backgroundColor: `${attr?.color ?? "#555"}28`,
-                          borderWidth: 1,
-                          borderStyle: "solid",
-                          borderColor: `${attr?.color ?? "#555"}60`,
-                          color: attr?.color ?? "#ccc",
-                        }}
-                        title={field.label}
-                      >
-                        {attr?.icon_url && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={attr.icon_url} alt={attr.name} className="w-4 h-4 object-contain" />
-                        )}
-                        {attr ? attr.name : val}
-                      </span>
-                    );
+                    const vals = Array.isArray(raw)
+                      ? (raw as unknown[]).map((v) => String(v))
+                      : [String(raw)];
+                    return vals.map((val) => {
+                      const attr = attrsByType.get(field.attribute_type!)?.get(val);
+                      if (!attr && !val) return null;
+                      return (
+                        <span
+                          key={`${field.key}-${val}`}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs"
+                          style={{
+                            backgroundColor: `${attr?.color ?? "#555"}28`,
+                            borderWidth: 1,
+                            borderStyle: "solid",
+                            borderColor: `${attr?.color ?? "#555"}60`,
+                            color: attr?.color ?? "#ccc",
+                          }}
+                          title={field.label}
+                        >
+                          {attr?.icon_url && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={attr.icon_url} alt={attr.name} className="w-4 h-4 object-contain" />
+                          )}
+                          {attr ? attr.name : val}
+                        </span>
+                      );
+                    });
                   }
 
-                  return (
+                  const val = String(raw);
+                  return [(
                     <span
                       key={field.key}
                       className="px-2.5 py-1 rounded-lg text-xs bg-gray-800 border border-gray-700 text-gray-300"
@@ -366,7 +371,7 @@ export default function ItemDetailPage() {
                     >
                       {field.label}: {val}
                     </span>
-                  );
+                  )];
                 })}
             </div>
           )}

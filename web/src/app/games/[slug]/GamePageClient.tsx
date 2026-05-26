@@ -314,14 +314,21 @@ export default function GamePageClient({ initial }: ClientProps) {
               {visibleItems.map((item) => {
                 const name = (item.data?.name as string) ?? item.slug;
                 const imageUrl = (item.data?.image_url ?? item.data?.icon_url) as string | undefined;
-                const elementAttr = lookupAttr(attrMap, "element", item.data?.element)
-                  ?? lookupAttr(attrMap, "attribute", item.data?.element);
+                // Card badge picks one attribute to show; for multi-value
+                // fields we just use the first entry rather than stacking.
+                const firstVal = (v: unknown): unknown => Array.isArray(v) ? v[0] : v;
+                const elementAttr = lookupAttr(attrMap, "element", firstVal(item.data?.element))
+                  ?? lookupAttr(attrMap, "attribute", firstVal(item.data?.element));
                 const rarity = item.data?.rarity;
                 const rarityStr = typeof rarity === "number" ? undefined : String(rarity ?? "");
                 const badgeAttrs = Object.keys(item.data ?? {})
-                  .filter(k => k !== "element" && attrMap[k] && typeof item.data[k] === "string")
+                  .filter(k => {
+                    if (k === "element" || !attrMap[k]) return false;
+                    const v = item.data[k];
+                    return typeof v === "string" || (Array.isArray(v) && v.length > 0);
+                  })
                   .slice(0, 1)
-                  .map(k => lookupAttr(attrMap, k, item.data[k]))
+                  .map(k => lookupAttr(attrMap, k, firstVal(item.data[k])))
                   .filter(Boolean) as GameAttribute[];
 
                 return (
@@ -446,8 +453,9 @@ function OverviewTab({
             {previewItems.map((item) => {
               const name = (item.data?.name as string) ?? item.slug;
               const imageUrl = (item.data?.image_url ?? item.data?.icon_url) as string | undefined;
-              const elementAttr = lookupAttr(attrMap, "element", item.data?.element)
-                ?? lookupAttr(attrMap, "attribute", item.data?.element);
+              const firstEl = Array.isArray(item.data?.element) ? item.data.element[0] : item.data?.element;
+              const elementAttr = lookupAttr(attrMap, "element", firstEl)
+                ?? lookupAttr(attrMap, "attribute", firstEl);
               const rarity = item.data?.rarity;
               const rarityStr = typeof rarity === "number" ? undefined : String(rarity ?? "");
               return (

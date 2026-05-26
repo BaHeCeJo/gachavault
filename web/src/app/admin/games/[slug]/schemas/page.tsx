@@ -40,6 +40,9 @@ interface SchemaField {
   label: string;
   type: FieldType;
   attribute_type?: string;
+  // Multi-value attribute: store as string[] (each entry is an attribute key)
+  // so pages can render multiple pills. Only meaningful when type=attribute.
+  multi?: boolean;
   item_section?: string;
   qty_range?: boolean;
   source_section?: string;
@@ -93,6 +96,7 @@ function parseFieldsValue(raw: unknown): SchemaField[] {
       const type = (typeof f.type === "string" ? (f.type as FieldType) : "text");
       const out: SchemaField = { key, label, type };
       if (typeof f.attribute_type === "string") out.attribute_type = f.attribute_type;
+      if (typeof f.multi === "boolean") out.multi = f.multi;
       if (typeof f.item_section === "string") out.item_section = f.item_section;
       if (typeof f.qty_range === "boolean") out.qty_range = f.qty_range;
       if (typeof f.source_section === "string") out.source_section = f.source_section;
@@ -122,6 +126,9 @@ function pruneField(f: SchemaField): SchemaField {
       if (f.options && f.options.length > 0) out.options = f.options;
       break;
     case "attribute":
+      if (f.attribute_type) out.attribute_type = f.attribute_type;
+      if (f.multi) out.multi = true;
+      break;
     case "resistances":
       if (f.attribute_type) out.attribute_type = f.attribute_type;
       break;
@@ -696,17 +703,30 @@ function FieldCard({
       )}
 
       {(field.type === "attribute" || field.type === "resistances") && (
-        <div>
-          <label className="text-xs text-gray-500 block mb-1">Attribute type</label>
-          <AttributeTypeInput
-            value={field.attribute_type ?? ""}
-            onChange={(v) => onChange({ attribute_type: v })}
-            options={attrTypes}
-          />
-          <p className="text-xs text-gray-600 mt-1">
-            Which attribute group this field pulls from (e.g. <code>element</code>, <code>class</code>). Manage attributes under{" "}
-            <span className="text-gray-500">Attributes</span> on the game.
-          </p>
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs text-gray-500 block mb-1">Attribute type</label>
+            <AttributeTypeInput
+              value={field.attribute_type ?? ""}
+              onChange={(v) => onChange({ attribute_type: v })}
+              options={attrTypes}
+            />
+            <p className="text-xs text-gray-600 mt-1">
+              Which attribute group this field pulls from (e.g. <code>element</code>, <code>class</code>). Manage attributes under{" "}
+              <span className="text-gray-500">Attributes</span> on the game.
+            </p>
+          </div>
+          {field.type === "attribute" && (
+            <label className="flex items-center gap-2 text-sm text-gray-300">
+              <input
+                type="checkbox"
+                checked={!!field.multi}
+                onChange={(e) => onChange({ multi: e.target.checked })}
+                className="accent-amber-500"
+              />
+              Allow multiple values (renders as pills, e.g. tags like DPS + AoE + Survival)
+            </label>
+          )}
         </div>
       )}
 

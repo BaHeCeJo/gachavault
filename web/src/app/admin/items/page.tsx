@@ -18,6 +18,7 @@ interface SchemaField {
   type: "text" | "number" | "url" | "textarea" | "select" | "attribute" | "date" | "itemref" | "itemlist" | "resistances" | "backref";
   options?: string[];
   attribute_type?: string;
+  multi?: boolean;
   item_section?: string;
   qty_range?: boolean;
   source_section?: string;
@@ -212,7 +213,21 @@ export default function AdminItemsPage() {
         next.set(attrType, group);
         return next;
       });
-      setFieldValue(fieldKey, created.key);
+      // If this field is multi-value, append; otherwise replace.
+      const currentSchema = schemas.find((s) => s.id === form.type_schema_id);
+      const currentFields: SchemaField[] = Array.isArray(currentSchema?.fields)
+        ? (currentSchema.fields as SchemaField[])
+        : [];
+      const fieldDef = currentFields.find((f) => f.key === fieldKey);
+      if (fieldDef?.type === "attribute" && fieldDef.multi) {
+        const raw = getRawFieldValue(fieldKey);
+        const existing = Array.isArray(raw)
+          ? (raw as unknown[]).filter((v): v is string => typeof v === "string")
+          : [];
+        setFieldValue(fieldKey, [...existing, created.key]);
+      } else {
+        setFieldValue(fieldKey, created.key);
+      }
       setInlineAttrField(null);
       setInlineAttrName("");
     } catch {
@@ -527,6 +542,109 @@ export default function AdminItemsPage() {
                   {/* Schema fields (excluding image_url) */}
                   {nonImageFields.map((field) => {
                     const currentVal = getFieldValue(field.key);
+                    if (field.type === "attribute" && field.multi) {
+                      const attrType = field.attribute_type ?? field.key;
+                      const opts = attrsByType.get(attrType) ?? [];
+                      const raw = getRawFieldValue(field.key);
+                      const selectedKeys = Array.isArray(raw)
+                        ? (raw as unknown[]).filter((v): v is string => typeof v === "string")
+                        : typeof raw === "string" && raw
+                          ? [raw]
+                          : [];
+                      const toggleKey = (k: string) => {
+                        const next = selectedKeys.includes(k)
+                          ? selectedKeys.filter((x) => x !== k)
+                          : [...selectedKeys, k];
+                        setFieldValue(field.key, next);
+                      };
+                      const isCreating = inlineAttrField === field.key;
+                      return (
+                        <div key={field.key}>
+                          <label className="text-xs text-gray-400 block mb-1">{field.label}</label>
+                          <div className="flex flex-wrap gap-1.5">
+                            {opts.map((a) => {
+                              const active = selectedKeys.includes(a.key);
+                              return (
+                                <button
+                                  key={a.key}
+                                  type="button"
+                                  onClick={() => toggleKey(a.key)}
+                                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs border transition ${
+                                    active
+                                      ? "border-transparent text-white shadow-sm"
+                                      : "border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200 bg-transparent"
+                                  }`}
+                                  style={active ? {
+                                    backgroundColor: a.color ? `${a.color}33` : "rgba(255,255,255,0.12)",
+                                    borderColor: a.color ?? "#666",
+                                    color: a.color ?? "white",
+                                  } : undefined}
+                                >
+                                  {a.icon_url ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img src={a.icon_url} alt="" className="w-3.5 h-3.5 object-contain" />
+                                  ) : a.color ? (
+                                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: a.color }} />
+                                  ) : null}
+                                  {a.name}
+                                </button>
+                              );
+                            })}
+                            <button
+                              type="button"
+                              title={`Create new ${field.label.toLowerCase()}`}
+                              onClick={() => {
+                                setInlineAttrField(isCreating ? null : field.key);
+                                setInlineAttrName("");
+                              }}
+                              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs border transition ${
+                                isCreating
+                                  ? "border-white text-white"
+                                  : "border-dashed border-gray-700 text-gray-500 hover:border-gray-400 hover:text-gray-300"
+                              }`}
+                            >
+                              + new
+                            </button>
+                          </div>
+                          {isCreating && (
+                            <div className="mt-2 flex items-center gap-2">
+                              <input
+                                autoFocus
+                                type="text"
+                                value={inlineAttrName}
+                                onChange={(e) => setInlineAttrName(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") saveInlineAttr(field.key, attrType);
+                                  if (e.key === "Escape") { setInlineAttrField(null); setInlineAttrName(""); }
+                                }}
+                                placeholder={`New ${field.label.toLowerCase()} name…`}
+                                className="flex-1 px-3 py-1.5 rounded-lg bg-gray-800 border border-amber-500/60 text-sm focus:outline-none focus:border-amber-400"
+                              />
+                              {inlineAttrName.trim() && (
+                                <span className="text-xs text-gray-500 shrink-0 font-mono">
+                                  key: {slugifyAttrKey(inlineAttrName)}
+                                </span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => saveInlineAttr(field.key, attrType)}
+                                disabled={inlineAttrSaving || !inlineAttrName.trim()}
+                                className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-500 text-black text-xs font-semibold disabled:opacity-40 hover:bg-amber-400 transition"
+                              >
+                                {inlineAttrSaving ? "…" : "Create"}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { setInlineAttrField(null); setInlineAttrName(""); }}
+                                className="shrink-0 text-gray-500 hover:text-white text-xs transition"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
                     if (field.type === "attribute") {
                       const attrType = field.attribute_type ?? field.key;
                       const opts = attrsByType.get(attrType) ?? [];

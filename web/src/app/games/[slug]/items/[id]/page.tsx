@@ -212,6 +212,20 @@ function FieldValue({
     return <span className="text-gray-500 text-sm text-xs italic">Loading…</span>;
   }
 
+  // Multi-value attribute: render each entry as its own pill.
+  if (Array.isArray(value)) {
+    const pills = value
+      .map((v) => lookupAttr(attrMap, fieldKey, v))
+      .filter((a): a is GameAttribute => a !== null);
+    if (pills.length > 0) {
+      return (
+        <div className="flex flex-wrap gap-1.5">
+          {pills.map((a) => <AttrPill key={a.key} attr={a} value={a.key} />)}
+        </div>
+      );
+    }
+  }
+
   // Check if this field has an attribute match
   const attr = lookupAttr(attrMap, fieldKey, value);
   if (attr) return <AttrPill attr={attr} value={String(value)} />;
@@ -488,8 +502,12 @@ export default function ItemDetailPage() {
               const relName = (rel.data?.name as string) ?? rel.slug;
               const relImg = (rel.data?.image_url ?? rel.data?.icon_url) as string | undefined;
               const relRarity = rel.data?.rarity;
-              const relElem = lookupAttr(attrMap, "element", rel.data?.element)
-                ?? Object.keys(rel.data ?? {}).map(k => lookupAttr(attrMap, k, rel.data[k])).find(Boolean) ?? null;
+              const relFirstEl = Array.isArray(rel.data?.element) ? rel.data.element[0] : rel.data?.element;
+              const relElem = lookupAttr(attrMap, "element", relFirstEl)
+                ?? Object.keys(rel.data ?? {}).map(k => {
+                  const v = rel.data[k];
+                  return lookupAttr(attrMap, k, Array.isArray(v) ? v[0] : v);
+                }).find(Boolean) ?? null;
               return (
                 <Link
                   key={rel.id}

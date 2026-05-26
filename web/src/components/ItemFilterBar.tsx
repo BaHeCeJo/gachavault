@@ -49,11 +49,18 @@ export function filterItems<T extends { data: Record<string, unknown> }>(
       const name = (item.data?.name as string ?? "").toLowerCase();
       if (!name.includes(search.toLowerCase().trim())) return false;
     }
-    // Attribute filters — each active type must match (AND across types, OR within type)
+    // Attribute filters — each active type must match (AND across types, OR within type).
+    // Items may store the value as a single string or as an array (multi attribute);
+    // a match in either case means "this item has one of the selected values".
     for (const [attrType, keys] of activeTypes) {
       const raw = item.data[attrType];
-      const val = raw != null ? String(raw).toLowerCase() : "";
-      if (!Array.from(keys).some(k => k.toLowerCase() === val)) return false;
+      const itemVals = Array.isArray(raw)
+        ? (raw as unknown[]).map((v) => String(v).toLowerCase())
+        : raw != null
+          ? [String(raw).toLowerCase()]
+          : [];
+      const wanted = Array.from(keys, (k) => k.toLowerCase());
+      if (!itemVals.some((v) => wanted.includes(v))) return false;
     }
     return true;
   });
@@ -75,8 +82,12 @@ export default function ItemFilterBar({
     for (const item of items) {
       for (const attrType of attrTypes) {
         const raw = item.data[attrType];
-        const val = raw != null ? String(raw).toLowerCase() : "";
-        if (val && attributes.some(a => a.attr_type === attrType && a.key.toLowerCase() === val)) {
+        const vals = Array.isArray(raw)
+          ? (raw as unknown[]).map((v) => String(v).toLowerCase())
+          : raw != null
+            ? [String(raw).toLowerCase()]
+            : [];
+        if (vals.some((val) => val && attributes.some((a) => a.attr_type === attrType && a.key.toLowerCase() === val))) {
           usedTypesSet.add(attrType);
         }
       }
