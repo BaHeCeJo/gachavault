@@ -7,6 +7,7 @@ import { collectionsApi, itemsApi, tierlistsApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
 import { SafeImage } from "@/components/SafeImage";
+import { cardGradient } from "@/lib/theme";
 import type { GamePageBundle } from "@/lib/seo";
 
 type Tab = "overview" | "sections" | "tierlists" | "collection";
@@ -62,11 +63,6 @@ interface GameAttribute {
 }
 
 type AttrMap = Record<string, Record<string, GameAttribute>>;
-
-const PALETTE = ["from-amber-900 to-amber-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
-function cardGradient(name: string) {
-  return PALETTE[name.charCodeAt(0) % PALETTE.length];
-}
 
 const RARITY_GLOW: Record<string, string> = {
   SSR: "shadow-yellow-500/20",

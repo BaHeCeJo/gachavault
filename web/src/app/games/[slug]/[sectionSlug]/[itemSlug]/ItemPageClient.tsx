@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { gamesApi, itemsApi } from "@/lib/api";
 import { SafeImage } from "@/components/SafeImage";
+import { cardGradient } from "@/lib/theme";
 import type { ItemPageBundle } from "@/lib/seo";
 
 interface Item {
@@ -372,8 +373,6 @@ export default function ItemPageClient({ initial }: ClientProps) {
   const rarityBorder = rarityStr ? ({ SSR: "border-yellow-600/40", SR: "border-purple-600/40", UR: "border-yellow-600/40", S: "border-yellow-600/40", A: "border-purple-600/40" }[rarityStr] ?? "border-gray-800") : "border-gray-800";
   const rarityGlow = rarityStr ? ({ SSR: "shadow-yellow-500/15", SR: "shadow-purple-500/15", UR: "shadow-yellow-500/15" }[rarityStr] ?? "") : "";
 
-  const PALETTE = ["from-amber-900 to-amber-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
-  const cardGradient = (n: string) => PALETTE[n.charCodeAt(0) % PALETTE.length];
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-10">

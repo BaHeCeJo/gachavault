@@ -3,17 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { getHomePageBundle } from "@/lib/seo";
 import { SafeImage } from "@/components/SafeImage";
 import HomeSearchForm from "@/components/HomeSearchForm";
-
-const PALETTE = [
-  "from-amber-900 to-amber-700",
-  "from-violet-900 to-violet-700",
-  "from-blue-900 to-blue-700",
-  "from-cyan-900 to-cyan-700",
-  "from-purple-900 to-purple-700",
-];
-function cardGradient(name: string) {
-  return PALETTE[name.charCodeAt(0) % PALETTE.length];
-}
+import { cardGradient } from "@/lib/theme";
 
 function FeatureCard({ title, description, icon }: { title: string; description: string; icon: React.ReactNode }) {
   return (

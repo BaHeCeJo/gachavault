@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useGames } from "@/hooks/queries";
 import { SafeImage } from "@/components/SafeImage";
+import { cardGradient } from "@/lib/theme";
 
 interface Game {
   id: string;
@@ -10,11 +11,6 @@ interface Game {
   name: string;
   description: string | null;
   banner_url: string | null;
-}
-
-const PALETTE = ["from-amber-900 to-amber-700", "from-violet-900 to-violet-700", "from-blue-900 to-blue-700", "from-cyan-900 to-cyan-700", "from-purple-900 to-purple-700"];
-function cardGradient(name: string) {
-  return PALETTE[name.charCodeAt(0) % PALETTE.length];
 }
 
 export default function GamesPage() {
