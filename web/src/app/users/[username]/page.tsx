@@ -17,15 +17,15 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
     };
   }
   const { user } = bundle;
-  const title = `@${user.username}`;
   const description = `${user.username}'s public collection on Hotarumi.`;
   const path = `/users/${encodeURIComponent(user.username)}`;
+  const fullTitle = `@${user.username} | Hotarumi`;
   return {
-    title,
+    title: { absolute: fullTitle },
     description,
     alternates: { canonical: path },
     openGraph: {
-      title: `${title} | Hotarumi`,
+      title: fullTitle,
       description,
       url: path,
       type: "profile",
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
     },
     twitter: {
       card: "summary",
-      title: `${title} | Hotarumi`,
+      title: fullTitle,
       description,
       images: user.avatar_url ? [user.avatar_url] : undefined,
     },

@@ -16,22 +16,22 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
       robots: { index: false, follow: false },
     };
   }
-  const title = bundle.tierList.title;
   const description = `A community tier list shared on Hotarumi: ${bundle.tierList.title}.`;
   const path = `/tierlists/share/${slug}`;
+  const fullTitle = `${bundle.tierList.title} | Hotarumi`;
   return {
-    title,
+    title: { absolute: fullTitle },
     description,
     alternates: { canonical: path },
     openGraph: {
-      title: `${title} | Hotarumi`,
+      title: fullTitle,
       description,
       url: path,
       type: "article",
     },
     twitter: {
       card: "summary",
-      title: `${title} | Hotarumi`,
+      title: fullTitle,
       description,
     },
   };

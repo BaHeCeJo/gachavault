@@ -30,7 +30,6 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
   }
   const name = itemDisplayName(bundle.item);
   const gameName = bundle.game?.name ?? slug;
-  const title = `${name} — ${gameName}`;
   const dataDesc =
     typeof bundle.item.data?.description === "string"
       ? (bundle.item.data.description as string)
@@ -48,12 +47,13 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
         ? (bundle.item.data.icon_url as string)
         : null;
   const path = `/games/${slug}/${sectionSlug}/${itemSlug}`;
+  const fullTitle = `${name} — ${gameName} | Hotarumi`;
   return {
-    title,
+    title: { absolute: fullTitle },
     description,
     alternates: { canonical: path },
     openGraph: {
-      title: `${title} | Hotarumi`,
+      title: fullTitle,
       description,
       url: path,
       type: "article",
@@ -61,7 +61,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
     },
     twitter: {
       card: imageUrl ? "summary_large_image" : "summary",
-      title: `${title} | Hotarumi`,
+      title: fullTitle,
       description,
       images: imageUrl ? [imageUrl] : undefined,
     },

@@ -25,18 +25,21 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
     };
   }
   const { game } = bundle;
-  const title = game.name;
   const description =
     truncate(game.description) ??
     `Characters, tier lists and events for ${game.name} on Hotarumi.`;
   const path = `/games/${game.slug}`;
   const images = game.banner_url ? [{ url: game.banner_url }] : undefined;
+  const fullTitle = `${game.name} | Hotarumi`;
   return {
-    title,
+    // Use absolute so the root template doesn't get a chance to double-apply
+    // or get skipped. Observed in prod: a plain-string title here renders as
+    // just "Arknights" without the Hotarumi suffix.
+    title: { absolute: fullTitle },
     description,
     alternates: { canonical: path },
     openGraph: {
-      title: `${title} | Hotarumi`,
+      title: fullTitle,
       description,
       url: path,
       type: "website",
@@ -44,7 +47,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | Hotarumi`,
+      title: fullTitle,
       description,
       images: game.banner_url ? [game.banner_url] : undefined,
     },

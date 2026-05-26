@@ -255,6 +255,10 @@ export default function GamePageClient({ initial }: ClientProps) {
         <OverviewTab
           sections={sections}
           itemCountsBySection={initial.itemCountsBySection}
+          previewItems={(initial.initialItems as Item[]).slice(0, 12)}
+          previewSection={sections.find((s) => s.id === initial.initialSectionId) ?? null}
+          attrMap={attrMap}
+          gameSlug={game.slug}
           tierlists={tierlists}
           onJumpToSection={(id) => {
             setActiveSection(id);
@@ -384,11 +388,16 @@ export default function GamePageClient({ initial }: ClientProps) {
 }
 
 function OverviewTab({
-  sections, itemCountsBySection, tierlists, onJumpToSection, onJumpToTierLists,
+  sections, itemCountsBySection, previewItems, previewSection, attrMap, gameSlug,
+  tierlists, onJumpToSection, onJumpToTierLists,
   tNoTierlists, tSectionsTitle, tTierlistsTitle, tViewAll,
 }: {
   sections: Section[];
   itemCountsBySection: Record<string, number>;
+  previewItems: Item[];
+  previewSection: Section | null;
+  attrMap: AttrMap;
+  gameSlug: string;
   tierlists: TierList[];
   onJumpToSection: (id: string) => void;
   onJumpToTierLists: () => void;
@@ -417,6 +426,68 @@ function OverviewTab({
                 </p>
               </button>
             ))}
+          </div>
+        </section>
+      )}
+
+      {previewItems.length > 0 && previewSection && (
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">{previewSection.name}</h2>
+            <button
+              type="button"
+              onClick={() => onJumpToSection(previewSection.id)}
+              className="text-sm text-gray-400 hover:text-amber-300 transition"
+            >
+              {tViewAll} →
+            </button>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {previewItems.map((item) => {
+              const name = (item.data?.name as string) ?? item.slug;
+              const imageUrl = (item.data?.image_url ?? item.data?.icon_url) as string | undefined;
+              const elementAttr = lookupAttr(attrMap, "element", item.data?.element)
+                ?? lookupAttr(attrMap, "attribute", item.data?.element);
+              const rarity = item.data?.rarity;
+              const rarityStr = typeof rarity === "number" ? undefined : String(rarity ?? "");
+              return (
+                <Link
+                  key={item.id}
+                  href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/games/${gameSlug}/items/${item.id}`}
+                  className={`flex flex-col rounded-lg border bg-gray-900 overflow-hidden transition-all duration-200 group hover:scale-[1.03] hover:shadow-lg ${
+                    rarityStr && RARITY_BORDER[rarityStr]
+                      ? `${RARITY_BORDER[rarityStr]} hover:shadow-lg ${RARITY_GLOW[rarityStr]}`
+                      : "border-gray-800 hover:border-amber-500/60 hover:shadow-amber-500/10"
+                  }`}
+                >
+                  <div className="relative h-28 w-full">
+                    <SafeImage
+                      src={imageUrl}
+                      alt={name}
+                      fill
+                      sizes="(min-width: 1024px) 200px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-200"
+                      fallback={
+                        <div className={`h-full w-full bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-2xl font-semibold text-white/50`}>
+                          {name[0]?.toUpperCase()}
+                        </div>
+                      }
+                    />
+                    {elementAttr && (
+                      <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center backdrop-blur-sm">
+                        <AttrBadge attr={elementAttr} />
+                      </div>
+                    )}
+                    {rarity !== undefined && (
+                      <div className="absolute bottom-1 left-1.5">
+                        <RarityBadge value={rarity} />
+                      </div>
+                    )}
+                  </div>
+                  <p className="px-2 py-1.5 text-xs truncate">{name}</p>
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}

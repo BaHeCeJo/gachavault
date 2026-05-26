@@ -22,7 +22,9 @@ export default async function HomePage() {
     getTranslations("home"),
     getHomePageBundle(),
   ]);
-  const featured = bundle.stats.slice(0, 8);
+  // Only feature games that actually have characters — empty slots advertise
+  // an unfinished site and the audit explicitly called this out as proof rot.
+  const featured = bundle.stats.filter((s) => s.characterCount > 0).slice(0, 8);
 
   return (
     <main className="min-h-[calc(100vh-57px)] flex flex-col">
