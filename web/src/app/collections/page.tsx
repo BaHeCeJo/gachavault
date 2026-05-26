@@ -108,7 +108,7 @@ export default function CollectionsPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold mb-2">My Collection</h1>
+      <h1 className="text-3xl font-semibold mb-2">My Collection</h1>
       <p className="text-gray-400 text-sm mb-8">Track which items you own and their progression.</p>
 
       {/* Game selector */}
@@ -117,7 +117,7 @@ export default function CollectionsPage() {
           <button
             key={g.id}
             onClick={() => loadGame(g)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            className={`px-4 py-2 rounded-lg text-sm transition ${
               selectedGame?.id === g.id
                 ? "bg-white text-black"
                 : "border border-gray-700 hover:border-gray-500"
@@ -157,7 +157,7 @@ export default function CollectionsPage() {
             return (
               <div className="mb-6 rounded-xl border border-gray-800 bg-gray-900 p-4 space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">Overall completion</span>
+                  <span>Overall completion</span>
                   <span className="text-gray-400">{owned} / {total} ({pct}%)</span>
                 </div>
                 <div className="w-full bg-gray-800 rounded-full h-2">
@@ -206,7 +206,7 @@ export default function CollectionsPage() {
                           fill
                           className="object-cover"
                           fallback={
-                            <div className="h-24 w-full bg-gray-800 flex items-center justify-center text-2xl font-bold text-gray-600">
+                            <div className="h-24 w-full bg-gray-800 flex items-center justify-center text-2xl font-semibold text-gray-600">
                               {name[0]?.toUpperCase()}
                             </div>
                           }
@@ -214,7 +214,7 @@ export default function CollectionsPage() {
                       </div>
                     </Link>
                     <div className="p-2 space-y-1">
-                      <p className="text-xs font-medium truncate">{name}</p>
+                      <p className="text-xs truncate">{name}</p>
                       <div className="flex gap-2 text-xs text-gray-400">
                         {entry.level && <span>Lv.{entry.level}</span>}
                         {entry.constellation_level != null && <span>C{entry.constellation_level}</span>}

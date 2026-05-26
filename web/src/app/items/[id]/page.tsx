@@ -286,13 +286,13 @@ export default function ItemDetailPage() {
       {/* Header */}
       <div className="flex gap-6 mb-8">
         <SafeImage src={imageUrl} alt={name} width={128} height={128} className="w-32 h-32 rounded-xl object-cover flex-shrink-0" fallback={
-          <div className="w-32 h-32 rounded-xl bg-gray-800 flex items-center justify-center text-4xl font-bold text-gray-600 flex-shrink-0">
+          <div className="w-32 h-32 rounded-xl bg-gray-800 flex items-center justify-center text-4xl font-semibold text-gray-600 flex-shrink-0">
             {name[0]?.toUpperCase()}
           </div>
         } />
         <div className="flex-1">
           <div className="flex items-start justify-between gap-4">
-            <h1 className="text-3xl font-bold">{name}</h1>
+            <h1 className="text-3xl font-semibold">{name}</h1>
             {admin && (
               <Link
                 href={`/admin/items`}
@@ -304,17 +304,17 @@ export default function ItemDetailPage() {
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
             {rarity && (
-              <span className="px-2 py-1 rounded text-xs bg-yellow-900 text-yellow-300 font-medium">
+              <span className="px-2 py-1 rounded text-xs bg-yellow-900 text-yellow-300">
                 {typeof rarity === "number" ? "★".repeat(rarity) : rarity}
               </span>
             )}
             {element && (
-              <span className="px-2 py-1 rounded text-xs bg-blue-900 text-blue-300 font-medium capitalize">
+              <span className="px-2 py-1 rounded text-xs bg-blue-900 text-blue-300 capitalize">
                 {element}
               </span>
             )}
             {role && (
-              <span className="px-2 py-1 rounded text-xs bg-purple-900 text-purple-300 font-medium capitalize">
+              <span className="px-2 py-1 rounded text-xs bg-purple-900 text-purple-300 capitalize">
                 {role}
               </span>
             )}
@@ -339,7 +339,7 @@ export default function ItemDetailPage() {
                     return (
                       <span
                         key={field.key}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium"
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs"
                         style={{
                           backgroundColor: `${attr?.color ?? "#555"}28`,
                           borderWidth: 1,
@@ -361,7 +361,7 @@ export default function ItemDetailPage() {
                   return (
                     <span
                       key={field.key}
-                      className="px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-800 border border-gray-700 text-gray-300"
+                      className="px-2.5 py-1 rounded-lg text-xs bg-gray-800 border border-gray-700 text-gray-300"
                       title={field.label}
                     >
                       {field.label}: {val}
@@ -375,7 +375,7 @@ export default function ItemDetailPage() {
             <button
               onClick={toggleCollection}
               disabled={collectingSaving}
-              className={`mt-4 px-4 py-2 rounded-lg text-sm font-medium transition ${
+              className={`mt-4 px-4 py-2 rounded-lg text-sm transition ${
                 inCollection
                   ? "bg-green-900 text-green-300 hover:bg-green-800"
                   : "border border-gray-600 hover:border-white"
@@ -393,7 +393,7 @@ export default function ItemDetailPage() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium capitalize transition -mb-px border-b-2 ${
+            className={`px-4 py-2 text-sm capitalize transition -mb-px border-b-2 ${
               tab === t ? "border-white text-white" : "border-transparent text-gray-400 hover:text-white"
             }`}
           >
@@ -643,12 +643,12 @@ export default function ItemDetailPage() {
                 >
                   <div className="relative h-20 w-full">
                     <SafeImage src={rImage} alt={rName} fill className="object-cover" fallback={
-                      <div className="h-20 w-full bg-gray-800 flex items-center justify-center text-2xl font-bold text-gray-600">
+                      <div className="h-20 w-full bg-gray-800 flex items-center justify-center text-2xl font-semibold text-gray-600">
                         {rName[0]?.toUpperCase()}
                       </div>
                     } />
                   </div>
-                  <p className="px-2 py-1.5 text-xs font-medium truncate group-hover:text-white">{rName}</p>
+                  <p className="px-2 py-1.5 text-xs truncate group-hover:text-white">{rName}</p>
                 </Link>
               );
             })}

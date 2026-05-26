@@ -15,7 +15,7 @@ export default function AdminBackupsPage() {
         <span className="text-white">Backups</span>
       </div>
 
-      <h1 className="text-3xl font-bold mb-2">Database Backups</h1>
+      <h1 className="text-3xl font-semibold mb-2">Database Backups</h1>
       <p className="text-gray-400 mb-8">
         The <code className="text-gray-300">db-backup</code> container runs{" "}
         <code className="text-gray-300">pg_dump</code> automatically every 24 hours.

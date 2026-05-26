@@ -3,7 +3,7 @@
 export default function AdminPage() {
   return (
     <main className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
+      <h1 className="text-3xl font-semibold mb-6">Admin Panel</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <AdminCard title="Games" description="Add and manage gacha games" href="/admin/games" />
         <AdminCard title="Items" description="Add and edit game items" href="/admin/items" />

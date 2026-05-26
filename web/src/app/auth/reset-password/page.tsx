@@ -43,7 +43,7 @@ function ResetPasswordContent() {
     <main className="flex min-h-[calc(100vh-57px)] items-center justify-center p-8">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Choose a new password</h1>
+          <h1 className="text-2xl font-semibold">Choose a new password</h1>
         </div>
 
         {error && (
@@ -54,7 +54,7 @@ function ResetPasswordContent() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">New password</label>
+            <label className="block text-sm mb-1">New password</label>
             <input
               type="password"
               value={password}
@@ -65,7 +65,7 @@ function ResetPasswordContent() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Confirm password</label>
+            <label className="block text-sm mb-1">Confirm password</label>
             <input
               type="password"
               value={confirm}

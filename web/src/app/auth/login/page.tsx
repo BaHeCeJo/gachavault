@@ -40,7 +40,7 @@ function LoginContent() {
     <main className="flex min-h-[calc(100vh-57px)] items-center justify-center p-8">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Sign in to Hotarumi</h1>
+          <h1 className="text-2xl font-semibold">Sign in to Hotarumi</h1>
         </div>
 
         {error && (
@@ -51,7 +51,7 @@ function LoginContent() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block text-sm mb-1">Email</label>
             <input
               type="email"
               value={email}
@@ -61,7 +61,7 @@ function LoginContent() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
+            <label className="block text-sm mb-1">Password</label>
             <input
               type="password"
               value={password}
@@ -90,7 +90,7 @@ function LoginContent() {
 
         <a
           href={`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/google`}
-          className="flex items-center justify-center gap-3 w-full py-2 border border-gray-700 rounded-lg hover:border-gray-500 transition text-sm font-medium"
+          className="flex items-center justify-center gap-3 w-full py-2 border border-gray-700 rounded-lg hover:border-gray-500 transition text-sm"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

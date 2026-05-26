@@ -131,10 +131,10 @@ export default function UserDetailPage() {
       <div className="flex items-center gap-5 rounded-xl border border-gray-800 bg-gray-900 p-6">
         <Avatar username={profile.username} avatarUrl={profile.avatar_url} size={64} />
         <div className="flex-1">
-          <h1 className="text-2xl font-bold">{profile.username}</h1>
+          <h1 className="text-2xl font-semibold">{profile.username}</h1>
           <p className="text-gray-400 text-sm">{profile.email}</p>
           <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-            <span>Global role: <span className="text-white font-medium capitalize">{profile.role}</span></span>
+            <span>Global role: <span className="text-white capitalize">{profile.role}</span></span>
             <span>·</span>
             <span>{profile.email_verified ? "Verified" : "Unverified"}</span>
             <span>·</span>
@@ -155,9 +155,9 @@ export default function UserDetailPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Game</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Role</th>
-                <th className="text-right px-4 py-3 text-gray-400 font-medium w-28">Action</th>
+                <th className="text-left px-4 py-3 text-gray-400">Game</th>
+                <th className="text-left px-4 py-3 text-gray-400">Role</th>
+                <th className="text-right px-4 py-3 text-gray-400 w-28">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -168,7 +168,7 @@ export default function UserDetailPage() {
                 const isSaving = saving === game.id;
                 return (
                   <tr key={game.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-900/50">
-                    <td className="px-4 py-3 font-medium">{game.name}</td>
+                    <td className="px-4 py-3">{game.name}</td>
                     <td className="px-4 py-3">
                       <select
                         value={pending}
@@ -206,7 +206,7 @@ export default function UserDetailPage() {
                               setPendingRoles((prev) => { const n = { ...prev }; delete n[game.id]; return n; });
                             }}
                             disabled={isSaving}
-                            className="text-xs px-3 py-1 bg-white text-black rounded font-medium hover:bg-gray-200 disabled:opacity-50"
+                            className="text-xs px-3 py-1 bg-white text-black rounded hover:bg-gray-200 disabled:opacity-50"
                           >
                             {isSaving ? "Saving…" : "Save"}
                           </button>
@@ -236,7 +236,7 @@ export default function UserDetailPage() {
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
           {GAME_ROLES.map((r) => (
             <div key={r}>
-              <dt className={`font-medium inline-block px-2 py-0.5 rounded border mb-0.5 ${ROLE_COLORS[r]}`}>
+              <dt className={`inline-block px-2 py-0.5 rounded border mb-0.5 ${ROLE_COLORS[r]}`}>
                 {ROLE_LABELS[r]}
               </dt>
               <dd className="text-gray-400">

@@ -58,7 +58,7 @@ function lookupAttr(map: AttrMap, attrType: string, value: unknown): GameAttribu
 function AttrPill({ attr, value }: { attr: GameAttribute; value: string }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium"
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm"
       style={{
         backgroundColor: attr.color ? `${attr.color}22` : "rgba(255,255,255,0.08)",
         border: `1px solid ${attr.color ?? "#444"}44`,
@@ -96,7 +96,7 @@ function RarityStars({ value }: { value: unknown }) {
     A: "text-purple-400 border-purple-700 bg-purple-900/20",
   };
   return (
-    <span className={`px-3 py-0.5 rounded-full text-sm font-bold border ${colorMap[str] ?? "text-gray-400 border-gray-700 bg-gray-800"}`}>
+    <span className={`px-3 py-0.5 rounded-full text-sm font-semibold border ${colorMap[str] ?? "text-gray-400 border-gray-700 bg-gray-800"}`}>
       {str}
     </span>
   );
@@ -177,7 +177,7 @@ function FieldValue({
             : "#6b7280";
           return (
             <span key={attr.key}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs"
               style={{ backgroundColor: `${color}20`, border: `1px solid ${color}50`, color }}
             >
               {attr.icon_url
@@ -411,18 +411,18 @@ export default function ItemDetailPage() {
           <div className={`rounded-xl overflow-hidden border bg-gray-900 shadow-lg ${rarityBorder} ${rarityGlow}`}>
             {imageUrl ? (
               <SafeImage src={imageUrl} alt={name} width={400} height={400} className="w-full object-cover" fallback={
-                <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
+                <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
                   {name[0]?.toUpperCase()}
                 </div>
               } />
             ) : iconUrl ? (
               <SafeImage src={iconUrl} alt={name} width={400} height={400} className="w-full object-contain p-6" fallback={
-                <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
+                <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
                   {name[0]?.toUpperCase()}
                 </div>
               } />
             ) : (
-              <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
+              <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
                 {name[0]?.toUpperCase()}
               </div>
             )}
@@ -434,7 +434,7 @@ export default function ItemDetailPage() {
 
         {/* Right: details */}
         <div>
-          <h1 className="text-3xl font-bold mb-1">{name}</h1>
+          <h1 className="text-3xl font-semibold mb-1">{name}</h1>
           <div className="flex items-center gap-2 mb-6 flex-wrap">
             {sectionName && (
               <span className="text-xs px-2 py-0.5 rounded bg-amber-900/40 border border-amber-700/40 text-amber-300">{sectionName}</span>
@@ -484,7 +484,7 @@ export default function ItemDetailPage() {
       {/* Related items */}
       {relatedItems.length > 0 && (
         <section>
-          <h2 className="text-xl font-bold mb-4">More {sectionName || "Items"}</h2>
+          <h2 className="text-xl font-semibold mb-4">More {sectionName || "Items"}</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {relatedItems.slice(0, 12).map((rel) => {
               const relName = (rel.data?.name as string) ?? rel.slug;
@@ -500,7 +500,7 @@ export default function ItemDetailPage() {
                 >
                   <div className="relative h-20">
                     <SafeImage src={relImg} alt={relName} fill className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
-                      <div className={`h-full bg-gradient-to-br ${cardGradient(relName)} flex items-center justify-center text-xl font-bold text-white/50`}>
+                      <div className={`h-full bg-gradient-to-br ${cardGradient(relName)} flex items-center justify-center text-xl font-semibold text-white/50`}>
                         {relName[0]?.toUpperCase()}
                       </div>
                     } />
@@ -517,7 +517,7 @@ export default function ItemDetailPage() {
                       <div className="absolute bottom-0.5 left-1">
                         {typeof relRarity === "number"
                           ? <span className="text-yellow-400 text-xs">{"★".repeat(Math.min(relRarity, 6))}</span>
-                          : <span className="text-yellow-400 text-xs font-bold">{String(relRarity)}</span>
+                          : <span className="text-yellow-400 text-xs font-semibold">{String(relRarity)}</span>
                         }
                       </div>
                     )}

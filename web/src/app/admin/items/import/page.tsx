@@ -106,7 +106,7 @@ export default function BulkImportPage() {
     <main className="max-w-4xl mx-auto px-6 py-10 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Bulk Item Import</h1>
+          <h1 className="text-3xl font-semibold">Bulk Item Import</h1>
           <p className="text-sm text-gray-400 mt-1">Upload a JSON file to import up to 500 items at once.</p>
         </div>
         <Link href="/admin/items" className="text-sm text-gray-400 hover:text-white">← Items</Link>
@@ -139,7 +139,7 @@ export default function BulkImportPage() {
 
       {/* File upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">JSON file</label>
+        <label className="block text-sm text-gray-300 mb-2">JSON file</label>
         <input
           ref={fileRef}
           type="file"
@@ -175,9 +175,9 @@ export default function BulkImportPage() {
             <table className="w-full text-xs">
               <thead className="bg-gray-900 text-gray-400">
                 <tr>
-                  <th className="px-3 py-2 text-left font-medium">Slug</th>
-                  <th className="px-3 py-2 text-left font-medium">Game</th>
-                  <th className="px-3 py-2 text-left font-medium">Name</th>
+                  <th className="px-3 py-2 text-left">Slug</th>
+                  <th className="px-3 py-2 text-left">Game</th>
+                  <th className="px-3 py-2 text-left">Name</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">

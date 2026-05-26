@@ -97,7 +97,7 @@ function RarityBadge({ value }: { value: unknown }) {
   }
   const str = String(value);
   const colorMap: Record<string, string> = { SSR: "text-yellow-400", SR: "text-purple-400", R: "text-blue-400", S: "text-yellow-400" };
-  return <span className={`text-xs font-bold ${colorMap[str] ?? "text-gray-400"}`}>{str}</span>;
+  return <span className={`text-xs font-semibold ${colorMap[str] ?? "text-gray-400"}`}>{str}</span>;
 }
 
 function AttrBadge({ attr }: { attr: GameAttribute }) {
@@ -178,9 +178,11 @@ export default function GamePageClient({ initial }: ClientProps) {
           src={game.banner_url}
           alt={game.name}
           fill
+          priority
+          sizes="(min-width: 1280px) 1280px, 100vw"
           className="object-cover"
           fallback={
-            <div className={`w-full h-full bg-gradient-to-br ${cardGradient(game.name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
+            <div className={`w-full h-full bg-gradient-to-br ${cardGradient(game.name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
               {game.name[0]}
             </div>
           }
@@ -191,10 +193,10 @@ export default function GamePageClient({ initial }: ClientProps) {
 
       <div className="flex items-center gap-4 mb-8">
         {game.logo_url && (
-          <SafeImage src={game.logo_url} alt="" width={56} height={56} className="w-14 h-14 rounded-lg object-cover border border-gray-700" />
+          <SafeImage src={game.logo_url} alt="" width={56} height={56} priority className="w-14 h-14 rounded-lg object-cover border border-gray-700" />
         )}
         <div>
-          <h1 className="text-3xl font-bold">{game.name}</h1>
+          <h1 className="text-3xl font-semibold">{game.name}</h1>
           {game.description && <p className="text-gray-400 mt-1">{game.description}</p>}
         </div>
       </div>
@@ -206,7 +208,7 @@ export default function GamePageClient({ initial }: ClientProps) {
             <button
               key={s.id}
               onClick={() => setActiveSection(s.id)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition ${
+              className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap transition ${
                 activeSection === s.id
                   ? "bg-amber-500 text-black shadow-sm shadow-amber-500/20"
                   : "border border-gray-700 text-gray-300 hover:border-amber-500/60 hover:text-amber-300"
@@ -266,9 +268,10 @@ export default function GamePageClient({ initial }: ClientProps) {
                     src={imageUrl}
                     alt={name}
                     fill
+                    sizes="(min-width: 1024px) 200px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-200"
                     fallback={
-                      <div className={`h-full w-full bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-2xl font-bold text-white/50`}>
+                      <div className={`h-full w-full bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-2xl font-semibold text-white/50`}>
                         {name[0]?.toUpperCase()}
                       </div>
                     }
@@ -284,7 +287,7 @@ export default function GamePageClient({ initial }: ClientProps) {
                     </div>
                   )}
                 </div>
-                <p className="px-2 py-1.5 text-xs font-medium truncate">{name}</p>
+                <p className="px-2 py-1.5 text-xs truncate">{name}</p>
               </Link>
             );
           })}
@@ -295,7 +298,7 @@ export default function GamePageClient({ initial }: ClientProps) {
       {tierlists.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Community Tier Lists</h2>
+            <h2 className="text-xl font-semibold">Community Tier Lists</h2>
             <Link href="/tierlists" className="text-sm text-gray-400 hover:text-amber-300 transition">
               Create yours →
             </Link>
@@ -307,7 +310,7 @@ export default function GamePageClient({ initial }: ClientProps) {
                 href={`/tierlists/share/${tl.share_slug}`}
                 className="p-4 rounded-xl border border-gray-800 hover:border-amber-500/50 hover:shadow-md hover:shadow-amber-500/10 transition-all duration-200"
               >
-                <p className="font-medium truncate">{tl.title}</p>
+                <p className="truncate">{tl.title}</p>
                 <div className="flex items-center justify-between mt-1">
                   <p className="text-xs text-gray-400">
                     Updated {new Date(tl.updated_at).toLocaleDateString()}

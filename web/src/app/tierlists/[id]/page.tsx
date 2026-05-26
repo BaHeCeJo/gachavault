@@ -171,11 +171,11 @@ export default function TierListEditorPage() {
               onChange={(e) => setTitle(e.target.value)}
               onBlur={() => setEditTitle(false)}
               onKeyDown={(e) => e.key === "Enter" && setEditTitle(false)}
-              className="text-2xl font-bold bg-transparent border-b border-white focus:outline-none w-full max-w-sm"
+              className="text-2xl font-semibold bg-transparent border-b border-white focus:outline-none w-full max-w-sm"
             />
           ) : (
             <h1
-              className="text-3xl font-bold cursor-pointer hover:opacity-80"
+              className="text-3xl font-semibold cursor-pointer hover:opacity-80"
               onClick={() => setEditTitle(true)}
               title="Click to rename"
             >
@@ -268,7 +268,7 @@ export default function TierListEditorPage() {
             <div key={tier.key} className="rounded-xl border p-3" style={tierRowStyle(tier.color)}>
               <div className="flex items-center gap-3">
                 <div
-                  className="w-10 text-lg font-black flex-shrink-0 text-center"
+                  className="w-10 text-lg font-semibold flex-shrink-0 text-center"
                   style={{ color: tier.color }}
                 >
                   {tier.name}
@@ -285,11 +285,11 @@ export default function TierListEditorPage() {
                         title={`Remove ${name} from tier`}
                       >
                         <SafeImage src={img} alt={name} width={48} height={48} className="w-12 h-12 rounded-lg object-cover" fallback={
-                          <div className="w-12 h-12 rounded-lg bg-gray-700 flex items-center justify-center text-lg font-bold text-gray-400">
+                          <div className="w-12 h-12 rounded-lg bg-gray-700 flex items-center justify-center text-lg font-semibold text-gray-400">
                             {name[0]?.toUpperCase()}
                           </div>
                         } />
-                        <div className="absolute inset-0 rounded-lg bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-bold text-white transition">
+                        <div className="absolute inset-0 rounded-lg bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-semibold text-white transition">
                           ✕
                         </div>
                       </div>
@@ -324,7 +324,7 @@ export default function TierListEditorPage() {
               <div key={item.id} className="relative group">
                 <div title={name}>
                   <SafeImage src={img} alt={name} width={48} height={48} className="w-12 h-12 rounded-lg object-cover" fallback={
-                    <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center text-lg font-bold text-gray-600">
+                    <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center text-lg font-semibold text-gray-600">
                       {name[0]?.toUpperCase()}
                     </div>
                   } />
@@ -333,7 +333,7 @@ export default function TierListEditorPage() {
                       <button
                         key={t.key}
                         onClick={() => setItemTier(item.id, t.key)}
-                        className="w-7 h-7 rounded text-xs font-black hover:bg-gray-700 transition"
+                        className="w-7 h-7 rounded text-xs font-semibold hover:bg-gray-700 transition"
                         style={{ color: t.color }}
                       >
                         {t.name.slice(0, 2)}

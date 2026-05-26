@@ -117,7 +117,7 @@ export default function ProfilePage() {
 
   return (
     <main className="max-w-2xl mx-auto px-6 py-10 space-y-8">
-      <h1 className="text-3xl font-bold">My Profile</h1>
+      <h1 className="text-3xl font-semibold">My Profile</h1>
 
       {/* ── Avatar + info ───────────────────────────────────────────── */}
       <section className="rounded-xl border border-gray-800 bg-gray-900 p-6 space-y-4">
@@ -130,7 +130,7 @@ export default function ProfilePage() {
               aria-label="Change avatar"
             >
               <Avatar username={user.username} avatarUrl={user.avatar_url} size={64} className="w-full h-full" />
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-xs font-medium">
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-xs">
                 {uploading ? "…" : "Change"}
               </div>
             </button>
@@ -176,7 +176,7 @@ export default function ProfilePage() {
           <button
             type="submit"
             disabled={usernameLoading || !username.trim() || username === user.username}
-            className="px-4 py-2 rounded-lg bg-white text-black text-sm font-medium hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="px-4 py-2 rounded-lg bg-white text-black text-sm hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             {usernameLoading ? "Saving…" : "Save"}
           </button>
@@ -221,7 +221,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={pwLoading}
-              className="w-full py-2 rounded-lg bg-white text-black text-sm font-medium hover:bg-gray-200 disabled:opacity-50 transition"
+              className="w-full py-2 rounded-lg bg-white text-black text-sm hover:bg-gray-200 disabled:opacity-50 transition"
             >
               {pwLoading ? "Updating…" : "Update Password"}
             </button>
@@ -245,7 +245,7 @@ export default function ProfilePage() {
             <a
               key={link.href}
               href={link.href}
-              className="px-4 py-3 rounded-lg border border-gray-800 hover:border-gray-600 transition text-sm font-medium"
+              className="px-4 py-3 rounded-lg border border-gray-800 hover:border-gray-600 transition text-sm"
             >
               {link.label}
             </a>
@@ -290,7 +290,7 @@ export default function ProfilePage() {
                 <button
                   onClick={handleDeleteAccount}
                   disabled={deleteLoading || (user.provider === "local" && !deleteConfirm)}
-                  className="flex-1 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium disabled:opacity-50 transition"
+                  className="flex-1 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm disabled:opacity-50 transition"
                 >
                   {deleteLoading ? "Deleting…" : "Yes, delete my account"}
                 </button>

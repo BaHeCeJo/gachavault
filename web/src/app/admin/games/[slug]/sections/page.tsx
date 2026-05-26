@@ -134,7 +134,7 @@ export default function AdminGameSectionsPage() {
         <span className="text-white">{gameName}</span>
       </div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Sections</h1>
+        <h1 className="text-3xl font-semibold">Sections</h1>
         <button
           onClick={openCreate}
           className="px-4 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-gray-200 transition"
@@ -156,17 +156,17 @@ export default function AdminGameSectionsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Name</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Slug</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Order</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Tabs</th>
+                <th className="text-left px-4 py-3 text-gray-400">Name</th>
+                <th className="text-left px-4 py-3 text-gray-400">Slug</th>
+                <th className="text-left px-4 py-3 text-gray-400">Order</th>
+                <th className="text-left px-4 py-3 text-gray-400">Tabs</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {sections.map((s) => (
                 <tr key={s.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-900/50">
-                  <td className="px-4 py-3 font-medium">{s.name}</td>
+                  <td className="px-4 py-3">{s.name}</td>
                   <td className="px-4 py-3 text-gray-400 font-mono">{s.slug}</td>
                   <td className="px-4 py-3 text-gray-500">{s.order}</td>
                   <td className="px-4 py-3 text-gray-400 text-xs">

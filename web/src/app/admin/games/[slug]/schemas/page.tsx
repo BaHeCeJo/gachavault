@@ -149,7 +149,7 @@ export default function AdminGameSchemasPage() {
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Item Schemas</h1>
+          <h1 className="text-3xl font-semibold">Item Schemas</h1>
           <p className="text-gray-400 text-sm mt-1">
             Schemas define what fields items in each section have.
           </p>
@@ -179,17 +179,17 @@ export default function AdminGameSchemasPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Name</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Section</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Fields</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium w-48">ID</th>
+                <th className="text-left px-4 py-3 text-gray-400">Name</th>
+                <th className="text-left px-4 py-3 text-gray-400">Section</th>
+                <th className="text-left px-4 py-3 text-gray-400">Fields</th>
+                <th className="text-left px-4 py-3 text-gray-400 w-48">ID</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {schemas.map((s) => (
                 <tr key={s.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-900/50">
-                  <td className="px-4 py-3 font-medium">{s.name}</td>
+                  <td className="px-4 py-3">{s.name}</td>
                   <td className="px-4 py-3 text-gray-400">{sectionName(s.section_id)}</td>
                   <td className="px-4 py-3 text-gray-400">
                     {Array.isArray(s.fields)

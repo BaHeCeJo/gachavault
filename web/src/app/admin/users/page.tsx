@@ -84,7 +84,7 @@ export default function AdminUsersPage() {
       </div>
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Users</h1>
+        <h1 className="text-3xl font-semibold">Users</h1>
         <span className="text-gray-400 text-sm">{users.length} total</span>
       </div>
 
@@ -109,13 +109,13 @@ export default function AdminUsersPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
-                <th className="text-left px-4 py-3 text-gray-400 font-medium w-10" />
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Username</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Email</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Provider</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Verified</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Role</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Joined</th>
+                <th className="text-left px-4 py-3 text-gray-400 w-10" />
+                <th className="text-left px-4 py-3 text-gray-400">Username</th>
+                <th className="text-left px-4 py-3 text-gray-400">Email</th>
+                <th className="text-left px-4 py-3 text-gray-400">Provider</th>
+                <th className="text-left px-4 py-3 text-gray-400">Verified</th>
+                <th className="text-left px-4 py-3 text-gray-400">Role</th>
+                <th className="text-left px-4 py-3 text-gray-400">Joined</th>
               </tr>
             </thead>
             <tbody>
@@ -134,7 +134,7 @@ export default function AdminUsersPage() {
                       <td className="px-4 py-3">
                         <Avatar username={u.username} avatarUrl={u.avatar_url} size={32} />
                       </td>
-                      <td className="px-4 py-3 font-medium">
+                      <td className="px-4 py-3">
                         <Link href={`/admin/users/${u.id}`} className="hover:text-white hover:underline">
                           {u.username}
                         </Link>
@@ -147,13 +147,13 @@ export default function AdminUsersPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`text-xs font-medium ${u.email_verified ? "text-green-400" : "text-yellow-400"}`}>
+                        <span className={`text-xs ${u.email_verified ? "text-green-400" : "text-yellow-400"}`}>
                           {u.email_verified ? "Yes" : "Pending"}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         {isSelf ? (
-                          <span className={`text-xs px-2 py-1 rounded border font-medium ${roleInfo.color}`}>
+                          <span className={`text-xs px-2 py-1 rounded border ${roleInfo.color}`}>
                             {roleInfo.label}
                           </span>
                         ) : (

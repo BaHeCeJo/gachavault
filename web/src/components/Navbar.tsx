@@ -32,7 +32,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-gray-800 bg-background/80 backdrop-blur-md px-6 py-3">
       <nav className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold tracking-tight">
+        <Link href="/" className="text-xl font-semibold tracking-tight">
           <span className="text-amber-400">H</span>otarumi
         </Link>
 
@@ -54,7 +54,7 @@ export function Navbar() {
                       className="flex items-center gap-2 hover:opacity-80 transition"
                     >
                       <Avatar username={user.username} avatarUrl={user.avatar_url} size={28} />
-                      <span className="text-white font-medium">{user.username}</span>
+                      <span className="text-white">{user.username}</span>
                     </Link>
                     <button
                       onClick={handleLogout}
@@ -71,7 +71,7 @@ export function Navbar() {
                   </Link>
                   <Link
                     href="/auth/register"
-                    className="px-4 py-1.5 bg-amber-500 text-black rounded-md font-medium text-sm hover:bg-amber-400 transition shadow-sm shadow-amber-500/20"
+                    className="px-4 py-1.5 bg-amber-500 text-black rounded-md text-sm hover:bg-amber-400 transition shadow-sm shadow-amber-500/20"
                   >
                     Sign up
                   </Link>

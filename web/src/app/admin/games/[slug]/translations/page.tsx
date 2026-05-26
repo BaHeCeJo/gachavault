@@ -125,7 +125,7 @@ export default function GameTranslationsPage() {
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold">{game?.name} — Translations</h1>
+        <h1 className="text-2xl font-semibold">{game?.name} — Translations</h1>
         <p className="text-sm text-gray-400 mt-1">
           English is the canonical language. Add translations for other locales here.
         </p>
@@ -137,9 +137,9 @@ export default function GameTranslationsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Locale</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Name</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium hidden sm:table-cell">Updated</th>
+                <th className="text-left px-4 py-3 text-gray-400">Locale</th>
+                <th className="text-left px-4 py-3 text-gray-400">Name</th>
+                <th className="text-left px-4 py-3 text-gray-400 hidden sm:table-cell">Updated</th>
                 <th className="text-right px-4 py-3 w-28" />
               </tr>
             </thead>
@@ -232,7 +232,7 @@ export default function GameTranslationsPage() {
                 <button
                   onClick={handleSave}
                   disabled={!form.name.trim() || saving}
-                  className="px-4 py-2 bg-white text-black text-sm font-medium rounded hover:bg-gray-200 disabled:opacity-50"
+                  className="px-4 py-2 bg-white text-black text-sm rounded hover:bg-gray-200 disabled:opacity-50"
                 >
                   {saving ? "Saving…" : "Save translation"}
                 </button>

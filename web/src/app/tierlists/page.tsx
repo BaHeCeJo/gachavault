@@ -97,7 +97,7 @@ export default function TierListsPage() {
   return (
     <main className="max-w-4xl mx-auto px-6 py-10">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">My Tier Lists</h1>
+        <h1 className="text-3xl font-semibold">My Tier Lists</h1>
         <button
           onClick={() => setCreating(true)}
           className="px-4 py-2 bg-amber-500 text-black rounded-lg text-sm font-semibold hover:bg-amber-400 transition"
@@ -130,7 +130,7 @@ export default function TierListsPage() {
               className="flex items-center gap-4 rounded-xl border border-gray-800 bg-gray-900 p-4 hover:border-gray-600 transition"
             >
               <Link href={`/tierlists/${tl.id}`} className="flex-1 min-w-0">
-                <p className="font-medium truncate">{tl.title}</p>
+                <p className="truncate">{tl.title}</p>
                 <p className="text-sm text-gray-400 mt-0.5">
                   {gameMap.get(tl.game_id) ?? tl.game_id} ·{" "}
                   {tl.is_public ? (

@@ -164,7 +164,7 @@ export default function AdminAttributesPage() {
       </div>
 
       <div className="flex items-center justify-between mb-2">
-        <h1 className="text-3xl font-bold">Attributes</h1>
+        <h1 className="text-3xl font-semibold">Attributes</h1>
         <button
           onClick={() => openCreate()}
           className="px-4 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-gray-200 transition"
@@ -202,11 +202,11 @@ export default function AdminAttributesPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-gray-800 bg-gray-900">
-                        <th className="text-left px-4 py-2 text-gray-400 font-medium w-8" />
-                        <th className="text-left px-4 py-2 text-gray-400 font-medium">Name</th>
-                        <th className="text-left px-4 py-2 text-gray-400 font-medium">Key</th>
-                        <th className="text-left px-4 py-2 text-gray-400 font-medium">Color</th>
-                        <th className="text-left px-4 py-2 text-gray-400 font-medium">Order</th>
+                        <th className="text-left px-4 py-2 text-gray-400 w-8" />
+                        <th className="text-left px-4 py-2 text-gray-400">Name</th>
+                        <th className="text-left px-4 py-2 text-gray-400">Key</th>
+                        <th className="text-left px-4 py-2 text-gray-400">Color</th>
+                        <th className="text-left px-4 py-2 text-gray-400">Order</th>
                         <th className="px-4 py-2" />
                       </tr>
                     </thead>
@@ -224,7 +224,7 @@ export default function AdminAttributesPage() {
                               />
                             )}
                           </td>
-                          <td className="px-4 py-2 font-medium">{a.name}</td>
+                          <td className="px-4 py-2">{a.name}</td>
                           <td className="px-4 py-2 text-gray-400 font-mono text-xs">{a.key}</td>
                           <td className="px-4 py-2">
                             {a.color && (

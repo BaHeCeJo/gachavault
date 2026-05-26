@@ -300,7 +300,7 @@ export default function AdminItemsPage() {
         </Link>
       </div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Manage Items</h1>
+        <h1 className="text-3xl font-semibold">Manage Items</h1>
         {selectedGame && sections.length > 0 && (
           <button
             onClick={openCreate}
@@ -317,7 +317,7 @@ export default function AdminItemsPage() {
           <button
             key={g.id}
             onClick={() => loadGame(g)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            className={`px-4 py-2 rounded-lg text-sm transition ${
               selectedGame?.id === g.id ? "bg-white text-black" : "border border-gray-700 hover:border-gray-500"
             }`}
           >
@@ -353,10 +353,10 @@ export default function AdminItemsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
-                <th className="text-left px-4 py-3 text-gray-400 font-medium w-14" />
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Name</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Slug</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Updated</th>
+                <th className="text-left px-4 py-3 text-gray-400 w-14" />
+                <th className="text-left px-4 py-3 text-gray-400">Name</th>
+                <th className="text-left px-4 py-3 text-gray-400">Slug</th>
+                <th className="text-left px-4 py-3 text-gray-400">Updated</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -382,17 +382,17 @@ export default function AdminItemsPage() {
                       <td className="px-4 py-2">
                         {img ? (
                           <SafeImage src={img} alt={name} width={40} height={40} className="w-10 h-10 rounded object-cover" fallback={
-                            <div className="w-10 h-10 rounded bg-gray-800 flex items-center justify-center text-gray-600 font-bold">
+                            <div className="w-10 h-10 rounded bg-gray-800 flex items-center justify-center text-gray-600 font-semibold">
                               {name[0]?.toUpperCase()}
                             </div>
                           } />
                         ) : (
-                          <div className="w-10 h-10 rounded bg-gray-800 flex items-center justify-center text-gray-600 font-bold">
+                          <div className="w-10 h-10 rounded bg-gray-800 flex items-center justify-center text-gray-600 font-semibold">
                             {name[0]?.toUpperCase()}
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3 font-medium">{name}</td>
+                      <td className="px-4 py-3">{name}</td>
                       <td className="px-4 py-3 text-gray-400 font-mono text-xs">{item.slug}</td>
                       <td className="px-4 py-3 text-gray-500 text-xs">
                         {new Date(item.updated_at).toLocaleDateString()}
@@ -560,7 +560,7 @@ export default function AdminItemsPage() {
                                 setInlineAttrField(isCreating ? null : field.key);
                                 setInlineAttrName("");
                               }}
-                              className={`shrink-0 w-7 h-7 rounded-lg border text-sm font-bold transition flex items-center justify-center ${
+                              className={`shrink-0 w-7 h-7 rounded-lg border text-sm font-semibold transition flex items-center justify-center ${
                                 isCreating
                                   ? "border-white text-white"
                                   : "border-gray-700 text-gray-400 hover:border-gray-400 hover:text-white"

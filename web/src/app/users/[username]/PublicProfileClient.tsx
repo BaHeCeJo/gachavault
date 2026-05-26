@@ -97,7 +97,7 @@ export default function PublicProfileClient() {
       <div className="flex items-center gap-5 rounded-xl border border-gray-800 bg-gray-900 p-6">
         <Avatar username={profile.username} avatarUrl={profile.avatar_url} size={64} />
         <div>
-          <h1 className="text-2xl font-bold">{profile.username}</h1>
+          <h1 className="text-2xl font-semibold">{profile.username}</h1>
           <p className="text-sm text-gray-400 mt-1">
             Member since {new Date(profile.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long" })}
           </p>
@@ -119,7 +119,7 @@ export default function PublicProfileClient() {
                   href={`/games/${game.slug}`}
                   className="flex items-center justify-between rounded-xl border border-gray-800 bg-gray-900 px-5 py-4 hover:border-gray-600 transition"
                 >
-                  <span className="font-medium">{game.name}</span>
+                  <span>{game.name}</span>
                   <span className="text-sm text-gray-400">{ownedCount} owned</span>
                 </Link>
               ))}

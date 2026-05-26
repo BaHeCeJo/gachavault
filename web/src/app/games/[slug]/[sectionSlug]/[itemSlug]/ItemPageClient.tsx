@@ -69,7 +69,7 @@ function lookupAttr(map: AttrMap, attrType: string, value: unknown): GameAttribu
 function AttrPill({ attr, value }: { attr: GameAttribute; value: string }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium"
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm"
       style={{
         backgroundColor: attr.color ? `${attr.color}22` : "rgba(255,255,255,0.08)",
         border: `1px solid ${attr.color ?? "#444"}44`,
@@ -107,7 +107,7 @@ function RarityStars({ value }: { value: unknown }) {
     A: "text-purple-400 border-purple-700 bg-purple-900/20",
   };
   return (
-    <span className={`px-3 py-0.5 rounded-full text-sm font-bold border ${colorMap[str] ?? "text-gray-400 border-gray-700 bg-gray-800"}`}>
+    <span className={`px-3 py-0.5 rounded-full text-sm font-semibold border ${colorMap[str] ?? "text-gray-400 border-gray-700 bg-gray-800"}`}>
       {str}
     </span>
   );
@@ -194,7 +194,7 @@ function FieldValue({
             : "#6b7280";
           return (
             <span key={attr.key}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs"
               style={{ backgroundColor: `${color}20`, border: `1px solid ${color}50`, color }}
             >
               {attr.icon_url
@@ -397,19 +397,19 @@ export default function ItemPageClient({ initial }: ClientProps) {
         <div className="flex flex-col gap-4">
           <div className={`rounded-xl overflow-hidden border bg-gray-900 shadow-lg ${rarityBorder} ${rarityGlow}`}>
             {imageUrl ? (
-              <SafeImage src={imageUrl} alt={name} width={400} height={400} className="w-full object-cover" fallback={
-                <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
+              <SafeImage src={imageUrl} alt={name} width={400} height={400} priority sizes="(min-width: 768px) 280px, 100vw" className="w-full object-cover" fallback={
+                <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
                   {name[0]?.toUpperCase()}
                 </div>
               } />
             ) : iconUrl ? (
-              <SafeImage src={iconUrl} alt={name} width={400} height={400} className="w-full object-contain p-6" fallback={
-                <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
+              <SafeImage src={iconUrl} alt={name} width={400} height={400} priority sizes="(min-width: 768px) 280px, 100vw" className="w-full object-contain p-6" fallback={
+                <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
                   {name[0]?.toUpperCase()}
                 </div>
               } />
             ) : (
-              <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-bold text-white/40`}>
+              <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
                 {name[0]?.toUpperCase()}
               </div>
             )}
@@ -421,7 +421,7 @@ export default function ItemPageClient({ initial }: ClientProps) {
 
         {/* Right: details */}
         <div>
-          <h1 className="text-3xl font-bold mb-1">{name}</h1>
+          <h1 className="text-3xl font-semibold mb-1">{name}</h1>
           <div className="flex items-center gap-2 mb-6 flex-wrap">
             {sectionName && (
               <span className="text-xs px-2 py-0.5 rounded bg-amber-900/40 border border-amber-700/40 text-amber-300">{sectionName}</span>
@@ -429,15 +429,9 @@ export default function ItemPageClient({ initial }: ClientProps) {
             {item.data?.rarity !== undefined && <RarityStars value={item.data.rarity} />}
           </div>
 
-          {typeof item.data?.description === "string" && item.data.description && (
-            <p className="text-gray-300 text-sm leading-relaxed mb-6 border-l-2 border-amber-500/60 pl-4 italic">
-              {item.data.description}
-            </p>
-          )}
-
-          {/* Stats table */}
-          <div className="rounded-xl border border-gray-800 overflow-hidden">
-            {orderedFields.filter(f => f.key !== "description").map(({ key, label, type, attribute_type }, i) => {
+          {/* Stats table — above the fold so the "should I pull / build this?" answer lands first */}
+          <div className="rounded-xl border border-gray-800 overflow-hidden mb-6">
+            {orderedFields.filter(f => f.key !== "description" && f.key !== "lore").map(({ key, label, type, attribute_type }, i) => {
               const value = item.data[key];
               const isBackref = type === "backref";
               if (!isBackref && (value === undefined || value === null || value === "")) return null;
@@ -464,13 +458,31 @@ export default function ItemPageClient({ initial }: ClientProps) {
               );
             })}
           </div>
+
+          {typeof item.data?.description === "string" && item.data.description && (
+            <section className="mb-6">
+              <h2 className="text-sm font-semibold text-gray-400 mb-2 uppercase tracking-wide">Description</h2>
+              <p className="text-gray-300 text-sm leading-relaxed border-l-2 border-amber-500/60 pl-4 italic">
+                {item.data.description}
+              </p>
+            </section>
+          )}
+
+          {typeof item.data?.lore === "string" && item.data.lore && (
+            <section className="mb-6">
+              <h2 className="text-sm font-semibold text-gray-400 mb-2 uppercase tracking-wide">Lore</h2>
+              <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
+                {item.data.lore}
+              </p>
+            </section>
+          )}
         </div>
       </div>
 
       {/* Related items */}
       {relatedItems.length > 0 && (
         <section>
-          <h2 className="text-xl font-bold mb-4">More {sectionName || "Items"}</h2>
+          <h2 className="text-xl font-semibold mb-4">More {sectionName || "Items"}</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {relatedItems.slice(0, 12).map((rel) => {
               const relName = (rel.data?.name as string) ?? rel.slug;
@@ -485,8 +497,8 @@ export default function ItemPageClient({ initial }: ClientProps) {
                   className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-amber-500/60 hover:shadow-md hover:shadow-amber-500/10 hover:scale-[1.03] transition-all duration-200 group"
                 >
                   <div className="relative h-20">
-                    <SafeImage src={relImg} alt={relName} fill className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
-                      <div className={`h-full bg-gradient-to-br ${cardGradient(relName)} flex items-center justify-center text-xl font-bold text-white/50`}>
+                    <SafeImage src={relImg} alt={relName} fill sizes="(min-width: 768px) 140px, (min-width: 640px) 25vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
+                      <div className={`h-full bg-gradient-to-br ${cardGradient(relName)} flex items-center justify-center text-xl font-semibold text-white/50`}>
                         {relName[0]?.toUpperCase()}
                       </div>
                     } />
@@ -503,7 +515,7 @@ export default function ItemPageClient({ initial }: ClientProps) {
                       <div className="absolute bottom-0.5 left-1">
                         {typeof relRarity === "number"
                           ? <span className="text-yellow-400 text-xs">{"★".repeat(Math.min(relRarity, 6))}</span>
-                          : <span className="text-yellow-400 text-xs font-bold">{String(relRarity)}</span>
+                          : <span className="text-yellow-400 text-xs font-semibold">{String(relRarity)}</span>
                         }
                       </div>
                     )}

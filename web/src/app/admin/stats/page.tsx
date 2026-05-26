@@ -33,7 +33,7 @@ function StatCard({
   const inner = (
     <div className="rounded-xl border border-gray-800 bg-gray-900 p-5 hover:border-gray-600 transition">
       <p className="text-sm text-gray-400 mb-1">{label}</p>
-      <p className="text-3xl font-bold">{typeof value === "number" ? value.toLocaleString() : value}</p>
+      <p className="text-3xl font-semibold">{typeof value === "number" ? value.toLocaleString() : value}</p>
       {sub && <p className="text-xs text-gray-500 mt-1">{sub}</p>}
     </div>
   );
@@ -82,7 +82,7 @@ export default function AdminStatsPage() {
   return (
     <main className="max-w-5xl mx-auto px-6 py-10 space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Site Statistics</h1>
+        <h1 className="text-3xl font-semibold">Site Statistics</h1>
         <Link href="/admin" className="text-sm text-gray-400 hover:text-white">
           ← Admin
         </Link>

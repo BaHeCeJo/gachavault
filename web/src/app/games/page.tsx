@@ -22,7 +22,7 @@ export default function GamesPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold mb-8">Games</h1>
+      <h1 className="text-3xl font-semibold mb-8">Games</h1>
 
       {isLoading && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -53,7 +53,7 @@ export default function GamesPage() {
                   fill
                   className="object-cover group-hover:brightness-110 transition duration-200"
                   fallback={
-                    <div className={`h-32 w-full bg-gradient-to-br ${cardGradient(game.name)} flex items-center justify-center text-4xl font-bold text-white/60`}>
+                    <div className={`h-32 w-full bg-gradient-to-br ${cardGradient(game.name)} flex items-center justify-center text-4xl font-semibold text-white/60`}>
                       {game.name[0]}
                     </div>
                   }

@@ -87,7 +87,7 @@ function SearchContent() {
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold mb-6">Search</h1>
+      <h1 className="text-3xl font-semibold mb-6">Search</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 mb-6">
         <input
@@ -191,14 +191,14 @@ function SearchContent() {
                       fill
                       className="object-cover"
                       fallback={
-                        <div className="h-28 w-full bg-gray-800 flex items-center justify-center text-3xl font-bold text-gray-600">
+                        <div className="h-28 w-full bg-gray-800 flex items-center justify-center text-3xl font-semibold text-gray-600">
                           {hit.name[0]?.toUpperCase()}
                         </div>
                       }
                     />
                   </div>
                   <div className="p-3">
-                    <p className="font-medium text-sm group-hover:text-white truncate">{hit.name}</p>
+                    <p className="text-sm group-hover:text-white truncate">{hit.name}</p>
                     <p className="text-xs text-gray-400 mt-0.5">
                       {hit.game_slug}{hit.section_slug ? ` · ${hit.section_slug}` : ""}
                     </p>

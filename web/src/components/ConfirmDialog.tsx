@@ -39,7 +39,7 @@ export function ConfirmDialog({
             </button>
             <button
               onClick={onConfirm}
-              className={`px-4 py-2 text-sm rounded-lg font-medium transition ${
+              className={`px-4 py-2 text-sm rounded-lg transition ${
                 destructive
                   ? "bg-red-600 hover:bg-red-500 text-white"
                   : "bg-white text-black hover:bg-gray-200"

@@ -33,7 +33,7 @@ export default function RegisterPage() {
       <main className="flex min-h-[calc(100vh-57px)] items-center justify-center p-8">
         <div className="w-full max-w-sm text-center space-y-4">
           <div className="text-4xl">✉️</div>
-          <h1 className="text-2xl font-bold">Check your email</h1>
+          <h1 className="text-2xl font-semibold">Check your email</h1>
           <p className="text-gray-400">
             We sent a verification link to <strong className="text-white">{email}</strong>.
             Click it to activate your account.
@@ -50,7 +50,7 @@ export default function RegisterPage() {
     <main className="flex min-h-[calc(100vh-57px)] items-center justify-center p-8">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Create your account</h1>
+          <h1 className="text-2xl font-semibold">Create your account</h1>
         </div>
 
         {error && (
@@ -61,7 +61,7 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block text-sm mb-1">Email</label>
             <input
               type="email"
               value={email}
@@ -71,7 +71,7 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Username</label>
+            <label className="block text-sm mb-1">Username</label>
             <input
               type="text"
               value={username}
@@ -83,7 +83,7 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
+            <label className="block text-sm mb-1">Password</label>
             <input
               type="password"
               value={password}

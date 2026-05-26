@@ -38,7 +38,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
                 onClick={() => onPageChange(p as number)}
                 className={`w-8 h-8 text-sm rounded-lg transition ${
                   p === page
-                    ? "bg-white text-black font-medium"
+                    ? "bg-white text-black"
                     : "border border-gray-700 hover:border-white"
                 }`}
               >

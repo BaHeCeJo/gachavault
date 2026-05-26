@@ -36,7 +36,7 @@ function VerifyEmailContent() {
       <main className="flex min-h-[calc(100vh-57px)] items-center justify-center p-8">
         <div className="w-full max-w-sm text-center space-y-4">
           <div className="text-4xl">✅</div>
-          <h1 className="text-2xl font-bold">Email verified!</h1>
+          <h1 className="text-2xl font-semibold">Email verified!</h1>
           <p className="text-gray-400">Your account is now active. You can sign in.</p>
           <Link
             href="/auth/login"
@@ -53,7 +53,7 @@ function VerifyEmailContent() {
     <main className="flex min-h-[calc(100vh-57px)] items-center justify-center p-8">
       <div className="w-full max-w-sm text-center space-y-4">
         <div className="text-4xl">❌</div>
-        <h1 className="text-2xl font-bold">Verification failed</h1>
+        <h1 className="text-2xl font-semibold">Verification failed</h1>
         <p className="text-gray-400">
           The link is invalid or has expired. Request a new one after signing in.
         </p>

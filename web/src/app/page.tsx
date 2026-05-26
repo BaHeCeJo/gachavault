@@ -41,7 +41,7 @@ export default function HomePage() {
           <div className="w-[600px] h-[400px] rounded-full bg-amber-500/15 blur-[120px]" />
         </div>
 
-        <h1 className="relative text-5xl sm:text-6xl font-bold tracking-tight mb-4">{t("title")}</h1>
+        <h1 className="relative text-5xl sm:text-6xl font-semibold tracking-tight mb-4">{t("title")}</h1>
         <p className="relative text-xl text-gray-400 mb-10 max-w-lg">{t("subtitle")}</p>
 
         <form onSubmit={handleSearch} className="relative w-full max-w-xl flex gap-2">
@@ -64,13 +64,13 @@ export default function HomePage() {
         <div className="relative flex gap-4 mt-8">
           <Link
             href="/games"
-            className="px-5 py-2.5 border border-gray-700 rounded-lg text-sm font-medium hover:border-amber-400 hover:text-amber-300 transition"
+            className="px-5 py-2.5 border border-gray-700 rounded-lg text-sm hover:border-amber-400 hover:text-amber-300 transition"
           >
             {t("browseGames")}
           </Link>
           <Link
             href="/auth/register"
-            className="px-5 py-2.5 border border-gray-700 rounded-lg text-sm font-medium hover:border-amber-400 hover:text-amber-300 transition"
+            className="px-5 py-2.5 border border-gray-700 rounded-lg text-sm hover:border-amber-400 hover:text-amber-300 transition"
           >
             {t("createAccount")}
           </Link>
@@ -84,7 +84,7 @@ export default function HomePage() {
       {games.length > 0 && (
         <section className="max-w-7xl mx-auto w-full px-6 pb-16">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">{t("gamesSection")}</h2>
+            <h2 className="text-xl font-semibold">{t("gamesSection")}</h2>
             <Link href="/games" className="text-sm text-gray-400 hover:text-amber-300 transition">
               {t("viewAll")} →
             </Link>
@@ -103,7 +103,7 @@ export default function HomePage() {
                     fill
                     className="object-cover group-hover:brightness-110 transition duration-200"
                     fallback={
-                      <div className={`h-28 w-full bg-gradient-to-br ${cardGradient(g.name)} flex items-center justify-center text-3xl font-bold text-white/60`}>
+                      <div className={`h-28 w-full bg-gradient-to-br ${cardGradient(g.name)} flex items-center justify-center text-3xl font-semibold text-white/60`}>
                         {g.name[0]}
                       </div>
                     }

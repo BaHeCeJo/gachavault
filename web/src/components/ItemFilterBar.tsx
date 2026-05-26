@@ -136,7 +136,7 @@ export default function ItemFilterBar({
                     key={attr.key}
                     onClick={() => onFilterToggle(attrType, attr.key.toLowerCase())}
                     title={attr.name}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs border transition-all ${
                       isActive
                         ? "border-transparent text-white shadow-sm"
                         : "border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200 bg-transparent"

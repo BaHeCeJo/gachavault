@@ -141,7 +141,7 @@ export default function SharedTierListClient() {
     <main className="max-w-4xl mx-auto px-6 py-10">
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">{tierList.title}</h1>
+          <h1 className="text-3xl font-semibold">{tierList.title}</h1>
           <p className="text-sm text-gray-500 mt-1">
             Shared tier list · {new Date(tierList.created_at).toLocaleDateString()}
           </p>
@@ -180,7 +180,7 @@ export default function SharedTierListClient() {
             >
               <div className="flex items-center gap-4">
                 <div
-                  className="w-10 text-xl font-black flex-shrink-0 text-center"
+                  className="w-10 text-xl font-semibold flex-shrink-0 text-center"
                   style={{ color: tier.color }}
                 >
                   {tier.name}
@@ -192,7 +192,7 @@ export default function SharedTierListClient() {
                     return (
                       <Link key={item.id} href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/items/${item.id}`} title={name} className="group relative">
                         <SafeImage src={img} alt={name} width={56} height={56} className="w-14 h-14 rounded-lg object-cover" fallback={
-                          <div className="w-14 h-14 rounded-lg bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-400">
+                          <div className="w-14 h-14 rounded-lg bg-gray-700 flex items-center justify-center text-xl font-semibold text-gray-400">
                             {name[0]?.toUpperCase()}
                           </div>
                         } />
@@ -223,12 +223,12 @@ export default function SharedTierListClient() {
           <div className="space-y-4 mb-6">
             {comments.map((c) => (
               <div key={c.id} className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-sm font-semibold flex-shrink-0">
                   {c.username[0]?.toUpperCase()}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-sm font-medium">{c.username}</span>
+                    <span className="text-sm">{c.username}</span>
                     <span className="text-xs text-gray-500">
                       {new Date(c.created_at).toLocaleDateString()}
                     </span>

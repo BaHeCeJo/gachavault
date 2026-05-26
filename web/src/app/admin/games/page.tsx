@@ -141,7 +141,7 @@ export default function AdminGamesPage() {
         <Link href="/admin" className="text-gray-400 hover:text-white text-sm">← Admin</Link>
       </div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Manage Games</h1>
+        <h1 className="text-3xl font-semibold">Manage Games</h1>
         <button
           onClick={openCreate}
           className="px-4 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-gray-200 transition"
@@ -163,16 +163,16 @@ export default function AdminGamesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Name</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Slug</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Status</th>
+                <th className="text-left px-4 py-3 text-gray-400">Name</th>
+                <th className="text-left px-4 py-3 text-gray-400">Slug</th>
+                <th className="text-left px-4 py-3 text-gray-400">Status</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {games.map((g) => (
                 <tr key={g.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-900/50">
-                  <td className="px-4 py-3 font-medium">{g.name}</td>
+                  <td className="px-4 py-3">{g.name}</td>
                   <td className="px-4 py-3 text-gray-400 font-mono">{g.slug}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded ${g.is_active ? "bg-green-900 text-green-300" : "bg-gray-800 text-gray-500"}`}>
