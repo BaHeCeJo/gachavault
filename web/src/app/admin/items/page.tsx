@@ -88,15 +88,15 @@ export default function AdminItemsPage() {
     setSelectedGame(game);
     setLoadingItems(true);
     try {
-      const [sectRes, schemaRes, itemsRes, attrRes] = await Promise.all([
+      const [sectRes, schemaRes, allItems, attrRes] = await Promise.all([
         gamesApi.getSections(game.slug),
         adminApi.games.listSchemas(game.slug),
-        itemsApi.list({ game_id: game.id, limit: 200, offset: 0 }),
+        itemsApi.listAll<Item>({ game_id: game.id }),
         gamesApi.getAttributes(game.slug),
       ]);
       setSections(sectRes.data.data ?? []);
       setSchemas(schemaRes.data.data ?? []);
-      setItems(itemsRes.data.data ?? []);
+      setItems(allItems);
       setActiveFilters({});
       setSearch("");
       const attrs: GameAttribute[] = attrRes.data.data ?? [];

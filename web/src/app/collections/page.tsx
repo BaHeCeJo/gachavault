@@ -46,13 +46,12 @@ export default function CollectionsPage() {
     setSelectedGame(game);
     setLoadingEntries(true);
     try {
-      const [entriesRes, itemsRes, sectionsRes] = await Promise.all([
+      const [entriesRes, itemsData, sectionsRes] = await Promise.all([
         collectionsApi.getByGame(game.id),
-        itemsApi.list({ game_id: game.id, limit: 500, offset: 0 }),
+        itemsApi.listAll<Item>({ game_id: game.id }),
         gamesApi.getSections(game.slug),
       ]);
       const entriesData: CollectionEntry[] = entriesRes.data.data ?? [];
-      const itemsData: Item[] = itemsRes.data.data ?? [];
       setEntries(entriesData);
       setItems(new Map(itemsData.map((i) => [i.id, i])));
       setSections(sectionsRes.data.data ?? []);

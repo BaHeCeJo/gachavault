@@ -88,6 +88,24 @@ export const itemsApi = {
     api.get(`/games/${gameSlug}/items`, { params }),
   list: (params?: { game_id?: string; section_id?: string; limit?: number; offset?: number }) =>
     api.get("/items", { params }),
+  // Fetches every item matching the filters by paginating through the
+  // /items endpoint. The server caps a single response at 200 rows, so callers
+  // that want the full set must page through. HARD_CAP guards against an
+  // unbounded loop if the backend ever stops honouring offset.
+  listAll: async <T = unknown>(params?: { game_id?: string; section_id?: string }): Promise<T[]> => {
+    const PAGE = 200;
+    const HARD_CAP = 100_000;
+    const all: T[] = [];
+    let offset = 0;
+    while (all.length < HARD_CAP) {
+      const res = await api.get("/items", { params: { ...params, limit: PAGE, offset } });
+      const page: T[] = res.data?.data ?? [];
+      all.push(...page);
+      if (page.length < PAGE) break;
+      offset += PAGE;
+    }
+    return all;
+  },
   get: (id: string, locale?: string) =>
     api.get(`/items/${id}`, { params: locale ? { locale } : {} }),
   getBySlug: (gameSlug: string, sectionSlug: string, itemSlug: string, locale?: string) =>

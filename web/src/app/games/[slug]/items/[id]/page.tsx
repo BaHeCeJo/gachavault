@@ -308,8 +308,8 @@ export default function ItemDetailPage() {
             uniqueSlugs.map(async (sectionSlug) => {
               const section = sections.find((s: { id: string; slug: string }) => s.slug === sectionSlug);
               if (!section) return [sectionSlug, []] as [string, Item[]];
-              const res = await itemsApi.list({ game_id: it.game_id, section_id: section.id, limit: 500, offset: 0 });
-              return [sectionSlug, res.data.data ?? []] as [string, Item[]];
+              const sourceItems = await itemsApi.listAll<Item>({ game_id: it.game_id, section_id: section.id });
+              return [sectionSlug, sourceItems] as [string, Item[]];
             })
           ).then((results) => {
             const sectionItems = new Map<string, Item[]>(results);

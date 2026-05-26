@@ -75,13 +75,13 @@ export default function TierListEditorPage() {
         const map = new Map<string, string>();
         for (const e of data.entries) map.set(e.item_id, e.tier);
         setEntries(map);
-        const itemParams: Record<string, unknown> = { game_id: data.game_id, limit: 200, offset: 0 };
+        const itemParams: { game_id: string; section_id?: string } = { game_id: data.game_id };
         if (data.section_id) {
           itemParams.section_id = data.section_id;
           gamesApi.getSection(data.section_id).then((r) => setSectionName(r.data.data.name)).catch(() => {});
         }
-        const itemsRes = await itemsApi.list(itemParams);
-        setAllItems(itemsRes.data.data ?? []);
+        const allItems = await itemsApi.listAll<Item>(itemParams);
+        setAllItems(allItems);
       })
       .catch(() => setError("Tier list not found"))
       .finally(() => setLoading(false));

@@ -154,8 +154,8 @@ export default function GameDetailPage() {
     setActiveFilters({});
     setSearch("");
     itemsApi
-      .list({ game_id: game.id, section_id: activeSection, limit: 200, offset: 0 })
-      .then((res) => setItems(res.data.data ?? []))
+      .listAll<Item>({ game_id: game.id, section_id: activeSection })
+      .then((all) => setItems(all))
       .catch(() => setItems([]));
   }, [game, activeSection]);
 

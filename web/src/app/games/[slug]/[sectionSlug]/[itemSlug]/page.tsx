@@ -122,7 +122,7 @@ function itemHref(item: { id: string; slug: string; game_slug?: string; section_
 }
 
 function FieldValue({
-  fieldKey, value, attrMap, fieldType, fieldAttrType, resolvedRef, backRefItems, gameSlug,
+  fieldKey, value, attrMap, fieldType, fieldAttrType, resolvedRef, backRefItems,
 }: {
   fieldKey: string;
   value: unknown;
@@ -131,7 +131,6 @@ function FieldValue({
   fieldAttrType?: string;
   resolvedRef?: { id: string; slug: string; name: string; game_slug?: string; section_slug?: string };
   backRefItems?: { id: string; slug: string; name: string; game_slug?: string; section_slug?: string }[];
-  gameSlug?: string;
 }) {
   if (fieldType === "backref") {
     if (!backRefItems || backRefItems.length === 0) return <span className="text-gray-600">—</span>;
@@ -331,8 +330,8 @@ export default function ItemDetailPage() {
             uniqueSlugs.map(async (secSlug) => {
               const section = sections.find((s: { id: string; slug: string }) => s.slug === secSlug);
               if (!section) return [secSlug, []] as [string, ItemFull[]];
-              const res = await itemsApi.list({ game_id: it.game_id, section_id: section.id, limit: 500, offset: 0 });
-              return [secSlug, res.data.data ?? []] as [string, ItemFull[]];
+              const sourceItems = await itemsApi.listAll<ItemFull>({ game_id: it.game_id, section_id: section.id });
+              return [secSlug, sourceItems] as [string, ItemFull[]];
             })
           ).then((results) => {
             const sectionItems = new Map<string, ItemFull[]>(results);
@@ -495,7 +494,6 @@ export default function ItemDetailPage() {
                       fieldAttrType={attribute_type}
                       resolvedRef={type === "itemref" ? resolvedRefs.get(String(value)) : undefined}
                       backRefItems={isBackref ? (backRefs.get(key) ?? []) : undefined}
-                      gameSlug={slug}
                     />
                   </div>
                 </div>

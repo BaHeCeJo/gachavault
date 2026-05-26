@@ -65,8 +65,7 @@ export default function SharedTierListPage() {
         for (const e of data.entries) map.set(e.item_id, e.tier);
         setEntriesMap(map);
         if (map.size > 0) {
-          const itemsRes = await itemsApi.list({ game_id: data.game_id, limit: 200, offset: 0 });
-          const items: Item[] = itemsRes.data.data ?? [];
+          const items = await itemsApi.listAll<Item>({ game_id: data.game_id });
           setItemsMap(new Map(items.map((i) => [i.id, i])));
         }
         // Load comments
