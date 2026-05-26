@@ -231,7 +231,11 @@ services:
     ports:
       - "3009:3009"
     environment:
+      # NEXT_PUBLIC_API_URL is the browser-side URL (baked into client JS).
+      # INTERNAL_API_URL is what Next uses for SSR / sitemap / generateMetadata
+      # — inside compose, that's the api-gateway service hostname.
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+      INTERNAL_API_URL: http://api-gateway:3000
       PORT: 3009
     depends_on:
       - api-gateway
