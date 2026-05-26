@@ -10,11 +10,12 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  // /search and /tierlists are excluded — /search is noindex and /tierlists
+  // is the authenticated index of a user's own lists. Public tier lists are
+  // listed individually below under /tierlists/share/<slug>.
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
     { url: `${SITE_URL}/games`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${SITE_URL}/search`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
-    { url: `${SITE_URL}/tierlists`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
   ];
 
   const [games, items] = await Promise.all([listGames(), listAllItems()]);

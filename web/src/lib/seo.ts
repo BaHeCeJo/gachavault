@@ -51,6 +51,13 @@ export interface SeoTierList {
   game_id: string;
 }
 
+export interface SeoPublicUser {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+  created_at: string;
+}
+
 export function getGame(slug: string) {
   return apiGet<SeoGame>(`/games/${encodeURIComponent(slug)}`);
 }
@@ -63,6 +70,10 @@ export function getItemBySlugs(gameSlug: string, sectionSlug: string, itemSlug: 
 
 export function getTierListByShareSlug(slug: string) {
   return apiGet<SeoTierList>(`/tierlists/share/${encodeURIComponent(slug)}`);
+}
+
+export function getPublicUserByUsername(username: string) {
+  return apiGet<SeoPublicUser>(`/users/by-username/${encodeURIComponent(username)}`);
 }
 
 export function listGames() {

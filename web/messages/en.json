@@ -11,12 +11,13 @@
     "logout": "Sign out"
   },
   "home": {
-    "title": "GachaVault",
-    "subtitle": "The complete gacha game database — characters, weapons, tier lists, and more.",
+    "title": "Hotarumi",
+    "subtitle": "Characters, items, tier lists and collection tracking across multiple gacha games.",
     "searchPlaceholder": "Search characters, weapons, items…",
     "searchButton": "Search",
     "browseGames": "Browse Games",
     "createAccount": "Create Account",
+    "createAccountHint": "Sync your collection and save tier lists across devices.",
     "gamesSection": "Games",
     "viewAll": "View all"
   },

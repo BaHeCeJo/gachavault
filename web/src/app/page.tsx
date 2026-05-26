@@ -75,6 +75,9 @@ export default function HomePage() {
             {t("createAccount")}
           </Link>
         </div>
+        <p className="relative text-xs text-gray-500 mt-3 max-w-md">
+          {t("createAccountHint")}
+        </p>
       </section>
 
       {/* Featured games */}
