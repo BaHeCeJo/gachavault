@@ -56,6 +56,40 @@ export interface SeoTierList {
   title: string;
   share_slug: string;
   game_id: string;
+  // The /tierlists/share/<slug> endpoint returns these too; the index list
+  // endpoint only returns the basics, hence everything below is optional.
+  upvote_count?: number;
+  created_at?: string;
+  tiers?: { key: string; name: string; color: string }[];
+  entries?: { item_id: string; tier: string }[];
+  user_upvoted?: boolean;
+  is_public?: boolean;
+}
+
+export interface SharedTierListBundle {
+  tierList: SeoTierList;
+  items: SeoItem[];
+}
+
+export async function getSharedTierListBundle(slug: string): Promise<SharedTierListBundle | null> {
+  const tierList = await getTierListByShareSlug(slug);
+  if (!tierList) return null;
+  const entryIds = new Set((tierList.entries ?? []).map((e) => e.item_id));
+  // The shared tier list only needs items referenced by entries — fetching the
+  // whole game can be hundreds of rows; just fetch the ones in the list.
+  const items = await fetchItemsByIds(Array.from(entryIds));
+  return { tierList, items };
+}
+
+async function fetchItemsByIds(ids: string[]): Promise<SeoItem[]> {
+  if (ids.length === 0) return [];
+  // Items service has no bulk-by-id endpoint, so issue parallel GETs.
+  const settled = await Promise.allSettled(
+    ids.map((id) => apiGet<SeoItem>(`/items/${encodeURIComponent(id)}`)),
+  );
+  return settled
+    .map((r) => (r.status === "fulfilled" ? r.value : null))
+    .filter((it): it is SeoItem => it !== null);
 }
 
 export interface SeoPublicUser {
@@ -223,6 +257,48 @@ export function getTierListByShareSlug(slug: string) {
 
 export function getPublicUserByUsername(username: string) {
   return apiGet<SeoPublicUser>(`/users/by-username/${encodeURIComponent(username)}`);
+}
+
+interface SeoCollectionEntry {
+  item_id: string;
+  game_id: string;
+  owned: boolean;
+}
+
+function getUserCollection(userId: string) {
+  return apiGet<SeoCollectionEntry[]>(`/users/${encodeURIComponent(userId)}/collections`);
+}
+
+export interface UserGameStat {
+  game: { id: string; slug: string; name: string };
+  ownedCount: number;
+}
+
+export interface PublicProfileBundle {
+  user: SeoPublicUser;
+  gameStats: UserGameStat[];
+  totalOwned: number;
+}
+
+export async function getPublicProfileBundle(username: string): Promise<PublicProfileBundle | null> {
+  const user = await getPublicUserByUsername(username);
+  if (!user) return null;
+  const [entries, games] = await Promise.all([
+    getUserCollection(user.id),
+    listGames(),
+  ]);
+  const owned = (entries ?? []).filter((e) => e.owned);
+  const countsByGame = new Map<string, number>();
+  for (const e of owned) {
+    countsByGame.set(e.game_id, (countsByGame.get(e.game_id) ?? 0) + 1);
+  }
+  const stats: UserGameStat[] = [];
+  for (const [gameId, count] of Array.from(countsByGame.entries())) {
+    const game = games?.find((g) => g.id === gameId);
+    if (game) stats.push({ game: { id: game.id, slug: game.slug, name: game.name }, ownedCount: count });
+  }
+  stats.sort((a, b) => b.ownedCount - a.ownedCount);
+  return { user, gameStats: stats, totalOwned: owned.length };
 }
 
 export function listGames() {

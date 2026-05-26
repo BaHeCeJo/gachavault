@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
-import { tierlistsApi, itemsApi } from "@/lib/api";
+import { tierlistsApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { SafeImage } from "@/components/SafeImage";
+import type { SharedTierListBundle } from "@/lib/seo";
 
 interface CustomTier { key: string; name: string; color: string }
 interface TierEntry { item_id: string; tier: string }
@@ -38,42 +38,40 @@ const DEFAULT_TIERS: CustomTier[] = [
   { key: "D", name: "D", color: "#60a5fa" },
 ];
 
-export default function SharedTierListClient() {
-  const { slug } = useParams<{ slug: string }>();
+interface ClientProps {
+  initial: SharedTierListBundle;
+}
+
+export default function SharedTierListClient({ initial }: ClientProps) {
   const { user } = useAuth();
-  const [tierList, setTierList] = useState<TierList | null>(null);
-  const [tiers, setTiers] = useState<CustomTier[]>(DEFAULT_TIERS);
-  const [entriesMap, setEntriesMap] = useState<Map<string, string>>(new Map());
-  const [itemsMap, setItemsMap] = useState<Map<string, Item>>(new Map());
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const slug = initial.tierList.share_slug;
+  const [tierList, setTierList] = useState<TierList>(initial.tierList as TierList);
+  const tiers: CustomTier[] = tierList.tiers && tierList.tiers.length > 0 ? tierList.tiers : DEFAULT_TIERS;
+  const entriesMap = new Map<string, string>(
+    (tierList.entries ?? []).map((e) => [e.item_id, e.tier]),
+  );
+  const itemsMap = new Map<string, Item>(initial.items.map((it) => [it.id, it as Item]));
+
   const [upvoting, setUpvoting] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentBody, setCommentBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    tierlistsApi
-      .getByShareSlug(slug)
-      .then(async (res) => {
-        const data = res.data.data as TierList;
-        setTierList(data);
-        if (Array.isArray(data.tiers) && data.tiers.length > 0) {
-          setTiers(data.tiers);
-        }
-        const map = new Map<string, string>();
-        for (const e of data.entries) map.set(e.item_id, e.tier);
-        setEntriesMap(map);
-        if (map.size > 0) {
-          const items = await itemsApi.listAll<Item>({ game_id: data.game_id });
-          setItemsMap(new Map(items.map((i) => [i.id, i])));
-        }
-        // Load comments
-        tierlistsApi.listComments(data.id).then((r) => setComments(r.data.data ?? [])).catch(() => {});
-      })
-      .catch(() => setError("Tier list not found or no longer public"))
-      .finally(() => setLoading(false));
-  }, [slug]);
+    // Comments and upvote state need cookies — fetch client-side after mount.
+    tierlistsApi.listComments(initial.tierList.id).then((r) => setComments(r.data.data ?? [])).catch(() => {});
+    tierlistsApi.getByShareSlug(slug).then((res) => {
+      const fresh = res.data.data as TierList;
+      // Only update fields that differ between an anonymous SSR fetch and an
+      // authenticated client fetch — leave the (already-rendered) entries
+      // and tiers untouched.
+      setTierList((prev) => ({
+        ...prev,
+        upvote_count: fresh.upvote_count,
+        user_upvoted: fresh.user_upvoted,
+      }));
+    }).catch(() => {});
+  }, [initial.tierList.id, slug]);
 
   const handleComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,25 +115,6 @@ export default function SharedTierListClient() {
       setUpvoting(false);
     }
   };
-
-  if (loading) {
-    return (
-      <main className="flex min-h-[calc(100vh-57px)] items-center justify-center">
-        <div className="text-gray-400 animate-pulse">Loading…</div>
-      </main>
-    );
-  }
-
-  if (error || !tierList) {
-    return (
-      <main className="max-w-4xl mx-auto px-6 py-10">
-        <p className="text-red-400">{error || "Not found"}</p>
-        <Link href="/tierlists" className="text-sm text-gray-400 hover:text-white mt-4 inline-block">
-          ← Browse tier lists
-        </Link>
-      </main>
-    );
-  }
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-10">

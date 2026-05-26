@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getTierListByShareSlug } from "@/lib/seo";
+import { notFound } from "next/navigation";
+import { getSharedTierListBundle } from "@/lib/seo";
 import SharedTierListClient from "./SharedTierListClient";
 
 interface RouteParams {
@@ -8,15 +9,15 @@ interface RouteParams {
 
 export async function generateMetadata({ params }: RouteParams): Promise<Metadata> {
   const { slug } = await params;
-  const list = await getTierListByShareSlug(slug);
-  if (!list) {
+  const bundle = await getSharedTierListBundle(slug);
+  if (!bundle) {
     return {
       title: "Tier list not found",
       robots: { index: false, follow: false },
     };
   }
-  const title = list.title;
-  const description = `A community tier list shared on Hotarumi: ${list.title}.`;
+  const title = bundle.tierList.title;
+  const description = `A community tier list shared on Hotarumi: ${bundle.tierList.title}.`;
   const path = `/tierlists/share/${slug}`;
   return {
     title,
@@ -36,6 +37,9 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
   };
 }
 
-export default function Page() {
-  return <SharedTierListClient />;
+export default async function Page({ params }: RouteParams) {
+  const { slug } = await params;
+  const bundle = await getSharedTierListBundle(slug);
+  if (!bundle) notFound();
+  return <SharedTierListClient initial={bundle} />;
 }

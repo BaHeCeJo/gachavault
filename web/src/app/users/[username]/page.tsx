@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getPublicUserByUsername } from "@/lib/seo";
+import { notFound } from "next/navigation";
+import { getPublicProfileBundle } from "@/lib/seo";
 import PublicProfileClient from "./PublicProfileClient";
 
 interface RouteParams {
@@ -8,13 +9,14 @@ interface RouteParams {
 
 export async function generateMetadata({ params }: RouteParams): Promise<Metadata> {
   const { username } = await params;
-  const user = await getPublicUserByUsername(username);
-  if (!user) {
+  const bundle = await getPublicProfileBundle(username);
+  if (!bundle) {
     return {
       title: "User not found",
       robots: { index: false, follow: false },
     };
   }
+  const { user } = bundle;
   const title = `@${user.username}`;
   const description = `${user.username}'s public collection on Hotarumi.`;
   const path = `/users/${encodeURIComponent(user.username)}`;
@@ -30,7 +32,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
       images: user.avatar_url ? [{ url: user.avatar_url }] : undefined,
     },
     twitter: {
-      card: user.avatar_url ? "summary" : "summary",
+      card: "summary",
       title: `${title} | Hotarumi`,
       description,
       images: user.avatar_url ? [user.avatar_url] : undefined,
@@ -38,6 +40,9 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
   };
 }
 
-export default function Page() {
-  return <PublicProfileClient />;
+export default async function Page({ params }: RouteParams) {
+  const { username } = await params;
+  const bundle = await getPublicProfileBundle(username);
+  if (!bundle) notFound();
+  return <PublicProfileClient initial={bundle} />;
 }

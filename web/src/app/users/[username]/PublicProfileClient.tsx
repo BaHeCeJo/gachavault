@@ -1,95 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
-import { collectionsApi, gamesApi, usersApi } from "@/lib/api";
 import { Avatar } from "@/components/Avatar";
+import type { PublicProfileBundle } from "@/lib/seo";
 
-interface PublicUser {
-  id: string;
-  username: string;
-  avatar_url: string | null;
-  created_at: string;
+interface ClientProps {
+  initial: PublicProfileBundle;
 }
 
-interface CollectionEntry {
-  item_id: string;
-  game_id: string;
-  owned: boolean;
-}
-
-interface Game {
-  id: string;
-  slug: string;
-  name: string;
-}
-
-interface GameStat {
-  game: Game;
-  ownedCount: number;
-}
-
-export default function PublicProfileClient() {
-  const { username } = useParams<{ username: string }>();
-
-  const [profile, setProfile] = useState<PublicUser | null>(null);
-  const [gameStats, setGameStats] = useState<GameStat[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    usersApi
-      .getPublicProfile(username)
-      .then(async (r) => {
-        const user: PublicUser = r.data.data;
-        setProfile(user);
-
-        const [entriesRes, gamesRes] = await Promise.all([
-          collectionsApi.getUserCollection(user.id),
-          gamesApi.list(),
-        ]);
-
-        const entries: CollectionEntry[] = entriesRes.data.data ?? [];
-        const games: Game[] = gamesRes.data.data ?? [];
-
-        const owned = entries.filter((e) => e.owned);
-        const countsByGame = new Map<string, number>();
-        for (const e of owned) {
-          countsByGame.set(e.game_id, (countsByGame.get(e.game_id) ?? 0) + 1);
-        }
-
-        const stats: GameStat[] = [];
-        for (const [gameId, count] of Array.from(countsByGame.entries())) {
-          const game = games.find((g) => g.id === gameId);
-          if (game) stats.push({ game, ownedCount: count });
-        }
-        stats.sort((a, b) => b.ownedCount - a.ownedCount);
-        setGameStats(stats);
-      })
-      .catch(() => setError("User not found"))
-      .finally(() => setLoading(false));
-  }, [username]);
-
-  if (loading) {
-    return (
-      <main className="max-w-3xl mx-auto px-6 py-10">
-        <div className="h-24 rounded-xl bg-gray-800 animate-pulse mb-4" />
-        <div className="h-48 rounded-xl bg-gray-800 animate-pulse" />
-      </main>
-    );
-  }
-
-  if (error || !profile) {
-    return (
-      <main className="max-w-3xl mx-auto px-6 py-10">
-        <p className="text-red-400">{error || "User not found"}</p>
-        <Link href="/" className="text-sm text-gray-400 hover:text-white mt-4 inline-block">← Home</Link>
-      </main>
-    );
-  }
-
-  const totalOwned = gameStats.reduce((s, g) => s + g.ownedCount, 0);
+export default function PublicProfileClient({ initial }: ClientProps) {
+  const { user: profile, gameStats, totalOwned } = initial;
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-10 space-y-8">
