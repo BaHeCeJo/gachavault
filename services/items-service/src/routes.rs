@@ -312,10 +312,22 @@ pub async fn delete_item(
     Ok(Json(ApiResponse::success(())))
 }
 
+#[derive(Debug, Deserialize)]
+pub struct BulkImportRow {
+    /// When present, the row is treated as an update of an existing item.
+    /// When absent, the row is created. This is the export-edit-reimport round-trip.
+    pub id: Option<Uuid>,
+    pub game: String,
+    pub section: String,
+    pub schema: String,
+    pub slug: Option<String>,
+    pub data: serde_json::Value,
+}
+
 pub async fn bulk_import(
     State(state): State<AppState>,
     auth: AuthUser,
-    Json(items): Json<Vec<CreateItemRequest>>,
+    Json(items): Json<Vec<BulkImportRow>>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
     if !auth.is_admin() {
         return Err(AppError::Forbidden(
@@ -330,29 +342,101 @@ pub async fn bulk_import(
     }
 
     let mut created = 0u32;
+    let mut updated = 0u32;
     let mut skipped = 0u32;
     let mut errors: Vec<serde_json::Value> = Vec::new();
 
-    for item in &items {
-        let slug = if item.slug.is_empty() {
-            let name = item.data.get("name").and_then(|v| v.as_str()).unwrap_or("");
-            if name.is_empty() {
-                errors.push(
-                    serde_json::json!({ "slug": "", "error": "slug or data.name is required" }),
-                );
+    // Slug → UUID caches. A typical export-reimport hits the same game/section/schema
+    // for every row, so caching cuts the lookup count from O(N) to O(1).
+    let mut game_cache: std::collections::HashMap<String, Uuid> = Default::default();
+    let mut section_cache: std::collections::HashMap<(Uuid, String), Uuid> = Default::default();
+    let mut schema_cache: std::collections::HashMap<(Uuid, String), Uuid> = Default::default();
+
+    for (idx, row) in items.iter().enumerate() {
+        // Best-effort label for error reporting — prefer slug, fall back to data.name, then index.
+        let label = row
+            .slug
+            .clone()
+            .or_else(|| {
+                row.data
+                    .get("name")
+                    .and_then(|v| v.as_str())
+                    .map(|s| s.to_string())
+            })
+            .unwrap_or_else(|| format!("#{}", idx));
+
+        // UPDATE path: id was provided, so this row maps to a specific existing item.
+        if let Some(id) = row.id {
+            match db::update_item(&state.pool, id, row.slug.as_deref(), Some(&row.data)).await {
+                Ok(Some(item)) => {
+                    updated += 1;
+                    let state_clone = state.clone();
+                    let item_clone = item.clone();
+                    tokio::spawn(async move {
+                        index_item(&state_clone, &item_clone).await;
+                    });
+                }
+                Ok(None) => {
+                    errors.push(serde_json::json!({
+                        "slug": label,
+                        "error": format!("Item with id {} not found", id),
+                    }));
+                }
+                Err(e) => {
+                    errors.push(serde_json::json!({"slug": label, "error": e.to_string()}));
+                }
+            }
+            continue;
+        }
+
+        // CREATE path: resolve game/section/schema slugs to UUIDs.
+        let game_id = match resolve_game_id(&state.pool, &row.game, &mut game_cache).await {
+            Ok(id) => id,
+            Err(msg) => {
+                errors.push(serde_json::json!({"slug": label, "error": msg}));
                 continue;
             }
-            slugify(name)
-        } else {
-            item.slug.clone()
         };
+        let section_id =
+            match resolve_section_id(&state.pool, game_id, &row.section, &mut section_cache).await
+            {
+                Ok(id) => id,
+                Err(msg) => {
+                    errors.push(serde_json::json!({"slug": label, "error": msg}));
+                    continue;
+                }
+            };
+        let schema_id =
+            match resolve_schema_id(&state.pool, game_id, &row.schema, &mut schema_cache).await {
+                Ok(id) => id,
+                Err(msg) => {
+                    errors.push(serde_json::json!({"slug": label, "error": msg}));
+                    continue;
+                }
+            };
+
+        let slug = match row.slug.as_deref() {
+            Some(s) if !s.is_empty() => s.to_string(),
+            _ => {
+                let name = row.data.get("name").and_then(|v| v.as_str()).unwrap_or("");
+                if name.is_empty() {
+                    errors.push(serde_json::json!({
+                        "slug": label,
+                        "error": "slug or data.name is required",
+                    }));
+                    continue;
+                }
+                slugify(name)
+            }
+        };
+
         match db::create_item(
             &state.pool,
-            item.game_id,
-            item.section_id,
-            item.type_schema_id,
+            game_id,
+            section_id,
+            schema_id,
             &slug,
-            &item.data,
+            &row.data,
             auth.id(),
         )
         .await
@@ -366,20 +450,87 @@ pub async fn bulk_import(
                 });
             }
             Err(sqlx::Error::Database(e)) if e.constraint() == Some("items_game_id_slug_key") => {
+                // Row had no id and the slug already exists — caller intended a create,
+                // so we honor the contract and skip rather than silently overwriting.
                 skipped += 1;
             }
             Err(e) => {
-                errors.push(serde_json::json!({ "slug": slug, "error": e.to_string() }));
+                errors.push(serde_json::json!({"slug": slug, "error": e.to_string()}));
             }
         }
     }
 
     Ok(Json(ApiResponse::success(serde_json::json!({
+        "total": items.len(),
         "created": created,
+        "updated": updated,
         "skipped": skipped,
         "errors": errors,
-        "total": items.len(),
     }))))
+}
+
+async fn resolve_game_id(
+    pool: &sqlx::PgPool,
+    slug: &str,
+    cache: &mut std::collections::HashMap<String, Uuid>,
+) -> Result<Uuid, String> {
+    if let Some(id) = cache.get(slug) {
+        return Ok(*id);
+    }
+    let id = sqlx::query_scalar::<_, Uuid>("SELECT id FROM games.games WHERE slug = $1")
+        .bind(slug)
+        .fetch_optional(pool)
+        .await
+        .map_err(|e| e.to_string())?
+        .ok_or_else(|| format!("Unknown game slug: '{}'", slug))?;
+    cache.insert(slug.to_string(), id);
+    Ok(id)
+}
+
+async fn resolve_section_id(
+    pool: &sqlx::PgPool,
+    game_id: Uuid,
+    slug: &str,
+    cache: &mut std::collections::HashMap<(Uuid, String), Uuid>,
+) -> Result<Uuid, String> {
+    let key = (game_id, slug.to_string());
+    if let Some(id) = cache.get(&key) {
+        return Ok(*id);
+    }
+    let id = sqlx::query_scalar::<_, Uuid>(
+        "SELECT id FROM games.sections WHERE game_id = $1 AND slug = $2",
+    )
+    .bind(game_id)
+    .bind(slug)
+    .fetch_optional(pool)
+    .await
+    .map_err(|e| e.to_string())?
+    .ok_or_else(|| format!("Unknown section slug '{}' in this game", slug))?;
+    cache.insert(key, id);
+    Ok(id)
+}
+
+async fn resolve_schema_id(
+    pool: &sqlx::PgPool,
+    game_id: Uuid,
+    name: &str,
+    cache: &mut std::collections::HashMap<(Uuid, String), Uuid>,
+) -> Result<Uuid, String> {
+    let key = (game_id, name.to_string());
+    if let Some(id) = cache.get(&key) {
+        return Ok(*id);
+    }
+    let id = sqlx::query_scalar::<_, Uuid>(
+        "SELECT id FROM games.item_type_schemas WHERE game_id = $1 AND name = $2",
+    )
+    .bind(game_id)
+    .bind(name)
+    .fetch_optional(pool)
+    .await
+    .map_err(|e| e.to_string())?
+    .ok_or_else(|| format!("Unknown schema name '{}' in this game", name))?;
+    cache.insert(key, id);
+    Ok(id)
 }
 
 pub async fn list_skills(

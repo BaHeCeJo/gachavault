@@ -288,6 +288,32 @@ export default function AdminItemsPage() {
     [items, activeFilters, search],
   );
 
+  function exportItems() {
+    if (visibleItems.length === 0 || !selectedGame) return;
+    const rows = visibleItems.map((item) => {
+      const section = sections.find((s) => s.id === item.section_id);
+      const schema = schemas.find((s) => s.id === item.type_schema_id);
+      return {
+        id: item.id,
+        game: selectedGame.slug,
+        section: section?.slug ?? item.section_slug ?? "",
+        schema: schema?.name ?? "",
+        slug: item.slug,
+        data: item.data,
+      };
+    });
+    const blob = new Blob([JSON.stringify(rows, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const today = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `${selectedGame.slug}-items-${today}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   function toggleFilter(attrType: string, key: string) {
     setActiveFilters(prev => {
       const next = { ...prev };
@@ -310,7 +336,19 @@ export default function AdminItemsPage() {
     <main className="max-w-6xl mx-auto px-6 py-10">
       <div className="flex items-center gap-4 mb-2">
         <Link href="/admin" className="text-gray-400 hover:text-white text-sm">← Admin</Link>
-        <Link href="/admin/items/import" className="text-sm text-gray-400 hover:text-white ml-auto">
+        {selectedGame && visibleItems.length > 0 && (
+          <button
+            onClick={exportItems}
+            className="text-sm text-gray-400 hover:text-white ml-auto"
+            title="Download the currently filtered items as JSON (roundtrip-ready for bulk import)"
+          >
+            Export ({visibleItems.length}) ↓
+          </button>
+        )}
+        <Link
+          href="/admin/items/import"
+          className={`text-sm text-gray-400 hover:text-white ${selectedGame && visibleItems.length > 0 ? "" : "ml-auto"}`}
+        >
           Bulk Import ↑
         </Link>
       </div>

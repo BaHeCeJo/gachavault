@@ -8,15 +8,20 @@ import { useRouter } from "next/navigation";
 
 interface Game { id: string; slug: string; name: string }
 interface ItemRow {
-  game_id: string;
-  section_id: string;
-  type_schema_id: string;
-  slug: string;
+  // Present for rows exported from the system. When provided, the backend
+  // treats the row as an update of that exact item. When absent, the row
+  // is created.
+  id?: string;
+  game: string;     // game slug, e.g. "honkai-star-rail"
+  section: string;  // section slug, e.g. "characters"
+  schema: string;   // schema name, e.g. "Character"
+  slug?: string;    // item slug. Auto-derived from data.name if omitted on create.
   data: Record<string, unknown>;
 }
 
 interface ImportResult {
   created: number;
+  updated: number;
   skipped: number;
   errors: Array<{ slug: string; error: string }>;
   total: number;
@@ -65,11 +70,16 @@ export default function BulkImportPage() {
           setParseError(`Too many items (${items.length}). Maximum 500 per import.`);
           return;
         }
-        // Basic validation
+        // Basic validation — sample first 5 rows for missing required fields.
         for (let i = 0; i < Math.min(items.length, 5); i++) {
           const row = items[i];
-          if (!row.slug || !row.game_id || !row.section_id || !row.type_schema_id) {
-            setParseError(`Item at index ${i} is missing required fields: slug, game_id, section_id, type_schema_id`);
+          if (!row.game || !row.section || !row.schema) {
+            setParseError(`Item at index ${i} is missing required fields: game, section, schema`);
+            return;
+          }
+          // For create rows (no id), we need either a slug or a data.name to derive one.
+          if (!row.id && !row.slug && !row.data?.name) {
+            setParseError(`Item at index ${i} has no id and no slug or data.name — cannot create`);
             return;
           }
         }
@@ -98,7 +108,7 @@ export default function BulkImportPage() {
     }
   }
 
-  const gameName = (id: string) => games.find((g) => g.id === id)?.name ?? id.slice(0, 8) + "…";
+  const gameName = (slug: string) => games.find((g) => g.slug === slug)?.name ?? slug;
 
   if (isLoading) return null;
 
@@ -118,22 +128,23 @@ export default function BulkImportPage() {
         <pre className="text-xs text-gray-400 overflow-x-auto">
 {`[
   {
-    "game_id": "<uuid>",
-    "section_id": "<uuid>",
-    "type_schema_id": "<uuid>",
-    "slug": "character-name",
+    "id": "<uuid>",              // optional — present → update, absent → create
+    "game": "honkai-star-rail",  // game slug
+    "section": "characters",     // section slug
+    "schema": "Character",       // schema name
+    "slug": "kafka",             // item slug (auto-derived from data.name if omitted)
     "data": {
-      "name": "Character Name",
-      "description": "...",
-      "image_url": "https://..."
+      "name": "Kafka",
+      "rarity": "5",
+      "path": "nihility"
     }
   }
 ]`}
         </pre>
         <p className="text-xs text-gray-500 mt-2">
-          Tip: get IDs from the{" "}
-          <Link href="/admin/games" className="text-gray-300 hover:text-white underline">Games admin</Link>.
-          Items with duplicate (game_id + slug) are silently skipped.
+          Rows with an <code className="text-gray-300">id</code> update that exact item.
+          Rows without one create a new item; duplicate slugs in the same game are skipped.
+          Tip: use the Export button on the Items admin to generate a roundtrip-ready file.
         </p>
       </div>
 
@@ -175,16 +186,28 @@ export default function BulkImportPage() {
             <table className="w-full text-xs">
               <thead className="bg-gray-900 text-gray-400">
                 <tr>
+                  <th className="px-3 py-2 text-left">Mode</th>
                   <th className="px-3 py-2 text-left">Slug</th>
                   <th className="px-3 py-2 text-left">Game</th>
+                  <th className="px-3 py-2 text-left">Section</th>
                   <th className="px-3 py-2 text-left">Name</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
                 {parsed.slice(0, 20).map((item, i) => (
                   <tr key={i} className="hover:bg-gray-900/50">
-                    <td className="px-3 py-2 font-mono text-gray-300">{item.slug}</td>
-                    <td className="px-3 py-2 text-gray-400">{gameName(item.game_id)}</td>
+                    <td className="px-3 py-2">
+                      {item.id ? (
+                        <span className="text-amber-400">update</span>
+                      ) : (
+                        <span className="text-green-400">create</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 font-mono text-gray-300">
+                      {item.slug ?? (item.data?.name ? `(from "${item.data.name as string}")` : "—")}
+                    </td>
+                    <td className="px-3 py-2 text-gray-400">{gameName(item.game)}</td>
+                    <td className="px-3 py-2 text-gray-400">{item.section}</td>
                     <td className="px-3 py-2 text-gray-400">
                       {(item.data?.name as string) ?? "—"}
                     </td>
@@ -192,7 +215,7 @@ export default function BulkImportPage() {
                 ))}
                 {parsed.length > 20 && (
                   <tr>
-                    <td colSpan={3} className="px-3 py-2 text-center text-gray-600">
+                    <td colSpan={5} className="px-3 py-2 text-center text-gray-600">
                       … {parsed.length - 20} more items not shown
                     </td>
                   </tr>
@@ -209,6 +232,7 @@ export default function BulkImportPage() {
           <h2 className="text-sm font-semibold">Import complete</h2>
           <div className="flex gap-6 text-sm">
             <span className="text-green-400">✓ {result.created} created</span>
+            {result.updated > 0 && <span className="text-amber-400">↻ {result.updated} updated</span>}
             {result.skipped > 0 && <span className="text-gray-400">⊘ {result.skipped} skipped (duplicate slugs)</span>}
             {result.errors.length > 0 && <span className="text-red-400">✗ {result.errors.length} errors</span>}
           </div>
