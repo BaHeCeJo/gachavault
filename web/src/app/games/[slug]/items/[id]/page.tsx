@@ -232,6 +232,18 @@ function FieldValue({
 
   if (fieldKey === "rarity") return <RarityStars value={value} />;
 
+  if (fieldType === "image" && typeof value === "string" && value) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={value}
+        alt=""
+        className="max-w-full max-h-80 rounded-lg object-contain"
+        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+      />
+    );
+  }
+
   if (fieldKey === "image_url" || fieldKey === "icon_url") {
     return (
       <a href={String(value)} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline text-sm truncate max-w-xs block">

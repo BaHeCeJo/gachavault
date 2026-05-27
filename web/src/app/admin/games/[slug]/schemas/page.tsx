@@ -21,6 +21,7 @@ type FieldType =
   | "text"
   | "number"
   | "url"
+  | "image"
   | "textarea"
   | "select"
   | "attribute"
@@ -56,6 +57,7 @@ const FIELD_TYPES: { value: FieldType; label: string; help: string }[] = [
   { value: "textarea", label: "Long text", help: "Multi-line text (description, lore)" },
   { value: "number", label: "Number", help: "Numeric value" },
   { value: "url", label: "URL", help: "External link" },
+  { value: "image", label: "Image", help: "Image URL with upload widget (portrait, splash art, etc.)" },
   { value: "date", label: "Date", help: "Date value" },
   { value: "select", label: "Select", help: "Pick from a fixed list of options" },
   { value: "attribute", label: "Attribute", help: "Pill from one attribute type (e.g. element, class)" },

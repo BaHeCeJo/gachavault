@@ -15,7 +15,7 @@ interface Section { id: string; slug: string; name: string }
 interface SchemaField {
   key: string;
   label: string;
-  type: "text" | "number" | "url" | "textarea" | "select" | "attribute" | "date" | "itemref" | "itemlist" | "resistances" | "backref";
+  type: "text" | "number" | "url" | "image" | "textarea" | "select" | "attribute" | "date" | "itemref" | "itemlist" | "resistances" | "backref";
   options?: string[];
   attribute_type?: string;
   multi?: boolean;
@@ -762,6 +762,18 @@ export default function AdminItemsPage() {
                             </div>
                           )}
                         </div>
+                      );
+                    }
+                    if (field.type === "image") {
+                      return (
+                        <ImageUploadField
+                          key={field.key}
+                          label={field.label}
+                          value={currentVal}
+                          onChange={(url) => setFieldValue(field.key, url)}
+                          placeholder="https://… or upload →"
+                          previewHeight="h-20"
+                        />
                       );
                     }
                     if (field.type === "date") {
