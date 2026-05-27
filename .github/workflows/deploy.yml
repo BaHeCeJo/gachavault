@@ -113,8 +113,12 @@ jobs:
             GHCR_OWNER=$GHCR_OWNER docker compose -f docker-compose.prod.yml pull
             GHCR_OWNER=$GHCR_OWNER docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
-            # Reload nginx to immediately pick up any new container IPs
-            docker compose -f docker-compose.prod.yml exec -T nginx nginx -s reload || true
+            # Force-recreate nginx so it picks up nginx.conf changes.
+            # nginx.conf is bind-mounted as a single file, and `git pull`
+            # replaces the file (new inode) rather than modifying it in place,
+            # so the existing container keeps the old content even after
+            # `nginx -s reload`. Full recreate re-resolves the mount.
+            GHCR_OWNER=$GHCR_OWNER docker compose -f docker-compose.prod.yml up -d --force-recreate nginx
 
             # Clean up old images
             docker image prune -f

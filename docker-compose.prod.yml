@@ -261,6 +261,7 @@ services:
         condition: service_healthy
     networks:
       - external
+      - internal
 
   certbot:
     image: certbot/certbot
