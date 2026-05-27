@@ -397,15 +397,20 @@ pub async fn bulk_import(
                 continue;
             }
         };
-        let section_id =
-            match resolve_section_id(&state.pool, game_id, &row.section, &mut section_cache).await
-            {
-                Ok(id) => id,
-                Err(msg) => {
-                    errors.push(serde_json::json!({"slug": label, "error": msg}));
-                    continue;
-                }
-            };
+        let section_id = match resolve_section_id(
+            &state.pool,
+            game_id,
+            &row.section,
+            &mut section_cache,
+        )
+        .await
+        {
+            Ok(id) => id,
+            Err(msg) => {
+                errors.push(serde_json::json!({"slug": label, "error": msg}));
+                continue;
+            }
+        };
         let schema_id =
             match resolve_schema_id(&state.pool, game_id, &row.schema, &mut schema_cache).await {
                 Ok(id) => id,
