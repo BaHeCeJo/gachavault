@@ -74,20 +74,24 @@ interface Props {
   footer?: React.ReactNode;
 }
 
-// Resolve a slot's attribute pill. `slot` is a field key from the schema —
-// we look up the field to learn (a) where the item stores its value
-// (item.data[field.key]) and (b) which attribute pool to render from
-// (field.attribute_type). If no schema is provided, fall back to treating
-// the slot as both the data key and the attribute_type (legacy convention
-// where field.key === field.attribute_type).
+// Resolve a slot's attribute pill. `slot` is normally a schema field key —
+// we use field.key for the data lookup and field.attribute_type for the
+// pill pool. Backwards-compat: configs saved before the field-key fix
+// stored attribute_type values, so if `slot` doesn't match a field key,
+// try matching it against any attribute-type field's attribute_type and
+// use that field instead.
 function slotAttr(
   map: AttrMap,
   item: ItemLike,
   slot: string | null | undefined,
   fieldsByKey: Record<string, SchemaFieldLite>,
+  allFields: SchemaFieldLite[] | undefined,
 ): GameAttribute | null {
   if (!slot) return null;
-  const field = fieldsByKey[slot];
+  let field: SchemaFieldLite | undefined = fieldsByKey[slot];
+  if (!field && allFields) {
+    field = allFields.find((f) => f.type === "attribute" && f.attribute_type === slot);
+  }
   const dataKey = field?.key ?? slot;
   const attrType = field?.attribute_type ?? slot;
   return lookupAttr(map, attrType, firstValue(item.data[dataKey]));
@@ -153,12 +157,12 @@ export default function ItemCard({
   // right, rarity-derived border classes. Border color from a configured
   // attribute always wins over the legacy RARITY_BORDER class.
   const isConfigured = !!layout;
-  const borderAttr = slotAttr(attrMap, item, layout?.border_color_attr, fieldsByKey);
-  const topLeftAttr = slotAttr(attrMap, item, layout?.badge_top_left, fieldsByKey);
+  const borderAttr = slotAttr(attrMap, item, layout?.border_color_attr, fieldsByKey, schemaFields);
+  const topLeftAttr = slotAttr(attrMap, item, layout?.badge_top_left, fieldsByKey, schemaFields);
   const topRightAttr = isConfigured
-    ? slotAttr(attrMap, item, layout?.badge_top_right, fieldsByKey)
-    : (slotAttr(attrMap, item, "element", fieldsByKey) ?? slotAttr(attrMap, item, "attribute", fieldsByKey));
-  const watermarkAttr = slotAttr(attrMap, item, layout?.watermark_attr, fieldsByKey);
+    ? slotAttr(attrMap, item, layout?.badge_top_right, fieldsByKey, schemaFields)
+    : (slotAttr(attrMap, item, "element", fieldsByKey, schemaFields) ?? slotAttr(attrMap, item, "attribute", fieldsByKey, schemaFields));
+  const watermarkAttr = slotAttr(attrMap, item, layout?.watermark_attr, fieldsByKey, schemaFields);
   const watermarkOpacity = layout?.watermark_opacity ?? 0.3;
 
   const legacyBorderClass =
@@ -166,8 +170,15 @@ export default function ItemCard({
       ? `${RARITY_BORDER[rarityStr]} hover:shadow-lg ${RARITY_GLOW[rarityStr]}`
       : "border-gray-800 hover:border-amber-500/60 hover:shadow-amber-500/10";
 
+  // When a border-color attribute resolves (e.g. rarity → SSR yellow), also
+  // tint the card body so cards aren't all the same flat gray. Use the
+  // color at low alpha as a gradient that fades into the base background.
   const cardStyle: React.CSSProperties | undefined = borderAttr?.color
-    ? { borderColor: borderAttr.color, boxShadow: `0 0 0 1px ${borderAttr.color}20` }
+    ? {
+        borderColor: borderAttr.color,
+        boxShadow: `0 0 0 1px ${borderAttr.color}30, 0 4px 12px -2px ${borderAttr.color}30`,
+        background: `linear-gradient(180deg, ${borderAttr.color}24 0%, ${borderAttr.color}10 60%, rgba(17,24,39,1) 100%)`,
+      }
     : undefined;
 
   const link = href

@@ -137,8 +137,13 @@ export default function ItemFilterBar({
 
   const visibleGroups = useMemo(() => {
     const allowSet = allowedKeys ? new Set(allowedKeys) : null;
+    // Backwards-compat: pre-fix allowlists stored attribute_types, so accept
+    // either a field key (new) or an attribute_type (old) as a match.
     return groupDefs
-      .filter((g) => (usedKeysByGroup[g.id]?.size ?? 0) > 0 && (!allowSet || allowSet.has(g.id)))
+      .filter((g) =>
+        (usedKeysByGroup[g.id]?.size ?? 0) > 0 &&
+        (!allowSet || allowSet.has(g.id) || allowSet.has(g.attrType))
+      )
       .sort((a, b) => {
         const ai = TYPE_ORDER.indexOf(a.attrType);
         const bi = TYPE_ORDER.indexOf(b.attrType);
