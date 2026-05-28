@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Convert a legacy /opt/gachavault/.env (or .env.prod) into Docker-secret
-# files under /opt/gachavault/secrets/. Run once on the VPS during the
-# cutover; idempotent (skips any file that already exists).
+# Convert a legacy /opt/gachavault/.env into Docker-secret files under
+# /opt/gachavault/secrets/. Run once on the VPS during the cutover;
+# idempotent (skips any file that already exists, never overwrites).
 #
 # Usage:
 #   sudo bash scripts/migrate-env-to-secrets.sh /opt/gachavault/.env
 #
 # After this finishes, you can `docker compose -f docker-compose.prod.yml
-# up -d` and remove the .env file. The plain env vars in compose were
-# replaced with *_FILE: /run/secrets/<name> references.
+# up -d` and remove the secret values from .env. The plain env vars in
+# compose were replaced with *_FILE: /run/secrets/<name> references.
 
 set -euo pipefail
 
@@ -19,15 +19,54 @@ if [ ! -f "$ENV_FILE" ]; then
   echo "env file not found: $ENV_FILE" >&2
   exit 1
 fi
+if [ ! -r "$ENV_FILE" ]; then
+  echo "env file not readable: $ENV_FILE (run with sudo)" >&2
+  exit 1
+fi
 
 mkdir -p "$SECRETS_DIR"
 chmod 700 "$SECRETS_DIR"
 
-# Source the env file in a subshell so its vars are local to this script.
-set -a
-# shellcheck disable=SC1090
-. "$ENV_FILE"
-set +a
+# Parse <KEY>=<VALUE> lines without sourcing the file (sourcing breaks on
+# anything that looks like a heredoc or shell special token). Comments,
+# blank lines, and `export KEY=...` prefixes are tolerated. Surrounding
+# single or double quotes on the value are stripped.
+get_env_value() {
+  local target="$1"
+  local line key value
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Strip a leading 'export ' if present
+    line="${line#export }"
+    # Skip comments and blanks
+    case "$line" in
+      ''|\#*) continue ;;
+    esac
+    # Must contain an '='
+    case "$line" in
+      *=*) ;;
+      *) continue ;;
+    esac
+    key="${line%%=*}"
+    # Trim trailing whitespace on the key
+    key="${key%"${key##*[![:space:]]}"}"
+    if [ "$key" = "$target" ]; then
+      value="${line#*=}"
+      # Strip surrounding double quotes
+      if [ "${value#\"}" != "$value" ] && [ "${value%\"}" != "$value" ]; then
+        value="${value#\"}"
+        value="${value%\"}"
+      fi
+      # Strip surrounding single quotes
+      if [ "${value#\'}" != "$value" ] && [ "${value%\'}" != "$value" ]; then
+        value="${value#\'}"
+        value="${value%\'}"
+      fi
+      printf '%s' "$value"
+      return 0
+    fi
+  done < "$ENV_FILE"
+  return 1
+}
 
 write_secret() {
   local name="$1"
@@ -46,22 +85,34 @@ write_secret() {
   echo "wrote $path"
 }
 
+POSTGRES_PASSWORD="$(get_env_value POSTGRES_PASSWORD || true)"
+REDIS_PASSWORD="$(get_env_value REDIS_PASSWORD || true)"
+JWT_SECRET="$(get_env_value JWT_SECRET || true)"
+INTERNAL_SECRET="$(get_env_value INTERNAL_SECRET || true)"
+MEILISEARCH_MASTER_KEY="$(get_env_value MEILISEARCH_MASTER_KEY || true)"
+GOOGLE_CLIENT_SECRET="$(get_env_value GOOGLE_CLIENT_SECRET || true)"
+SMTP_PASSWORD="$(get_env_value SMTP_PASSWORD || true)"
+
 # Atomic secrets (one value per file)
-write_secret postgres_password     "${POSTGRES_PASSWORD:-}"
-write_secret redis_password        "${REDIS_PASSWORD:-}"
-write_secret jwt_secret            "${JWT_SECRET:-}"
-write_secret internal_secret       "${INTERNAL_SECRET:-}"
-write_secret meilisearch_master_key "${MEILISEARCH_MASTER_KEY:-}"
-write_secret google_client_secret  "${GOOGLE_CLIENT_SECRET:-}"
-write_secret smtp_password         "${SMTP_PASSWORD:-}"
+write_secret postgres_password      "$POSTGRES_PASSWORD"
+write_secret redis_password         "$REDIS_PASSWORD"
+write_secret jwt_secret             "$JWT_SECRET"
+write_secret internal_secret        "$INTERNAL_SECRET"
+write_secret meilisearch_master_key "$MEILISEARCH_MASTER_KEY"
+write_secret google_client_secret   "$GOOGLE_CLIENT_SECRET"
+write_secret smtp_password          "$SMTP_PASSWORD"
 
 # Compound secrets — built from parts so a password rotation only needs
 # to touch one file but the URL forms are still available to apps that
 # expect a single DSN string.
-write_secret database_url \
-  "postgres://gachavault:${POSTGRES_PASSWORD:-}@postgres:5432/gachavault"
-write_secret redis_url \
-  "redis://:${REDIS_PASSWORD:-}@redis:6379"
+if [ -n "$POSTGRES_PASSWORD" ]; then
+  write_secret database_url \
+    "postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault"
+fi
+if [ -n "$REDIS_PASSWORD" ]; then
+  write_secret redis_url \
+    "redis://:${REDIS_PASSWORD}@redis:6379"
+fi
 
 echo
 echo "Done. Verify with: ls -la $SECRETS_DIR"
