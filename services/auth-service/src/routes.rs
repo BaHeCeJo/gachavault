@@ -98,8 +98,28 @@ pub struct AuthTokens {
 
 pub async fn register(
     State(pool): State<PgPool>,
+    headers: HeaderMap,
     Json(body): Json<RegisterRequest>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    // Throttle by IP (broad) and by email (narrow). Email gate prevents the
+    // same address from being recycled in retry loops; IP gate prevents one
+    // host from registering many distinct accounts.
+    let ip = client_ip(&headers);
+    rate_limit(
+        &format!("register_ip:{}", ip),
+        5,
+        3600,
+        "Too many registrations from this IP. Try again in an hour.",
+    )
+    .await?;
+    rate_limit(
+        &format!("register_email:{}", body.email.to_lowercase()),
+        2,
+        86400,
+        "Too many registrations for this email. Try again in 24 hours.",
+    )
+    .await?;
+
     // Basic validation
     if !is_valid_email(&body.email) {
         return Err(AppError::BadRequest("Invalid email address".into()));
@@ -217,6 +237,18 @@ pub async fn refresh(
     State(pool): State<PgPool>,
     headers: HeaderMap,
 ) -> AppResult<impl IntoResponse> {
+    // Per-IP throttle on refresh. Defends against an attacker spraying stolen
+    // refresh tokens through the same exit IP; nginx also rate-limits this
+    // endpoint at the edge for additional defense-in-depth.
+    let ip = client_ip(&headers);
+    rate_limit(
+        &format!("refresh_ip:{}", ip),
+        60,
+        3600,
+        "Too many refresh attempts. Try again later.",
+    )
+    .await?;
+
     let refresh_token_val = extract_cookie(&headers, "refresh_token")
         .ok_or_else(|| AppError::Unauthorized("No refresh token".into()))?;
 
@@ -271,8 +303,28 @@ pub async fn verify_email(
 
 pub async fn forgot_password(
     State(pool): State<PgPool>,
+    headers: HeaderMap,
     Json(body): Json<ForgotPasswordRequest>,
 ) -> AppResult<Json<ApiResponse<()>>> {
+    // Throttle by IP (broad) and by email (narrow). The email cap stops an
+    // attacker from spamming reset emails to one victim; the IP cap stops
+    // enumeration sweeps from one host.
+    let ip = client_ip(&headers);
+    rate_limit(
+        &format!("forgot_pw_ip:{}", ip),
+        10,
+        3600,
+        "Too many password reset requests from this IP.",
+    )
+    .await?;
+    rate_limit(
+        &format!("forgot_pw_email:{}", body.email.to_lowercase()),
+        3,
+        3600,
+        "Too many password reset requests for this email.",
+    )
+    .await?;
+
     // Always return success to prevent email enumeration
     let user = db::find_user_by_email(&pool, &body.email.to_lowercase())
         .await
@@ -929,6 +981,43 @@ async fn clear_login_failures(email: &str) {
     };
     let key = format!("login_fail:{}", email);
     let _: redis::RedisResult<()> = conn.del(&key).await;
+}
+
+/// Returns the first non-empty IP from X-Forwarded-For, falling back to
+/// X-Real-IP. Both are set by the nginx reverse proxy. Used as a coarse rate
+/// limit key — spoofable if the gateway is bypassed, so always pair with a
+/// secondary key (e.g. email).
+fn client_ip(headers: &HeaderMap) -> String {
+    if let Some(v) = headers.get("x-forwarded-for").and_then(|h| h.to_str().ok()) {
+        if let Some(first) = v.split(',').next() {
+            let ip = first.trim();
+            if !ip.is_empty() {
+                return ip.to_string();
+            }
+        }
+    }
+    headers
+        .get("x-real-ip")
+        .and_then(|h| h.to_str().ok())
+        .map(|s| s.trim().to_string())
+        .unwrap_or_else(|| "unknown".to_string())
+}
+
+/// Increment a Redis counter under `key`, set a TTL on the first hit, and
+/// reject the request if the counter exceeds `limit`. Fails open on Redis
+/// outage to avoid taking the whole site down if Redis is the broken thing.
+async fn rate_limit(key: &str, limit: i64, window_secs: i64, message: &str) -> AppResult<()> {
+    let Some(mut conn) = get_redis_conn().await else {
+        return Ok(());
+    };
+    let count: i64 = conn.incr(key, 1i64).await.unwrap_or(0);
+    if count == 1 {
+        let _: redis::RedisResult<()> = conn.expire(key, window_secs).await;
+    }
+    if count > limit {
+        return Err(AppError::TooManyRequests(message.into()));
+    }
+    Ok(())
 }
 
 async fn revoke_jti(jti: &str, exp: usize) {

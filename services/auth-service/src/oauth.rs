@@ -4,7 +4,8 @@ use axum::{
     http::{header::LOCATION, StatusCode},
     response::{IntoResponse, Redirect, Response},
 };
-use rand::Rng;
+use rand::{rngs::OsRng, Rng, RngCore};
+use redis::AsyncCommands;
 use reqwest::Client;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
@@ -28,6 +29,7 @@ pub struct CallbackParams {
 }
 
 const OAUTH_STATE_TTL_SECS: i64 = 600; // 10 minutes
+const PKCE_VERIFIER_BYTES: usize = 32; // 256 bits → 43-char base64url
 
 fn generate_oauth_state(secret: &str) -> String {
     let nonce: [u8; 16] = rand::thread_rng().gen();
@@ -68,6 +70,54 @@ fn verify_oauth_state(secret: &str, state_param: &str) -> bool {
     hex::encode(hasher.finalize()) == sig
 }
 
+/// URL-safe base64 without padding (RFC 4648 §5), which is what PKCE requires.
+fn base64url_encode(data: &[u8]) -> String {
+    const CHARSET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+    let mut out = String::with_capacity(data.len().div_ceil(3) * 4);
+    let chunks = data.chunks_exact(3);
+    let remainder = chunks.remainder().to_vec();
+    for chunk in chunks {
+        let b = ((chunk[0] as u32) << 16) | ((chunk[1] as u32) << 8) | (chunk[2] as u32);
+        out.push(CHARSET[((b >> 18) & 0x3F) as usize] as char);
+        out.push(CHARSET[((b >> 12) & 0x3F) as usize] as char);
+        out.push(CHARSET[((b >> 6) & 0x3F) as usize] as char);
+        out.push(CHARSET[(b & 0x3F) as usize] as char);
+    }
+    match remainder.len() {
+        1 => {
+            let b = (remainder[0] as u32) << 16;
+            out.push(CHARSET[((b >> 18) & 0x3F) as usize] as char);
+            out.push(CHARSET[((b >> 12) & 0x3F) as usize] as char);
+        }
+        2 => {
+            let b = ((remainder[0] as u32) << 16) | ((remainder[1] as u32) << 8);
+            out.push(CHARSET[((b >> 18) & 0x3F) as usize] as char);
+            out.push(CHARSET[((b >> 12) & 0x3F) as usize] as char);
+            out.push(CHARSET[((b >> 6) & 0x3F) as usize] as char);
+        }
+        _ => {}
+    }
+    out
+}
+
+fn generate_pkce_pair() -> (String, String) {
+    let mut verifier_bytes = [0u8; PKCE_VERIFIER_BYTES];
+    OsRng.fill_bytes(&mut verifier_bytes);
+    let verifier = base64url_encode(&verifier_bytes);
+    let challenge = base64url_encode(&Sha256::digest(verifier.as_bytes()));
+    (verifier, challenge)
+}
+
+async fn get_redis_conn() -> Option<redis::aio::MultiplexedConnection> {
+    let url = shared_auth::read_secret("REDIS_URL").ok()?;
+    let client = redis::Client::open(url).ok()?;
+    client.get_multiplexed_async_connection().await.ok()
+}
+
+fn pkce_key(state: &str) -> String {
+    format!("oauth_pkce:{}", state)
+}
+
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
 struct GoogleTokenResponse {
@@ -91,12 +141,30 @@ pub async fn google_redirect() -> AppResult<Redirect> {
     let redirect_uri = google_redirect_uri();
     let state = generate_oauth_state(&jwt_secret);
 
+    // PKCE: generate a per-request code_verifier, stash it in Redis under the
+    // state key, send only the SHA256 challenge to Google. An attacker who
+    // intercepts the auth code can't redeem it without the verifier.
+    let (verifier, challenge) = generate_pkce_pair();
+    if let Some(mut conn) = get_redis_conn().await {
+        let _: redis::RedisResult<()> = conn
+            .set_ex(pkce_key(&state), &verifier, OAUTH_STATE_TTL_SECS as u64)
+            .await;
+    } else {
+        // PKCE storage requires Redis. Without it, the callback cannot prove
+        // the request originated from this server — refuse to start the flow
+        // rather than silently downgrade to non-PKCE.
+        return Err(AppError::Internal(anyhow::anyhow!(
+            "Redis unavailable: OAuth requires Redis for PKCE state"
+        )));
+    }
+
     let url = format!(
-        "{}?client_id={}&redirect_uri={}&response_type=code&scope=openid%20email%20profile&access_type=offline&state={}",
+        "{}?client_id={}&redirect_uri={}&response_type=code&scope=openid%20email%20profile&access_type=offline&state={}&code_challenge={}&code_challenge_method=S256",
         GOOGLE_AUTH_URL,
         urlencoding::encode(&client_id),
         urlencoding::encode(&redirect_uri),
         urlencoding::encode(&state),
+        urlencoding::encode(&challenge),
     );
 
     Ok(Redirect::temporary(&url))
@@ -131,6 +199,19 @@ pub async fn google_callback(
         .code
         .ok_or_else(|| AppError::BadRequest("Missing authorization code".into()))?;
 
+    // Retrieve and immediately delete the PKCE verifier so each auth code can
+    // only be redeemed once even on a replay race.
+    let mut redis_conn = get_redis_conn().await.ok_or_else(|| {
+        AppError::Internal(anyhow::anyhow!(
+            "Redis unavailable: cannot validate OAuth PKCE"
+        ))
+    })?;
+    let key = pkce_key(&state_param);
+    let verifier: Option<String> = redis_conn.get(&key).await.ok();
+    let _: redis::RedisResult<()> = redis_conn.del(&key).await;
+    let verifier = verifier
+        .ok_or_else(|| AppError::BadRequest("OAuth state expired or already used".into()))?;
+
     // Exchange code for access token
     let client_id = std::env::var("GOOGLE_CLIENT_ID")
         .map_err(|_| AppError::Internal(anyhow::anyhow!("GOOGLE_CLIENT_ID not configured")))?;
@@ -148,6 +229,7 @@ pub async fn google_callback(
             ("client_secret", client_secret.as_str()),
             ("redirect_uri", redirect_uri.as_str()),
             ("grant_type", "authorization_code"),
+            ("code_verifier", verifier.as_str()),
         ])
         .send()
         .await
