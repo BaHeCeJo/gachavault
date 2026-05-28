@@ -7,6 +7,7 @@ import { adminApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ImageUploadField from "@/components/ImageUploadField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { revalidateGame, revalidatePaths } from "@/lib/revalidate";
 
 interface Game {
   id: string;
@@ -102,9 +103,11 @@ export default function AdminGamesPage() {
       if (modal?.mode === "create") {
         const res = await adminApi.games.create(payload);
         setGames((prev) => [...prev, res.data.data]);
+        revalidateGame((res.data.data as Game).slug);
       } else if (modal?.game) {
         const res = await adminApi.games.update(modal.game.slug, payload);
         setGames((prev) => prev.map((g) => (g.id === modal.game!.id ? res.data.data : g)));
+        revalidateGame(modal.game.slug);
       }
       setModal(null);
     } catch (e: unknown) {
@@ -120,6 +123,8 @@ export default function AdminGamesPage() {
     try {
       await adminApi.games.delete(deleteTarget.slug);
       setGames((prev) => prev.filter((g) => g.slug !== deleteTarget.slug));
+      // Deleted game's pages are gone — refresh the games list and home.
+      revalidatePaths(["/games", "/"]);
     } catch {
       setError("Failed to delete game");
     } finally {

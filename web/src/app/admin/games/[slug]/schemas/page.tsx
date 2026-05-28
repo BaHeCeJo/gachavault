@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import ItemCard, { type CardLayout } from "@/components/ItemCard";
 import { buildAttrMap, type GameAttribute as GameAttributeFull } from "@/lib/attrs";
+import { revalidateGame } from "@/lib/revalidate";
 
 interface Section { id: string; slug: string; name: string }
 interface GameAttribute { attr_type: string }
@@ -346,6 +347,7 @@ export default function AdminGameSchemasPage() {
         });
         setSchemas((prev) => prev.map((s) => (s.id === modal.schema.id ? res.data.data : s)));
       }
+      revalidateGame(slug);
       setModal(null);
     } catch (e: unknown) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -360,6 +362,7 @@ export default function AdminGameSchemasPage() {
     try {
       await adminApi.games.deleteSchema(slug, deleteTarget.id);
       setSchemas((prev) => prev.filter((s) => s.id !== deleteTarget.id));
+      revalidateGame(slug);
     } catch {
       setError("Failed to delete schema");
     } finally {

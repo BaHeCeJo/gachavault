@@ -11,6 +11,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { SafeImage } from "@/components/SafeImage";
 import ItemCard, { type CardLayout } from "@/components/ItemCard";
 import { buildAttrMap } from "@/lib/attrs";
+import { revalidateGame } from "@/lib/revalidate";
 
 interface Game { id: string; slug: string; name: string }
 interface Section { id: string; slug: string; name: string }
@@ -286,6 +287,7 @@ export default function AdminItemsPage() {
         const res = await adminApi.items.update(modal.item.id, { slug: form.slug, data });
         setItems((prev) => prev.map((i) => (i.id === modal.item!.id ? res.data.data : i)));
       }
+      if (selectedGame) revalidateGame(selectedGame.slug);
       setModal(null);
     } catch (e: unknown) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -300,6 +302,7 @@ export default function AdminItemsPage() {
     try {
       await adminApi.items.delete(deleteTarget);
       setItems((prev) => prev.filter((i) => i.id !== deleteTarget));
+      if (selectedGame) revalidateGame(selectedGame.slug);
     } catch {
       setFormError("Failed to delete item");
     } finally {

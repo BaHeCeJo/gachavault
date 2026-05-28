@@ -6,6 +6,7 @@ import Link from "next/link";
 import { gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { revalidateGame } from "@/lib/revalidate";
 
 interface GameInfo {
   slug: string;
@@ -82,6 +83,7 @@ export default function GameTranslationsPage() {
         return [...without, { locale: editing, name: updated.name, description: updated.description, updated_at: new Date().toISOString() }]
           .sort((a, b) => a.locale.localeCompare(b.locale));
       });
+      revalidateGame(slug as string);
       setEditing(null);
     } catch {
       alert("Failed to save translation");
@@ -95,6 +97,7 @@ export default function GameTranslationsPage() {
     try {
       await gamesApi.deleteTranslation(slug as string, deleteTarget);
       setTranslations((prev) => prev.filter((t) => t.locale !== deleteTarget));
+      revalidateGame(slug as string);
     } catch {
       setDeleteError("Failed to delete translation");
     } finally {

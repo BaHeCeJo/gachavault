@@ -6,6 +6,7 @@ import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { revalidateGame } from "@/lib/revalidate";
 
 interface Section { id: string; slug: string; name: string; order: number; tabs?: string[] }
 
@@ -95,6 +96,7 @@ export default function AdminGameSectionsPage() {
             .sort((a, b) => a.order - b.order)
         );
       }
+      revalidateGame(slug);
       setModal(null);
     } catch (e: unknown) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -109,6 +111,7 @@ export default function AdminGameSectionsPage() {
     try {
       await adminApi.games.deleteSection(slug, deleteTarget.id);
       setSections((prev) => prev.filter((s) => s.id !== deleteTarget.id));
+      revalidateGame(slug);
     } catch {
       setError("Failed to delete section");
     } finally {

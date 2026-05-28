@@ -7,6 +7,7 @@ import { adminApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ImageUploadField from "@/components/ImageUploadField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { revalidateGame } from "@/lib/revalidate";
 
 interface GameAttribute {
   id: string;
@@ -121,6 +122,7 @@ export default function AdminAttributesPage() {
           prev.map((a) => (a.id === modal.attr.id ? res.data.data : a)).sort(sortAttrs)
         );
       }
+      revalidateGame(slug);
       setModal(null);
     } catch (e: unknown) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -135,6 +137,7 @@ export default function AdminAttributesPage() {
     try {
       await adminApi.games.deleteAttribute(slug, deleteTarget.id);
       setAttributes((prev) => prev.filter((a) => a.id !== deleteTarget.id));
+      revalidateGame(slug);
     } catch {
       setError("Failed to delete attribute");
     } finally {

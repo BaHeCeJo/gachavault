@@ -5,6 +5,7 @@ import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { revalidateGame } from "@/lib/revalidate";
 
 interface Game { id: string; slug: string; name: string }
 interface ItemRow {
@@ -98,6 +99,10 @@ export default function BulkImportPage() {
     try {
       const res = await adminApi.items.bulkImport(parsed);
       setResult(res.data.data);
+      // Bulk import may touch multiple games — revalidate every game slug
+      // referenced in the batch so each affected /games/<slug> refreshes.
+      const touched = Array.from(new Set(parsed.map((r) => r.game).filter(Boolean)));
+      for (const g of touched) revalidateGame(g);
       setParsed(null);
       if (fileRef.current) fileRef.current.value = "";
     } catch (err: unknown) {
