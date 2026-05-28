@@ -18,7 +18,7 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer().json())
         .init();
 
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL required");
+    let database_url = shared_auth::read_secret("DATABASE_URL").expect("DATABASE_URL required");
     let pool = shared_db::create_pool(&database_url)
         .await
         .expect("Failed to connect to database");

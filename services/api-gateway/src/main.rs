@@ -44,8 +44,8 @@ async fn main() {
         .init();
 
     let auth_url = std::env::var("AUTH_SERVICE_URL").expect("AUTH_SERVICE_URL required");
-    let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET required");
-    let redis_client = std::env::var("REDIS_URL")
+    let jwt_secret = shared_auth::read_secret("JWT_SECRET").expect("JWT_SECRET required");
+    let redis_client = shared_auth::read_secret("REDIS_URL")
         .ok()
         .and_then(|url| redis::Client::open(url).ok())
         .map(Arc::new);

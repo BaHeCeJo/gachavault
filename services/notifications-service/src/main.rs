@@ -40,12 +40,13 @@ async fn main() {
             .parse()
             .expect("Invalid SMTP_PORT"),
         smtp_username: std::env::var("SMTP_USERNAME").unwrap_or_default(),
-        smtp_password: std::env::var("SMTP_PASSWORD").unwrap_or_default(),
+        smtp_password: shared_auth::read_secret("SMTP_PASSWORD").unwrap_or_default(),
         from_email: std::env::var("FROM_EMAIL")
             .unwrap_or_else(|_| "noreply@gachavault.com".to_string()),
         frontend_url: std::env::var("FRONTEND_URL")
             .unwrap_or_else(|_| "http://localhost:3009".to_string()),
-        internal_secret: std::env::var("INTERNAL_SECRET").expect("INTERNAL_SECRET required"),
+        internal_secret: shared_auth::read_secret("INTERNAL_SECRET")
+            .expect("INTERNAL_SECRET required"),
     };
 
     let internal_routes = Router::new()

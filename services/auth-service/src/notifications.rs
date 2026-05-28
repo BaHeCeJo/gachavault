@@ -1,7 +1,7 @@
 use reqwest::Client;
 
 fn internal_secret() -> String {
-    std::env::var("INTERNAL_SECRET").unwrap_or_default()
+    shared_auth::read_secret("INTERNAL_SECRET").unwrap_or_default()
 }
 
 pub async fn send_verification(

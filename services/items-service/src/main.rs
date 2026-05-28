@@ -27,7 +27,7 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer().json())
         .init();
 
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL required");
+    let database_url = shared_auth::read_secret("DATABASE_URL").expect("DATABASE_URL required");
     let pool = shared_db::create_pool(&database_url)
         .await
         .expect("Failed to connect to database");
@@ -40,7 +40,8 @@ async fn main() {
         http_client: Arc::new(Client::new()),
         search_url: std::env::var("SEARCH_SERVICE_URL")
             .unwrap_or_else(|_| "http://localhost:3007".to_string()),
-        internal_secret: std::env::var("INTERNAL_SECRET").expect("INTERNAL_SECRET required"),
+        internal_secret: shared_auth::read_secret("INTERNAL_SECRET")
+            .expect("INTERNAL_SECRET required"),
     };
 
     let app = Router::new()

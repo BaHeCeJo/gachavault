@@ -86,7 +86,7 @@ struct GoogleUserInfo {
 pub async fn google_redirect() -> AppResult<Redirect> {
     let client_id = std::env::var("GOOGLE_CLIENT_ID")
         .map_err(|_| AppError::Internal(anyhow::anyhow!("GOOGLE_CLIENT_ID not configured")))?;
-    let jwt_secret = std::env::var("JWT_SECRET")
+    let jwt_secret = shared_auth::read_secret("JWT_SECRET")
         .map_err(|_| AppError::Internal(anyhow::anyhow!("JWT_SECRET not configured")))?;
     let redirect_uri = google_redirect_uri();
     let state = generate_oauth_state(&jwt_secret);
@@ -108,7 +108,7 @@ pub async fn google_callback(
 ) -> AppResult<Response> {
     let frontend_url =
         std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3009".into());
-    let jwt_secret = std::env::var("JWT_SECRET")
+    let jwt_secret = shared_auth::read_secret("JWT_SECRET")
         .map_err(|_| AppError::Internal(anyhow::anyhow!("JWT_SECRET not configured")))?;
 
     if let Some(err) = params.error {
@@ -134,7 +134,7 @@ pub async fn google_callback(
     // Exchange code for access token
     let client_id = std::env::var("GOOGLE_CLIENT_ID")
         .map_err(|_| AppError::Internal(anyhow::anyhow!("GOOGLE_CLIENT_ID not configured")))?;
-    let client_secret = std::env::var("GOOGLE_CLIENT_SECRET")
+    let client_secret = shared_auth::read_secret("GOOGLE_CLIENT_SECRET")
         .map_err(|_| AppError::Internal(anyhow::anyhow!("GOOGLE_CLIENT_SECRET not configured")))?;
     let redirect_uri = google_redirect_uri();
 

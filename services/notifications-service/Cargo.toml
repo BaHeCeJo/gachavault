@@ -10,6 +10,7 @@ path = "src/main.rs"
 [dependencies]
 shared-types = { workspace = true }
 shared-errors = { workspace = true }
+shared-auth = { workspace = true }
 axum = { workspace = true }
 tokio = { workspace = true }
 serde = { workspace = true }

@@ -65,6 +65,23 @@ Fill in every value (see `.env.prod.example` for the full list). The most import
 - `FRONTEND_URL` / `BACKEND_URL` — set to `https://yourdomain.com`
 - SMTP — use **Brevo** (free plan: 300 emails/day): sign up at brevo.com → SMTP & API → SMTP settings
 
+### Optional: Pre-populate Docker secret files
+
+The Rust services now read passwords from `*_FILE` env vars first (Docker
+secrets pattern) and fall back to plain env vars. A follow-up commit will
+flip `docker-compose.prod.yml` to use the file paths exclusively — when
+that lands, you'll need these files in place. Run this on the VPS now to
+get ahead of it:
+
+```bash
+sudo bash /opt/gachavault/scripts/migrate-env-to-secrets.sh /opt/gachavault/.env
+```
+
+The script reads every secret out of your `.env` and writes one file per
+secret to `/opt/gachavault/secrets/` with mode `600`. Idempotent — safe
+to run multiple times. After the compose flip ships, you can strip the
+secret values from `.env` and rotate them by editing the files directly.
+
 ---
 
 ## 4. Get the SSL certificate (run once, after DNS propagates)

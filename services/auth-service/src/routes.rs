@@ -893,7 +893,7 @@ fn extract_cookie(headers: &HeaderMap, name: &str) -> Option<String> {
 }
 
 async fn get_redis_conn() -> Option<redis::aio::MultiplexedConnection> {
-    let url = std::env::var("REDIS_URL").ok()?;
+    let url = shared_auth::read_secret("REDIS_URL").ok()?;
     let client = redis::Client::open(url).ok()?;
     client.get_multiplexed_async_connection().await.ok()
 }
@@ -932,7 +932,7 @@ async fn clear_login_failures(email: &str) {
 }
 
 async fn revoke_jti(jti: &str, exp: usize) {
-    let Ok(redis_url) = std::env::var("REDIS_URL") else {
+    let Ok(redis_url) = shared_auth::read_secret("REDIS_URL") else {
         return;
     };
     let Ok(client) = redis::Client::open(redis_url) else {
@@ -959,7 +959,7 @@ pub async fn issue_tokens(
     email: &str,
     username: &str,
 ) -> AppResult<AuthTokens> {
-    let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET required");
+    let jwt_secret = shared_auth::read_secret("JWT_SECRET").expect("JWT_SECRET required");
     let expiry_seconds: i64 = std::env::var("JWT_EXPIRY_SECONDS")
         .ok()
         .and_then(|v| v.parse().ok())

@@ -25,3 +25,6 @@ Thumbs.db
 
 # Uploads (local media storage)
 uploads/
+
+# Docker secrets - per-host populated, never committed
+secrets/

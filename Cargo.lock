@@ -1427,6 +1427,7 @@ dependencies = [
  "lettre",
  "serde",
  "serde_json",
+ "shared-auth",
  "shared-errors",
  "shared-types",
  "tokio",

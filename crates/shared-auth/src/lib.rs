@@ -13,6 +13,26 @@ use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+/// Read a secret from `<NAME>_FILE` (Docker secret mount) before falling back
+/// to `<NAME>` (plain env var). This is the standard Docker-secrets pattern:
+/// `/run/secrets/<name>` files don't appear in `docker inspect` env dumps,
+/// process listings, or log scrapes, where plain env vars do.
+///
+/// Trailing whitespace (newlines from `echo "..." > secret.txt`) is trimmed
+/// so secret files can be edited with any editor without breaking the value.
+pub fn read_secret(name: &str) -> Result<String, std::env::VarError> {
+    if let Ok(file_path) = std::env::var(format!("{}_FILE", name)) {
+        match std::fs::read_to_string(&file_path) {
+            Ok(content) => return Ok(content.trim().to_string()),
+            Err(e) => {
+                tracing::error!("failed to read secret file {}: {}", file_path, e);
+                return Err(std::env::VarError::NotPresent);
+            }
+        }
+    }
+    std::env::var(name)
+}
+
 fn default_role() -> String {
     "user".to_string()
 }
@@ -115,7 +135,7 @@ where
             .map_err(|_| unauthorized("Missing or malformed authorization header"))?;
 
         let secret =
-            std::env::var("JWT_SECRET").map_err(|_| unauthorized("JWT secret not configured"))?;
+            read_secret("JWT_SECRET").map_err(|_| unauthorized("JWT secret not configured"))?;
 
         let claims = Claims::decode(bearer.token(), &secret).map_err(|e| {
             tracing::debug!("JWT validation failed: {:?}", e);

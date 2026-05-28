@@ -33,10 +33,11 @@ async fn main() {
 
     let state = AppState {
         meilisearch_url: std::env::var("MEILISEARCH_URL").expect("MEILISEARCH_URL required"),
-        meilisearch_key: std::env::var("MEILISEARCH_MASTER_KEY")
+        meilisearch_key: shared_auth::read_secret("MEILISEARCH_MASTER_KEY")
             .expect("MEILISEARCH_MASTER_KEY required"),
         http_client: Arc::new(Client::new()),
-        internal_secret: std::env::var("INTERNAL_SECRET").expect("INTERNAL_SECRET required"),
+        internal_secret: shared_auth::read_secret("INTERNAL_SECRET")
+            .expect("INTERNAL_SECRET required"),
     };
 
     init_meilisearch_index(&state).await;
