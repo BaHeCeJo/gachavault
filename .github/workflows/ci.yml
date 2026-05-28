@@ -50,13 +50,17 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
-      - name: Install sqlx-cli
-        run: cargo install sqlx-cli --no-default-features --features postgres
-
       - name: Run all migrations
+        # Globally sort by version prefix (timestamp) and apply with psql.
+        # sqlx-cli's per-source `migrate run` was rejecting out-of-order
+        # versions across services and was masked by `|| true` — leaving
+        # tests to compile against an incomplete schema. All migrations
+        # are written with IF NOT EXISTS so direct psql is idempotent.
         run: |
-          for dir in services/*/migrations; do
-            sqlx migrate run --source "$dir" --database-url "$DATABASE_URL" || true
+          set -euo pipefail
+          for f in $(ls services/*/migrations/*.sql | sort -t/ -k4); do
+            echo "==> $f"
+            PGPASSWORD=cipassword psql -h localhost -U gachavault -d gachavault -v ON_ERROR_STOP=1 -f "$f"
           done
 
       - name: Check formatting
