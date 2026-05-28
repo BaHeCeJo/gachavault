@@ -165,6 +165,17 @@ export default function ItemCard({
   const watermarkAttr = slotAttr(attrMap, item, layout?.watermark_attr, fieldsByKey, schemaFields);
   const watermarkOpacity = layout?.watermark_opacity ?? 0.3;
 
+  // If rarity is already represented somewhere on the card (e.g. as the
+  // border color), hide the textual stars/badge — the visual already
+  // conveys it and the duplication just clutters the corner.
+  const rarityRepresented = isConfigured && [
+    layout?.border_color_attr,
+    layout?.badge_top_left,
+    layout?.badge_top_right,
+    layout?.watermark_attr,
+  ].includes("rarity");
+  const showRarity = rarity !== undefined && !rarityRepresented;
+
   const legacyBorderClass =
     !borderAttr && rarityStr && RARITY_BORDER[rarityStr]
       ? `${RARITY_BORDER[rarityStr]} hover:shadow-lg ${RARITY_GLOW[rarityStr]}`
@@ -222,7 +233,7 @@ export default function ItemCard({
           <AttrIcon attr={topRightAttr} />
         </div>
       )}
-      {rarity !== undefined && (
+      {showRarity && (
         <div className="absolute bottom-1 left-1.5">
           <RarityBadge value={rarity} />
         </div>
@@ -242,8 +253,8 @@ export default function ItemCard({
         <Link href={link} className="block">
           {imageArea}
         </Link>
-        <div className="px-2 py-1.5">
-          <p className="text-xs truncate">{name}</p>
+        <div className="px-2 py-2">
+          <p className="text-sm font-medium text-center truncate leading-snug">{name}</p>
           {footer}
         </div>
       </div>
