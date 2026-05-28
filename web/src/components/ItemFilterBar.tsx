@@ -20,6 +20,9 @@ interface Props {
   items: { data: Record<string, unknown> }[];
   activeFilters: ActiveFilters;
   search: string;
+  // Allowlist of attr_types to show as filter chip groups. `null` (or
+  // undefined) means "auto" — every attr_type with values shows up.
+  allowedAttrTypes?: string[] | null;
   onFilterToggle: (attrType: string, key: string) => void;
   onClearAll: () => void;
   onSearchChange: (v: string) => void;
@@ -71,14 +74,22 @@ export default function ItemFilterBar({
   items,
   activeFilters,
   search,
+  allowedAttrTypes,
   onFilterToggle,
   onClearAll,
   onSearchChange,
 }: Props) {
-  // Only show filter groups where ≥1 item actually has a value matching an attribute key
-  const visibleGroups = useMemo(() => {
+  // Per attr_type, the set of attribute keys that ≥1 item actually has a
+  // value for. Used to (a) decide which groups appear and (b) hide pills
+  // for keys nobody has — e.g. don't show the "Voracity path" chip when no
+  // character in the section has that path.
+  const usedKeysByType = useMemo(() => {
     const attrTypes = Array.from(new Set(attributes.map(a => a.attr_type)));
-    const usedTypesSet = new Set<string>();
+    const knownKeys: Record<string, Set<string>> = {};
+    for (const a of attributes) {
+      (knownKeys[a.attr_type] ??= new Set()).add(a.key.toLowerCase());
+    }
+    const usedKeys: Record<string, Set<string>> = {};
     for (const item of items) {
       for (const attrType of attrTypes) {
         const raw = item.data[attrType];
@@ -87,12 +98,21 @@ export default function ItemFilterBar({
           : raw != null
             ? [String(raw).toLowerCase()]
             : [];
-        if (vals.some((val) => val && attributes.some((a) => a.attr_type === attrType && a.key.toLowerCase() === val))) {
-          usedTypesSet.add(attrType);
+        for (const val of vals) {
+          if (val && knownKeys[attrType]?.has(val)) {
+            (usedKeys[attrType] ??= new Set()).add(val);
+          }
         }
       }
     }
-    const usedTypes = Array.from(usedTypesSet);
+    return usedKeys;
+  }, [attributes, items]);
+
+  const visibleGroups = useMemo(() => {
+    const allowSet = allowedAttrTypes ? new Set(allowedAttrTypes) : null;
+    const usedTypes = Object.entries(usedKeysByType)
+      .filter(([attrType, keys]) => keys.size > 0 && (!allowSet || allowSet.has(attrType)))
+      .map(([attrType]) => attrType);
     return usedTypes.sort((a, b) => {
       const ai = TYPE_ORDER.indexOf(a);
       const bi = TYPE_ORDER.indexOf(b);
@@ -101,7 +121,7 @@ export default function ItemFilterBar({
       if (bi !== -1) return 1;
       return a.localeCompare(b);
     });
-  }, [attributes, items]);
+  }, [usedKeysByType, allowedAttrTypes]);
 
   const hasActive = Object.values(activeFilters).some(s => s.size > 0) || search.trim().length > 0;
 
@@ -130,8 +150,9 @@ export default function ItemFilterBar({
 
       {/* Filter groups */}
       {visibleGroups.map(attrType => {
+        const used = usedKeysByType[attrType];
         const opts = attributes
-          .filter(a => a.attr_type === attrType)
+          .filter(a => a.attr_type === attrType && used?.has(a.key.toLowerCase()))
           .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name));
         const active = activeFilters[attrType] ?? new Set();
         return (

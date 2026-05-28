@@ -544,9 +544,16 @@ pub async fn create_schema(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound(format!("Game '{}' not found", slug)))?;
 
-    let schema = db::create_schema(&pool, game.id, body.section_id, &body.name, &body.fields)
-        .await
-        .map_err(AppError::Database)?;
+    let schema = db::create_schema(
+        &pool,
+        game.id,
+        body.section_id,
+        &body.name,
+        &body.fields,
+        body.filter_attrs.as_ref(),
+    )
+    .await
+    .map_err(AppError::Database)?;
 
     Ok(Json(ApiResponse::success(schema)))
 }
@@ -564,10 +571,22 @@ pub async fn update_schema(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound(format!("Game '{}' not found", slug)))?;
 
+    // filter_attrs uses a tri-state update: $5 NULL means "don't touch", a
+    // wrapped JSONB value (including JSONB 'null') means "overwrite". We
+    // disambiguate with an extra $6 sentinel because we can't tell SQL NULL
+    // from JSONB null otherwise.
+    let (filter_attrs_present, filter_attrs_value): (bool, Option<serde_json::Value>) =
+        match body.filter_attrs {
+            None => (false, None),
+            Some(None) => (true, None),
+            Some(Some(v)) => (true, Some(v)),
+        };
+
     let row = sqlx::query_as::<_, DbSchema>(
         "UPDATE games.item_type_schemas SET
             name = COALESCE($3, name),
             fields = COALESCE($4, fields),
+            filter_attrs = CASE WHEN $6 THEN $5 ELSE filter_attrs END,
             updated_at = NOW()
          WHERE id = $1 AND game_id = $2
          RETURNING *",
@@ -576,6 +595,8 @@ pub async fn update_schema(
     .bind(game.id)
     .bind(body.name.as_deref())
     .bind(body.fields.as_ref())
+    .bind(filter_attrs_value)
+    .bind(filter_attrs_present)
     .fetch_optional(&pool)
     .await
     .map_err(AppError::Database)?

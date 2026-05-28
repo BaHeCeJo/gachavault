@@ -62,6 +62,12 @@ interface GameAttribute {
   color: string | null;
 }
 
+interface Schema {
+  id: string;
+  section_id: string | null;
+  filter_attrs: string[] | null;
+}
+
 type AttrMap = Record<string, Record<string, GameAttribute>>;
 
 const RARITY_GLOW: Record<string, string> = {
@@ -131,6 +137,7 @@ export default function GamePageClient({ initial }: ClientProps) {
   const game = initial.game as Game;
   const sections = initial.sections as Section[];
   const attrList = initial.attributes as GameAttribute[];
+  const schemas = (initial.schemas ?? []) as Schema[];
   const attrMap = useMemo(() => buildAttrMap(attrList), [attrList]);
 
   const [activeTab, setActiveTab] = useState<Tab>("overview");
@@ -191,6 +198,24 @@ export default function GamePageClient({ initial }: ClientProps) {
     () => filterItems(items, activeFilters, search),
     [items, activeFilters, search],
   );
+
+  // Build the filter-chip allowlist for the active section by merging the
+  // schemas attached to it (or to "all sections" via section_id=null).
+  // If any matching schema is on "auto" (filter_attrs=null), the section
+  // stays auto. Otherwise we union every schema's allowed attr_types.
+  const filterAllowlist = useMemo<string[] | null>(() => {
+    if (!activeSection) return null;
+    const relevant = schemas.filter(
+      (s) => s.section_id === activeSection || s.section_id === null,
+    );
+    if (relevant.length === 0) return null;
+    if (relevant.some((s) => s.filter_attrs === null)) return null;
+    const union = new Set<string>();
+    for (const s of relevant) {
+      for (const a of s.filter_attrs ?? []) union.add(a);
+    }
+    return Array.from(union);
+  }, [activeSection, schemas]);
 
   function toggleFilter(attrType: string, key: string) {
     setActiveFilters(prev => {
@@ -299,6 +324,7 @@ export default function GamePageClient({ initial }: ClientProps) {
               items={items}
               activeFilters={activeFilters}
               search={search}
+              allowedAttrTypes={filterAllowlist}
               onFilterToggle={toggleFilter}
               onClearAll={() => { setActiveFilters({}); setSearch(""); }}
               onSearchChange={setSearch}

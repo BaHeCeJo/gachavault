@@ -14,6 +14,9 @@ interface Schema {
   section_id: string | null;
   name: string;
   fields: unknown;
+  // null = auto (current behavior, all attr_types with values),
+  // [] = no filters, ["path","rarity"] = only those.
+  filter_attrs: string[] | null;
   created_at: string;
 }
 
@@ -173,6 +176,9 @@ export default function AdminGameSchemasPage() {
   const [name, setName] = useState("");
   const [sectionId, setSectionId] = useState("");
   const [fields, setFields] = useState<SchemaField[]>([]);
+  // null = "auto" (show all attr_types that have values).
+  // string[] = explicit allowlist of attribute-type keys.
+  const [filterAttrs, setFilterAttrs] = useState<string[] | null>(null);
   const [viewMode, setViewMode] = useState<"visual" | "json">("visual");
   const [jsonDraft, setJsonDraft] = useState("");
   const [jsonError, setJsonError] = useState("");
@@ -211,6 +217,7 @@ export default function AdminGameSchemasPage() {
     setName("");
     setSectionId("");
     setFields(DEFAULT_FIELDS);
+    setFilterAttrs(null);
     setJsonDraft(JSON.stringify(DEFAULT_FIELDS, null, 2));
     setViewMode("visual");
     setJsonError("");
@@ -227,6 +234,7 @@ export default function AdminGameSchemasPage() {
     setName(schema.name);
     setSectionId(schema.section_id ?? "");
     setFields(parsed);
+    setFilterAttrs(Array.isArray(schema.filter_attrs) ? schema.filter_attrs : null);
     setJsonDraft(JSON.stringify(schema.fields, null, 2));
     setViewMode("visual");
     setJsonError("");
@@ -315,12 +323,14 @@ export default function AdminGameSchemasPage() {
           name,
           section_id: sectionId || null,
           fields: fs,
+          filter_attrs: filterAttrs,
         });
         setSchemas((prev) => [...prev, res.data.data]);
       } else if (modal?.mode === "edit") {
         const res = await adminApi.games.updateSchema(slug, modal.schema.id, {
           name,
           fields: fs,
+          filter_attrs: filterAttrs,
         });
         setSchemas((prev) => prev.map((s) => (s.id === modal.schema.id ? res.data.data : s)));
       }
@@ -564,6 +574,12 @@ export default function AdminGameSchemasPage() {
                 </>
               )}
             </div>
+
+            <FilterAttrsEditor
+              fields={fields}
+              value={filterAttrs}
+              onChange={setFilterAttrs}
+            />
 
             {error && <p className="text-red-400 text-sm">{error}</p>}
 
@@ -835,5 +851,94 @@ function AttributeTypeInput({
         {options.map((o) => <option key={o} value={o} />)}
       </datalist>
     </>
+  );
+}
+
+// Lets the admin pick which attribute-type fields are shown as filter chips on
+// the section page. `null` = auto (every attr_type with values shows up),
+// `[]` = no filters, `["path","rarity"]` = only those.
+function FilterAttrsEditor({
+  fields,
+  value,
+  onChange,
+}: {
+  fields: SchemaField[];
+  value: string[] | null;
+  onChange: (next: string[] | null) => void;
+}) {
+  // Candidates = distinct attribute_types referenced by attribute-type fields
+  // in this schema. Filter chips only make sense for attribute fields, since
+  // ItemFilterBar groups by attr_type.
+  const candidates = useMemo(() => {
+    const seen = new Map<string, string>(); // attr_type -> label
+    for (const f of fields) {
+      if (f.type !== "attribute") continue;
+      const at = f.attribute_type?.trim();
+      if (!at) continue;
+      if (!seen.has(at)) seen.set(at, f.label || at);
+    }
+    return Array.from(seen.entries()).map(([attr_type, label]) => ({ attr_type, label }));
+  }, [fields]);
+
+  const isAuto = value === null;
+  const selected = new Set(value ?? []);
+
+  function toggle(attrType: string) {
+    if (isAuto) {
+      // First click while auto = switch to explicit allowlist starting with
+      // every candidate, then toggle off the one the user clicked.
+      const next = candidates.map((c) => c.attr_type).filter((t) => t !== attrType);
+      onChange(next);
+      return;
+    }
+    const next = new Set(selected);
+    if (next.has(attrType)) next.delete(attrType);
+    else next.add(attrType);
+    onChange(Array.from(next));
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <label className="text-xs text-gray-400">Filter chips on section page</label>
+        <button
+          type="button"
+          onClick={() => onChange(isAuto ? [] : null)}
+          className="text-xs text-amber-400 hover:text-amber-300"
+        >
+          {isAuto ? "Customize" : "Reset to auto"}
+        </button>
+      </div>
+      {candidates.length === 0 ? (
+        <p className="text-xs text-gray-500 py-3 text-center border border-dashed border-gray-800 rounded-lg">
+          Add an attribute-type field above to make it filterable.
+        </p>
+      ) : isAuto ? (
+        <p className="text-xs text-gray-500 py-3 px-3 border border-dashed border-gray-800 rounded-lg">
+          Auto — every attribute-type field with values shows as a filter chip group.
+          Click <span className="text-amber-400">Customize</span> to pick a subset.
+        </p>
+      ) : (
+        <div className="space-y-1.5 px-3 py-2.5 rounded-lg border border-gray-800 bg-gray-950/40">
+          {candidates.map((c) => (
+            <label key={c.attr_type} className="flex items-center gap-2 cursor-pointer text-sm">
+              <input
+                type="checkbox"
+                checked={selected.has(c.attr_type)}
+                onChange={() => toggle(c.attr_type)}
+                className="accent-amber-500"
+              />
+              <span>{c.label}</span>
+              <span className="text-xs text-gray-600 font-mono">({c.attr_type})</span>
+            </label>
+          ))}
+          {selected.size === 0 && (
+            <p className="text-xs text-amber-300/80 pt-1">
+              No filters will be shown for items in this schema.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

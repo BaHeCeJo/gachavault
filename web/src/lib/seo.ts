@@ -140,8 +140,10 @@ export interface SeoSchemaField {
 
 export interface SeoSchema {
   id: string;
+  section_id: string | null;
   name: string;
   fields: SeoSchemaField[];
+  filter_attrs: string[] | null;
 }
 
 export interface SeoGameAttribute {
@@ -185,6 +187,7 @@ export interface GamePageBundle {
   game: SeoGame;
   sections: SeoSection[];
   attributes: SeoGameAttribute[];
+  schemas: SeoSchema[];
   initialSectionId: string | null;
   initialItems: SeoItem[];
   itemCountsBySection: Record<string, number>;
@@ -196,10 +199,11 @@ export async function getGamePageBundle(
   gameSlug: string,
   locale: string,
 ): Promise<GamePageBundle | null> {
-  const [game, sections, attributes] = await Promise.all([
+  const [game, sections, attributes, schemas] = await Promise.all([
     getGame(gameSlug, locale),
     listSections(gameSlug),
     listAttributes(gameSlug),
+    listSchemas(gameSlug),
   ]);
   if (!game) return null;
   const sortedSections = (sections ?? []).slice().sort((a, b) => a.display_order - b.display_order);
@@ -218,6 +222,7 @@ export async function getGamePageBundle(
     game,
     sections: sortedSections,
     attributes: attributes ?? [],
+    schemas: schemas ?? [],
     initialSectionId: firstSection?.id ?? null,
     initialItems,
     itemCountsBySection,

@@ -133,16 +133,18 @@ pub async fn create_schema(
     section_id: Option<Uuid>,
     name: &str,
     fields: &serde_json::Value,
+    filter_attrs: Option<&serde_json::Value>,
 ) -> Result<DbSchema, sqlx::Error> {
     sqlx::query_as!(
         DbSchema,
-        r#"INSERT INTO games.item_type_schemas (game_id, section_id, name, fields)
-           VALUES ($1, $2, $3, $4)
+        r#"INSERT INTO games.item_type_schemas (game_id, section_id, name, fields, filter_attrs)
+           VALUES ($1, $2, $3, $4, $5)
            RETURNING *"#,
         game_id,
         section_id,
         name,
         fields,
+        filter_attrs,
     )
     .fetch_one(pool)
     .await
