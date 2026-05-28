@@ -8,6 +8,8 @@ import { useAuth } from "@/context/AuthContext";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
 import { SafeImage } from "@/components/SafeImage";
 import { cardGradient } from "@/lib/theme";
+import ItemCard, { type CardLayout } from "@/components/ItemCard";
+import { type AttrMap, type GameAttribute, buildAttrMap } from "@/lib/attrs";
 import type { GamePageBundle } from "@/lib/seo";
 
 type Tab = "overview" | "sections" | "tierlists" | "collection";
@@ -41,6 +43,7 @@ interface Item {
   game_slug?: string;
   section_id: string;
   section_slug?: string;
+  type_schema_id?: string | null;
   data: Record<string, unknown>;
 }
 
@@ -53,77 +56,25 @@ interface TierList {
   updated_at: string;
 }
 
-interface GameAttribute {
-  id: string;
-  attr_type: string;
-  key: string;
-  name: string;
-  icon_url: string | null;
-  color: string | null;
-}
-
 interface Schema {
   id: string;
   section_id: string | null;
   filter_attrs: string[] | null;
+  card_layout: CardLayout | null;
 }
 
-type AttrMap = Record<string, Record<string, GameAttribute>>;
-
-const RARITY_GLOW: Record<string, string> = {
-  SSR: "shadow-yellow-500/20",
-  SR: "shadow-purple-500/20",
-  UR: "shadow-yellow-500/20",
-  S: "shadow-yellow-500/20",
-  A: "shadow-purple-500/20",
-};
-const RARITY_BORDER: Record<string, string> = {
-  SSR: "border-yellow-700/50",
-  SR: "border-purple-700/50",
-  UR: "border-yellow-700/50",
-  S: "border-yellow-700/50",
-  A: "border-purple-700/50",
-};
-
-function buildAttrMap(attrs: GameAttribute[]): AttrMap {
-  const map: AttrMap = {};
-  for (const a of attrs) {
-    if (!map[a.attr_type]) map[a.attr_type] = {};
-    map[a.attr_type][a.key.toLowerCase()] = a;
-  }
-  return map;
-}
-
-function lookupAttr(map: AttrMap, attrType: string, value: unknown): GameAttribute | null {
-  if (typeof value !== "string") return null;
-  return map[attrType]?.[value.toLowerCase()] ?? null;
-}
-
-function RarityBadge({ value }: { value: unknown }) {
-  if (value === null || value === undefined) return null;
-  if (typeof value === "number") {
-    return (
-      <span className="text-yellow-400 text-xs leading-none">
-        {"★".repeat(Math.min(value, 6))}
-      </span>
-    );
-  }
-  const str = String(value);
-  const colorMap: Record<string, string> = { SSR: "text-yellow-400", SR: "text-purple-400", R: "text-blue-400", S: "text-yellow-400" };
-  return <span className={`text-xs font-semibold ${colorMap[str] ?? "text-gray-400"}`}>{str}</span>;
-}
-
-function AttrBadge({ attr }: { attr: GameAttribute }) {
-  if (attr.icon_url) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={attr.icon_url} alt={attr.name} title={attr.name} className="w-7 h-7 object-contain" />;
+// Picks the schema that governs how an item card renders. Prefer the item's
+// own type_schema_id; fall back to any schema bound to the section, then to
+// a game-wide schema.
+function schemaForItem(schemas: Schema[], item: Item): Schema | null {
+  if (item.type_schema_id) {
+    const direct = schemas.find((s) => s.id === item.type_schema_id);
+    if (direct) return direct;
   }
   return (
-    <span
-      title={attr.name}
-      className="w-5 h-5 rounded-full inline-block border border-black/20"
-      style={{ backgroundColor: attr.color ?? "#888" }}
-    />
+    schemas.find((s) => s.section_id === item.section_id) ??
+    schemas.find((s) => s.section_id === null) ??
+    null
   );
 }
 
@@ -283,6 +234,7 @@ export default function GamePageClient({ initial }: ClientProps) {
           previewItems={(initial.initialItems as Item[]).slice(0, 12)}
           previewSection={sections.find((s) => s.id === initial.initialSectionId) ?? null}
           attrMap={attrMap}
+          schemas={schemas}
           gameSlug={game.slug}
           tierlists={tierlists}
           onJumpToSection={(id) => {
@@ -337,64 +289,15 @@ export default function GamePageClient({ initial }: ClientProps) {
             <p className="text-gray-400 mb-12">No items match the current filters.</p>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-12">
-              {visibleItems.map((item) => {
-                const name = (item.data?.name as string) ?? item.slug;
-                const imageUrl = (item.data?.image_url ?? item.data?.icon_url) as string | undefined;
-                // Card badge picks one attribute to show; for multi-value
-                // fields we just use the first entry rather than stacking.
-                const firstVal = (v: unknown): unknown => Array.isArray(v) ? v[0] : v;
-                const elementAttr = lookupAttr(attrMap, "element", firstVal(item.data?.element))
-                  ?? lookupAttr(attrMap, "attribute", firstVal(item.data?.element));
-                const rarity = item.data?.rarity;
-                const rarityStr = typeof rarity === "number" ? undefined : String(rarity ?? "");
-                const badgeAttrs = Object.keys(item.data ?? {})
-                  .filter(k => {
-                    if (k === "element" || !attrMap[k]) return false;
-                    const v = item.data[k];
-                    return typeof v === "string" || (Array.isArray(v) && v.length > 0);
-                  })
-                  .slice(0, 1)
-                  .map(k => lookupAttr(attrMap, k, firstVal(item.data[k])))
-                  .filter(Boolean) as GameAttribute[];
-
-                return (
-                  <Link
-                    key={item.id}
-                    href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/games/${game.slug}/items/${item.id}`}
-                    className={`flex flex-col rounded-lg border bg-gray-900 overflow-hidden transition-all duration-200 group hover:scale-[1.03] hover:shadow-lg ${
-                      rarityStr && RARITY_BORDER[rarityStr]
-                        ? `${RARITY_BORDER[rarityStr]} hover:shadow-lg ${RARITY_GLOW[rarityStr]}`
-                        : "border-gray-800 hover:border-amber-500/60 hover:shadow-amber-500/10"
-                    }`}
-                  >
-                    <div className="relative h-28 w-full">
-                      <SafeImage
-                        src={imageUrl}
-                        alt={name}
-                        fill
-                        sizes="(min-width: 1024px) 200px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-200"
-                        fallback={
-                          <div className={`h-full w-full bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-2xl font-semibold text-white/50`}>
-                            {name[0]?.toUpperCase()}
-                          </div>
-                        }
-                      />
-                      {(elementAttr || badgeAttrs[0]) && (
-                        <div className="absolute top-1.5 right-1.5 w-9 h-9 rounded-full bg-black/50 flex items-center justify-center backdrop-blur-sm">
-                          <AttrBadge attr={(elementAttr ?? badgeAttrs[0])!} />
-                        </div>
-                      )}
-                      {rarity !== undefined && (
-                        <div className="absolute bottom-1 left-1.5">
-                          <RarityBadge value={rarity} />
-                        </div>
-                      )}
-                    </div>
-                    <p className="px-2 py-1.5 text-xs truncate">{name}</p>
-                  </Link>
-                );
-              })}
+              {visibleItems.map((item) => (
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  attrMap={attrMap}
+                  layout={schemaForItem(schemas, item)?.card_layout ?? null}
+                  fallbackGameSlug={game.slug}
+                />
+              ))}
             </div>
           )}
         </>
@@ -421,7 +324,7 @@ export default function GamePageClient({ initial }: ClientProps) {
 }
 
 function OverviewTab({
-  sections, itemCountsBySection, previewItems, previewSection, attrMap, gameSlug,
+  sections, itemCountsBySection, previewItems, previewSection, attrMap, schemas, gameSlug,
   tierlists, onJumpToSection, onJumpToTierLists,
   tNoTierlists, tSectionsTitle, tTierlistsTitle, tViewAll,
 }: {
@@ -430,6 +333,7 @@ function OverviewTab({
   previewItems: Item[];
   previewSection: Section | null;
   attrMap: AttrMap;
+  schemas: Schema[];
   gameSlug: string;
   tierlists: TierList[];
   onJumpToSection: (id: string) => void;
@@ -476,52 +380,15 @@ function OverviewTab({
             </button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {previewItems.map((item) => {
-              const name = (item.data?.name as string) ?? item.slug;
-              const imageUrl = (item.data?.image_url ?? item.data?.icon_url) as string | undefined;
-              const firstEl = Array.isArray(item.data?.element) ? item.data.element[0] : item.data?.element;
-              const elementAttr = lookupAttr(attrMap, "element", firstEl)
-                ?? lookupAttr(attrMap, "attribute", firstEl);
-              const rarity = item.data?.rarity;
-              const rarityStr = typeof rarity === "number" ? undefined : String(rarity ?? "");
-              return (
-                <Link
-                  key={item.id}
-                  href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/games/${gameSlug}/items/${item.id}`}
-                  className={`flex flex-col rounded-lg border bg-gray-900 overflow-hidden transition-all duration-200 group hover:scale-[1.03] hover:shadow-lg ${
-                    rarityStr && RARITY_BORDER[rarityStr]
-                      ? `${RARITY_BORDER[rarityStr]} hover:shadow-lg ${RARITY_GLOW[rarityStr]}`
-                      : "border-gray-800 hover:border-amber-500/60 hover:shadow-amber-500/10"
-                  }`}
-                >
-                  <div className="relative h-28 w-full">
-                    <SafeImage
-                      src={imageUrl}
-                      alt={name}
-                      fill
-                      sizes="(min-width: 1024px) 200px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-200"
-                      fallback={
-                        <div className={`h-full w-full bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-2xl font-semibold text-white/50`}>
-                          {name[0]?.toUpperCase()}
-                        </div>
-                      }
-                    />
-                    {elementAttr && (
-                      <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center backdrop-blur-sm">
-                        <AttrBadge attr={elementAttr} />
-                      </div>
-                    )}
-                    {rarity !== undefined && (
-                      <div className="absolute bottom-1 left-1.5">
-                        <RarityBadge value={rarity} />
-                      </div>
-                    )}
-                  </div>
-                  <p className="px-2 py-1.5 text-xs truncate">{name}</p>
-                </Link>
-              );
-            })}
+            {previewItems.map((item) => (
+              <ItemCard
+                key={item.id}
+                item={item}
+                attrMap={attrMap}
+                layout={schemaForItem(schemas, item)?.card_layout ?? null}
+                fallbackGameSlug={gameSlug}
+              />
+            ))}
           </div>
         </section>
       )}

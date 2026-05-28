@@ -551,6 +551,7 @@ pub async fn create_schema(
         &body.name,
         &body.fields,
         body.filter_attrs.as_ref(),
+        body.card_layout.as_ref(),
     )
     .await
     .map_err(|e| match e {
@@ -580,12 +581,18 @@ pub async fn update_schema(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound(format!("Game '{}' not found", slug)))?;
 
-    // filter_attrs uses a tri-state update: $5 NULL means "don't touch", a
-    // wrapped JSONB value (including JSONB 'null') means "overwrite". We
-    // disambiguate with an extra $6 sentinel because we can't tell SQL NULL
-    // from JSONB null otherwise.
+    // Tri-state JSONB updates: the outer Option of body.<key> tells us whether
+    // the client sent the key at all; the inner Option distinguishes JSON null
+    // (reset to SQL NULL) from a real value. We pass a (value, present)
+    // pair per field and let CASE WHEN <present> swap or preserve.
     let (filter_attrs_present, filter_attrs_value): (bool, Option<serde_json::Value>) =
         match body.filter_attrs {
+            None => (false, None),
+            Some(None) => (true, None),
+            Some(Some(v)) => (true, Some(v)),
+        };
+    let (card_layout_present, card_layout_value): (bool, Option<serde_json::Value>) =
+        match body.card_layout {
             None => (false, None),
             Some(None) => (true, None),
             Some(Some(v)) => (true, Some(v)),
@@ -596,6 +603,7 @@ pub async fn update_schema(
             name = COALESCE($3, name),
             fields = COALESCE($4, fields),
             filter_attrs = CASE WHEN $6 THEN $5 ELSE filter_attrs END,
+            card_layout = CASE WHEN $8 THEN $7 ELSE card_layout END,
             updated_at = NOW()
          WHERE id = $1 AND game_id = $2
          RETURNING *",
@@ -606,6 +614,8 @@ pub async fn update_schema(
     .bind(body.fields.as_ref())
     .bind(filter_attrs_value)
     .bind(filter_attrs_present)
+    .bind(card_layout_value)
+    .bind(card_layout_present)
     .fetch_optional(&pool)
     .await
     .map_err(AppError::Database)?

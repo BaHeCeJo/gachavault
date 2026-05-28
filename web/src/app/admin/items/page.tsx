@@ -9,6 +9,8 @@ import ImageUploadField from "@/components/ImageUploadField";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { SafeImage } from "@/components/SafeImage";
+import ItemCard, { type CardLayout } from "@/components/ItemCard";
+import { buildAttrMap } from "@/lib/attrs";
 
 interface Game { id: string; slug: string; name: string }
 interface Section { id: string; slug: string; name: string }
@@ -25,7 +27,13 @@ interface SchemaField {
   source_field?: string;
   sources?: { source_section: string; source_field: string }[];
 }
-interface Schema { id: string; name: string; section_id: string | null; fields: SchemaField[] }
+interface Schema {
+  id: string;
+  name: string;
+  section_id: string | null;
+  fields: SchemaField[];
+  card_layout?: CardLayout | null;
+}
 
 // Find the schema for a given section. Prefer a schema explicitly bound to
 // the section; fall back to any game-wide schema (section_id=null). Returns
@@ -73,6 +81,9 @@ export default function AdminItemsPage() {
   const [attrList, setAttrList] = useState<GameAttribute[]>([]);
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+
+  const attrMap = useMemo(() => buildAttrMap(attrList), [attrList]);
 
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [modal, setModal] = useState<{ mode: "create" | "edit"; item?: Item } | null>(null);
@@ -414,7 +425,65 @@ export default function AdminItemsPage() {
         />
       )}
 
-      {selectedGame && !loadingItems && (
+      {selectedGame && !loadingItems && items.length > 0 && (
+        <div className="flex justify-end mb-3">
+          <div className="inline-flex rounded-lg border border-gray-700 overflow-hidden text-xs">
+            <button
+              type="button"
+              onClick={() => setViewMode("table")}
+              className={`px-3 py-1.5 transition ${
+                viewMode === "table" ? "bg-amber-500 text-black" : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Table
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("cards")}
+              className={`px-3 py-1.5 transition ${
+                viewMode === "cards" ? "bg-amber-500 text-black" : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Cards
+            </button>
+          </div>
+        </div>
+      )}
+
+      {selectedGame && !loadingItems && viewMode === "cards" && visibleItems.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-6">
+          {visibleItems.map((item) => {
+            const schema = schemas.find((s) => s.id === item.type_schema_id);
+            return (
+              <ItemCard
+                key={item.id}
+                item={item}
+                attrMap={attrMap}
+                layout={schema?.card_layout ?? null}
+                linkMode="image"
+                footer={
+                  <div className="flex gap-1 mt-1.5">
+                    <button
+                      onClick={() => openEdit(item)}
+                      className="flex-1 text-xs py-1 rounded bg-gray-800 hover:bg-gray-700 transition"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteTarget(item.id)}
+                      className="text-xs px-2 py-1 rounded bg-gray-800 hover:bg-red-900 text-red-400 transition"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                }
+              />
+            );
+          })}
+        </div>
+      )}
+
+      {selectedGame && !loadingItems && viewMode === "table" && (
         <div className="overflow-hidden rounded-xl border border-gray-800">
           <table className="w-full text-sm">
             <thead>

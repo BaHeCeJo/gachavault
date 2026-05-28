@@ -138,12 +138,21 @@ export interface SeoSchemaField {
   options?: string[];
 }
 
+export interface SeoSchemaCardLayout {
+  border_color_attr?: string | null;
+  badge_top_left?: string | null;
+  badge_top_right?: string | null;
+  watermark_attr?: string | null;
+  watermark_opacity?: number;
+}
+
 export interface SeoSchema {
   id: string;
   section_id: string | null;
   name: string;
   fields: SeoSchemaField[];
   filter_attrs: string[] | null;
+  card_layout: SeoSchemaCardLayout | null;
 }
 
 export interface SeoGameAttribute {

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { collectionsApi, gamesApi, itemsApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import { SafeImage } from "@/components/SafeImage";
+import ItemCard, { type CardLayout } from "@/components/ItemCard";
+import { buildAttrMap, type GameAttribute } from "@/lib/attrs";
 
 interface Game { id: string; slug: string; name: string }
 interface CollectionEntry {
@@ -17,8 +18,21 @@ interface CollectionEntry {
   ascension: number | null;
   constellation_level: number | null;
 }
-interface Item { id: string; slug: string; section_id: string; game_slug?: string; section_slug?: string; data: Record<string, unknown> }
+interface Item {
+  id: string;
+  slug: string;
+  section_id: string;
+  type_schema_id?: string | null;
+  game_slug?: string;
+  section_slug?: string;
+  data: Record<string, unknown>;
+}
 interface Section { id: string; slug: string; name: string }
+interface Schema {
+  id: string;
+  section_id: string | null;
+  card_layout: CardLayout | null;
+}
 
 export default function CollectionsPage() {
   const { user, isLoading } = useAuth();
@@ -29,9 +43,13 @@ export default function CollectionsPage() {
   const [sections, setSections] = useState<Section[]>([]);
   const [entries, setEntries] = useState<CollectionEntry[]>([]);
   const [items, setItems] = useState<Map<string, Item>>(new Map());
+  const [schemas, setSchemas] = useState<Schema[]>([]);
+  const [attrs, setAttrs] = useState<GameAttribute[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
   const [editing, setEditing] = useState<CollectionEntry | null>(null);
   const [editForm, setEditForm] = useState({ level: "", ascension: "", constellation_level: "" });
+
+  const attrMap = useMemo(() => buildAttrMap(attrs), [attrs]);
 
   useEffect(() => {
     if (!isLoading && !user) router.replace("/auth/login?redirect=/collections");
@@ -46,15 +64,19 @@ export default function CollectionsPage() {
     setSelectedGame(game);
     setLoadingEntries(true);
     try {
-      const [entriesRes, itemsData, sectionsRes] = await Promise.all([
+      const [entriesRes, itemsData, sectionsRes, schemasRes, attrsRes] = await Promise.all([
         collectionsApi.getByGame(game.id),
         itemsApi.listAll<Item>({ game_id: game.id }),
         gamesApi.getSections(game.slug),
+        gamesApi.listSchemas(game.slug),
+        gamesApi.getAttributes(game.slug),
       ]);
       const entriesData: CollectionEntry[] = entriesRes.data.data ?? [];
       setEntries(entriesData);
       setItems(new Map(itemsData.map((i) => [i.id, i])));
       setSections(sectionsRes.data.data ?? []);
+      setSchemas(schemasRes.data.data ?? []);
+      setAttrs(attrsRes.data.data ?? []);
     } finally {
       setLoadingEntries(false);
     }
@@ -191,50 +213,41 @@ export default function CollectionsPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {entries.map((entry) => {
                 const item = items.get(entry.item_id);
-                const name = (item?.data?.name as string) ?? entry.item_id.slice(0, 8);
-                const imageUrl = item?.data?.image_url as string | undefined;
+                if (!item) return null;
+                const schema =
+                  (item.type_schema_id && schemas.find((s) => s.id === item.type_schema_id)) ||
+                  schemas.find((s) => s.section_id === item.section_id) ||
+                  schemas.find((s) => s.section_id === null);
                 return (
-                  <div
+                  <ItemCard
                     key={entry.id}
-                    className="relative flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden"
-                  >
-                    <Link href={item?.game_slug && item?.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/items/${entry.item_id}`}>
-                      <div className="relative h-24 w-full">
-                        <SafeImage
-                          src={imageUrl}
-                          alt={name}
-                          fill
-                          className="object-cover"
-                          fallback={
-                            <div className="h-24 w-full bg-gray-800 flex items-center justify-center text-2xl font-semibold text-gray-600">
-                              {name[0]?.toUpperCase()}
-                            </div>
-                          }
-                        />
-                      </div>
-                    </Link>
-                    <div className="p-2 space-y-1">
-                      <p className="text-xs truncate">{name}</p>
-                      <div className="flex gap-2 text-xs text-gray-400">
-                        {entry.level && <span>Lv.{entry.level}</span>}
-                        {entry.constellation_level != null && <span>C{entry.constellation_level}</span>}
-                      </div>
-                      <div className="flex gap-1 mt-1">
-                        <button
-                          onClick={() => openEdit(entry)}
-                          className="flex-1 text-xs py-1 rounded bg-gray-800 hover:bg-gray-700 transition"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => removeEntry(entry.item_id)}
-                          className="text-xs px-2 py-1 rounded bg-gray-800 hover:bg-red-900 text-red-400 transition"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                    item={item}
+                    attrMap={attrMap}
+                    layout={schema?.card_layout ?? null}
+                    linkMode="image"
+                    footer={
+                      <>
+                        <div className="flex gap-2 text-xs text-gray-400 mt-1">
+                          {entry.level && <span>Lv.{entry.level}</span>}
+                          {entry.constellation_level != null && <span>C{entry.constellation_level}</span>}
+                        </div>
+                        <div className="flex gap-1 mt-1">
+                          <button
+                            onClick={() => openEdit(entry)}
+                            className="flex-1 text-xs py-1 rounded bg-gray-800 hover:bg-gray-700 transition"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => removeEntry(entry.item_id)}
+                            className="text-xs px-2 py-1 rounded bg-gray-800 hover:bg-red-900 text-red-400 transition"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </>
+                    }
+                  />
                 );
               })}
             </div>

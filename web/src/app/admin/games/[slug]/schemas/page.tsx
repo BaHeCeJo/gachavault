@@ -6,6 +6,8 @@ import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import ItemCard, { type CardLayout } from "@/components/ItemCard";
+import { buildAttrMap, type GameAttribute as GameAttributeFull } from "@/lib/attrs";
 
 interface Section { id: string; slug: string; name: string }
 interface GameAttribute { attr_type: string }
@@ -17,6 +19,7 @@ interface Schema {
   // null = auto (current behavior, all attr_types with values),
   // [] = no filters, ["path","rarity"] = only those.
   filter_attrs: string[] | null;
+  card_layout: CardLayout | null;
   created_at: string;
 }
 
@@ -169,6 +172,7 @@ export default function AdminGameSchemasPage() {
   const [schemas, setSchemas] = useState<Schema[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [attrTypes, setAttrTypes] = useState<string[]>([]);
+  const [allAttrs, setAllAttrs] = useState<GameAttributeFull[]>([]);
   const [gameName, setGameName] = useState(slug);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<ModalState>(null);
@@ -179,6 +183,8 @@ export default function AdminGameSchemasPage() {
   // null = "auto" (show all attr_types that have values).
   // string[] = explicit allowlist of attribute-type keys.
   const [filterAttrs, setFilterAttrs] = useState<string[] | null>(null);
+  // null = legacy hardcoded defaults; object = explicit per-slot config.
+  const [cardLayout, setCardLayout] = useState<CardLayout | null>(null);
   const [viewMode, setViewMode] = useState<"visual" | "json">("visual");
   const [jsonDraft, setJsonDraft] = useState("");
   const [jsonError, setJsonError] = useState("");
@@ -203,8 +209,10 @@ export default function AdminGameSchemasPage() {
         setGameName(gameRes.data.data.name);
         setSections(sectRes.data.data ?? []);
         setSchemas(schemaRes.data.data ?? []);
+        const attrs = (attrRes.data.data ?? []) as GameAttributeFull[];
+        setAllAttrs(attrs);
         const types = new Set<string>();
-        for (const a of (attrRes.data.data ?? []) as GameAttribute[]) types.add(a.attr_type);
+        for (const a of attrs as GameAttribute[]) types.add(a.attr_type);
         setAttrTypes(Array.from(types).sort());
       })
       .finally(() => setLoading(false));
@@ -218,6 +226,7 @@ export default function AdminGameSchemasPage() {
     setSectionId("");
     setFields(DEFAULT_FIELDS);
     setFilterAttrs(null);
+    setCardLayout(null);
     setJsonDraft(JSON.stringify(DEFAULT_FIELDS, null, 2));
     setViewMode("visual");
     setJsonError("");
@@ -235,6 +244,7 @@ export default function AdminGameSchemasPage() {
     setSectionId(schema.section_id ?? "");
     setFields(parsed);
     setFilterAttrs(Array.isArray(schema.filter_attrs) ? schema.filter_attrs : null);
+    setCardLayout(schema.card_layout ?? null);
     setJsonDraft(JSON.stringify(schema.fields, null, 2));
     setViewMode("visual");
     setJsonError("");
@@ -324,6 +334,7 @@ export default function AdminGameSchemasPage() {
           section_id: sectionId || null,
           fields: fs,
           filter_attrs: filterAttrs,
+          card_layout: cardLayout,
         });
         setSchemas((prev) => [...prev, res.data.data]);
       } else if (modal?.mode === "edit") {
@@ -331,6 +342,7 @@ export default function AdminGameSchemasPage() {
           name,
           fields: fs,
           filter_attrs: filterAttrs,
+          card_layout: cardLayout,
         });
         setSchemas((prev) => prev.map((s) => (s.id === modal.schema.id ? res.data.data : s)));
       }
@@ -588,6 +600,13 @@ export default function AdminGameSchemasPage() {
               fields={fields}
               value={filterAttrs}
               onChange={setFilterAttrs}
+            />
+
+            <CardLayoutEditor
+              fields={fields}
+              attrs={allAttrs}
+              value={cardLayout}
+              onChange={setCardLayout}
             />
 
             {error && <p className="text-red-400 text-sm">{error}</p>}
@@ -948,6 +967,143 @@ function FilterAttrsEditor({
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+// Per-schema card display config: dropdowns for the border-color source,
+// top-left badge, top-right badge, and a watermark + opacity, with a live
+// preview rendering the same <ItemCard> the section page uses.
+function CardLayoutEditor({
+  fields,
+  attrs,
+  value,
+  onChange,
+}: {
+  fields: SchemaField[];
+  attrs: GameAttributeFull[];
+  value: CardLayout | null;
+  onChange: (next: CardLayout | null) => void;
+}) {
+  // Candidates: same source as the filter editor — attribute-type fields
+  // defined on this schema. Storing by attr_type keeps the lookup consistent
+  // with how items store their values.
+  const candidates = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const f of fields) {
+      if (f.type !== "attribute") continue;
+      const at = f.attribute_type?.trim();
+      if (!at) continue;
+      if (!seen.has(at)) seen.set(at, f.label || at);
+    }
+    return Array.from(seen.entries()).map(([attr_type, label]) => ({ attr_type, label }));
+  }, [fields]);
+
+  const isAuto = value === null;
+  const layout = value ?? {};
+
+  // Sample item for the preview: pick the first attribute of each candidate
+  // type so the preview actually renders real icons/colors from the user's
+  // attribute config rather than placeholders.
+  const previewItem = useMemo(() => {
+    const data: Record<string, unknown> = { name: "Sample character", rarity: "SSR" };
+    for (const c of candidates) {
+      const first = attrs.find((a) => a.attr_type === c.attr_type);
+      if (first) data[c.attr_type] = first.key;
+    }
+    return { id: "preview", slug: "preview", data };
+  }, [candidates, attrs]);
+
+  const attrMap = useMemo(() => buildAttrMap(attrs), [attrs]);
+
+  function patch(p: Partial<CardLayout>) {
+    onChange({ ...(value ?? {}), ...p });
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <label className="text-xs text-gray-400">Card display</label>
+        <button
+          type="button"
+          onClick={() => onChange(isAuto ? {} : null)}
+          className="text-xs text-amber-400 hover:text-amber-300"
+        >
+          {isAuto ? "Customize" : "Reset to defaults"}
+        </button>
+      </div>
+      {candidates.length === 0 ? (
+        <p className="text-xs text-gray-500 py-3 text-center border border-dashed border-gray-800 rounded-lg">
+          Add an attribute-type field above to drive the card layout.
+        </p>
+      ) : isAuto ? (
+        <p className="text-xs text-gray-500 py-3 px-3 border border-dashed border-gray-800 rounded-lg">
+          Default — gacha-style card with rarity border and element badge top-right.
+          Click <span className="text-amber-400">Customize</span> to drive border/badges/watermark from your attributes.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-3 py-3 rounded-lg border border-gray-800 bg-gray-950/40">
+          <div className="space-y-3">
+            <Slot label="Border color" value={layout.border_color_attr ?? ""} candidates={candidates}
+              onChange={(v) => patch({ border_color_attr: v || null })} />
+            <Slot label="Top-left badge" value={layout.badge_top_left ?? ""} candidates={candidates}
+              onChange={(v) => patch({ badge_top_left: v || null })} />
+            <Slot label="Top-right badge" value={layout.badge_top_right ?? ""} candidates={candidates}
+              onChange={(v) => patch({ badge_top_right: v || null })} />
+            <Slot label="Watermark" value={layout.watermark_attr ?? ""} candidates={candidates}
+              onChange={(v) => patch({ watermark_attr: v || null })} />
+            {layout.watermark_attr && (
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">
+                  Watermark opacity: {Math.round((layout.watermark_opacity ?? 0.3) * 100)}%
+                </label>
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={layout.watermark_opacity ?? 0.3}
+                  onChange={(e) => patch({ watermark_opacity: parseFloat(e.target.value) })}
+                  className="w-full accent-amber-500"
+                />
+              </div>
+            )}
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 mb-2">Preview</p>
+            <div className="max-w-[180px]">
+              <ItemCard item={previewItem} attrMap={attrMap} layout={layout} noLink />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Slot({
+  label, value, candidates, onChange,
+}: {
+  label: string;
+  value: string;
+  candidates: { attr_type: string; label: string }[];
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div>
+      <label className="text-xs text-gray-500 block mb-1">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+      >
+        <option value="">— none —</option>
+        {candidates.map((c) => (
+          <option key={c.attr_type} value={c.attr_type}>
+            {c.label} ({c.attr_type})
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

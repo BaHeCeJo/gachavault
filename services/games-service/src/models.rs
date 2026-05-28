@@ -32,6 +32,7 @@ pub struct DbSchema {
     pub name: String,
     pub fields: serde_json::Value,
     pub filter_attrs: Option<serde_json::Value>,
+    pub card_layout: Option<serde_json::Value>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -67,6 +68,7 @@ pub struct CreateSchemaRequest {
     pub name: String,
     pub fields: serde_json::Value,
     pub filter_attrs: Option<serde_json::Value>,
+    pub card_layout: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -84,6 +86,8 @@ pub struct UpdateSchemaRequest {
     // null (reset to "auto"), Some(Some(arr)) = new allowlist.
     #[serde(default, deserialize_with = "deserialize_some")]
     pub filter_attrs: Option<Option<serde_json::Value>>,
+    #[serde(default, deserialize_with = "deserialize_some")]
+    pub card_layout: Option<Option<serde_json::Value>>,
 }
 
 fn deserialize_some<'de, T, D>(deserializer: D) -> Result<Option<T>, D::Error>
