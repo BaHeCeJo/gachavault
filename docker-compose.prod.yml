@@ -4,8 +4,10 @@ services:
     restart: always
     environment:
       POSTGRES_USER: gachavault
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       POSTGRES_DB: gachavault
+    secrets:
+      - postgres_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -19,11 +21,15 @@ services:
   redis:
     image: redis:7-alpine
     restart: always
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+    # redis 7 doesn't natively read passwords from files, so we wrap the
+    # entrypoint in a tiny shell that exports the file content first.
+    command: ["sh", "-c", "redis-server --requirepass \"$$(cat /run/secrets/redis_password)\""]
+    secrets:
+      - redis_password
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a \"$$(cat /run/secrets/redis_password)\" ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,8 +40,10 @@ services:
     image: getmeili/meilisearch:v1.11
     restart: always
     environment:
-      MEILI_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
+      MEILI_MASTER_KEY_FILE: /run/secrets/meilisearch_master_key
       MEILI_ENV: production
+    secrets:
+      - meilisearch_master_key
     volumes:
       - meilisearch_data:/meili_data
     networks:
@@ -53,8 +61,8 @@ services:
     environment:
       PORT: 3000
       RUST_LOG: info
-      JWT_SECRET: ${JWT_SECRET}
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+      REDIS_URL_FILE: /run/secrets/redis_url
       ALLOWED_ORIGINS: ${FRONTEND_URL}
       AUTH_SERVICE_URL: http://auth-service:3001
       GAMES_SERVICE_URL: http://games-service:3002
@@ -64,6 +72,9 @@ services:
       MEDIA_SERVICE_URL: http://media-service:3006
       SEARCH_SERVICE_URL: http://search-service:3007
       NOTIFICATIONS_SERVICE_URL: http://notifications-service:3008
+    secrets:
+      - jwt_secret
+      - redis_url
     depends_on:
       redis:
         condition: service_healthy
@@ -91,17 +102,23 @@ services:
     environment:
       PORT: 3001
       RUST_LOG: info
-      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
-      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL_FILE: /run/secrets/database_url
+      REDIS_URL_FILE: /run/secrets/redis_url
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
       JWT_EXPIRY_SECONDS: 900
       REFRESH_TOKEN_EXPIRY_DAYS: 7
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_CLIENT_SECRET_FILE: /run/secrets/google_client_secret
       FRONTEND_URL: ${FRONTEND_URL}
       BACKEND_URL: ${BACKEND_URL}
       NOTIFICATIONS_SERVICE_URL: http://notifications-service:3008
-      INTERNAL_SECRET: ${INTERNAL_SECRET}
+      INTERNAL_SECRET_FILE: /run/secrets/internal_secret
+    secrets:
+      - database_url
+      - redis_url
+      - jwt_secret
+      - google_client_secret
+      - internal_secret
     depends_on:
       postgres:
         condition: service_healthy
@@ -116,8 +133,11 @@ services:
     environment:
       PORT: 3002
       RUST_LOG: info
-      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
-      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL_FILE: /run/secrets/database_url
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    secrets:
+      - database_url
+      - jwt_secret
     depends_on:
       postgres:
         condition: service_healthy
@@ -130,10 +150,14 @@ services:
     environment:
       PORT: 3003
       RUST_LOG: info
-      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
-      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL_FILE: /run/secrets/database_url
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
       SEARCH_SERVICE_URL: http://search-service:3007
-      INTERNAL_SECRET: ${INTERNAL_SECRET}
+      INTERNAL_SECRET_FILE: /run/secrets/internal_secret
+    secrets:
+      - database_url
+      - jwt_secret
+      - internal_secret
     depends_on:
       postgres:
         condition: service_healthy
@@ -146,8 +170,11 @@ services:
     environment:
       PORT: 3004
       RUST_LOG: info
-      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
-      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL_FILE: /run/secrets/database_url
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    secrets:
+      - database_url
+      - jwt_secret
     depends_on:
       postgres:
         condition: service_healthy
@@ -160,8 +187,11 @@ services:
     environment:
       PORT: 3005
       RUST_LOG: info
-      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
-      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL_FILE: /run/secrets/database_url
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    secrets:
+      - database_url
+      - jwt_secret
     depends_on:
       postgres:
         condition: service_healthy
@@ -174,11 +204,14 @@ services:
     environment:
       PORT: 3006
       RUST_LOG: info
-      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
-      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL_FILE: /run/secrets/database_url
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
       UPLOAD_DIR: /app/uploads
       MAX_FILE_SIZE_MB: 20
       PUBLIC_BASE_URL: ${BACKEND_URL}
+    secrets:
+      - database_url
+      - jwt_secret
     volumes:
       - media_uploads:/app/uploads
     depends_on:
@@ -194,9 +227,13 @@ services:
       PORT: 3007
       RUST_LOG: info
       MEILISEARCH_URL: http://meilisearch:7700
-      MEILISEARCH_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
-      JWT_SECRET: ${JWT_SECRET}
-      INTERNAL_SECRET: ${INTERNAL_SECRET}
+      MEILISEARCH_MASTER_KEY_FILE: /run/secrets/meilisearch_master_key
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+      INTERNAL_SECRET_FILE: /run/secrets/internal_secret
+    secrets:
+      - meilisearch_master_key
+      - jwt_secret
+      - internal_secret
     depends_on:
       - meilisearch
     networks:
@@ -211,10 +248,13 @@ services:
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USERNAME: ${SMTP_USERNAME}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
       FROM_EMAIL: ${FROM_EMAIL}
       FRONTEND_URL: ${FRONTEND_URL}
-      INTERNAL_SECRET: ${INTERNAL_SECRET}
+      INTERNAL_SECRET_FILE: /run/secrets/internal_secret
+    secrets:
+      - smtp_password
+      - internal_secret
     networks:
       - internal
 
@@ -273,14 +313,18 @@ services:
   db-backup:
     image: postgres:16-alpine
     restart: always
-    entrypoint: ["/bin/sh", "/scripts/db-backup.sh"]
+    # The official postgres image's libpq reads PGPASSWORD from env. Source
+    # it from the secret file in the entrypoint wrapper before exec'ing the
+    # backup script.
+    entrypoint: ["/bin/sh", "-c", "export PGPASSWORD=$$(cat /run/secrets/postgres_password); exec /scripts/db-backup.sh"]
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGHOST: postgres
       PGUSER: gachavault
       PGDATABASE: gachavault
       KEEP_DAYS: 14
       BACKUP_INTERVAL: 86400
+    secrets:
+      - postgres_password
     volumes:
       - ./scripts/db-backup.sh:/scripts/db-backup.sh:ro
       - db_backups:/backups
@@ -289,6 +333,31 @@ services:
         condition: service_healthy
     networks:
       - internal
+
+# Docker secrets are bind-mounted files. On the VPS, populate
+# /opt/gachavault/secrets/<name> with the contents (no trailing newline
+# needed — read_secret() trims). chmod 600 the files and chown to root
+# so only privileged processes can read them. Use the
+# scripts/migrate-env-to-secrets.sh helper for the initial import.
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password
+  redis_password:
+    file: ./secrets/redis_password
+  redis_url:
+    file: ./secrets/redis_url
+  database_url:
+    file: ./secrets/database_url
+  jwt_secret:
+    file: ./secrets/jwt_secret
+  internal_secret:
+    file: ./secrets/internal_secret
+  meilisearch_master_key:
+    file: ./secrets/meilisearch_master_key
+  google_client_secret:
+    file: ./secrets/google_client_secret
+  smtp_password:
+    file: ./secrets/smtp_password
 
 volumes:
   postgres_data:
