@@ -70,7 +70,11 @@ impl Claims {
     }
 
     pub fn user_id(&self) -> Uuid {
-        Uuid::parse_str(&self.sub).expect("Invalid UUID in JWT claims")
+        // Safe: Claims::decode rejects tokens whose `sub` is not a valid UUID,
+        // and Claims::new only constructs from a Uuid. If this ever returns
+        // None, a Claims was built outside the supported paths — fall back to
+        // nil UUID to keep the request safe rather than panic the worker.
+        Uuid::parse_str(&self.sub).unwrap_or_else(|_| Uuid::nil())
     }
 
     pub fn role(&self) -> &str {
@@ -91,6 +95,12 @@ impl Claims {
             &DecodingKey::from_secret(secret.as_bytes()),
             &Validation::new(Algorithm::HS256),
         )?;
+        // Reject malformed `sub` at the boundary so downstream user_id() is
+        // guaranteed safe. A token signed correctly but with a non-UUID `sub`
+        // is treated as InvalidToken (401), never a panic.
+        if Uuid::parse_str(&data.claims.sub).is_err() {
+            return Err(jsonwebtoken::errors::ErrorKind::InvalidSubject.into());
+        }
         Ok(data.claims)
     }
 }
