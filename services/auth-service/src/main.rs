@@ -6,12 +6,7 @@ use serde_json::json;
 use std::net::SocketAddr;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-mod crypto;
-mod db;
-mod models;
-mod notifications;
-mod oauth;
-mod routes;
+use auth_service::{oauth, routes};
 
 #[tokio::main]
 async fn main() {

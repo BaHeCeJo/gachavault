@@ -68,6 +68,13 @@ jobs:
       - name: Build (all services)
         run: cargo build --workspace --release
 
+      - name: Run tests
+        # SQLX_OFFLINE=false so sqlx::test can verify queries against the
+        # live CI Postgres (each test gets its own auto-created database).
+        env:
+          SQLX_OFFLINE: "false"
+        run: cargo test --workspace --all-targets
+
       - name: Security audit (Rust)
         # RUSTSEC-2023-0071: rsa timing side-channel, no fix available.
         # Only reachable via sqlx-mysql (compile-time macro dep); we use PostgreSQL only.

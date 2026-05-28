@@ -34,3 +34,7 @@ rand = "0.8"
 urlencoding = "2"
 redis = { workspace = true }
 
+[dev-dependencies]
+tower = { workspace = true }
+http-body-util = "0.1"
+
