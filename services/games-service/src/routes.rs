@@ -553,7 +553,14 @@ pub async fn create_schema(
         body.filter_attrs.as_ref(),
     )
     .await
-    .map_err(AppError::Database)?;
+    .map_err(|e| match e {
+        sqlx::Error::Database(db_err)
+            if db_err.constraint() == Some("item_type_schemas_section_unique") =>
+        {
+            AppError::Conflict("This section already has a schema. Only one schema per section is allowed.".into())
+        }
+        other => AppError::Database(other),
+    })?;
 
     Ok(Json(ApiResponse::success(schema)))
 }

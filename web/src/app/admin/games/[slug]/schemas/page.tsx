@@ -506,21 +506,30 @@ export default function AdminGameSchemasPage() {
               />
             </div>
 
-            {modal.mode === "create" && (
-              <div>
-                <label className="text-xs text-gray-400 block mb-1">Section (optional)</label>
-                <select
-                  value={sectionId}
-                  onChange={(e) => setSectionId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
-                >
-                  <option value="">— All sections —</option>
-                  {sections.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-            )}
+            {modal.mode === "create" && (() => {
+              const taken = new Set(schemas.map((s) => s.section_id).filter((id): id is string => !!id));
+              const available = sections.filter((s) => !taken.has(s.id));
+              return (
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Section (optional)</label>
+                  <select
+                    value={sectionId}
+                    onChange={(e) => setSectionId(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                  >
+                    <option value="">— All sections —</option>
+                    {available.map((s) => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                  {available.length < sections.length && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Sections already attached to a schema are hidden — one schema per section.
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
 
             <div>
               <div className="flex items-center justify-between mb-2">

@@ -25,7 +25,18 @@ interface SchemaField {
   source_field?: string;
   sources?: { source_section: string; source_field: string }[];
 }
-interface Schema { id: string; name: string; fields: SchemaField[] }
+interface Schema { id: string; name: string; section_id: string | null; fields: SchemaField[] }
+
+// Find the schema for a given section. Prefer a schema explicitly bound to
+// the section; fall back to any game-wide schema (section_id=null). Returns
+// the first match, or null.
+function schemaForSection(schemas: Schema[], sectionId: string): Schema | null {
+  return (
+    schemas.find((s) => s.section_id === sectionId) ??
+    schemas.find((s) => s.section_id === null) ??
+    null
+  );
+}
 interface GameAttribute {
   id: string;
   attr_type: string;
@@ -125,10 +136,12 @@ export default function AdminItemsPage() {
   }
 
   const openCreate = () => {
+    const firstSectionId = sections[0]?.id ?? "";
+    const matchedSchema = firstSectionId ? schemaForSection(schemas, firstSectionId) : null;
     setForm({
       slug: "",
-      section_id: sections[0]?.id ?? "",
-      type_schema_id: schemas[0]?.id ?? "",
+      section_id: firstSectionId,
+      type_schema_id: matchedSchema?.id ?? "",
       dataJson: JSON.stringify({ name: "", image_url: "" }, null, 2),
     });
     setSlugLocked(false);
@@ -532,34 +545,35 @@ export default function AdminItemsPage() {
                 placeholder="auto-generated from name"
               />
             </div>
-            {modal.mode === "create" && (
-              <>
-                <div>
-                  <label className="text-xs text-gray-400 block mb-1">Section</label>
-                  <select
-                    value={form.section_id}
-                    onChange={(e) => setForm((f) => ({ ...f, section_id: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
-                  >
-                    {sections.map((s) => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-400 block mb-1">Schema</label>
-                  <select
-                    value={form.type_schema_id}
-                    onChange={(e) => setForm((f) => ({ ...f, type_schema_id: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
-                  >
-                    {schemas.map((s) => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </>
-            )}
+            {modal.mode === "create" && (() => {
+              const matchedSchema = form.section_id ? schemaForSection(schemas, form.section_id) : null;
+              return (
+                <>
+                  <div>
+                    <label className="text-xs text-gray-400 block mb-1">Section</label>
+                    <select
+                      value={form.section_id}
+                      onChange={(e) => {
+                        const next = e.target.value;
+                        const sch = schemaForSection(schemas, next);
+                        setForm((f) => ({ ...f, section_id: next, type_schema_id: sch?.id ?? "" }));
+                      }}
+                      className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                    >
+                      {sections.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Schema:{" "}
+                      {matchedSchema
+                        ? <span className="text-gray-300">{matchedSchema.name}</span>
+                        : <span className="text-red-400">none — add a schema for this section first</span>}
+                    </p>
+                  </div>
+                </>
+              );
+            })()}
             {/* Schema-driven form fields */}
             {(() => {
               const schema = schemas.find((s) => s.id === form.type_schema_id);

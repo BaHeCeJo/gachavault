@@ -116,12 +116,12 @@ function RarityBadge({ value }: { value: unknown }) {
 function AttrBadge({ attr }: { attr: GameAttribute }) {
   if (attr.icon_url) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={attr.icon_url} alt={attr.name} title={attr.name} className="w-5 h-5 object-contain" />;
+    return <img src={attr.icon_url} alt={attr.name} title={attr.name} className="w-7 h-7 object-contain" />;
   }
   return (
     <span
       title={attr.name}
-      className="w-4 h-4 rounded-full inline-block border border-black/20"
+      className="w-5 h-5 rounded-full inline-block border border-black/20"
       style={{ backgroundColor: attr.color ?? "#888" }}
     />
   );
@@ -381,7 +381,7 @@ export default function GamePageClient({ initial }: ClientProps) {
                         }
                       />
                       {(elementAttr || badgeAttrs[0]) && (
-                        <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center backdrop-blur-sm">
+                        <div className="absolute top-1.5 right-1.5 w-9 h-9 rounded-full bg-black/50 flex items-center justify-center backdrop-blur-sm">
                           <AttrBadge attr={(elementAttr ?? badgeAttrs[0])!} />
                         </div>
                       )}

@@ -70,7 +70,7 @@ function lookupAttr(map: AttrMap, attrType: string, value: unknown): GameAttribu
 function AttrPill({ attr, value }: { attr: GameAttribute; value: string }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm"
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm"
       style={{
         backgroundColor: attr.color ? `${attr.color}22` : "rgba(255,255,255,0.08)",
         border: `1px solid ${attr.color ?? "#444"}44`,
@@ -79,7 +79,7 @@ function AttrPill({ attr, value }: { attr: GameAttribute; value: string }) {
     >
       {attr.icon_url && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={attr.icon_url} alt={attr.name} className="w-4 h-4 object-contain" />
+        <img src={attr.icon_url} alt={attr.name} className="w-7 h-7 object-contain" />
       )}
       {attr.name || value}
     </span>
