@@ -110,6 +110,15 @@ jobs:
 
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_ACTOR" --password-stdin
 
+            # Ensure every Docker-secret file referenced by docker-compose.prod.yml
+            # exists before `up -d`. Without this, adding a new secret to compose
+            # (e.g. grafana_admin_password) fails the entire recreate with
+            # 'bind source path does not exist' and leaves containers half-stopped.
+            # The script is idempotent — existing secret files are skipped, only
+            # missing ones are created (with auto-generated values where possible).
+            # No sudo: VPS_USER is root per DEPLOY.md, so this runs as root anyway.
+            bash scripts/migrate-env-to-secrets.sh /opt/gachavault/.env
+
             GHCR_OWNER=$GHCR_OWNER docker compose -f docker-compose.prod.yml pull
             GHCR_OWNER=$GHCR_OWNER docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
