@@ -3,6 +3,25 @@ import type { NextRequest } from "next/server";
 
 const PROTECTED_ROUTES = ["/admin", "/profile", "/collections", "/tierlists"];
 const PUBLIC_OVERRIDES = ["/tierlists/share"];
+const ADMIN_ROLES = new Set(["admin", "superadmin"]);
+
+// Decode the payload of a JWT without verifying its signature. Used purely
+// for UI routing (showing or hiding the /admin shell). Real authorization is
+// always re-enforced on the API by services that verify the signature, so a
+// forged role claim here only changes which page renders, never what the
+// attacker can actually do.
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
+  try {
+    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const padded = payload + "===".slice((payload.length + 3) % 4);
+    const json = atob(padded);
+    return JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -38,6 +57,7 @@ export function middleware(request: NextRequest) {
   const isProtected =
     !isPublicOverride &&
     PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
+  const isAdminRoute = pathname.startsWith("/admin");
 
   if (isProtected) {
     const token = request.cookies.get("access_token")?.value;
@@ -47,6 +67,17 @@ export function middleware(request: NextRequest) {
       const redirectResponse = NextResponse.redirect(loginUrl);
       redirectResponse.headers.set("Content-Security-Policy", csp);
       return redirectResponse;
+    }
+
+    if (isAdminRoute) {
+      const claims = decodeJwtPayload(token);
+      const role = typeof claims?.role === "string" ? claims.role : "user";
+      if (!ADMIN_ROLES.has(role)) {
+        const homeUrl = new URL("/", request.url);
+        const redirectResponse = NextResponse.redirect(homeUrl);
+        redirectResponse.headers.set("Content-Security-Policy", csp);
+        return redirectResponse;
+      }
     }
   }
 
