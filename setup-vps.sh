@@ -1,6 +1,10 @@
 #!/bin/bash
 # Run this ONCE on a fresh Hetzner (or any Ubuntu 24.04) VPS as root.
 # Usage: bash setup-vps.sh <your-github-username>
+#
+# SSH is intentionally left at defaults (root + password auth allowed) per
+# operator preference. fail2ban below provides the brute-force defense for
+# password-based SSH.
 set -euo pipefail
 
 GHCR_OWNER="${1:?Usage: bash setup-vps.sh <github-username>}"
@@ -35,6 +39,39 @@ ufw allow ssh
 ufw allow 80/tcp
 ufw allow 443/tcp
 ufw --force enable
+
+# ── 6. fail2ban — automatic ban for repeated SSH brute force ──────────────────
+apt-get install -y fail2ban
+cat > /etc/fail2ban/jail.local <<'EOF'
+[DEFAULT]
+bantime = 1h
+findtime = 10m
+maxretry = 5
+backend = systemd
+
+[sshd]
+enabled = true
+EOF
+systemctl enable --now fail2ban
+systemctl restart fail2ban
+
+# ── 7. Unattended security upgrades ───────────────────────────────────────────
+apt-get install -y unattended-upgrades apt-listchanges
+cat > /etc/apt/apt.conf.d/20auto-upgrades <<'EOF'
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+APT::Periodic::AutocleanInterval "7";
+EOF
+# Limit auto-upgrades to security updates to keep blast radius small
+cat > /etc/apt/apt.conf.d/50unattended-upgrades.local <<'EOF'
+Unattended-Upgrade::Allowed-Origins {
+    "${distro_id}:${distro_codename}-security";
+    "${distro_id}ESMApps:${distro_codename}-apps-security";
+    "${distro_id}ESM:${distro_codename}-infra-security";
+};
+Unattended-Upgrade::Automatic-Reboot "false";
+EOF
+systemctl enable --now unattended-upgrades
 
 echo ""
 echo "=== VPS setup complete ==="

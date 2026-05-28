@@ -92,6 +92,15 @@ INTERNAL_SECRET="$(get_env_value INTERNAL_SECRET || true)"
 MEILISEARCH_MASTER_KEY="$(get_env_value MEILISEARCH_MASTER_KEY || true)"
 GOOGLE_CLIENT_SECRET="$(get_env_value GOOGLE_CLIENT_SECRET || true)"
 SMTP_PASSWORD="$(get_env_value SMTP_PASSWORD || true)"
+GRAFANA_ADMIN_PASSWORD="$(get_env_value GRAFANA_ADMIN_PASSWORD || true)"
+
+# Auto-generate Grafana admin password on first run if it isn't in .env.
+# Lets the observability stack come up cleanly without manual setup.
+if [ -z "$GRAFANA_ADMIN_PASSWORD" ] && [ ! -f "$SECRETS_DIR/grafana_admin_password" ]; then
+  GRAFANA_ADMIN_PASSWORD="$(head -c 24 /dev/urandom | base64 | tr -d '/+=' | head -c 24)"
+  echo "generated grafana_admin_password (24 random chars) — save the printed value:"
+  echo "  $GRAFANA_ADMIN_PASSWORD"
+fi
 
 # Atomic secrets (one value per file)
 write_secret postgres_password      "$POSTGRES_PASSWORD"
@@ -101,6 +110,7 @@ write_secret internal_secret        "$INTERNAL_SECRET"
 write_secret meilisearch_master_key "$MEILISEARCH_MASTER_KEY"
 write_secret google_client_secret   "$GOOGLE_CLIENT_SECRET"
 write_secret smtp_password          "$SMTP_PASSWORD"
+write_secret grafana_admin_password "$GRAFANA_ADMIN_PASSWORD"
 
 # Compound secrets — built from parts so a password rotation only needs
 # to touch one file but the URL forms are still available to apps that
