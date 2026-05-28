@@ -118,11 +118,13 @@ pub async fn create_section(
 }
 
 pub async fn list_schemas(pool: &PgPool, game_id: Uuid) -> Result<Vec<DbSchema>, sqlx::Error> {
-    sqlx::query_as!(
-        DbSchema,
+    // Runtime form (not query_as!) so adding columns doesn't require
+    // regenerating the .sqlx offline cache — the Docker build container
+    // has no DB and SQLX_OFFLINE=true is baked into the image build.
+    sqlx::query_as::<_, DbSchema>(
         "SELECT * FROM games.item_type_schemas WHERE game_id = $1 ORDER BY name ASC",
-        game_id
     )
+    .bind(game_id)
     .fetch_all(pool)
     .await
 }
@@ -135,17 +137,16 @@ pub async fn create_schema(
     fields: &serde_json::Value,
     filter_attrs: Option<&serde_json::Value>,
 ) -> Result<DbSchema, sqlx::Error> {
-    sqlx::query_as!(
-        DbSchema,
+    sqlx::query_as::<_, DbSchema>(
         r#"INSERT INTO games.item_type_schemas (game_id, section_id, name, fields, filter_attrs)
            VALUES ($1, $2, $3, $4, $5)
            RETURNING *"#,
-        game_id,
-        section_id,
-        name,
-        fields,
-        filter_attrs,
     )
+    .bind(game_id)
+    .bind(section_id)
+    .bind(name)
+    .bind(fields)
+    .bind(filter_attrs)
     .fetch_one(pool)
     .await
 }
