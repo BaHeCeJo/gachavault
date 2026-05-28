@@ -33,3 +33,25 @@ export function lookupAttr(map: AttrMap, attrType: string, value: unknown): Game
 export function firstValue(v: unknown): unknown {
   return Array.isArray(v) ? v[0] : v;
 }
+
+// Minimal schema-field shape needed by item-rendering components. A schema
+// field's `key` is where the item stores its value (item.data[key]) while
+// `attribute_type` says which attribute pool the value is drawn from. The
+// two are commonly equal but don't have to be (HSR character schema names
+// its element field `element` but draws from attribute type `type`).
+export interface SchemaFieldLite {
+  key: string;
+  label: string;
+  type: string;
+  attribute_type?: string;
+}
+
+// Build a lookup from field key -> SchemaFieldLite for fast resolution at
+// render time. Only attribute-type fields are interesting for badges/filters.
+export function attributeFieldsByKey(fields: SchemaFieldLite[]): Record<string, SchemaFieldLite> {
+  const out: Record<string, SchemaFieldLite> = {};
+  for (const f of fields) {
+    if (f.type === "attribute" && f.attribute_type) out[f.key] = f;
+  }
+  return out;
+}

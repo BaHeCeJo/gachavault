@@ -9,7 +9,7 @@ import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/Ite
 import { SafeImage } from "@/components/SafeImage";
 import { cardGradient } from "@/lib/theme";
 import ItemCard, { type CardLayout } from "@/components/ItemCard";
-import { type AttrMap, type GameAttribute, buildAttrMap } from "@/lib/attrs";
+import { type AttrMap, type GameAttribute, type SchemaFieldLite, buildAttrMap } from "@/lib/attrs";
 import type { GamePageBundle } from "@/lib/seo";
 
 type Tab = "overview" | "sections" | "tierlists" | "collection";
@@ -59,6 +59,7 @@ interface TierList {
 interface Schema {
   id: string;
   section_id: string | null;
+  fields: SchemaFieldLite[];
   filter_attrs: string[] | null;
   card_layout: CardLayout | null;
 }
@@ -150,23 +151,22 @@ export default function GamePageClient({ initial }: ClientProps) {
     [items, activeFilters, search],
   );
 
-  // Build the filter-chip allowlist for the active section by merging the
-  // schemas attached to it (or to "all sections" via section_id=null).
-  // If any matching schema is on "auto" (filter_attrs=null), the section
-  // stays auto. Otherwise we union every schema's allowed attr_types.
-  const filterAllowlist = useMemo<string[] | null>(() => {
+  // The active section's schema drives both the filter chips and the per-
+  // item card layout. Prefer a schema explicitly bound to the section,
+  // falling back to a game-wide schema (section_id=null). One schema per
+  // section is enforced in the DB, so this is a single resolution.
+  const sectionSchema = useMemo<Schema | null>(() => {
     if (!activeSection) return null;
-    const relevant = schemas.filter(
-      (s) => s.section_id === activeSection || s.section_id === null,
+    return (
+      schemas.find((s) => s.section_id === activeSection) ??
+      schemas.find((s) => s.section_id === null) ??
+      null
     );
-    if (relevant.length === 0) return null;
-    if (relevant.some((s) => s.filter_attrs === null)) return null;
-    const union = new Set<string>();
-    for (const s of relevant) {
-      for (const a of s.filter_attrs ?? []) union.add(a);
-    }
-    return Array.from(union);
   }, [activeSection, schemas]);
+
+  // null = auto (the existing has-values heuristic decides). Otherwise an
+  // allowlist of schema field keys to render as filter chip groups.
+  const filterAllowlist: string[] | null = sectionSchema?.filter_attrs ?? null;
 
   function toggleFilter(attrType: string, key: string) {
     setActiveFilters(prev => {
@@ -276,7 +276,8 @@ export default function GamePageClient({ initial }: ClientProps) {
               items={items}
               activeFilters={activeFilters}
               search={search}
-              allowedAttrTypes={filterAllowlist}
+              schemaFields={sectionSchema?.fields}
+              allowedKeys={filterAllowlist}
               onFilterToggle={toggleFilter}
               onClearAll={() => { setActiveFilters({}); setSearch(""); }}
               onSearchChange={setSearch}
@@ -289,15 +290,19 @@ export default function GamePageClient({ initial }: ClientProps) {
             <p className="text-gray-400 mb-12">No items match the current filters.</p>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-12">
-              {visibleItems.map((item) => (
-                <ItemCard
-                  key={item.id}
-                  item={item}
-                  attrMap={attrMap}
-                  layout={schemaForItem(schemas, item)?.card_layout ?? null}
-                  fallbackGameSlug={game.slug}
-                />
-              ))}
+              {visibleItems.map((item) => {
+                const sch = schemaForItem(schemas, item);
+                return (
+                  <ItemCard
+                    key={item.id}
+                    item={item}
+                    attrMap={attrMap}
+                    layout={sch?.card_layout ?? null}
+                    schemaFields={sch?.fields}
+                    fallbackGameSlug={game.slug}
+                  />
+                );
+              })}
             </div>
           )}
         </>
@@ -380,15 +385,19 @@ function OverviewTab({
             </button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {previewItems.map((item) => (
-              <ItemCard
-                key={item.id}
-                item={item}
-                attrMap={attrMap}
-                layout={schemaForItem(schemas, item)?.card_layout ?? null}
-                fallbackGameSlug={gameSlug}
-              />
-            ))}
+            {previewItems.map((item) => {
+              const sch = schemaForItem(schemas, item);
+              return (
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  attrMap={attrMap}
+                  layout={sch?.card_layout ?? null}
+                  schemaFields={sch?.fields}
+                  fallbackGameSlug={gameSlug}
+                />
+              );
+            })}
           </div>
         </section>
       )}

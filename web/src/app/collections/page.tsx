@@ -6,7 +6,7 @@ import Link from "next/link";
 import { collectionsApi, gamesApi, itemsApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ItemCard, { type CardLayout } from "@/components/ItemCard";
-import { buildAttrMap, type GameAttribute } from "@/lib/attrs";
+import { buildAttrMap, type GameAttribute, type SchemaFieldLite } from "@/lib/attrs";
 
 interface Game { id: string; slug: string; name: string }
 interface CollectionEntry {
@@ -31,6 +31,7 @@ interface Section { id: string; slug: string; name: string }
 interface Schema {
   id: string;
   section_id: string | null;
+  fields: SchemaFieldLite[];
   card_layout: CardLayout | null;
 }
 
@@ -224,6 +225,7 @@ export default function CollectionsPage() {
                     item={item}
                     attrMap={attrMap}
                     layout={schema?.card_layout ?? null}
+                    schemaFields={schema?.fields}
                     linkMode="image"
                     footer={
                       <>

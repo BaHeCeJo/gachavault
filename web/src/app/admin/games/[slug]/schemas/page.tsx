@@ -882,9 +882,11 @@ function AttributeTypeInput({
   );
 }
 
-// Lets the admin pick which attribute-type fields are shown as filter chips on
-// the section page. `null` = auto (every attr_type with values shows up),
-// `[]` = no filters, `["path","rarity"]` = only those.
+// Lets the admin pick which attribute-type fields are shown as filter chips
+// on the section page. Stored as schema *field keys* (not attribute_types)
+// so a field like {key: "element", attribute_type: "type"} works correctly
+// — the renderer needs the key to read item.data[key]. `null` = auto,
+// `[]` = no filters, `["element","path"]` = only those.
 function FilterAttrsEditor({
   fields,
   value,
@@ -894,34 +896,31 @@ function FilterAttrsEditor({
   value: string[] | null;
   onChange: (next: string[] | null) => void;
 }) {
-  // Candidates = distinct attribute_types referenced by attribute-type fields
-  // in this schema. Filter chips only make sense for attribute fields, since
-  // ItemFilterBar groups by attr_type.
   const candidates = useMemo(() => {
-    const seen = new Map<string, string>(); // attr_type -> label
+    const out: { key: string; label: string; attr_type: string }[] = [];
     for (const f of fields) {
       if (f.type !== "attribute") continue;
       const at = f.attribute_type?.trim();
-      if (!at) continue;
-      if (!seen.has(at)) seen.set(at, f.label || at);
+      if (!at || !f.key) continue;
+      out.push({ key: f.key, label: f.label || f.key, attr_type: at });
     }
-    return Array.from(seen.entries()).map(([attr_type, label]) => ({ attr_type, label }));
+    return out;
   }, [fields]);
 
   const isAuto = value === null;
   const selected = new Set(value ?? []);
 
-  function toggle(attrType: string) {
+  function toggle(fieldKey: string) {
     if (isAuto) {
       // First click while auto = switch to explicit allowlist starting with
       // every candidate, then toggle off the one the user clicked.
-      const next = candidates.map((c) => c.attr_type).filter((t) => t !== attrType);
+      const next = candidates.map((c) => c.key).filter((k) => k !== fieldKey);
       onChange(next);
       return;
     }
     const next = new Set(selected);
-    if (next.has(attrType)) next.delete(attrType);
-    else next.add(attrType);
+    if (next.has(fieldKey)) next.delete(fieldKey);
+    else next.add(fieldKey);
     onChange(Array.from(next));
   }
 
@@ -949,15 +948,15 @@ function FilterAttrsEditor({
       ) : (
         <div className="space-y-1.5 px-3 py-2.5 rounded-lg border border-gray-800 bg-gray-950/40">
           {candidates.map((c) => (
-            <label key={c.attr_type} className="flex items-center gap-2 cursor-pointer text-sm">
+            <label key={c.key} className="flex items-center gap-2 cursor-pointer text-sm">
               <input
                 type="checkbox"
-                checked={selected.has(c.attr_type)}
-                onChange={() => toggle(c.attr_type)}
+                checked={selected.has(c.key)}
+                onChange={() => toggle(c.key)}
                 className="accent-amber-500"
               />
               <span>{c.label}</span>
-              <span className="text-xs text-gray-600 font-mono">({c.attr_type})</span>
+              <span className="text-xs text-gray-600 font-mono">({c.key})</span>
             </label>
           ))}
           {selected.size === 0 && (
@@ -973,7 +972,9 @@ function FilterAttrsEditor({
 
 // Per-schema card display config: dropdowns for the border-color source,
 // top-left badge, top-right badge, and a watermark + opacity, with a live
-// preview rendering the same <ItemCard> the section page uses.
+// preview rendering the same <ItemCard> the section page uses. Slot values
+// are schema *field keys* so the renderer can read item.data[field.key]
+// directly and use field.attribute_type to find the matching pill.
 function CardLayoutEditor({
   fields,
   attrs,
@@ -985,36 +986,38 @@ function CardLayoutEditor({
   value: CardLayout | null;
   onChange: (next: CardLayout | null) => void;
 }) {
-  // Candidates: same source as the filter editor — attribute-type fields
-  // defined on this schema. Storing by attr_type keeps the lookup consistent
-  // with how items store their values.
   const candidates = useMemo(() => {
-    const seen = new Map<string, string>();
+    const out: { key: string; label: string; attr_type: string }[] = [];
     for (const f of fields) {
       if (f.type !== "attribute") continue;
       const at = f.attribute_type?.trim();
-      if (!at) continue;
-      if (!seen.has(at)) seen.set(at, f.label || at);
+      if (!at || !f.key) continue;
+      out.push({ key: f.key, label: f.label || f.key, attr_type: at });
     }
-    return Array.from(seen.entries()).map(([attr_type, label]) => ({ attr_type, label }));
+    return out;
   }, [fields]);
 
   const isAuto = value === null;
   const layout = value ?? {};
 
-  // Sample item for the preview: pick the first attribute of each candidate
-  // type so the preview actually renders real icons/colors from the user's
-  // attribute config rather than placeholders.
+  // Sample item for the preview: pick the first attribute of each
+  // candidate's attribute_type, but key the value by FIELD KEY (matching
+  // how real items store data). This way the preview is a faithful render
+  // of what the public page will show.
   const previewItem = useMemo(() => {
     const data: Record<string, unknown> = { name: "Sample character", rarity: "SSR" };
     for (const c of candidates) {
       const first = attrs.find((a) => a.attr_type === c.attr_type);
-      if (first) data[c.attr_type] = first.key;
+      if (first) data[c.key] = first.key;
     }
     return { id: "preview", slug: "preview", data };
   }, [candidates, attrs]);
 
   const attrMap = useMemo(() => buildAttrMap(attrs), [attrs]);
+  const previewFields = useMemo(
+    () => candidates.map((c) => ({ key: c.key, label: c.label, type: "attribute", attribute_type: c.attr_type })),
+    [candidates],
+  );
 
   function patch(p: Partial<CardLayout>) {
     onChange({ ...(value ?? {}), ...p });
@@ -1072,7 +1075,13 @@ function CardLayoutEditor({
           <div>
             <p className="text-xs text-gray-500 mb-2">Preview</p>
             <div className="max-w-[180px]">
-              <ItemCard item={previewItem} attrMap={attrMap} layout={layout} noLink />
+              <ItemCard
+                item={previewItem}
+                attrMap={attrMap}
+                layout={layout}
+                schemaFields={previewFields}
+                noLink
+              />
             </div>
           </div>
         </div>
@@ -1086,7 +1095,7 @@ function Slot({
 }: {
   label: string;
   value: string;
-  candidates: { attr_type: string; label: string }[];
+  candidates: { key: string; label: string; attr_type: string }[];
   onChange: (v: string) => void;
 }) {
   return (
@@ -1099,8 +1108,8 @@ function Slot({
       >
         <option value="">— none —</option>
         {candidates.map((c) => (
-          <option key={c.attr_type} value={c.attr_type}>
-            {c.label} ({c.attr_type})
+          <option key={c.key} value={c.key}>
+            {c.label} ({c.key})
           </option>
         ))}
       </select>

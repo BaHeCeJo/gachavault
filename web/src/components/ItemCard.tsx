@@ -1,11 +1,14 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
 import { cardGradient } from "@/lib/theme";
 import {
   type AttrMap,
   type GameAttribute,
+  type SchemaFieldLite,
+  attributeFieldsByKey,
   firstValue,
   lookupAttr,
 } from "@/lib/attrs";
@@ -49,6 +52,11 @@ interface Props {
   item: ItemLike;
   attrMap: AttrMap;
   layout?: CardLayout | null;
+  // Schema fields the item's data adheres to. Each *_attr slot in `layout`
+  // is a field key from this list; the field tells us which attribute pool
+  // to draw the pill from (field.attribute_type) AND where the value lives
+  // on the item (item.data[field.key]).
+  schemaFields?: SchemaFieldLite[];
   // Fallback game slug used to build the item link when the item's own
   // section_slug isn't present (e.g. server bundles that don't join it).
   fallbackGameSlug?: string;
@@ -66,9 +74,23 @@ interface Props {
   footer?: React.ReactNode;
 }
 
-function badgeAttr(map: AttrMap, item: ItemLike, attrType: string | null | undefined): GameAttribute | null {
-  if (!attrType) return null;
-  return lookupAttr(map, attrType, firstValue(item.data[attrType]));
+// Resolve a slot's attribute pill. `slot` is a field key from the schema —
+// we look up the field to learn (a) where the item stores its value
+// (item.data[field.key]) and (b) which attribute pool to render from
+// (field.attribute_type). If no schema is provided, fall back to treating
+// the slot as both the data key and the attribute_type (legacy convention
+// where field.key === field.attribute_type).
+function slotAttr(
+  map: AttrMap,
+  item: ItemLike,
+  slot: string | null | undefined,
+  fieldsByKey: Record<string, SchemaFieldLite>,
+): GameAttribute | null {
+  if (!slot) return null;
+  const field = fieldsByKey[slot];
+  const dataKey = field?.key ?? slot;
+  const attrType = field?.attribute_type ?? slot;
+  return lookupAttr(map, attrType, firstValue(item.data[dataKey]));
 }
 
 function RarityBadge({ value }: { value: unknown }) {
@@ -109,6 +131,7 @@ export default function ItemCard({
   item,
   attrMap,
   layout,
+  schemaFields,
   fallbackGameSlug,
   href,
   noLink,
@@ -120,17 +143,22 @@ export default function ItemCard({
   const rarity = item.data?.rarity;
   const rarityStr = typeof rarity === "number" ? undefined : String(rarity ?? "");
 
+  const fieldsByKey = useMemo(
+    () => (schemaFields ? attributeFieldsByKey(schemaFields) : {}),
+    [schemaFields],
+  );
+
   // Resolve each slot. When the schema's card_layout is set, the configured
-  // attr_type wins; otherwise we fall back to legacy defaults: element top-
+  // field key wins; otherwise we fall back to legacy defaults: element top-
   // right, rarity-derived border classes. Border color from a configured
   // attribute always wins over the legacy RARITY_BORDER class.
   const isConfigured = !!layout;
-  const borderAttr = badgeAttr(attrMap, item, layout?.border_color_attr);
-  const topLeftAttr = badgeAttr(attrMap, item, layout?.badge_top_left);
+  const borderAttr = slotAttr(attrMap, item, layout?.border_color_attr, fieldsByKey);
+  const topLeftAttr = slotAttr(attrMap, item, layout?.badge_top_left, fieldsByKey);
   const topRightAttr = isConfigured
-    ? badgeAttr(attrMap, item, layout?.badge_top_right)
-    : (badgeAttr(attrMap, item, "element") ?? badgeAttr(attrMap, item, "attribute"));
-  const watermarkAttr = badgeAttr(attrMap, item, layout?.watermark_attr);
+    ? slotAttr(attrMap, item, layout?.badge_top_right, fieldsByKey)
+    : (slotAttr(attrMap, item, "element", fieldsByKey) ?? slotAttr(attrMap, item, "attribute", fieldsByKey));
+  const watermarkAttr = slotAttr(attrMap, item, layout?.watermark_attr, fieldsByKey);
   const watermarkOpacity = layout?.watermark_opacity ?? 0.3;
 
   const legacyBorderClass =

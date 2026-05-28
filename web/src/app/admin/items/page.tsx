@@ -460,6 +460,7 @@ export default function AdminItemsPage() {
                 item={item}
                 attrMap={attrMap}
                 layout={schema?.card_layout ?? null}
+                schemaFields={schema?.fields}
                 linkMode="image"
                 footer={
                   <div className="flex gap-1 mt-1.5">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import type { SchemaFieldLite } from "@/lib/attrs";
 
 export interface GameAttribute {
   id: string;
@@ -12,7 +13,10 @@ export interface GameAttribute {
   sort_order?: number;
 }
 
-// filters: { [attr_type]: Set<key> }
+// Active filter selections. The outer key is a *group id* — when a schema is
+// provided, that's the schema field's key (so item.data[fieldKey] is what
+// gets matched). With no schema, it falls back to the legacy attr_type
+// convention. The inner Set holds attribute keys the user has activated.
 export type ActiveFilters = Record<string, Set<string>>;
 
 interface Props {
@@ -20,10 +24,15 @@ interface Props {
   items: { data: Record<string, unknown> }[];
   activeFilters: ActiveFilters;
   search: string;
-  // Allowlist of attr_types to show as filter chip groups. `null` (or
-  // undefined) means "auto" — every attr_type with values shows up.
-  allowedAttrTypes?: string[] | null;
-  onFilterToggle: (attrType: string, key: string) => void;
+  // When provided, filter groups are driven by the schema's attribute-type
+  // fields — group id = field.key (the JSON key on item.data), group label
+  // = field.label, pills come from attrMap[field.attribute_type]. When
+  // absent, the older attr_type-as-everything fallback is used.
+  schemaFields?: SchemaFieldLite[];
+  // Allowlist of group ids to render. Field keys when schemaFields is set,
+  // attr_types otherwise. null/undefined = auto.
+  allowedKeys?: string[] | null;
+  onFilterToggle: (groupId: string, key: string) => void;
   onClearAll: () => void;
   onSearchChange: (v: string) => void;
 }
@@ -45,18 +54,17 @@ export function filterItems<T extends { data: Record<string, unknown> }>(
   activeFilters: ActiveFilters,
   search: string,
 ): T[] {
-  const activeTypes = Object.entries(activeFilters).filter(([, s]) => s.size > 0);
+  const activeGroups = Object.entries(activeFilters).filter(([, s]) => s.size > 0);
   return items.filter((item) => {
     // Name search
     if (search.trim()) {
       const name = (item.data?.name as string ?? "").toLowerCase();
       if (!name.includes(search.toLowerCase().trim())) return false;
     }
-    // Attribute filters — each active type must match (AND across types, OR within type).
-    // Items may store the value as a single string or as an array (multi attribute);
-    // a match in either case means "this item has one of the selected values".
-    for (const [attrType, keys] of activeTypes) {
-      const raw = item.data[attrType];
+    // AND across groups, OR within group. Group id is the JSON key on
+    // item.data (either field.key when schema-driven, or attr_type legacy).
+    for (const [groupId, keys] of activeGroups) {
+      const raw = item.data[groupId];
       const itemVals = Array.isArray(raw)
         ? (raw as unknown[]).map((v) => String(v).toLowerCase())
         : raw != null
@@ -74,54 +82,72 @@ export default function ItemFilterBar({
   items,
   activeFilters,
   search,
-  allowedAttrTypes,
+  schemaFields,
+  allowedKeys,
   onFilterToggle,
   onClearAll,
   onSearchChange,
 }: Props) {
-  // Per attr_type, the set of attribute keys that ≥1 item actually has a
-  // value for. Used to (a) decide which groups appear and (b) hide pills
-  // for keys nobody has — e.g. don't show the "Voracity path" chip when no
-  // character in the section has that path.
-  const usedKeysByType = useMemo(() => {
-    const attrTypes = Array.from(new Set(attributes.map(a => a.attr_type)));
+  // Group definition: id (= JSON key on item.data), label (shown left of
+  // pills), and attr_type (which pool to pull pills from). With a schema we
+  // walk its attribute-type fields; without one we fall back to the legacy
+  // convention where the attr_type itself doubles as the JSON key.
+  const groupDefs = useMemo(() => {
+    if (schemaFields && schemaFields.length > 0) {
+      return schemaFields
+        .filter((f) => f.type === "attribute" && f.attribute_type)
+        .map((f) => ({ id: f.key, label: f.label || f.key, attrType: f.attribute_type as string }));
+    }
+    const seen = new Set<string>();
+    const out: { id: string; label: string; attrType: string }[] = [];
+    for (const a of attributes) {
+      if (seen.has(a.attr_type)) continue;
+      seen.add(a.attr_type);
+      out.push({ id: a.attr_type, label: a.attr_type, attrType: a.attr_type });
+    }
+    return out;
+  }, [schemaFields, attributes]);
+
+  // Per group id, the set of attribute keys that ≥1 item actually has a
+  // value for. Drives (a) which groups appear and (b) which pills appear
+  // inside each — no "Voracity" path chip if no character has that path.
+  const usedKeysByGroup = useMemo(() => {
     const knownKeys: Record<string, Set<string>> = {};
     for (const a of attributes) {
       (knownKeys[a.attr_type] ??= new Set()).add(a.key.toLowerCase());
     }
-    const usedKeys: Record<string, Set<string>> = {};
+    const out: Record<string, Set<string>> = {};
     for (const item of items) {
-      for (const attrType of attrTypes) {
-        const raw = item.data[attrType];
+      for (const g of groupDefs) {
+        const raw = item.data[g.id];
         const vals = Array.isArray(raw)
           ? (raw as unknown[]).map((v) => String(v).toLowerCase())
           : raw != null
             ? [String(raw).toLowerCase()]
             : [];
         for (const val of vals) {
-          if (val && knownKeys[attrType]?.has(val)) {
-            (usedKeys[attrType] ??= new Set()).add(val);
+          if (val && knownKeys[g.attrType]?.has(val)) {
+            (out[g.id] ??= new Set()).add(val);
           }
         }
       }
     }
-    return usedKeys;
-  }, [attributes, items]);
+    return out;
+  }, [groupDefs, attributes, items]);
 
   const visibleGroups = useMemo(() => {
-    const allowSet = allowedAttrTypes ? new Set(allowedAttrTypes) : null;
-    const usedTypes = Object.entries(usedKeysByType)
-      .filter(([attrType, keys]) => keys.size > 0 && (!allowSet || allowSet.has(attrType)))
-      .map(([attrType]) => attrType);
-    return usedTypes.sort((a, b) => {
-      const ai = TYPE_ORDER.indexOf(a);
-      const bi = TYPE_ORDER.indexOf(b);
-      if (ai !== -1 && bi !== -1) return ai - bi;
-      if (ai !== -1) return -1;
-      if (bi !== -1) return 1;
-      return a.localeCompare(b);
-    });
-  }, [usedKeysByType, allowedAttrTypes]);
+    const allowSet = allowedKeys ? new Set(allowedKeys) : null;
+    return groupDefs
+      .filter((g) => (usedKeysByGroup[g.id]?.size ?? 0) > 0 && (!allowSet || allowSet.has(g.id)))
+      .sort((a, b) => {
+        const ai = TYPE_ORDER.indexOf(a.attrType);
+        const bi = TYPE_ORDER.indexOf(b.attrType);
+        if (ai !== -1 && bi !== -1) return ai - bi;
+        if (ai !== -1) return -1;
+        if (bi !== -1) return 1;
+        return a.label.localeCompare(b.label);
+      });
+  }, [groupDefs, usedKeysByGroup, allowedKeys]);
 
   const hasActive = Object.values(activeFilters).some(s => s.size > 0) || search.trim().length > 0;
 
@@ -149,16 +175,16 @@ export default function ItemFilterBar({
       </div>
 
       {/* Filter groups */}
-      {visibleGroups.map(attrType => {
-        const used = usedKeysByType[attrType];
+      {visibleGroups.map(group => {
+        const used = usedKeysByGroup[group.id];
         const opts = attributes
-          .filter(a => a.attr_type === attrType && used?.has(a.key.toLowerCase()))
+          .filter(a => a.attr_type === group.attrType && used?.has(a.key.toLowerCase()))
           .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name));
-        const active = activeFilters[attrType] ?? new Set();
+        const active = activeFilters[group.id] ?? new Set();
         return (
-          <div key={attrType} className="flex items-start gap-3">
+          <div key={group.id} className="flex items-start gap-3">
             <span className="text-xs text-gray-500 w-20 shrink-0 pt-2 capitalize">
-              {typeLabel(attrType)}
+              {typeLabel(group.label)}
             </span>
             {/* Mobile: horizontal scroll strip — desktop: wrapped rows */}
             <div className="flex gap-1.5 overflow-x-auto sm:flex-wrap min-w-0 -mx-1 px-1 scrollbar-thin">
@@ -167,7 +193,7 @@ export default function ItemFilterBar({
                 return (
                   <button
                     key={attr.key}
-                    onClick={() => onFilterToggle(attrType, attr.key.toLowerCase())}
+                    onClick={() => onFilterToggle(group.id, attr.key.toLowerCase())}
                     title={attr.name}
                     className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm border transition-all shrink-0 ${
                       isActive
