@@ -1,10 +1,11 @@
 use axum::{
     body::Body,
-    extract::State,
+    extract::{Request, State},
     http::{
         header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
         HeaderValue, Method, StatusCode,
     },
+    middleware::{self, Next},
     response::Response,
     routing::any,
     Router,
@@ -16,6 +17,7 @@ use shared_auth::Claims;
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::cors::CorsLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use uuid::Uuid;
 
 #[derive(Clone)]
 struct AppState {
@@ -30,6 +32,7 @@ struct AppState {
     users_url: String,
     jwt_secret: String,
     redis_client: Option<Arc<redis::Client>>,
+    allowed_origins: Arc<Vec<String>>,
 }
 
 #[tokio::main]
@@ -50,6 +53,18 @@ async fn main() {
         .and_then(|url| redis::Client::open(url).ok())
         .map(Arc::new);
 
+    let allowed_origin_strings: Vec<String> = std::env::var("ALLOWED_ORIGINS")
+        .unwrap_or_else(|_| "http://localhost:3009".into())
+        .split(',')
+        .map(|s| s.trim().trim_end_matches('/').to_string())
+        .filter(|s| !s.is_empty())
+        .collect();
+
+    let allowed_origins: Vec<HeaderValue> = allowed_origin_strings
+        .iter()
+        .filter_map(|s| s.parse().ok())
+        .collect();
+
     let state = AppState {
         http_client: Arc::new(Client::new()),
         users_url: auth_url.clone(),
@@ -64,13 +79,8 @@ async fn main() {
         search_url: std::env::var("SEARCH_SERVICE_URL").expect("SEARCH_SERVICE_URL required"),
         jwt_secret,
         redis_client,
+        allowed_origins: Arc::new(allowed_origin_strings),
     };
-
-    let allowed_origins: Vec<HeaderValue> = std::env::var("ALLOWED_ORIGINS")
-        .unwrap_or_else(|_| "http://localhost:3009".into())
-        .split(',')
-        .filter_map(|s| s.trim().parse().ok())
-        .collect();
 
     let cors = CorsLayer::new()
         .allow_origin(allowed_origins)
@@ -105,6 +115,11 @@ async fn main() {
         .route("/api/v1/media/*path", any(proxy_media))
         .route("/api/v1/search/*path", any(proxy_search))
         .route("/api/v1/users/*path", any(proxy_users))
+        .layer(middleware::from_fn_with_state(
+            state.clone(),
+            csrf_origin_check,
+        ))
+        .layer(middleware::from_fn(request_id_middleware))
         .with_state(state)
         .layer(cors);
 
@@ -118,6 +133,100 @@ async fn main() {
 
 async fn health_check() -> axum::Json<serde_json::Value> {
     axum::Json(json!({"status": "ok", "service": "api-gateway"}))
+}
+
+/// CSRF defense-in-depth on top of SameSite cookies.
+/// State-changing methods must carry an `Origin` (or `Referer` fallback) that
+/// matches the configured ALLOWED_ORIGINS. Same-origin browser requests always
+/// send one of these; cross-origin forgery attempts from `evil.com` either
+/// omit them (rejected) or carry their own origin (rejected).
+async fn csrf_origin_check(
+    State(state): State<AppState>,
+    req: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    let method = req.method();
+    let is_state_changing = matches!(
+        *method,
+        Method::POST | Method::PUT | Method::PATCH | Method::DELETE
+    );
+    if !is_state_changing {
+        return Ok(next.run(req).await);
+    }
+
+    // Exempt the OAuth callback — it's actually a GET, but defensively scoped
+    // here in case its method ever changes; without exemption a state-changing
+    // callback from accounts.google.com would always 403.
+    let path = req.uri().path();
+    if path.starts_with("/api/v1/auth/google/callback") {
+        return Ok(next.run(req).await);
+    }
+
+    let origin = req
+        .headers()
+        .get("origin")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.trim_end_matches('/').to_string());
+
+    let referer = req
+        .headers()
+        .get("referer")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.to_string());
+
+    let allowed = &state.allowed_origins;
+
+    let origin_ok = origin
+        .as_deref()
+        .map(|o| allowed.iter().any(|a| a == o))
+        .unwrap_or(false);
+
+    let referer_ok = referer
+        .as_deref()
+        .map(|r| {
+            allowed
+                .iter()
+                .any(|a| r.starts_with(&format!("{}/", a)) || r == a)
+        })
+        .unwrap_or(false);
+
+    if origin_ok || referer_ok {
+        return Ok(next.run(req).await);
+    }
+
+    tracing::warn!(
+        "csrf: rejecting {} {} (origin={:?}, referer={:?})",
+        method,
+        path,
+        origin,
+        referer,
+    );
+    Err(StatusCode::FORBIDDEN)
+}
+
+/// Propagate or generate an X-Request-ID for every incoming request and stamp
+/// it on the response so logs and downstream services can correlate.
+async fn request_id_middleware(mut req: Request, next: Next) -> Response {
+    let header_name = axum::http::HeaderName::from_static("x-request-id");
+    let incoming = req
+        .headers()
+        .get(&header_name)
+        .and_then(|v| v.to_str().ok())
+        .filter(|s| !s.is_empty() && s.len() <= 128)
+        .map(|s| s.to_string());
+
+    let request_id = incoming.unwrap_or_else(|| Uuid::new_v4().to_string());
+
+    if let Ok(value) = HeaderValue::from_str(&request_id) {
+        req.headers_mut().insert(header_name.clone(), value.clone());
+        let span = tracing::info_span!("request", request_id = %request_id);
+        let _enter = span.enter();
+        let mut response = next.run(req).await;
+        response.headers_mut().insert(header_name, value);
+        response
+    } else {
+        next.run(req).await
+    }
 }
 
 async fn proxy_auth(
