@@ -1,9 +1,17 @@
 -- Cross-schema foreign keys for auth.user_roles → games schema.
--- Idempotent via information_schema lookup. Runs only after games-service has
--- created the games schema (enforced by docker-compose depends_on).
+--
+-- Each FK is gated by an EXISTS check on the referent table. This is a no-op
+-- when the referent schema isn't present (e.g. sqlx::testing per-service test
+-- DBs that only apply auth-service's own migrations). Real deploys apply all
+-- migrations against a shared DB — either via CI's psql global-version-sort
+-- step or via runtime sqlx::migrate!() with healthcheck-gated service order
+-- (postgres → games → auth → ...) so the referent always exists in prod.
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'games' AND table_name = 'games'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'auth'
           AND table_name = 'user_roles'
@@ -16,7 +24,10 @@ DO $$ BEGIN
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'games' AND table_name = 'sections'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'auth'
           AND table_name = 'user_roles'

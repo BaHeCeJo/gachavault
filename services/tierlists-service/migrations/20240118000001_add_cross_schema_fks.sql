@@ -1,8 +1,14 @@
 -- Cross-schema foreign keys for tierlists → auth, games, items.
--- Runs after auth, games, and items services finish their migrations.
+--
+-- Each FK is gated by an EXISTS check on the referent table. No-op in tests
+-- where only tierlists-service migrations are applied; real deploys apply
+-- all migrations against a shared DB so referents always exist.
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'auth' AND table_name = 'users'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'tierlists'
           AND table_name = 'tier_lists'
@@ -15,7 +21,10 @@ DO $$ BEGIN
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'games' AND table_name = 'games'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'tierlists'
           AND table_name = 'tier_lists'
@@ -30,7 +39,10 @@ END $$;
 -- section_id is nullable (tier lists span a whole game or one section).
 -- SET NULL on section delete preserves the list under the parent game.
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'games' AND table_name = 'sections'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'tierlists'
           AND table_name = 'tier_lists'
@@ -43,7 +55,10 @@ DO $$ BEGIN
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'items' AND table_name = 'items'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'tierlists'
           AND table_name = 'tier_list_entries'
@@ -56,7 +71,10 @@ DO $$ BEGIN
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'auth' AND table_name = 'users'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'tierlists'
           AND table_name = 'upvotes'
@@ -69,7 +87,10 @@ DO $$ BEGIN
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'auth' AND table_name = 'users'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'tierlists'
           AND table_name = 'comments'

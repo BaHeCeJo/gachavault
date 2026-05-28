@@ -1,8 +1,14 @@
 -- Cross-schema foreign keys for items → games and items → auth.users.
--- Idempotent. Runs after games-service and auth-service migrations finish.
+--
+-- Each FK is gated by an EXISTS check on the referent table. No-op in tests
+-- where only items-service migrations are applied; real deploys apply all
+-- migrations against a shared DB so referents always exist.
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'games' AND table_name = 'games'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'items'
           AND table_name = 'items'
@@ -15,7 +21,10 @@ DO $$ BEGIN
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'games' AND table_name = 'sections'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'items'
           AND table_name = 'items'
@@ -28,7 +37,10 @@ DO $$ BEGIN
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'games' AND table_name = 'item_type_schemas'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'items'
           AND table_name = 'items'
@@ -45,7 +57,10 @@ END $$;
 -- proceed, which is the correct policy for a wiki where contributions outlive
 -- contributors.
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'auth' AND table_name = 'users'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'items'
           AND table_name = 'items'
@@ -58,7 +73,10 @@ DO $$ BEGIN
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'auth' AND table_name = 'users'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'items'
           AND table_name = 'item_builds'

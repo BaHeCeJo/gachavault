@@ -1,10 +1,16 @@
 -- Cross-schema foreign keys for collections.entries → auth, items, games.
 -- CASCADE everywhere — when a user, item, or game is removed the collection
 -- entry has no meaning and should disappear with it.
--- Runs after auth, games, and items services finish their migrations.
+--
+-- Each FK is gated by an EXISTS check on the referent table. No-op in tests
+-- where only collections-service migrations are applied; real deploys apply
+-- all migrations against a shared DB so referents always exist.
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'auth' AND table_name = 'users'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'collections'
           AND table_name = 'entries'
@@ -17,7 +23,10 @@ DO $$ BEGIN
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'items' AND table_name = 'items'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'collections'
           AND table_name = 'entries'
@@ -30,7 +39,10 @@ DO $$ BEGIN
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'games' AND table_name = 'games'
+    ) AND NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_schema = 'collections'
           AND table_name = 'entries'
