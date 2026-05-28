@@ -1,6 +1,11 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
+const API_BASE =
+  process.env.INTERNAL_API_URL ??
+  process.env.NEXT_PUBLIC_API_URL ??
+  "http://localhost:3000";
+
 // On-demand ISR invalidation. Called from admin pages after every successful
 // save/delete so the public pages (which fetch with `revalidate: 300` in
 // lib/seo.ts) don't have to wait out the 5-minute window.
@@ -11,10 +16,40 @@ import { NextResponse } from "next/server";
 // the home page. paths invalidates each explicitly. Both are optional and
 // can be combined.
 //
-// Auth: not gated. The endpoint can only force-refresh already-public
-// content — nothing destructive and nothing private. Rate-limiting can be
-// added at nginx if abuse ever shows up.
+// Auth: caller must be authenticated as admin or superadmin. We validate by
+// forwarding the request cookies to auth-service /auth/me and inspecting
+// the role. This keeps the secret on the backend (Next.js never needs
+// JWT_SECRET) and blocks anonymous floods, which would otherwise trigger
+// repeated ISR regeneration.
 export async function POST(req: Request) {
+  const cookie = req.headers.get("cookie");
+  if (!cookie) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
+  let meRes: Response;
+  try {
+    meRes = await fetch(`${API_BASE}/api/v1/auth/me`, {
+      headers: { cookie, accept: "application/json" },
+      // Don't cache the auth check — we always want a live answer.
+      cache: "no-store",
+    });
+  } catch {
+    return NextResponse.json({ ok: false, error: "auth check failed" }, { status: 502 });
+  }
+  if (!meRes.ok) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
+  let meJson: { data?: { role?: string } } = {};
+  try {
+    meJson = await meRes.json();
+  } catch {
+    return NextResponse.json({ ok: false, error: "auth parse failed" }, { status: 502 });
+  }
+  const role = meJson.data?.role;
+  if (role !== "admin" && role !== "superadmin") {
+    return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
+  }
+
   let body: unknown;
   try {
     body = await req.json();
