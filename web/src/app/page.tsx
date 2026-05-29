@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { getHomePageBundle } from "@/lib/seo";
+import { getHomePageBundle, SITE_URL } from "@/lib/seo";
 import { SafeImage } from "@/components/SafeImage";
 import HomeSearchForm from "@/components/HomeSearchForm";
 import { cardGradient } from "@/lib/theme";
@@ -26,8 +26,37 @@ export default async function HomePage() {
   // an unfinished site and the audit explicitly called this out as proof rot.
   const featured = bundle.stats.filter((s) => s.characterCount > 0).slice(0, 8);
 
+  // Organization + WebSite schema. The Organization entry gives Google the
+  // canonical site name + logo for the knowledge panel; WebSite + the
+  // SearchAction declares a Sitelinks searchbox pointing at /search so
+  // SERPs can render a search input directly under the result.
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Hotarumi",
+      url: SITE_URL,
+      logo: `${SITE_URL}/icon.png`,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Hotarumi",
+      url: SITE_URL,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${SITE_URL}/search?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ];
+
   return (
     <main className="min-h-[calc(100vh-57px)] flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Hero */}
       <section className="relative flex flex-col items-center justify-center flex-1 px-6 py-20 text-center overflow-hidden">
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -53,7 +82,7 @@ export default async function HomePage() {
             {t("createAccount")}
           </Link>
         </div>
-        <p className="relative text-xs text-gray-500 mt-3 max-w-md">{t("createAccountHint")}</p>
+        <p className="relative text-xs text-gray-400 mt-3 max-w-md">{t("createAccountHint")}</p>
       </section>
 
       {/* Tracked games grid with counts */}
@@ -88,7 +117,7 @@ export default async function HomePage() {
                 </div>
                 <div className="p-3">
                   <p className="font-semibold text-sm group-hover:text-amber-300 transition">{game.name}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <p className="text-xs text-gray-400 mt-0.5">
                     {t("charactersCount", { count: characterCount })}
                   </p>
                 </div>

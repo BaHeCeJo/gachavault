@@ -42,10 +42,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} className="dark">
       <body className={`${inter.className} bg-background text-foreground min-h-screen`}>
+        {/* Skip link — only visible to keyboard users on focus. Lets them
+            jump past the navbar (logo + 5+ links + language switcher +
+            profile menu) directly to the page content. */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-amber-500 focus:text-black focus:rounded-lg focus:font-semibold"
+        >
+          Skip to main content
+        </a>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <Navbar />
-            {children}
+            <div id="main-content">{children}</div>
           </Providers>
         </NextIntlClientProvider>
       </body>

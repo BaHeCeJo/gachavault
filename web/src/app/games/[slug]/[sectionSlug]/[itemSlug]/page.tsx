@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import {
   getItemPageBundle,
   itemDisplayName,
+  SITE_URL,
   truncate,
 } from "@/lib/seo";
 import ItemPageClient from "./ItemPageClient";
@@ -73,5 +74,57 @@ export default async function Page({ params }: RouteParams) {
   const locale = await readLocale();
   const bundle = await getItemPageBundle(slug, sectionSlug, itemSlug, locale);
   if (!bundle) notFound();
-  return <ItemPageClient initial={bundle} />;
+
+  // Article schema for rich snippets. Computed alongside the page render
+  // so the strings match what generateMetadata produced (both fetches hit
+  // the same Next.js fetch-cache entry so this is one upstream request).
+  const name = itemDisplayName(bundle.item);
+  const gameName = bundle.game?.name ?? slug;
+  const dataDesc =
+    typeof bundle.item.data?.description === "string"
+      ? (bundle.item.data.description as string)
+      : null;
+  const dataLore =
+    typeof bundle.item.data?.lore === "string" ? (bundle.item.data.lore as string) : null;
+  const description =
+    truncate(dataDesc) ??
+    truncate(dataLore) ??
+    `${name} stats, skills and builds for ${gameName} on Hotarumi.`;
+  const imageUrl =
+    typeof bundle.item.data?.image_url === "string"
+      ? (bundle.item.data.image_url as string)
+      : typeof bundle.item.data?.icon_url === "string"
+        ? (bundle.item.data.icon_url as string)
+        : null;
+  const itemUrl = `${SITE_URL}/games/${slug}/${sectionSlug}/${itemSlug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: `${name} — ${gameName}`,
+    name,
+    description,
+    image: imageUrl ?? undefined,
+    url: itemUrl,
+    inLanguage: locale,
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Hotarumi",
+      url: SITE_URL,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Hotarumi",
+      url: SITE_URL,
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ItemPageClient initial={bundle} />
+    </>
+  );
 }

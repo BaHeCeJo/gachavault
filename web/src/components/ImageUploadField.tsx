@@ -70,7 +70,8 @@ export default function ImageUploadField({
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={value}
-          alt="preview"
+          alt=""
+          aria-hidden="true"
           className={`mt-2 ${previewHeight} rounded object-cover`}
           onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
         />

@@ -61,9 +61,11 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm mb-1">Email</label>
+            <label htmlFor="register-email" className="block text-sm mb-1">Email</label>
             <input
+              id="register-email"
               type="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -71,9 +73,11 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Username</label>
+            <label htmlFor="register-username" className="block text-sm mb-1">Username</label>
             <input
+              id="register-username"
               type="text"
+              autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -83,16 +87,19 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Password</label>
+            <label htmlFor="register-password" className="block text-sm mb-1">Password</label>
             <input
+              id="register-password"
               type="password"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
+              aria-describedby="register-password-hint"
               className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-white"
             />
-            <p className="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+            <p id="register-password-hint" className="text-xs text-gray-400 mt-1">Minimum 8 characters</p>
           </div>
           <button
             type="submit"

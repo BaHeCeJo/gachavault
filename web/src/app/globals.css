@@ -13,3 +13,17 @@
     --foreground: #171717;
   }
 }
+
+/* Keyboard focus ring — :focus-visible only triggers on actual keyboard
+ * navigation, not on mouse clicks, so this doesn't add visible rings to
+ * button clicks. Many buttons in the codebase set `focus:outline-none`
+ * with no replacement, leaving keyboard users with no focus indicator.
+ * This restores a visible indicator across the whole tree without
+ * touching every component. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid #fbbf24; /* amber-400 */
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+}
