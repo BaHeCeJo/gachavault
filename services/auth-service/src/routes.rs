@@ -144,14 +144,14 @@ pub async fn register(
         &password_hash,
     )
     .await
-    .map_err(|e| match e {
-        sqlx::Error::Database(db_err) if db_err.constraint() == Some("users_email_key") => {
-            AppError::Conflict("Email already in use".into())
-        }
-        sqlx::Error::Database(db_err) if db_err.constraint() == Some("users_username_key") => {
-            AppError::Conflict("Username already taken".into())
-        }
-        other => AppError::Database(other),
+    .map_err(|e| {
+        shared_errors::map_unique_violation(
+            e,
+            &[
+                ("users_email_key", "Email already in use"),
+                ("users_username_key", "Username already taken"),
+            ],
+        )
     })?;
 
     // Generate and store email verification token
@@ -589,11 +589,11 @@ pub async fn update_username(
         .bind(auth.id())
         .execute(&pool)
         .await
-        .map_err(|e| match e {
-            sqlx::Error::Database(db_err) if db_err.constraint() == Some("users_username_key") => {
-                AppError::Conflict("Username already taken".into())
-            }
-            other => AppError::Database(other),
+        .map_err(|e| {
+            shared_errors::map_unique_violation(
+                e,
+                &[("users_username_key", "Username already taken")],
+            )
         })?;
 
     Ok(Json(ApiResponse::success(

@@ -4,7 +4,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use shared_errors::{AppError, AppResult};
-use shared_types::ApiResponse;
+use shared_types::{ApiResponse, PaginationQuery};
 use uuid::Uuid;
 
 use crate::AppState;
@@ -14,8 +14,8 @@ pub struct SearchParams {
     pub q: String,
     pub game: Option<String>,
     pub section: Option<String>,
-    pub page: Option<u32>,
-    pub per_page: Option<u32>,
+    #[serde(flatten)]
+    pub pagination: PaginationQuery,
     /// "name:asc" | "name:desc" — passed directly to Meilisearch sort
     pub sort: Option<String>,
 }
@@ -36,13 +36,10 @@ pub async fn search(
     State(state): State<AppState>,
     Query(params): Query<SearchParams>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
-    let per_page = params.per_page.unwrap_or(20).min(100);
-    let page = params.page.unwrap_or(0);
-
     let mut body = serde_json::json!({
         "q": params.q,
-        "limit": per_page,
-        "offset": page * per_page,
+        "limit": params.pagination.limit(),
+        "offset": params.pagination.offset(),
     });
 
     // Build filter expression for Meilisearch.

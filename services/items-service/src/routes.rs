@@ -211,14 +211,9 @@ pub async fn create_item(
         auth.id(),
     )
     .await
-    .map_err(|e| match e {
-        sqlx::Error::Database(db_err) if db_err.constraint() == Some("items_game_id_slug_key") => {
-            AppError::Conflict(format!(
-                "Item with slug '{}' already exists in this game",
-                slug
-            ))
-        }
-        other => AppError::Database(other),
+    .map_err(|e| {
+        let msg = format!("Item with slug '{}' already exists in this game", slug);
+        shared_errors::map_unique_violation(e, &[("items_game_id_slug_key", &msg)])
     })?;
 
     // Fire-and-forget search indexing

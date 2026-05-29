@@ -85,3 +85,29 @@ impl IntoResponse for AppError {
 }
 
 pub type AppResult<T> = Result<T, AppError>;
+
+/// Translate a sqlx unique-constraint violation into a user-facing `Conflict`
+/// error. Each entry in `mappings` is `(constraint_name, user_message)`; the
+/// first matching constraint wins. Anything else (including other DB errors)
+/// falls through as `AppError::Database`.
+///
+/// Use this for INSERT/UPDATE handlers that may collide with an existing row.
+/// Multi-mapping example:
+/// ```ignore
+/// .map_err(|e| shared_errors::map_unique_violation(e, &[
+///     ("users_email_key",    "Email already in use"),
+///     ("users_username_key", "Username already taken"),
+/// ]))?
+/// ```
+pub fn map_unique_violation(e: sqlx::Error, mappings: &[(&str, &str)]) -> AppError {
+    if let sqlx::Error::Database(ref db_err) = e {
+        if let Some(name) = db_err.constraint() {
+            for (constraint, message) in mappings {
+                if name == *constraint {
+                    return AppError::Conflict((*message).to_string());
+                }
+            }
+        }
+    }
+    AppError::Database(e)
+}

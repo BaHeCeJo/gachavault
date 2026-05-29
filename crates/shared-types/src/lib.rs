@@ -115,6 +115,33 @@ pub struct PaginatedResponse<T> {
     pub per_page: i64,
 }
 
+/// Common shape for `?page=N&per_page=M` list endpoints. Services that use a
+/// `limit/offset` convention (e.g. items-service) keep their own DTOs — this
+/// is for the page/per_page family so the bounds logic lives in one place.
+#[derive(Debug, Clone, Deserialize, Default)]
+pub struct PaginationQuery {
+    pub page: Option<i64>,
+    pub per_page: Option<i64>,
+}
+
+impl PaginationQuery {
+    pub const DEFAULT_PER_PAGE: i64 = 20;
+    pub const MAX_PER_PAGE: i64 = 100;
+
+    /// Clamped page size, always in `[1, MAX_PER_PAGE]`.
+    pub fn limit(&self) -> i64 {
+        self.per_page
+            .unwrap_or(Self::DEFAULT_PER_PAGE)
+            .clamp(1, Self::MAX_PER_PAGE)
+    }
+
+    /// Row offset for SQL `OFFSET`. Negative pages collapse to 0.
+    pub fn offset(&self) -> i64 {
+        let page = self.page.unwrap_or(0).max(0);
+        page * self.limit()
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ApiResponse<T: Serialize> {
     pub success: bool,

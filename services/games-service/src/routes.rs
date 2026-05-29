@@ -117,11 +117,9 @@ pub async fn create_game(
         body.banner_url.as_deref(),
     )
     .await
-    .map_err(|e| match e {
-        sqlx::Error::Database(db_err) if db_err.constraint() == Some("games_slug_key") => {
-            AppError::Conflict(format!("A game with slug '{}' already exists", body.slug))
-        }
-        other => AppError::Database(other),
+    .map_err(|e| {
+        let msg = format!("A game with slug '{}' already exists", body.slug);
+        shared_errors::map_unique_violation(e, &[("games_slug_key", &msg)])
     })?;
 
     Ok(Json(ApiResponse::success(game)))
@@ -216,16 +214,9 @@ pub async fn create_section(
         body.order.unwrap_or(0),
     )
     .await
-    .map_err(|e| match e {
-        sqlx::Error::Database(db_err)
-            if db_err.constraint() == Some("sections_game_id_slug_key") =>
-        {
-            AppError::Conflict(format!(
-                "Section '{}' already exists in this game",
-                body.slug
-            ))
-        }
-        other => AppError::Database(other),
+    .map_err(|e| {
+        let msg = format!("Section '{}' already exists in this game", body.slug);
+        shared_errors::map_unique_violation(e, &[("sections_game_id_slug_key", &msg)])
     })?;
 
     Ok(Json(ApiResponse::success(section)))
@@ -370,11 +361,12 @@ pub async fn create_attribute(
     .bind(body.sort_order.unwrap_or(0))
     .fetch_one(&pool)
     .await
-    .map_err(|e| match e {
-        sqlx::Error::Database(db_err) if db_err.constraint() == Some("attributes_game_id_attr_type_key_key") => {
-            AppError::Conflict(format!("Attribute '{}' already exists for type '{}'", body.key, body.attr_type))
-        }
-        other => AppError::Database(other),
+    .map_err(|e| {
+        let msg = format!(
+            "Attribute '{}' already exists for type '{}'",
+            body.key, body.attr_type
+        );
+        shared_errors::map_unique_violation(e, &[("attributes_game_id_attr_type_key_key", &msg)])
     })?;
 
     Ok(Json(ApiResponse::success(attr_row_to_json(&row))))
@@ -554,15 +546,14 @@ pub async fn create_schema(
         body.card_layout.as_ref(),
     )
     .await
-    .map_err(|e| match e {
-        sqlx::Error::Database(db_err)
-            if db_err.constraint() == Some("item_type_schemas_section_unique") =>
-        {
-            AppError::Conflict(
-                "This section already has a schema. Only one schema per section is allowed.".into(),
-            )
-        }
-        other => AppError::Database(other),
+    .map_err(|e| {
+        shared_errors::map_unique_violation(
+            e,
+            &[(
+                "item_type_schemas_section_unique",
+                "This section already has a schema. Only one schema per section is allowed.",
+            )],
+        )
     })?;
 
     Ok(Json(ApiResponse::success(schema)))
