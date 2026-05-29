@@ -5,14 +5,45 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
+// Resolve a `?redirect=` query parameter to a safe same-origin path. The naive
+// `startsWith("/") && !startsWith("//")` check misses encoded variants like
+// `/%2f%2fevil.com` or `/\\evil.com`, so parse as a URL and verify the origin
+// matches the current page.
+function safeRedirect(raw: string | null): string {
+  if (!raw) return "/";
+  try {
+    const url = new URL(raw, window.location.origin);
+    if (url.origin !== window.location.origin) return "/";
+    // Reject javascript:, data:, etc. (URL normalises these, but be explicit)
+    if (url.protocol !== window.location.protocol) return "/";
+    return url.pathname + url.search + url.hash;
+  } catch {
+    return "/";
+  }
+}
+
+function loginErrorMessage(code: string | null): string {
+  switch (code) {
+    case "email_password_conflict":
+      return "This email is already registered with a password. Sign in with your password, then link Google from your profile settings.";
+    case null:
+    case "":
+      return "";
+    default:
+      return "Sign-in failed. Please try again.";
+  }
+}
+
 function LoginContent() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() =>
+    loginErrorMessage(searchParams.get("error"))
+  );
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,11 +51,7 @@ function LoginContent() {
     setLoading(true);
     try {
       await login(email, password);
-      const raw = searchParams.get("redirect") ?? "/";
-      // Only follow same-origin relative paths — reject anything that starts
-      // with "//" (protocol-relative) or contains a scheme (open redirect).
-      const redirect =
-        raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
+      const redirect = safeRedirect(searchParams.get("redirect"));
       router.push(redirect);
     } catch (err: unknown) {
       const msg =

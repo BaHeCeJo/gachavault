@@ -249,8 +249,11 @@ pub async fn google_callback(
         .await
         .map_err(|e| AppError::Internal(anyhow::anyhow!("Google userinfo parse failed: {}", e)))?;
 
-    // Find or create user
-    let user = db::find_or_create_google_user(
+    // Find or create user. EmailConflict means there's already a
+    // password-based account with this email; we refuse to auto-link it (an
+    // email match alone is not proof of ownership). Send the user back to the
+    // login page with a clear error code so the UI can explain.
+    let outcome = db::find_or_create_google_user(
         &pool,
         &user_info.id,
         &user_info.email,
@@ -259,6 +262,16 @@ pub async fn google_callback(
     )
     .await
     .map_err(AppError::Database)?;
+    let user = match outcome {
+        db::GoogleLoginOutcome::User(u) => u,
+        db::GoogleLoginOutcome::EmailConflict => {
+            return Ok(Redirect::temporary(&format!(
+                "{}/auth/login?error=email_password_conflict",
+                frontend_url,
+            ))
+            .into_response());
+        }
+    };
 
     // Issue tokens and deliver them as HttpOnly cookies, then redirect to the frontend.
     // Tokens are never exposed in URLs, headers the client can read, or JavaScript.

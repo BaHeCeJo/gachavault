@@ -7,6 +7,7 @@ use axum::{
 };
 use serde_json::json;
 use std::net::SocketAddr;
+use subtle::ConstantTimeEq;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod routes;
@@ -87,7 +88,13 @@ async fn verify_internal_secret(
         .get("x-internal-secret")
         .and_then(|v| v.to_str().ok())
         .unwrap_or("");
-    if secret != state.internal_secret {
+    // Constant-time compare so an attacker can't recover the secret byte-by-byte
+    // via response-time differences.
+    let matched: bool = secret
+        .as_bytes()
+        .ct_eq(state.internal_secret.as_bytes())
+        .into();
+    if !matched {
         return axum::http::StatusCode::UNAUTHORIZED.into_response();
     }
     next.run(request).await

@@ -5,11 +5,13 @@ const PROTECTED_ROUTES = ["/admin", "/profile", "/collections", "/tierlists"];
 const PUBLIC_OVERRIDES = ["/tierlists/share"];
 const ADMIN_ROLES = new Set(["admin", "superadmin"]);
 
-// Decode the payload of a JWT without verifying its signature. Used purely
-// for UI routing (showing or hiding the /admin shell). Real authorization is
-// always re-enforced on the API by services that verify the signature, so a
-// forged role claim here only changes which page renders, never what the
-// attacker can actually do.
+// Decode the payload of a JWT without verifying its signature. This is a
+// UX-only fast path that lets us skip the /admin round-trip for users whose
+// token claims aren't an admin role at all (common case). The real admin
+// gate lives in web/src/app/admin/layout.tsx, which calls auth-service
+// /auth/me to verify the signature server-side. A forged role claim here
+// would survive this middleware check but be rejected by the layout, so the
+// page shell still never renders for a non-admin.
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   const parts = token.split(".");
   if (parts.length !== 3) return null;

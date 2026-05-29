@@ -951,8 +951,19 @@ async fn get_redis_conn() -> Option<redis::aio::MultiplexedConnection> {
 }
 
 async fn check_login_throttle(email: &str) -> AppResult<()> {
+    // Fail closed: if Redis is unavailable we can't enforce the per-email
+    // brute-force limit, so refuse the login attempt rather than letting an
+    // attacker hammer credentials unrestricted. Background rate limits
+    // (`rate_limit()`) intentionally fail open because they protect against
+    // spam, not credential stuffing; this one protects passwords.
     let Some(mut conn) = get_redis_conn().await else {
-        return Ok(()); // fail open if Redis unavailable
+        tracing::warn!(
+            email = %email,
+            "login throttle: Redis unavailable, failing closed"
+        );
+        return Err(AppError::TooManyRequests(
+            "Login temporarily unavailable. Please try again in a moment.".into(),
+        ));
     };
     let key = format!("login_fail:{}", email);
     let count: i64 = conn.get(&key).await.unwrap_or(0);

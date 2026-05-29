@@ -59,6 +59,9 @@ argon2 = "0.5"
 # Redis
 redis = { version = "0.27", features = ["tokio-comp"] }
 
+# Constant-time comparison (for shared internal-secret middleware)
+subtle = "2"
+
 # Shared crates
 shared-types = { path = "crates/shared-types" }
 shared-auth = { path = "crates/shared-auth" }

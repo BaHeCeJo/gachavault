@@ -182,14 +182,28 @@ pub async fn update_password(
     Ok(())
 }
 
+/// Result of a Google OAuth login attempt.
+///
+/// `EmailConflict` means a password-based account with the same email already
+/// exists but has never been linked to this Google identity. We refuse to
+/// auto-link because the email match alone does not prove the Google user owns
+/// the original account (an attacker who registers a Google account with the
+/// victim's address — possible for self-hosted domains, or via Gmail aliasing
+/// edge cases — would otherwise gain access without a password). The user must
+/// log in with their password and link Google explicitly from settings.
+pub enum GoogleLoginOutcome {
+    User(DbUser),
+    EmailConflict,
+}
+
 pub async fn find_or_create_google_user(
     pool: &PgPool,
     google_id: &str,
     email: &str,
     display_name: Option<&str>,
     avatar_url: Option<&str>,
-) -> Result<DbUser, sqlx::Error> {
-    // Try to find by google_id first
+) -> Result<GoogleLoginOutcome, sqlx::Error> {
+    // Try to find by google_id first — already linked, normal sign-in.
     if let Some(user) = sqlx::query_as!(
         DbUser,
         "SELECT * FROM auth.users WHERE google_id = $1",
@@ -198,23 +212,18 @@ pub async fn find_or_create_google_user(
     .fetch_optional(pool)
     .await?
     {
-        return Ok(user);
+        return Ok(GoogleLoginOutcome::User(user));
     }
 
-    // Try to find by email (link existing account)
-    if let Some(user) = sqlx::query_as!(
-        DbUser,
-        "UPDATE auth.users SET google_id = $1, avatar_url = COALESCE(avatar_url, $2), provider = 'google', updated_at = NOW()
-         WHERE email = $3
-         RETURNING *",
-        google_id,
-        avatar_url,
-        email,
-    )
-    .fetch_optional(pool)
-    .await?
-    {
-        return Ok(user);
+    // An account with this email may exist from a password signup. Do NOT
+    // auto-link it — return EmailConflict so the caller can route the user to
+    // password login + manual link.
+    let existing: Option<(Uuid,)> = sqlx::query_as("SELECT id FROM auth.users WHERE email = $1")
+        .bind(email)
+        .fetch_optional(pool)
+        .await?;
+    if existing.is_some() {
+        return Ok(GoogleLoginOutcome::EmailConflict);
     }
 
     // Create new Google user — derive username from display_name or email prefix
@@ -225,7 +234,7 @@ pub async fn find_or_create_google_user(
     // Make username unique by appending a random suffix if needed
     let username = make_unique_username(pool, &base_username).await?;
 
-    sqlx::query_as!(
+    let user = sqlx::query_as!(
         DbUser,
         r#"INSERT INTO auth.users (email, username, google_id, avatar_url, provider, email_verified)
            VALUES ($1, $2, $3, $4, 'google', TRUE)
@@ -236,7 +245,8 @@ pub async fn find_or_create_google_user(
         avatar_url,
     )
     .fetch_one(pool)
-    .await
+    .await?;
+    Ok(GoogleLoginOutcome::User(user))
 }
 
 async fn make_unique_username(pool: &PgPool, base: &str) -> Result<String, sqlx::Error> {
