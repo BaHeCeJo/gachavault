@@ -148,22 +148,23 @@ jobs:
             # `nginx -s reload`. Full recreate re-resolves the mount.
             GHCR_OWNER=$GHCR_OWNER IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.prod.yml up -d --force-recreate nginx
 
-            # Post-deploy smoke test. Poll the public health endpoint until
-            # we get a 200 or we run out of attempts. Without this a broken
-            # image (failed migration, panic on startup, env var typo) gets
-            # deployed silently and the operator only learns about it from
-            # users reporting an outage. The api-gateway /health returns
-            # 200 once the gateway has booted; that's a weak readiness
-            # signal (it doesn't ping every downstream) but it does catch
-            # the common "service crashed on startup" failure mode.
+            # Post-deploy smoke test. Hit the public games list endpoint —
+            # that path traverses nginx -> api-gateway -> games-service ->
+            # postgres, so a 2xx response means the whole chain is alive,
+            # not just that nginx is serving. /api/v1/health isn't a route
+            # (the gateway exposes /health at root, but nginx routes only
+            # the /api/ prefix to the gateway, so /api/v1/health 404s).
+            # Accept any 2xx via -o /dev/null + -w '%{http_code}' check.
             echo "[smoke] waiting for site readiness..."
             for attempt in $(seq 1 30); do
-              if curl -sf --max-time 5 https://hotarumi.com/api/v1/health >/dev/null; then
-                echo "[smoke] site is up (attempt $attempt)"
+              code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 \
+                https://hotarumi.com/api/v1/games || echo 000)
+              if [ "${code:0:1}" = "2" ]; then
+                echo "[smoke] site is up (attempt $attempt, HTTP $code)"
                 break
               fi
               if [ "$attempt" = 30 ]; then
-                echo "[smoke] FAILED — site did not respond after 30 attempts (~150s)" >&2
+                echo "[smoke] FAILED — last response was HTTP $code after 30 attempts (~150s)" >&2
                 echo "[smoke] inspect with: docker compose -f docker-compose.prod.yml ps" >&2
                 exit 1
               fi
