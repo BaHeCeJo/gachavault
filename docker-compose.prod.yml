@@ -50,7 +50,7 @@ services:
       - internal
 
   api-gateway:
-    image: ghcr.io/${GHCR_OWNER}/gachavault-api-gateway:latest
+    image: ghcr.io/${GHCR_OWNER}/gachavault-api-gateway:${IMAGE_TAG:-latest}
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/3000' 2>/dev/null || exit 1"]
@@ -104,7 +104,7 @@ services:
   # Adds ~30s to a cold start but eliminates a class of broken-deploy bugs.
 
   games-service:
-    image: ghcr.io/${GHCR_OWNER}/gachavault-games-service:latest
+    image: ghcr.io/${GHCR_OWNER}/gachavault-games-service:${IMAGE_TAG:-latest}
     restart: always
     environment:
       PORT: 3002
@@ -127,7 +127,7 @@ services:
       - internal
 
   auth-service:
-    image: ghcr.io/${GHCR_OWNER}/gachavault-auth-service:latest
+    image: ghcr.io/${GHCR_OWNER}/gachavault-auth-service:${IMAGE_TAG:-latest}
     restart: always
     environment:
       PORT: 3001
@@ -166,7 +166,7 @@ services:
       - internal
 
   items-service:
-    image: ghcr.io/${GHCR_OWNER}/gachavault-items-service:latest
+    image: ghcr.io/${GHCR_OWNER}/gachavault-items-service:${IMAGE_TAG:-latest}
     restart: always
     environment:
       PORT: 3003
@@ -196,7 +196,7 @@ services:
       - internal
 
   collections-service:
-    image: ghcr.io/${GHCR_OWNER}/gachavault-collections-service:latest
+    image: ghcr.io/${GHCR_OWNER}/gachavault-collections-service:${IMAGE_TAG:-latest}
     restart: always
     environment:
       PORT: 3004
@@ -225,7 +225,7 @@ services:
       - internal
 
   tierlists-service:
-    image: ghcr.io/${GHCR_OWNER}/gachavault-tierlists-service:latest
+    image: ghcr.io/${GHCR_OWNER}/gachavault-tierlists-service:${IMAGE_TAG:-latest}
     restart: always
     environment:
       PORT: 3005
@@ -254,7 +254,7 @@ services:
       - internal
 
   media-service:
-    image: ghcr.io/${GHCR_OWNER}/gachavault-media-service:latest
+    image: ghcr.io/${GHCR_OWNER}/gachavault-media-service:${IMAGE_TAG:-latest}
     restart: always
     environment:
       PORT: 3006
@@ -282,7 +282,7 @@ services:
       - internal
 
   search-service:
-    image: ghcr.io/${GHCR_OWNER}/gachavault-search-service:latest
+    image: ghcr.io/${GHCR_OWNER}/gachavault-search-service:${IMAGE_TAG:-latest}
     restart: always
     environment:
       PORT: 3007
@@ -301,7 +301,7 @@ services:
       - internal
 
   notifications-service:
-    image: ghcr.io/${GHCR_OWNER}/gachavault-notifications-service:latest
+    image: ghcr.io/${GHCR_OWNER}/gachavault-notifications-service:${IMAGE_TAG:-latest}
     restart: always
     environment:
       PORT: 3008
@@ -320,7 +320,7 @@ services:
       - internal
 
   web:
-    image: ghcr.io/${GHCR_OWNER}/gachavault-web:latest
+    image: ghcr.io/${GHCR_OWNER}/gachavault-web:${IMAGE_TAG:-latest}
     restart: always
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3009/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"]

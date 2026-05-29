@@ -17,5 +17,9 @@ COPY --from=builder /app/.next/static ./.next/static
 # never silently downgrades the image optimizer to identity-passthrough.
 COPY --from=builder /app/node_modules/sharp ./node_modules/sharp
 COPY --from=builder /app/node_modules/@img ./node_modules/@img
+# node:20-alpine ships with the `node` user (UID 1000); drop privileges so
+# a code-exec bug in the Next.js standalone server doesn't get root in the
+# container.
+USER node
 EXPOSE 3009
 CMD ["node", "server.js"]

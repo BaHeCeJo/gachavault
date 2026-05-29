@@ -14,8 +14,10 @@ COPY . .
 RUN cargo build --release -p api-gateway
 
 FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/* \
+    && useradd --system --uid 10000 --no-create-home --shell /usr/sbin/nologin appuser
 WORKDIR /app
 COPY --from=builder /app/target/release/api-gateway .
+USER 10000
 EXPOSE 3000
 CMD ["./api-gateway"]

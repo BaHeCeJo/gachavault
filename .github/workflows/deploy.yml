@@ -95,15 +95,22 @@ jobs:
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GHCR_ACTOR: ${{ github.actor }}
+          # Commit SHA of this push — used to pin every gachavault-* image
+          # tag below so what we just built is exactly what gets deployed.
+          # Without this, compose would pull `:latest`, which is racy against
+          # any concurrent build/push (and is the standard supply-chain
+          # concern of mutable tags).
+          IMAGE_TAG: ${{ github.sha }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: GHCR_TOKEN,GHCR_ACTOR
+          envs: GHCR_TOKEN,GHCR_ACTOR,IMAGE_TAG
           script: |
             set -e
             export PATH=$PATH:/usr/bin:/usr/local/bin
             export GHCR_OWNER=$(echo "$GHCR_ACTOR" | tr '[:upper:]' '[:lower:]')
+            export IMAGE_TAG
             cd /opt/gachavault
 
             git pull origin main
@@ -119,15 +126,27 @@ jobs:
             # No sudo: VPS_USER is root per DEPLOY.md, so this runs as root anyway.
             bash scripts/migrate-env-to-secrets.sh /opt/gachavault/.env
 
-            GHCR_OWNER=$GHCR_OWNER docker compose -f docker-compose.prod.yml pull
-            GHCR_OWNER=$GHCR_OWNER docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            # One-time (now idempotent) fix for the media_uploads volume:
+            # earlier images ran media-service as root, so existing files are
+            # owned by uid 0. The current image runs as uid 10000, which can't
+            # write to a root-owned dir. We chown the volume to 10000 before
+            # the new container starts. Doing this every deploy is harmless —
+            # a no-op when ownership is already correct.
+            MEDIA_VOLUME=$(docker volume ls -q --filter name=media_uploads | head -1 || true)
+            if [ -n "$MEDIA_VOLUME" ]; then
+              docker run --rm -v "$MEDIA_VOLUME":/uploads alpine \
+                chown -R 10000:10000 /uploads
+            fi
+
+            GHCR_OWNER=$GHCR_OWNER IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.prod.yml pull
+            GHCR_OWNER=$GHCR_OWNER IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
             # Force-recreate nginx so it picks up nginx.conf changes.
             # nginx.conf is bind-mounted as a single file, and `git pull`
             # replaces the file (new inode) rather than modifying it in place,
             # so the existing container keeps the old content even after
             # `nginx -s reload`. Full recreate re-resolves the mount.
-            GHCR_OWNER=$GHCR_OWNER docker compose -f docker-compose.prod.yml up -d --force-recreate nginx
+            GHCR_OWNER=$GHCR_OWNER IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.prod.yml up -d --force-recreate nginx
 
             # Clean up old images
             docker image prune -f

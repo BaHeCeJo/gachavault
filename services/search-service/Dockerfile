@@ -14,8 +14,10 @@ COPY . .
 RUN cargo build --release -p search-service
 
 FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/* \
+    && useradd --system --uid 10000 --no-create-home --shell /usr/sbin/nologin appuser
 WORKDIR /app
 COPY --from=builder /app/target/release/search-service .
+USER 10000
 EXPOSE 3007
 CMD ["./search-service"]
