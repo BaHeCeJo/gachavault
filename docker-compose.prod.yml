@@ -47,15 +47,17 @@ services:
     volumes:
       - meilisearch_data:/meili_data
     healthcheck:
-      # The image ships wget; /health is the canonical readiness endpoint.
-      # Without this, search-service starts and accepts requests while
-      # meilisearch is still warming up, causing initial search requests to
-      # hang or 500 until the index loads.
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7700/health || exit 1"]
+      # GET via wget (no --spider). Meilisearch's /health only accepts GET
+      # and returns 405 on HEAD; --spider would issue HEAD and the check
+      # would never pass. -qO- forces GET, discards body, exits non-zero
+      # on connect/HTTP failure.
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7700/health >/dev/null 2>&1 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      # Cold-loading an existing index can take 30-60s before the first
+      # request is served — 90s buffer covers normal warmup.
+      start_period: 90s
     networks:
       - internal
 
