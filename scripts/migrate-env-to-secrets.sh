@@ -124,6 +124,16 @@ if [ -n "$REDIS_PASSWORD" ]; then
     "redis://:${REDIS_PASSWORD}@redis:6379"
 fi
 
+# Hand ownership of every secret file to the container's appuser
+# (uid 10000). Service containers dropped to non-root, and Docker Compose
+# `file:`-source secrets are bind-mounted into /run/secrets/<name> with
+# host ownership preserved, so root-owned files become unreadable to the
+# non-root process. chown'ing to 10000 keeps mode 600 effective — only
+# the matching container UID can read — without widening the at-rest
+# perms. Apply to every file (not just newly written ones) so existing
+# secrets created by earlier runs get fixed on the next deploy.
+chown -R 10000:10000 "$SECRETS_DIR" 2>/dev/null || true
+
 echo
 echo "Done. Verify with: ls -la $SECRETS_DIR"
 echo "Remaining env-only vars (kept in .env): FRONTEND_URL, BACKEND_URL,"
