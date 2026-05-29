@@ -72,3 +72,12 @@ shared-auth = { path = "crates/shared-auth" }
 shared-errors = { path = "crates/shared-errors" }
 shared-db = { path = "crates/shared-db" }
 shared-server = { path = "crates/shared-server" }
+
+# Release tuning. `lto = "thin"` is the sweet spot — within ~5% of full LTO
+# for runtime perf, but builds in roughly the same time as no LTO at all.
+# `strip = true` drops debug symbols (most of the binary size for a Rust
+# release build). Together these cut each service binary by ~50% with
+# negligible CI cost; image pulls and container start times benefit.
+[profile.release]
+lto = "thin"
+strip = true

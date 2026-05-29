@@ -15,7 +15,11 @@ scrape_configs:
   - job_name: docker
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
-        refresh_interval: 5s
+        # 60s is far enough apart to skip the Docker API hammering (5s was
+        # ~1700 calls/hr for the same container set) without delaying new-
+        # container log capture in any practical way — compose recreates
+        # take longer than this anyway.
+        refresh_interval: 60s
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
         regex: '/(.*)'
