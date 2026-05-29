@@ -46,18 +46,14 @@ services:
       - meilisearch_master_key
     volumes:
       - meilisearch_data:/meili_data
-    healthcheck:
-      # GET via wget (no --spider). Meilisearch's /health only accepts GET
-      # and returns 405 on HEAD; --spider would issue HEAD and the check
-      # would never pass. -qO- forces GET, discards body, exits non-zero
-      # on connect/HTTP failure.
-      test: ["CMD-SHELL", "wget -qO- http://localhost:7700/health >/dev/null 2>&1 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      # Cold-loading an existing index can take 30-60s before the first
-      # request is served — 90s buffer covers normal warmup.
-      start_period: 90s
+    # No healthcheck — the meilisearch v1.11 image has neither wget nor curl
+    # in its runtime layer, so every shell-out probe (HEAD via --spider, GET
+    # via -qO-, even a TCP probe via nc) exits "command not found". The R4
+    # attempt at adding one repeatedly blocked the boot chain. Without one
+    # we lose the depends_on: service_healthy gate for search-service, but
+    # search-service tolerates an empty meilisearch by retrying its index
+    # init on each request — practical impact is "first search after a cold
+    # deploy is slightly slower" rather than a real failure.
     networks:
       - internal
 
@@ -314,8 +310,7 @@ services:
       retries: 5
       start_period: 30s
     depends_on:
-      meilisearch:
-        condition: service_healthy
+      - meilisearch
     networks:
       - internal
 
