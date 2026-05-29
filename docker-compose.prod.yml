@@ -46,6 +46,16 @@ services:
       - meilisearch_master_key
     volumes:
       - meilisearch_data:/meili_data
+    healthcheck:
+      # The image ships wget; /health is the canonical readiness endpoint.
+      # Without this, search-service starts and accepts requests while
+      # meilisearch is still warming up, causing initial search requests to
+      # hang or 500 until the index loads.
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7700/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - internal
 
@@ -295,8 +305,15 @@ services:
       - meilisearch_master_key
       - jwt_secret
       - internal_secret
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/3007' 2>/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     depends_on:
-      - meilisearch
+      meilisearch:
+        condition: service_healthy
     networks:
       - internal
 

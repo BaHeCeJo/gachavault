@@ -148,5 +148,27 @@ jobs:
             # `nginx -s reload`. Full recreate re-resolves the mount.
             GHCR_OWNER=$GHCR_OWNER IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.prod.yml up -d --force-recreate nginx
 
+            # Post-deploy smoke test. Poll the public health endpoint until
+            # we get a 200 or we run out of attempts. Without this a broken
+            # image (failed migration, panic on startup, env var typo) gets
+            # deployed silently and the operator only learns about it from
+            # users reporting an outage. The api-gateway /health returns
+            # 200 once the gateway has booted; that's a weak readiness
+            # signal (it doesn't ping every downstream) but it does catch
+            # the common "service crashed on startup" failure mode.
+            echo "[smoke] waiting for site readiness..."
+            for attempt in $(seq 1 30); do
+              if curl -sf --max-time 5 https://hotarumi.com/api/v1/health >/dev/null; then
+                echo "[smoke] site is up (attempt $attempt)"
+                break
+              fi
+              if [ "$attempt" = 30 ]; then
+                echo "[smoke] FAILED — site did not respond after 30 attempts (~150s)" >&2
+                echo "[smoke] inspect with: docker compose -f docker-compose.prod.yml ps" >&2
+                exit 1
+              fi
+              sleep 5
+            done
+
             # Clean up old images
             docker image prune -f
