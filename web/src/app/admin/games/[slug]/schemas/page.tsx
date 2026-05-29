@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useId, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { extractApiError } from "@/lib/errors";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import ItemCard, { type CardLayout } from "@/components/ItemCard";
 import { buildAttrMap, type GameAttribute as GameAttributeFull } from "@/lib/attrs";
@@ -167,8 +168,7 @@ function pruneField(f: SchemaField): SchemaField {
 
 export default function AdminGameSchemasPage() {
   const { slug } = useParams<{ slug: string }>();
-  const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading } = useAdminGuard(`/admin/games/${slug}/schemas`);
 
   const [schemas, setSchemas] = useState<Schema[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
@@ -193,10 +193,6 @@ export default function AdminGameSchemasPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Schema | null>(null);
-
-  useEffect(() => {
-    if (!isLoading && !user) router.replace(`/auth/login?redirect=/admin/games/${slug}/schemas`);
-  }, [isLoading, user, router, slug]);
 
   useEffect(() => {
     if (!user) return;
@@ -350,8 +346,7 @@ export default function AdminGameSchemasPage() {
       revalidateGame(slug);
       setModal(null);
     } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? "Failed to save");
+      setError(extractApiError(e, "Failed to save"));
     } finally {
       setSaving(false);
     }

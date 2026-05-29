@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { revalidateGame } from "@/lib/revalidate";
 
 interface Game { id: string; slug: string; name: string }
@@ -29,8 +28,7 @@ interface ImportResult {
 }
 
 export default function BulkImportPage() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
+  const { user, isLoading } = useAdminGuard("/admin/items/import");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [games, setGames] = useState<Game[]>([]);
@@ -38,12 +36,6 @@ export default function BulkImportPage() {
   const [parseError, setParseError] = useState("");
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
-
-  useEffect(() => {
-    if (!isLoading && (!user || (user.role !== "admin" && user.role !== "superadmin"))) {
-      router.replace("/");
-    }
-  }, [isLoading, user, router]);
 
   useEffect(() => {
     if (!user) return;

@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { adminApi, usersApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { Avatar } from "@/components/Avatar";
 
 interface User {
@@ -28,16 +27,11 @@ const ROLE_LABELS: Record<string, { label: string; color: string }> = {
 };
 
 export default function AdminUsersPage() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
+  const { user, isLoading } = useAdminGuard("/admin/users");
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [savingRole, setSavingRole] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isLoading && !user) router.replace("/auth/login?redirect=/admin/users");
-  }, [isLoading, user, router]);
 
   useEffect(() => {
     if (!user) return;

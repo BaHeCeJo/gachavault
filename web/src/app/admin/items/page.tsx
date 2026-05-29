@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { adminApi, gamesApi, itemsApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -68,8 +68,7 @@ interface Item {
 }
 
 export default function AdminItemsPage() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
+  const { user, isLoading } = useAdminGuard("/admin/items");
 
   const [games, setGames] = useState<Game[]>([]);
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
@@ -98,10 +97,6 @@ export default function AdminItemsPage() {
   const [inlineAttrField, setInlineAttrField] = useState<string | null>(null);
   const [inlineAttrName, setInlineAttrName] = useState("");
   const [inlineAttrSaving, setInlineAttrSaving] = useState(false);
-
-  useEffect(() => {
-    if (!isLoading && !user) router.replace("/auth/login?redirect=/admin/items");
-  }, [isLoading, user, router]);
 
   useEffect(() => {
     if (!user) return;
@@ -290,8 +285,7 @@ export default function AdminItemsPage() {
       if (selectedGame) revalidateGame(selectedGame.slug);
       setModal(null);
     } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setFormError(msg ?? "Failed to save");
+      setFormError(extractApiError(e, "Failed to save"));
     } finally {
       setSaving(false);
     }

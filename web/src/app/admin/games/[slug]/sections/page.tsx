@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { extractApiError } from "@/lib/errors";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { revalidateGame } from "@/lib/revalidate";
 
@@ -27,8 +28,7 @@ type ModalState =
 
 export default function AdminGameSectionsPage() {
   const { slug } = useParams<{ slug: string }>();
-  const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading } = useAdminGuard(`/admin/games/${slug}/sections`);
 
   const [sections, setSections] = useState<Section[]>([]);
   const [gameName, setGameName] = useState(slug);
@@ -39,10 +39,6 @@ export default function AdminGameSectionsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Section | null>(null);
-
-  useEffect(() => {
-    if (!isLoading && !user) router.replace(`/auth/login?redirect=/admin/games/${slug}/sections`);
-  }, [isLoading, user, router, slug]);
 
   useEffect(() => {
     if (!user) return;
@@ -99,8 +95,7 @@ export default function AdminGameSectionsPage() {
       revalidateGame(slug);
       setModal(null);
     } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? "Failed to save");
+      setError(extractApiError(e, "Failed to save"));
     } finally {
       setSaving(false);
     }

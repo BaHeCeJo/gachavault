@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usersApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
 
 interface SiteStats {
   total_users: number;
@@ -41,16 +40,9 @@ function StatCard({
 }
 
 export default function AdminStatsPage() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
+  const { user, isLoading } = useAdminGuard("/admin/stats");
   const [stats, setStats] = useState<SiteStats | null>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!isLoading && (!user || (user.role !== "admin" && user.role !== "superadmin"))) {
-      router.replace("/");
-    }
-  }, [isLoading, user, router]);
 
   useEffect(() => {
     if (!user) return;

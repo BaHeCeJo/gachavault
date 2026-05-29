@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { adminApi, gamesApi, usersApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { Avatar } from "@/components/Avatar";
 
 interface UserInfo {
@@ -47,8 +47,7 @@ const ROLE_COLORS: Record<string, string> = {
 
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { user: me, isLoading: authLoading } = useAuth();
-  const router = useRouter();
+  const { user: me, isLoading: authLoading } = useAdminGuard(`/admin/users/${id}`);
 
   const [profile, setProfile] = useState<UserInfo | null>(null);
   const [games, setGames] = useState<Game[]>([]);
@@ -56,10 +55,6 @@ export default function UserDetailPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [pendingRoles, setPendingRoles] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    if (!authLoading && !me) router.replace("/auth/login");
-  }, [authLoading, me, router]);
 
   useEffect(() => {
     if (!me) return;

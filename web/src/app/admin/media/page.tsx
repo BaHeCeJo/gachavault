@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { mediaApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface Asset {
@@ -25,20 +24,13 @@ function formatBytes(n: number) {
 }
 
 export default function AdminMediaPage() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
+  const { user, isLoading } = useAdminGuard("/admin/media");
 
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isLoading && (!user || (user.role !== "admin" && user.role !== "superadmin"))) {
-      router.replace("/");
-    }
-  }, [isLoading, user, router]);
 
   useEffect(() => {
     if (!user) return;

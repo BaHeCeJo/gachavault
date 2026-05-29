@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { revalidateGame } from "@/lib/revalidate";
@@ -31,8 +32,7 @@ function slugify(s: string) {
 
 export default function AdminAttributesPage() {
   const { slug } = useParams<{ slug: string }>();
-  const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading } = useAdminGuard(`/admin/games/${slug}/attributes`);
 
   const [gameName, setGameName] = useState(slug);
   const [attributes, setAttributes] = useState<GameAttribute[]>([]);
@@ -50,10 +50,6 @@ export default function AdminAttributesPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<GameAttribute | null>(null);
-
-  useEffect(() => {
-    if (!isLoading && !user) router.replace(`/auth/login?redirect=/admin/games/${slug}/attributes`);
-  }, [isLoading, user, router, slug]);
 
   useEffect(() => {
     if (!user) return;
@@ -125,8 +121,7 @@ export default function AdminAttributesPage() {
       revalidateGame(slug);
       setModal(null);
     } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? "Failed to save");
+      setError(extractApiError(e, "Failed to save"));
     } finally {
       setSaving(false);
     }

@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { gamesApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { revalidateGame } from "@/lib/revalidate";
 
@@ -33,8 +33,7 @@ const SUPPORTED_LOCALES: Record<string, string> = {
 
 export default function GameTranslationsPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { user, isLoading: authLoading } = useAuth();
-  const router = useRouter();
+  const { user, isLoading: authLoading } = useAdminGuard(`/admin/games/${slug}/translations`);
 
   const [game, setGame] = useState<GameInfo | null>(null);
   const [translations, setTranslations] = useState<Translation[]>([]);
@@ -44,10 +43,6 @@ export default function GameTranslationsPage() {
   const [saving, setSaving] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState("");
-
-  useEffect(() => {
-    if (!authLoading && !user) router.replace("/auth/login");
-  }, [authLoading, user, router]);
 
   useEffect(() => {
     if (!user) return;
