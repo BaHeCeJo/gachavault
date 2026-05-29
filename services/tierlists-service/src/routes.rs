@@ -327,24 +327,20 @@ pub async fn upvote_tierlist(
         return Err(AppError::NotFound("Tier list not found".into()));
     }
 
-    // INSERT OR IGNORE — idempotent
-    let already = sqlx::query_scalar::<_, i64>(
-        "SELECT COUNT(*) FROM tierlists.upvotes WHERE tierlist_id = $1 AND user_id = $2",
-    )
-    .bind(id)
-    .bind(auth.id())
-    .fetch_one(&pool)
-    .await
-    .map_err(AppError::Database)?;
-
-    if already == 0 {
-        sqlx::query("INSERT INTO tierlists.upvotes (tierlist_id, user_id) VALUES ($1, $2)")
+    // Atomic upsert: the (tierlist_id, user_id) primary key ensures only one
+    // INSERT can win per user. We use rows_affected to know whether ours was
+    // the winner, and bump the counter only then — closes the COUNT/INSERT
+    // race where two concurrent requests could both pass the "already == 0"
+    // check and double-increment.
+    let insert_result =
+        sqlx::query("INSERT INTO tierlists.upvotes (tierlist_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING")
             .bind(id)
             .bind(auth.id())
             .execute(&pool)
             .await
             .map_err(AppError::Database)?;
 
+    if insert_result.rows_affected() > 0 {
         sqlx::query(
             "UPDATE tierlists.tier_lists SET upvote_count = upvote_count + 1 WHERE id = $1",
         )

@@ -404,6 +404,30 @@ pub async fn me(
     }))))
 }
 
+/// Returns the list of URL prefixes a user-supplied avatar_url is allowed to
+/// start with. Built from FRONTEND_URL (the app's own /uploads/ namespace) plus
+/// any extra prefixes in ALLOWED_AVATAR_HOSTS (comma-separated full
+/// scheme+host pairs, e.g. `https://secure.gravatar.com,https://lh3.googleusercontent.com`).
+///
+/// An empty result triggers the legacy "any https:// URL" fallback so dev
+/// environments with no FRONTEND_URL configured don't break — see callsite.
+fn allowed_avatar_prefixes() -> Vec<String> {
+    let mut prefixes = Vec::new();
+    if let Ok(frontend) = std::env::var("FRONTEND_URL") {
+        let trimmed = frontend.trim_end_matches('/');
+        if !trimmed.is_empty() {
+            prefixes.push(format!("{}/uploads/", trimmed));
+        }
+    }
+    if let Ok(extra) = std::env::var("ALLOWED_AVATAR_HOSTS") {
+        for raw in extra.split(',').map(str::trim).filter(|s| !s.is_empty()) {
+            let normalised = raw.trim_end_matches('/');
+            prefixes.push(format!("{}/", normalised));
+        }
+    }
+    prefixes
+}
+
 pub async fn update_avatar(
     State(pool): State<PgPool>,
     auth: AuthUser,
@@ -415,6 +439,23 @@ pub async fn update_avatar(
     if !body.avatar_url.starts_with("https://") {
         return Err(AppError::BadRequest(
             "avatar_url must be an https:// URL".into(),
+        ));
+    }
+
+    // Block pointing the avatar at arbitrary attacker domains (which would
+    // leak viewer IPs / User-Agent on every render, and could host malicious
+    // payloads). Production must set FRONTEND_URL so only the app's own
+    // /uploads/ namespace is accepted; ALLOWED_AVATAR_HOSTS opens specific
+    // third-party hosts (Gravatar, googleusercontent) on opt-in.
+    let prefixes = allowed_avatar_prefixes();
+    if prefixes.is_empty() {
+        tracing::warn!(
+            "FRONTEND_URL / ALLOWED_AVATAR_HOSTS unset — accepting any https avatar_url. Set FRONTEND_URL in production."
+        );
+    } else if !prefixes.iter().any(|p| body.avatar_url.starts_with(p)) {
+        return Err(AppError::BadRequest(
+            "avatar_url host is not on the allowlist. Upload via the app or use an approved host."
+                .into(),
         ));
     }
 
