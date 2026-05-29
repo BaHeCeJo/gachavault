@@ -4,7 +4,10 @@
 #
 # SSH is intentionally left at defaults (root + password auth allowed) per
 # operator preference. fail2ban below provides the brute-force defense for
-# password-based SSH.
+# password-based SSH (5 retries / 10 min → 1h ban). Because this is the only
+# line of defense, the root password MUST be a high-entropy randomly
+# generated value (≥ 24 chars, mixed character set). A weak password
+# trivially defeats fail2ban — it only slows guessing, doesn't stop it.
 set -euo pipefail
 
 GHCR_OWNER="${1:?Usage: bash setup-vps.sh <github-username>}"

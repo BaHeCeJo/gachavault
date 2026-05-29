@@ -43,8 +43,16 @@ run_backup() {
         # pipes/redirects in OFFSITE_UPLOAD_CMD work as written. A failed
         # upload is logged loudly but does NOT fail the loop — the local
         # backup remains intact and the next interval will retry.
+        #
+        # The resolved command is NOT logged. If an operator embeds
+        # credentials directly in OFFSITE_UPLOAD_CMD (e.g. an inline
+        # access key) instead of using rclone/aws config files, echoing
+        # the substituted command here would leak them to log scrapers.
+        # The pre-substitution OFFSITE_UPLOAD_CMD already appears in
+        # `docker inspect` and is fine to log; what we hide is whatever
+        # tooling adds at runtime.
         UPLOAD_CMD=$(echo "$OFFSITE_UPLOAD_CMD" | sed "s|{FILE}|$FILENAME|g")
-        echo "[backup] Off-site upload: $UPLOAD_CMD"
+        echo "[backup] Off-site upload: starting (file=$FILENAME)"
         if sh -c "$UPLOAD_CMD"; then
             echo "[backup] Off-site upload OK"
         else

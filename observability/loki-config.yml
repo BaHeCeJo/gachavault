@@ -1,3 +1,8 @@
+# auth_enabled: false is intentional — Loki only listens on the internal
+# Docker network (no `ports:` mapping in docker-compose.prod.yml), so the
+# port 3100 is unreachable from outside the host. Authentication is
+# enforced at the Grafana layer (which is the only consumer). Do NOT
+# expose this port via `ports:` or nginx without flipping this to true.
 auth_enabled: false
 
 server:
