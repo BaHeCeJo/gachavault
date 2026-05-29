@@ -95,6 +95,20 @@ async fn main() {
         .allow_headers([AUTHORIZATION, CONTENT_TYPE, ACCEPT])
         .allow_credentials(true);
 
+    // Admin endpoints proxy to auth-service but are gated at the edge: the
+    // request must carry a valid JWT with role admin/superadmin or the
+    // gateway returns 401/403 before any backend service is touched. This is
+    // defense-in-depth on top of per-service is_admin() checks — a bug in a
+    // downstream handler can't accidentally expose an admin endpoint without
+    // also bypassing this layer.
+    let admin_router: Router<AppState> = Router::new()
+        .route("/api/v1/admin", any(proxy_admin))
+        .route("/api/v1/admin/*path", any(proxy_admin))
+        .layer(middleware::from_fn_with_state(
+            state.clone(),
+            admin_role_check,
+        ));
+
     let app = Router::new()
         .route("/health", axum::routing::get(health_check))
         // Base routes (no trailing path segment)
@@ -115,6 +129,7 @@ async fn main() {
         .route("/api/v1/media/*path", any(proxy_media))
         .route("/api/v1/search/*path", any(proxy_search))
         .route("/api/v1/users/*path", any(proxy_users))
+        .merge(admin_router)
         .layer(middleware::from_fn_with_state(
             state.clone(),
             csrf_origin_check,
@@ -276,6 +291,46 @@ async fn proxy_users(
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
     proxy_request(&s, &s.users_url.clone(), req).await
+}
+async fn proxy_admin(
+    State(s): State<AppState>,
+    req: axum::extract::Request,
+) -> Result<Response, StatusCode> {
+    // Admin routes live in auth-service alongside /auth/* and /users/*.
+    proxy_request(&s, &s.auth_url.clone(), req).await
+}
+
+/// Reject any /api/v1/admin/* request whose JWT doesn't claim role
+/// admin or superadmin. Returns 401 without a token (or with one that
+/// won't decode under our secret) and 403 when the role check fails.
+/// Downstream services still run their own is_admin() check — this is
+/// strictly defense-in-depth at the edge.
+async fn admin_role_check(
+    State(state): State<AppState>,
+    req: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    let headers = req.headers();
+    let token = headers
+        .get(AUTHORIZATION)
+        .and_then(|v| v.to_str().ok())
+        .and_then(|v| v.strip_prefix("Bearer "))
+        .map(|s| s.to_string())
+        .or_else(|| extract_cookie_value(headers, "access_token"));
+
+    let Some(token) = token else {
+        return Err(StatusCode::UNAUTHORIZED);
+    };
+
+    let Ok(claims) = Claims::decode(&token, &state.jwt_secret) else {
+        return Err(StatusCode::UNAUTHORIZED);
+    };
+
+    if !matches!(claims.role.as_str(), "admin" | "superadmin") {
+        return Err(StatusCode::FORBIDDEN);
+    }
+
+    Ok(next.run(req).await)
 }
 
 fn extract_cookie_value(headers: &axum::http::HeaderMap, name: &str) -> Option<String> {

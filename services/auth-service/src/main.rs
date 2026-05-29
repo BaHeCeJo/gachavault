@@ -8,6 +8,34 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use auth_service::{oauth, routes};
 
+/// Refuse to start if FRONTEND_URL / BACKEND_URL are obviously wrong: unset,
+/// malformed, or `http://` against a non-loopback host. These values land in
+/// OAuth redirect URIs and post-callback redirects, so a typo or missing env
+/// in prod is the kind of silent misconfig that downgrades auth without any
+/// error showing up until you trace a real bug back to it.
+fn validate_public_url(name: &str, value: &str) {
+    let Some(rest) = value
+        .strip_prefix("https://")
+        .or_else(|| value.strip_prefix("http://"))
+    else {
+        panic!(
+            "{} must start with http:// or https:// (got {:?})",
+            name, value
+        );
+    };
+    let host = rest.split(['/', ':']).next().unwrap_or("");
+    if host.is_empty() {
+        panic!("{} has no host component (got {:?})", name, value);
+    }
+    let is_loopback = host == "localhost" || host == "127.0.0.1" || host == "[::1]";
+    if value.starts_with("http://") && !is_loopback {
+        panic!(
+            "{}={:?} uses http:// on a non-loopback host; set https:// in production",
+            name, value,
+        );
+    }
+}
+
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().ok();
@@ -18,6 +46,12 @@ async fn main() {
         ))
         .with(tracing_subscriber::fmt::layer().json())
         .init();
+
+    // Fail loudly on URL misconfig before we accept any traffic.
+    let frontend_url = std::env::var("FRONTEND_URL").expect("FRONTEND_URL required");
+    let backend_url = std::env::var("BACKEND_URL").expect("BACKEND_URL required");
+    validate_public_url("FRONTEND_URL", &frontend_url);
+    validate_public_url("BACKEND_URL", &backend_url);
 
     let database_url = shared_auth::read_secret("DATABASE_URL").expect("DATABASE_URL required");
     let pool = shared_db::create_pool(&database_url)

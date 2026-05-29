@@ -87,10 +87,13 @@ pub async fn search(
     if !response.status().is_success() {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
+        // Log the body server-side as a structured field but don't fold it
+        // into the AppError message — Meilisearch error responses can echo
+        // auth headers, query payloads, or other sensitive config back at us.
+        tracing::error!(status = %status, body = %text, "meilisearch: search returned non-success");
         return Err(AppError::Internal(anyhow::anyhow!(
-            "Meilisearch error {}: {}",
-            status,
-            text
+            "search upstream error ({})",
+            status
         )));
     }
 
@@ -131,10 +134,10 @@ pub async fn index_item(
     if !response.status().is_success() {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
+        tracing::error!(status = %status, body = %text, "meilisearch: index returned non-success");
         return Err(AppError::Internal(anyhow::anyhow!(
-            "Meilisearch error {}: {}",
-            status,
-            text
+            "search index upstream error ({})",
+            status
         )));
     }
 
@@ -160,10 +163,10 @@ pub async fn remove_from_index(
     if !response.status().is_success() {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
+        tracing::error!(status = %status, body = %text, "meilisearch: remove returned non-success");
         return Err(AppError::Internal(anyhow::anyhow!(
-            "Meilisearch error {}: {}",
-            status,
-            text
+            "search index upstream error ({})",
+            status
         )));
     }
 

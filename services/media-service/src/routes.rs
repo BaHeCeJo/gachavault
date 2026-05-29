@@ -125,9 +125,26 @@ pub async fn delete_asset(
         ));
     }
 
-    // Delete the file from disk
-    if tokio::fs::remove_file(&asset.storage_path).await.is_err() {
-        tracing::warn!("Failed to delete file at {}", asset.storage_path);
+    // Delete the file from disk first. If the file is already gone (NotFound)
+    // we still proceed to delete the DB row — that's actually the right
+    // cleanup. Any other I/O failure (permission denied, disk full, etc.) is
+    // surfaced so the caller can retry; otherwise the DB row vanishes while
+    // the file lingers and we accumulate orphaned uploads.
+    if let Err(e) = tokio::fs::remove_file(&asset.storage_path).await {
+        if e.kind() != std::io::ErrorKind::NotFound {
+            tracing::error!(
+                path = %asset.storage_path,
+                error = %e,
+                "media: file delete failed; keeping DB row to allow retry"
+            );
+            return Err(AppError::Internal(anyhow::anyhow!(
+                "failed to delete asset file"
+            )));
+        }
+        tracing::warn!(
+            path = %asset.storage_path,
+            "media: asset file already missing on disk"
+        );
     }
 
     sqlx::query!("DELETE FROM media.assets WHERE id = $1", id)
