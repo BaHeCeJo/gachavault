@@ -6,10 +6,11 @@ use axum::{
 use reqwest::Client;
 use serde_json::json;
 use shared_auth::HasInternalSecret;
-use std::{net::SocketAddr, sync::Arc};
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use std::sync::Arc;
 
 mod routes;
+
+const SERVICE: &str = "search-service";
 
 #[derive(Clone)]
 pub struct AppState {
@@ -27,14 +28,7 @@ impl HasInternalSecret for AppState {
 
 #[tokio::main]
 async fn main() {
-    dotenvy::dotenv().ok();
-
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
-        ))
-        .with(tracing_subscriber::fmt::layer().json())
-        .init();
+    shared_server::init_tracing();
 
     let state = AppState {
         meilisearch_url: std::env::var("MEILISEARCH_URL").expect("MEILISEARCH_URL required"),
@@ -59,21 +53,12 @@ async fn main() {
         ));
 
     let app = Router::new()
-        .route("/health", get(health_check))
+        .route("/health", get(|| async { shared_server::health(SERVICE) }))
         .route("/api/v1/search", get(routes::search))
         .merge(index_routes)
         .with_state(state);
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3007".to_string());
-    let addr: SocketAddr = format!("0.0.0.0:{}", port).parse().unwrap();
-    tracing::info!("search-service listening on {}", addr);
-
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
-}
-
-async fn health_check() -> axum::Json<serde_json::Value> {
-    axum::Json(json!({"status": "ok", "service": "search-service"}))
+    shared_server::serve(SERVICE, 3007, app).await;
 }
 
 async fn init_meilisearch_index(state: &AppState) {

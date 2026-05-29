@@ -12,12 +12,12 @@ use axum::{
 };
 use redis::AsyncCommands;
 use reqwest::Client;
-use serde_json::json;
 use shared_auth::Claims;
-use std::{net::SocketAddr, sync::Arc};
+use std::sync::Arc;
 use tower_http::cors::CorsLayer;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use uuid::Uuid;
+
+const SERVICE: &str = "api-gateway";
 
 #[derive(Clone)]
 struct AppState {
@@ -37,14 +37,7 @@ struct AppState {
 
 #[tokio::main]
 async fn main() {
-    dotenvy::dotenv().ok();
-
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
-        ))
-        .with(tracing_subscriber::fmt::layer().json())
-        .init();
+    shared_server::init_tracing();
 
     let auth_url = std::env::var("AUTH_SERVICE_URL").expect("AUTH_SERVICE_URL required");
     let jwt_secret = shared_auth::read_secret("JWT_SECRET").expect("JWT_SECRET required");
@@ -110,7 +103,10 @@ async fn main() {
         ));
 
     let app = Router::new()
-        .route("/health", axum::routing::get(health_check))
+        .route(
+            "/health",
+            axum::routing::get(|| async { shared_server::health(SERVICE) }),
+        )
         // Base routes (no trailing path segment)
         .route("/api/v1/auth", any(proxy_auth))
         .route("/api/v1/games", any(proxy_games))
@@ -138,16 +134,7 @@ async fn main() {
         .with_state(state)
         .layer(cors);
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
-    let addr: SocketAddr = format!("0.0.0.0:{}", port).parse().unwrap();
-    tracing::info!("api-gateway listening on {}", addr);
-
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
-}
-
-async fn health_check() -> axum::Json<serde_json::Value> {
-    axum::Json(json!({"status": "ok", "service": "api-gateway"}))
+    shared_server::serve(SERVICE, 3000, app).await;
 }
 
 /// CSRF defense-in-depth on top of SameSite cookies.

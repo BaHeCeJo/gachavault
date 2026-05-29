@@ -1,12 +1,12 @@
 use axum::{routing::get, Router};
 use reqwest::Client;
-use serde_json::json;
-use std::{net::SocketAddr, sync::Arc};
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use std::sync::Arc;
 
 mod db;
 mod models;
 mod routes;
+
+const SERVICE: &str = "items-service";
 
 #[derive(Clone)]
 pub struct AppState {
@@ -18,14 +18,7 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
-    dotenvy::dotenv().ok();
-
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
-        ))
-        .with(tracing_subscriber::fmt::layer().json())
-        .init();
+    shared_server::init_tracing();
 
     let database_url = shared_auth::read_secret("DATABASE_URL").expect("DATABASE_URL required");
     let pool = shared_db::create_pool(&database_url)
@@ -45,7 +38,7 @@ async fn main() {
     };
 
     let app = Router::new()
-        .route("/health", get(health_check))
+        .route("/health", get(|| async { shared_server::health(SERVICE) }))
         .route(
             "/api/v1/items",
             get(routes::list_items).post(routes::create_item),
@@ -91,14 +84,5 @@ async fn main() {
         )
         .with_state(state);
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3003".to_string());
-    let addr: SocketAddr = format!("0.0.0.0:{}", port).parse().unwrap();
-    tracing::info!("items-service listening on {}", addr);
-
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
-}
-
-async fn health_check() -> axum::Json<serde_json::Value> {
-    axum::Json(json!({"status": "ok", "service": "items-service"}))
+    shared_server::serve(SERVICE, 3003, app).await;
 }

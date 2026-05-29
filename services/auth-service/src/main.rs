@@ -2,11 +2,10 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use serde_json::json;
-use std::net::SocketAddr;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use auth_service::{oauth, routes};
+
+const SERVICE: &str = "auth-service";
 
 /// Refuse to start if FRONTEND_URL / BACKEND_URL are obviously wrong: unset,
 /// malformed, or `http://` against a non-loopback host. These values land in
@@ -38,14 +37,7 @@ fn validate_public_url(name: &str, value: &str) {
 
 #[tokio::main]
 async fn main() {
-    dotenvy::dotenv().ok();
-
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
-        ))
-        .with(tracing_subscriber::fmt::layer().json())
-        .init();
+    shared_server::init_tracing();
 
     // Fail loudly on URL misconfig before we accept any traffic.
     let frontend_url = std::env::var("FRONTEND_URL").expect("FRONTEND_URL required");
@@ -62,7 +54,7 @@ async fn main() {
     migrator.run(&pool).await.expect("Failed to run migrations");
 
     let app = Router::new()
-        .route("/health", get(health_check))
+        .route("/health", get(|| async { shared_server::health(SERVICE) }))
         .route("/api/v1/auth/register", post(routes::register))
         .route("/api/v1/auth/login", post(routes::login))
         .route("/api/v1/auth/refresh", post(routes::refresh))
@@ -110,14 +102,5 @@ async fn main() {
         )
         .with_state(pool);
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3001".to_string());
-    let addr: SocketAddr = format!("0.0.0.0:{}", port).parse().unwrap();
-    tracing::info!("auth-service listening on {}", addr);
-
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
-}
-
-async fn health_check() -> axum::Json<serde_json::Value> {
-    axum::Json(json!({"status": "ok", "service": "auth-service"}))
+    shared_server::serve(SERVICE, 3001, app).await;
 }

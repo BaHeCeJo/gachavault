@@ -11,6 +11,7 @@ path = "src/main.rs"
 shared-types = { workspace = true }
 shared-errors = { workspace = true }
 shared-auth = { workspace = true }
+shared-server = { workspace = true }
 axum = { workspace = true }
 tokio = { workspace = true }
 serde = { workspace = true }

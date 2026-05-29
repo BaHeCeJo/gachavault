@@ -46,6 +46,7 @@ dependencies = [
  "serde_json",
  "shared-auth",
  "shared-errors",
+ "shared-server",
  "shared-types",
  "tokio",
  "tower 0.4.13",
@@ -124,6 +125,7 @@ dependencies = [
  "shared-auth",
  "shared-db",
  "shared-errors",
+ "shared-server",
  "shared-types",
  "sqlx",
  "subtle",
@@ -341,6 +343,7 @@ dependencies = [
  "shared-auth",
  "shared-db",
  "shared-errors",
+ "shared-server",
  "shared-types",
  "sqlx",
  "tokio",
@@ -702,6 +705,7 @@ dependencies = [
  "shared-auth",
  "shared-db",
  "shared-errors",
+ "shared-server",
  "shared-types",
  "sqlx",
  "tokio",
@@ -1137,6 +1141,7 @@ dependencies = [
  "shared-auth",
  "shared-db",
  "shared-errors",
+ "shared-server",
  "shared-types",
  "sqlx",
  "tokio",
@@ -1336,6 +1341,7 @@ dependencies = [
  "shared-auth",
  "shared-db",
  "shared-errors",
+ "shared-server",
  "shared-types",
  "sqlx",
  "tokio",
@@ -1433,6 +1439,7 @@ dependencies = [
  "serde_json",
  "shared-auth",
  "shared-errors",
+ "shared-server",
  "shared-types",
  "tokio",
  "tower-http 0.5.2",
@@ -2092,6 +2099,7 @@ dependencies = [
  "serde_json",
  "shared-auth",
  "shared-errors",
+ "shared-server",
  "shared-types",
  "tokio",
  "tower-http 0.5.2",
@@ -2269,6 +2277,18 @@ dependencies = [
  "sqlx",
  "thiserror",
  "tracing",
+]
+
+[[package]]
+name = "shared-server"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "dotenvy",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -2680,6 +2700,7 @@ dependencies = [
  "shared-auth",
  "shared-db",
  "shared-errors",
+ "shared-server",
  "shared-types",
  "sqlx",
  "tokio",

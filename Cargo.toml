@@ -13,6 +13,7 @@ members = [
     "crates/shared-auth",
     "crates/shared-errors",
     "crates/shared-db",
+    "crates/shared-server",
 ]
 resolver = "2"
 
@@ -70,3 +71,4 @@ shared-types = { path = "crates/shared-types" }
 shared-auth = { path = "crates/shared-auth" }
 shared-errors = { path = "crates/shared-errors" }
 shared-db = { path = "crates/shared-db" }
+shared-server = { path = "crates/shared-server" }

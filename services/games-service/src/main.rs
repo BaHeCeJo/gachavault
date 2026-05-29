@@ -1,22 +1,14 @@
 use axum::{routing::get, Router};
-use serde_json::json;
-use std::net::SocketAddr;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod db;
 mod models;
 mod routes;
 
+const SERVICE: &str = "games-service";
+
 #[tokio::main]
 async fn main() {
-    dotenvy::dotenv().ok();
-
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
-        ))
-        .with(tracing_subscriber::fmt::layer().json())
-        .init();
+    shared_server::init_tracing();
 
     let database_url = shared_auth::read_secret("DATABASE_URL").expect("DATABASE_URL required");
     let pool = shared_db::create_pool(&database_url)
@@ -27,7 +19,7 @@ async fn main() {
     migrator.run(&pool).await.expect("Failed to run migrations");
 
     let app = Router::new()
-        .route("/health", get(health_check))
+        .route("/health", get(|| async { shared_server::health(SERVICE) }))
         .route(
             "/api/v1/games",
             get(routes::list_games).post(routes::create_game),
@@ -74,14 +66,5 @@ async fn main() {
         )
         .with_state(pool);
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3002".to_string());
-    let addr: SocketAddr = format!("0.0.0.0:{}", port).parse().unwrap();
-    tracing::info!("games-service listening on {}", addr);
-
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
-}
-
-async fn health_check() -> axum::Json<serde_json::Value> {
-    axum::Json(json!({"status": "ok", "service": "games-service"}))
+    shared_server::serve(SERVICE, 3002, app).await;
 }
