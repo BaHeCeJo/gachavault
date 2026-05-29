@@ -40,9 +40,16 @@ api.interceptors.response.use(
       refreshQueue.forEach((resolve) => resolve());
       refreshQueue = [];
       return api(original!);
-    } catch {
+    } catch (refreshError) {
+      // The user's session is gone — neither the original 401 nor a fresh
+      // login attempt will help. Drain the queue and reject with a typed
+      // error so callers can show "please sign in again" instead of the
+      // confusing generic 401 from the original request.
       refreshQueue = [];
-      return Promise.reject(error);
+      console.error("[api] refresh failed; session expired", refreshError);
+      const sessionError = new Error("Session expired — please sign in again");
+      (sessionError as Error & { code?: string }).code = "SESSION_EXPIRED";
+      return Promise.reject(sessionError);
     } finally {
       refreshing = false;
     }

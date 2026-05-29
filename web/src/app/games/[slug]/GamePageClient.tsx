@@ -112,22 +112,25 @@ export default function GamePageClient({ initial }: ClientProps) {
       .catch(() => {});
   }, [game.id]);
 
+  // Two parallel one-shot fetches when the collection tab first opens.
+  // Kept as separate effects so each only re-runs when its own state changes;
+  // bundling them shared deps array, which re-ran the whole thing every time
+  // either fetch settled and risked refetching the just-loaded list.
   useEffect(() => {
-    if (activeTab !== "collection") return;
-    if (!user) return;
-    if (collectionEntries === null) {
-      collectionsApi
-        .getByGame(game.id)
-        .then((r) => setCollectionEntries(r.data.data ?? []))
-        .catch(() => setCollectionEntries([]));
-    }
-    if (allGameItems === null) {
-      itemsApi
-        .listAll<Item>({ game_id: game.id })
-        .then((all) => setAllGameItems(all))
-        .catch(() => setAllGameItems([]));
-    }
-  }, [activeTab, user, game.id, collectionEntries, allGameItems]);
+    if (activeTab !== "collection" || !user || collectionEntries !== null) return;
+    collectionsApi
+      .getByGame(game.id)
+      .then((r) => setCollectionEntries(r.data.data ?? []))
+      .catch(() => setCollectionEntries([]));
+  }, [activeTab, user, game.id, collectionEntries]);
+
+  useEffect(() => {
+    if (activeTab !== "collection" || !user || allGameItems !== null) return;
+    itemsApi
+      .listAll<Item>({ game_id: game.id })
+      .then((all) => setAllGameItems(all))
+      .catch(() => setAllGameItems([]));
+  }, [activeTab, user, game.id, allGameItems]);
 
   // Skip the fetch on first render — the server already shipped items for
   // the initial section. Subsequent section switches do a client-side fetch.

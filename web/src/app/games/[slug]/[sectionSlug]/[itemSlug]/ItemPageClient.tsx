@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { gamesApi, itemsApi } from "@/lib/api";
 import { SafeImage } from "@/components/SafeImage";
-import { cardGradient } from "@/lib/theme";
+import { cardGradient, RARITY_CLASSES, RARITY_BADGE_FALLBACK } from "@/lib/theme";
 import type { ItemPageBundle } from "@/lib/seo";
 import {
   type AttrMap,
@@ -81,15 +81,9 @@ function RarityStars({ value }: { value: unknown }) {
     );
   }
   const str = String(value);
-  const colorMap: Record<string, string> = {
-    SSR: "text-yellow-400 border-yellow-700 bg-yellow-900/20",
-    SR: "text-purple-400 border-purple-700 bg-purple-900/20",
-    R: "text-blue-400 border-blue-700 bg-blue-900/20",
-    S: "text-yellow-400 border-yellow-700 bg-yellow-900/20",
-    A: "text-purple-400 border-purple-700 bg-purple-900/20",
-  };
+  const badge = RARITY_CLASSES[str]?.badge ?? RARITY_BADGE_FALLBACK;
   return (
-    <span className={`px-3 py-0.5 rounded-full text-sm font-semibold border ${colorMap[str] ?? "text-gray-400 border-gray-700 bg-gray-800"}`}>
+    <span className={`px-3 py-0.5 rounded-full text-sm font-semibold border ${badge}`}>
       {str}
     </span>
   );

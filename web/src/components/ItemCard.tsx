@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
-import { cardGradient } from "@/lib/theme";
+import { cardGradient, RARITY_CLASSES } from "@/lib/theme";
 import {
   type AttrMap,
   type GameAttribute,
@@ -22,23 +22,6 @@ export interface CardLayout {
   watermark_attr?: string | null;
   watermark_opacity?: number;
 }
-
-// Hardcoded fallbacks used when a schema has no card_layout configured —
-// matches the gacha-style defaults that lived inline in GamePageClient.
-const RARITY_GLOW: Record<string, string> = {
-  SSR: "shadow-yellow-500/20",
-  SR: "shadow-purple-500/20",
-  UR: "shadow-yellow-500/20",
-  S: "shadow-yellow-500/20",
-  A: "shadow-purple-500/20",
-};
-const RARITY_BORDER: Record<string, string> = {
-  SSR: "border-yellow-700/50",
-  SR: "border-purple-700/50",
-  UR: "border-yellow-700/50",
-  S: "border-yellow-700/50",
-  A: "border-purple-700/50",
-};
 
 interface ItemLike {
   id: string;
@@ -177,8 +160,8 @@ export default function ItemCard({
   const showRarity = rarity !== undefined && !rarityRepresented;
 
   const legacyBorderClass =
-    !borderAttr && rarityStr && RARITY_BORDER[rarityStr]
-      ? `${RARITY_BORDER[rarityStr]} hover:shadow-lg ${RARITY_GLOW[rarityStr]}`
+    !borderAttr && rarityStr && RARITY_CLASSES[rarityStr]
+      ? `${RARITY_CLASSES[rarityStr].border} hover:shadow-lg ${RARITY_CLASSES[rarityStr].glow}`
       : "border-gray-800 hover:border-amber-500/60 hover:shadow-amber-500/10";
 
   // When a border-color attribute resolves (e.g. rarity → SSR yellow), also

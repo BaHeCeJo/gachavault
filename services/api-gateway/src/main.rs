@@ -326,7 +326,10 @@ async fn admin_role_check(
         return Err(StatusCode::UNAUTHORIZED);
     };
 
-    if !matches!(claims.role.as_str(), "admin" | "superadmin") {
+    if !matches!(
+        claims.role.as_str(),
+        shared_auth::ROLE_ADMIN | shared_auth::ROLE_SUPERADMIN
+    ) {
         return Err(StatusCode::FORBIDDEN);
     }
 

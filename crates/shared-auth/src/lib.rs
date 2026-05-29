@@ -36,8 +36,22 @@ pub fn read_secret(name: &str) -> Result<String, std::env::VarError> {
     std::env::var(name)
 }
 
+// Canonical role names. Every service that compares against a role string
+// should reference these constants instead of inlining a literal — a typo
+// like "superuser" (vs "superadmin") would otherwise silently authorise no
+// one without anything visibly failing at compile time.
+pub const ROLE_USER: &str = "user";
+pub const ROLE_EDITOR: &str = "editor";
+pub const ROLE_ADMIN: &str = "admin";
+pub const ROLE_SUPERADMIN: &str = "superadmin";
+
+/// Set of role values accepted at the global (non-game-scoped) layer.
+/// Per-game roles (`game_admin`, `game_editor`, `section_editor`) live in
+/// items-service alongside the queries that use them.
+pub const VALID_GLOBAL_ROLES: &[&str] = &[ROLE_USER, ROLE_EDITOR, ROLE_ADMIN, ROLE_SUPERADMIN];
+
 fn default_role() -> String {
-    "user".to_string()
+    ROLE_USER.to_string()
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -126,11 +140,11 @@ impl AuthUser {
     }
 
     pub fn is_admin(&self) -> bool {
-        matches!(self.role(), "admin" | "superadmin")
+        matches!(self.role(), ROLE_ADMIN | ROLE_SUPERADMIN)
     }
 
     pub fn can_edit(&self) -> bool {
-        matches!(self.role(), "admin" | "superadmin" | "editor")
+        matches!(self.role(), ROLE_ADMIN | ROLE_SUPERADMIN | ROLE_EDITOR)
     }
 }
 

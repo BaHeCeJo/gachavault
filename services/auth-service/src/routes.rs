@@ -411,21 +411,28 @@ pub async fn me(
 ///
 /// An empty result triggers the legacy "any https:// URL" fallback so dev
 /// environments with no FRONTEND_URL configured don't break — see callsite.
-fn allowed_avatar_prefixes() -> Vec<String> {
-    let mut prefixes = Vec::new();
-    if let Ok(frontend) = std::env::var("FRONTEND_URL") {
-        let trimmed = frontend.trim_end_matches('/');
-        if !trimmed.is_empty() {
-            prefixes.push(format!("{}/uploads/", trimmed));
+///
+/// Cached behind a OnceLock since both env vars are conceptually startup
+/// config: rebuilding the Vec on every avatar PATCH is wasted allocation.
+/// To pick up an env change, restart the process.
+fn allowed_avatar_prefixes() -> &'static [String] {
+    static CACHE: std::sync::OnceLock<Vec<String>> = std::sync::OnceLock::new();
+    CACHE.get_or_init(|| {
+        let mut prefixes = Vec::new();
+        if let Ok(frontend) = std::env::var("FRONTEND_URL") {
+            let trimmed = frontend.trim_end_matches('/');
+            if !trimmed.is_empty() {
+                prefixes.push(format!("{}/uploads/", trimmed));
+            }
         }
-    }
-    if let Ok(extra) = std::env::var("ALLOWED_AVATAR_HOSTS") {
-        for raw in extra.split(',').map(str::trim).filter(|s| !s.is_empty()) {
-            let normalised = raw.trim_end_matches('/');
-            prefixes.push(format!("{}/", normalised));
+        if let Ok(extra) = std::env::var("ALLOWED_AVATAR_HOSTS") {
+            for raw in extra.split(',').map(str::trim).filter(|s| !s.is_empty()) {
+                let normalised = raw.trim_end_matches('/');
+                prefixes.push(format!("{}/", normalised));
+            }
         }
-    }
-    prefixes
+        prefixes
+    })
 }
 
 pub async fn update_avatar(
@@ -520,16 +527,15 @@ pub async fn set_user_role(
     if auth.id() == user_id {
         return Err(AppError::Forbidden("Cannot change your own role".into()));
     }
-    let valid_roles = ["user", "editor", "admin", "superadmin"];
-    if !valid_roles.contains(&body.role.as_str()) {
+    if !shared_auth::VALID_GLOBAL_ROLES.contains(&body.role.as_str()) {
         return Err(AppError::BadRequest(format!(
             "Invalid role '{}'. Valid: {}",
             body.role,
-            valid_roles.join(", ")
+            shared_auth::VALID_GLOBAL_ROLES.join(", ")
         )));
     }
     // Only superadmins may grant the superadmin role
-    if body.role == "superadmin" && auth.role() != "superadmin" {
+    if body.role == shared_auth::ROLE_SUPERADMIN && auth.role() != shared_auth::ROLE_SUPERADMIN {
         return Err(AppError::Forbidden(
             "Only superadmins may grant the superadmin role".into(),
         ));
@@ -900,7 +906,7 @@ pub async fn revoke_all_sessions(
     State(pool): State<PgPool>,
     auth: AuthUser,
 ) -> AppResult<Json<ApiResponse<()>>> {
-    if auth.role() != "superadmin" {
+    if auth.role() != shared_auth::ROLE_SUPERADMIN {
         return Err(AppError::Forbidden("Superadmin access required".into()));
     }
 
