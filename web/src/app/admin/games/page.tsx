@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { adminApi } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { revalidateGame, revalidatePaths } from "@/lib/revalidate";
@@ -44,8 +44,7 @@ function toSlug(name: string): string {
 }
 
 export default function AdminGamesPage() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
+  const { user, isLoading } = useAdminGuard("/admin/games");
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<{ mode: "create" | "edit"; game?: Game } | null>(null);
@@ -54,10 +53,6 @@ export default function AdminGamesPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Game | null>(null);
-
-  useEffect(() => {
-    if (!isLoading && !user) router.replace("/auth/login?redirect=/admin/games");
-  }, [isLoading, user, router]);
 
   useEffect(() => {
     if (!user) return;
@@ -111,8 +106,7 @@ export default function AdminGamesPage() {
       }
       setModal(null);
     } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? "Failed to save");
+      setError(extractApiError(e, "Failed to save"));
     } finally {
       setSaving(false);
     }
@@ -125,8 +119,8 @@ export default function AdminGamesPage() {
       setGames((prev) => prev.filter((g) => g.slug !== deleteTarget.slug));
       // Deleted game's pages are gone — refresh the games list and home.
       revalidatePaths(["/games", "/"]);
-    } catch {
-      setError("Failed to delete game");
+    } catch (e: unknown) {
+      setError(extractApiError(e, "Failed to delete game"));
     } finally {
       setDeleteTarget(null);
     }
