@@ -1,0 +1,40 @@
+apiVersion: 1
+
+# Where alert notifications get delivered.
+#
+# The default contact point below is a placeholder webhook URL — Grafana
+# will refuse to send anything to it. To actually receive alerts, edit
+# this file on the VPS (then restart grafana) and either:
+#
+#   1. Replace the webhook URL with a real Discord / Slack incoming webhook
+#      (the easiest path for a solo operator).
+#
+#   2. Comment out the webhook block and uncomment the email block at the
+#      bottom, filling in the SMTP fields. The shared SMTP_* secrets used
+#      by notifications-service can be reused — set them via Grafana's
+#      [smtp] section in grafana.ini, not here.
+#
+# Until then, alerts still fire and show up in Grafana's Alerting > Alert
+# rules page when you SSH-tunnel in — they just don't push anywhere.
+
+contactPoints:
+  - orgId: 1
+    name: default
+    receivers:
+      - uid: default-webhook
+        type: webhook
+        settings:
+          # ↓↓↓ EDIT THIS to your Discord/Slack/etc webhook URL ↓↓↓
+          url: https://example.invalid/replace-me-with-real-webhook
+          httpMethod: POST
+        # Don't send a heads-up when an alert resolves itself — keep the
+        # signal-to-noise high.
+        disableResolveMessage: false
+
+# Alternative — uncomment and fill in if you'd rather receive email:
+#
+#      - uid: default-email
+#        type: email
+#        settings:
+#          addresses: you@example.com
+#          singleEmail: false

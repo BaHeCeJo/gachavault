@@ -2,6 +2,10 @@ apiVersion: 1
 
 datasources:
   - name: Loki
+    # Pinned so alerting/rules.yml can reference the datasource by a stable
+    # UID. Without this the auto-generated UID changes between Grafana
+    # restarts and alert rules break.
+    uid: loki
     type: loki
     access: proxy
     url: http://loki:3100

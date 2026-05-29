@@ -1,0 +1,172 @@
+apiVersion: 1
+
+# Alert rules backed by Loki LogQL queries. The Grafana evaluator runs
+# each query on the `interval` cadence and fires an alert when the
+# `for` window has been continuously over threshold.
+#
+# Limitations:
+#   - We're log-based, so anything that doesn't surface in logs (CPU,
+#     memory, disk free, network) isn't covered here — that needs
+#     node_exporter + Prometheus, not on this stack.
+#   - Disk pressure on /loki and /postgres_data shows up as service
+#     crash logs eventually, which the "service panic" rule below catches
+#     after the fact.
+
+groups:
+  - orgId: 1
+    name: gachavault
+    folder: gachavault
+    interval: 1m
+    rules:
+
+      # Any Rust service panicked in the last 5 minutes. Rust panics print
+      # "panicked at" with backtrace info; restart loops re-emit it on
+      # every cycle so this fires within a minute of the first crash.
+      - uid: service-panic
+        title: Service panicked
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({container=~"gachavault-.*"} |~ "(?i)panicked at" [5m]))'
+              queryType: instant
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "__expr__"
+            model:
+              type: threshold
+              refId: B
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0] }
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: A gachavault-* container logged a panic
+          description: "Check `docker logs <container>` and the Loki stream {container=\"...\"} |~ \"panicked at\""
+
+      # 5xx error rate spike from nginx. Threshold 10 errors / 5 min is a
+      # rough heuristic — tune after a week of baseline data. Catches both
+      # backend outages (502/504) and unhandled handler errors (500).
+      - uid: nginx-5xx-spike
+        title: nginx 5xx spike
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({container=~".*nginx.*"} |~ " 5[0-9][0-9] " [5m]))'
+              queryType: instant
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "__expr__"
+            model:
+              type: threshold
+              refId: B
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [10] }
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: nginx returned more than 10 5xx responses in 5 minutes
+          description: "Drill into {container=~\".*nginx.*\"} |~ \" 5[0-9][0-9] \" to find which path is failing"
+
+      # Postgres logged a FATAL or PANIC. These mean the DB itself is in a
+      # bad place (out of memory, corrupt page, can't write WAL) — the
+      # services will start failing within seconds.
+      - uid: postgres-fatal
+        title: Postgres FATAL/PANIC
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({service="postgres"} |~ "(?i)\\b(fatal|panic)\\b" [5m]))'
+              queryType: instant
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "__expr__"
+            model:
+              type: threshold
+              refId: B
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0] }
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Postgres logged a FATAL or PANIC message
+          description: "Check `docker logs postgres` immediately"
+
+      # Certbot renewal printed its loud failure marker.
+      # db-backup.sh prints `[certbot] renew FAILED at ...` on failure,
+      # the cert healthcheck flips unhealthy at 7 days to expiry; this
+      # rule catches the earlier signal so we have time to intervene.
+      - uid: certbot-renew-failed
+        title: certbot renew failed
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 86400, to: 0 }
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({container=~".*certbot.*"} |~ "renew FAILED" [24h]))'
+              queryType: instant
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "__expr__"
+            model:
+              type: threshold
+              refId: B
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0] }
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: certbot has logged a renewal failure in the last 24h
+          description: "Investigate before the cert hits the 7-day expiry healthcheck threshold"
+
+      # Off-site backup hasn't succeeded recently. scripts/db-backup.sh
+      # prints `[backup] Off-site upload OK` after a successful push;
+      # absence of that line for 48h means restore-from-off-site is no
+      # longer current.
+      - uid: offsite-backup-stale
+        title: Off-site backup hasn't succeeded in 48h
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 172800, to: 0 }
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({container=~".*db-backup.*"} |~ "Off-site upload OK" [48h]))'
+              queryType: instant
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "__expr__"
+            model:
+              type: threshold
+              refId: B
+              expression: A
+              conditions:
+                - evaluator: { type: lt, params: [1] }
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: No successful off-site backup logged in the last 48 hours
+          description: "Either OFFSITE_UPLOAD_CMD is unset, or every upload in the last 48h has failed. VPS disk failure is now a data-loss event."
