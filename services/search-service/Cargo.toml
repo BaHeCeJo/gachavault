@@ -22,4 +22,3 @@ dotenvy = { workspace = true }
 anyhow = { workspace = true }
 reqwest = { workspace = true }
 uuid = { workspace = true }
-subtle = { workspace = true }

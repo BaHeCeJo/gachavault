@@ -6,6 +6,12 @@ import { gamesApi, itemsApi } from "@/lib/api";
 import { SafeImage } from "@/components/SafeImage";
 import { cardGradient } from "@/lib/theme";
 import type { ItemPageBundle } from "@/lib/seo";
+import {
+  type AttrMap,
+  type GameAttribute,
+  buildAttrMap,
+  lookupAttr,
+} from "@/lib/attrs";
 
 interface Item {
   id: string;
@@ -40,31 +46,6 @@ interface SchemaField {
   source_section?: string;
   source_field?: string;
   sources?: { source_section: string; source_field: string }[];
-}
-
-interface GameAttribute {
-  id: string;
-  attr_type: string;
-  key: string;
-  name: string;
-  icon_url: string | null;
-  color: string | null;
-}
-
-type AttrMap = Record<string, Record<string, GameAttribute>>;
-
-function buildAttrMap(attrs: GameAttribute[]): AttrMap {
-  const map: AttrMap = {};
-  for (const a of attrs) {
-    if (!map[a.attr_type]) map[a.attr_type] = {};
-    map[a.attr_type][a.key.toLowerCase()] = a;
-  }
-  return map;
-}
-
-function lookupAttr(map: AttrMap, attrType: string, value: unknown): GameAttribute | null {
-  if (typeof value !== "string") return null;
-  return map[attrType]?.[value.toLowerCase()] ?? null;
 }
 
 function AttrPill({ attr, value }: { attr: GameAttribute; value: string }) {

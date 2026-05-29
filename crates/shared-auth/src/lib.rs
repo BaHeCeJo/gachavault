@@ -1,7 +1,9 @@
 use axum::{
     async_trait,
-    extract::FromRequestParts,
+    extract::{FromRequestParts, Request, State},
     http::{request::Parts, StatusCode},
+    middleware::Next,
+    response::{IntoResponse, Response},
     Json, RequestPartsExt,
 };
 use axum_extra::{
@@ -11,6 +13,7 @@ use axum_extra::{
 use chrono::Utc;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
+use subtle::ConstantTimeEq;
 use uuid::Uuid;
 
 /// Read a secret from `<NAME>_FILE` (Docker secret mount) before falling back
@@ -164,6 +167,46 @@ fn unauthorized(msg: &str) -> (StatusCode, Json<serde_json::Value>) {
             "error": { "code": "UNAUTHORIZED", "message": msg }
         })),
     )
+}
+
+/// Implemented by every service's `AppState` that uses
+/// [`verify_internal_secret`] middleware. Lets the shared middleware read the
+/// expected secret out of any state shape without each service rolling its
+/// own near-identical copy.
+pub trait HasInternalSecret {
+    fn internal_secret(&self) -> &str;
+}
+
+/// Axum middleware that rejects any request whose `x-internal-secret` header
+/// doesn't match the value returned by `state.internal_secret()`. Compared in
+/// constant time so a near-miss header can't be brute-forced byte-by-byte via
+/// response-time differences.
+///
+/// Wire it like:
+/// ```ignore
+/// .layer(middleware::from_fn_with_state(state.clone(), shared_auth::verify_internal_secret::<AppState>))
+/// ```
+pub async fn verify_internal_secret<S>(
+    State(state): State<S>,
+    request: Request,
+    next: Next,
+) -> Response
+where
+    S: HasInternalSecret + Clone + Send + Sync + 'static,
+{
+    let supplied = request
+        .headers()
+        .get("x-internal-secret")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    let matched: bool = supplied
+        .as_bytes()
+        .ct_eq(state.internal_secret().as_bytes())
+        .into();
+    if !matched {
+        return StatusCode::UNAUTHORIZED.into_response();
+    }
+    next.run(request).await
 }
 
 #[derive(Debug, Clone)]

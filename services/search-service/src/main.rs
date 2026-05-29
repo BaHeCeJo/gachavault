@@ -1,14 +1,12 @@
 use axum::{
-    extract::{Request, State},
-    middleware::{self, Next},
-    response::{IntoResponse, Response},
+    middleware,
     routing::{delete, get, post},
     Router,
 };
 use reqwest::Client;
 use serde_json::json;
+use shared_auth::HasInternalSecret;
 use std::{net::SocketAddr, sync::Arc};
-use subtle::ConstantTimeEq;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod routes;
@@ -19,6 +17,12 @@ pub struct AppState {
     pub meilisearch_key: String,
     pub http_client: Arc<Client>,
     pub internal_secret: String,
+}
+
+impl HasInternalSecret for AppState {
+    fn internal_secret(&self) -> &str {
+        &self.internal_secret
+    }
 }
 
 #[tokio::main]
@@ -51,7 +55,7 @@ async fn main() {
         )
         .route_layer(middleware::from_fn_with_state(
             state.clone(),
-            verify_internal_secret,
+            shared_auth::verify_internal_secret::<AppState>,
         ));
 
     let app = Router::new()
@@ -66,28 +70,6 @@ async fn main() {
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
-}
-
-async fn verify_internal_secret(
-    State(state): State<AppState>,
-    request: Request,
-    next: Next,
-) -> Response {
-    let secret = request
-        .headers()
-        .get("x-internal-secret")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("");
-    // Constant-time compare so an attacker can't recover the secret byte-by-byte
-    // via response-time differences.
-    let matched: bool = secret
-        .as_bytes()
-        .ct_eq(state.internal_secret.as_bytes())
-        .into();
-    if !matched {
-        return axum::http::StatusCode::UNAUTHORIZED.into_response();
-    }
-    next.run(request).await
 }
 
 async fn health_check() -> axum::Json<serde_json::Value> {

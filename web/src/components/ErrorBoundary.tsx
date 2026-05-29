@@ -22,6 +22,17 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return { hasError: true, error };
   }
 
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Log to the browser console; Promtail tails the web container's
+    // stdout into Loki, so production crashes become searchable instead
+    // of silently swallowing into the fallback UI.
+    console.error("[ErrorBoundary]", {
+      message: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    });
+  }
+
   render() {
     if (this.state.hasError) {
       return (

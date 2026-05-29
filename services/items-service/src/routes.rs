@@ -18,12 +18,16 @@ pub struct LocaleQuery {
 
 // Returns true if the user has a game-level role that permits editing items for `game_id`.
 // Called only when the global role is below "editor" — admins bypass this.
+// Returns Ok(true) if the user has a per-game / per-section editor role,
+// Ok(false) if no matching row, Err on DB failure. Callers must `?`-propagate
+// the error so a transient Postgres outage doesn't get mistaken for "user
+// lacks permission" (which used to silently 403 every editor).
 async fn can_edit_game(
     pool: &sqlx::PgPool,
     user_id: uuid::Uuid,
     game_id: uuid::Uuid,
     section_id: Option<uuid::Uuid>,
-) -> bool {
+) -> AppResult<bool> {
     let game_ok = sqlx::query(
         "SELECT 1 FROM auth.user_roles \
          WHERE user_id=$1 AND game_id=$2 AND section_id IS NULL \
@@ -33,16 +37,15 @@ async fn can_edit_game(
     .bind(game_id)
     .fetch_optional(pool)
     .await
-    .ok()
-    .flatten()
+    .map_err(AppError::Database)?
     .is_some();
 
     if game_ok {
-        return true;
+        return Ok(true);
     }
 
     if let Some(sid) = section_id {
-        return sqlx::query(
+        let section_ok = sqlx::query(
             "SELECT 1 FROM auth.user_roles \
              WHERE user_id=$1 AND game_id=$2 AND section_id=$3 \
              AND role IN ('game_admin','game_editor','section_editor') LIMIT 1",
@@ -52,12 +55,12 @@ async fn can_edit_game(
         .bind(sid)
         .fetch_optional(pool)
         .await
-        .ok()
-        .flatten()
+        .map_err(AppError::Database)?
         .is_some();
+        return Ok(section_ok);
     }
 
-    false
+    Ok(false)
 }
 
 pub async fn list_items(
@@ -180,7 +183,7 @@ pub async fn create_item(
     Json(body): Json<CreateItemRequest>,
 ) -> AppResult<Json<ApiResponse<DbItem>>> {
     if !auth.can_edit()
-        && !can_edit_game(&state.pool, auth.id(), body.game_id, Some(body.section_id)).await
+        && !can_edit_game(&state.pool, auth.id(), body.game_id, Some(body.section_id)).await?
     {
         return Err(AppError::Forbidden(
             "Editor, game_editor, or section_editor role required".into(),
@@ -246,7 +249,7 @@ pub async fn update_item(
             existing.game_id,
             Some(existing.section_id),
         )
-        .await
+        .await?
         {
             return Err(AppError::Forbidden(
                 "Editor, game_editor, or section_editor role required".into(),
@@ -559,7 +562,7 @@ pub async fn create_skill(
             .await
             .map_err(AppError::Database)?
             .ok_or_else(|| AppError::NotFound("Item not found".into()))?;
-        if !can_edit_game(&state.pool, auth.id(), item.game_id, Some(item.section_id)).await {
+        if !can_edit_game(&state.pool, auth.id(), item.game_id, Some(item.section_id)).await? {
             return Err(AppError::Forbidden(
                 "Editor, game_editor, or section_editor role required".into(),
             ));
@@ -607,7 +610,7 @@ pub async fn create_build(
             .await
             .map_err(AppError::Database)?
             .ok_or_else(|| AppError::NotFound("Item not found".into()))?;
-        if !can_edit_game(&state.pool, auth.id(), item.game_id, Some(item.section_id)).await {
+        if !can_edit_game(&state.pool, auth.id(), item.game_id, Some(item.section_id)).await? {
             return Err(AppError::Forbidden(
                 "Editor, game_editor, or section_editor role required".into(),
             ));
@@ -646,7 +649,7 @@ pub async fn create_changelog(
             .await
             .map_err(AppError::Database)?
             .ok_or_else(|| AppError::NotFound("Item not found".into()))?;
-        if !can_edit_game(&state.pool, auth.id(), item.game_id, Some(item.section_id)).await {
+        if !can_edit_game(&state.pool, auth.id(), item.game_id, Some(item.section_id)).await? {
             return Err(AppError::Forbidden(
                 "Editor, game_editor, or section_editor role required".into(),
             ));
