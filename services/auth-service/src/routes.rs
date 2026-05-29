@@ -992,15 +992,22 @@ async fn get_redis_conn() -> Option<redis::aio::MultiplexedConnection> {
 }
 
 async fn check_login_throttle(email: &str) -> AppResult<()> {
-    // Fail closed: if Redis is unavailable we can't enforce the per-email
-    // brute-force limit, so refuse the login attempt rather than letting an
-    // attacker hammer credentials unrestricted. Background rate limits
-    // (`rate_limit()`) intentionally fail open because they protect against
-    // spam, not credential stuffing; this one protects passwords.
+    // Two distinct "no Redis" cases to handle differently:
+    //   1. REDIS_URL is not configured at all — local dev or the integration
+    //      test suite, neither of which runs Redis. Skip the throttle so the
+    //      test/dev flow works.
+    //   2. REDIS_URL is configured but the connection fails — production with
+    //      a degraded cache. Fail closed: an attacker hammering credentials
+    //      without rate limiting is the worse outcome. (Background rate
+    //      limits in `rate_limit()` intentionally fail open because they
+    //      protect against spam, not passwords; this one protects passwords.)
+    if shared_auth::read_secret("REDIS_URL").is_err() {
+        return Ok(());
+    }
     let Some(mut conn) = get_redis_conn().await else {
         tracing::warn!(
             email = %email,
-            "login throttle: Redis unavailable, failing closed"
+            "login throttle: Redis configured but unreachable, failing closed"
         );
         return Err(AppError::TooManyRequests(
             "Login temporarily unavailable. Please try again in a moment.".into(),
