@@ -62,6 +62,9 @@ redis = { version = "0.27", features = ["tokio-comp"] }
 # Constant-time comparison (for shared internal-secret middleware)
 subtle = "2"
 
+# HMAC for OAuth state signing
+hmac = "0.12"
+
 # Shared crates
 shared-types = { path = "crates/shared-types" }
 shared-auth = { path = "crates/shared-auth" }

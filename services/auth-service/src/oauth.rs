@@ -4,6 +4,7 @@ use axum::{
     http::{header::LOCATION, StatusCode},
     response::{IntoResponse, Redirect, Response},
 };
+use hmac::{Hmac, Mac};
 use rand::{rngs::OsRng, Rng, RngCore};
 use redis::AsyncCommands;
 use reqwest::Client;
@@ -11,6 +12,9 @@ use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use shared_errors::{AppError, AppResult};
 use sqlx::PgPool;
+use subtle::ConstantTimeEq;
+
+type HmacSha256 = Hmac<Sha256>;
 
 use crate::{
     db,
@@ -31,24 +35,30 @@ pub struct CallbackParams {
 const OAUTH_STATE_TTL_SECS: i64 = 600; // 10 minutes
 const PKCE_VERIFIER_BYTES: usize = 32; // 256 bits → 43-char base64url
 
+/// Compute the HMAC-SHA256 signature over `nonce:ts_hex` keyed by `secret`.
+/// Pulled out so generate and verify use the exact same bytes — any drift
+/// between the two would silently break OAuth.
+fn oauth_state_signature(secret: &str, nonce: &str, ts_hex: &str) -> Vec<u8> {
+    let mut mac =
+        HmacSha256::new_from_slice(secret.as_bytes()).expect("HMAC accepts any key length");
+    mac.update(nonce.as_bytes());
+    mac.update(b":");
+    mac.update(ts_hex.as_bytes());
+    mac.finalize().into_bytes().to_vec()
+}
+
 fn generate_oauth_state(secret: &str) -> String {
     let nonce: [u8; 16] = rand::thread_rng().gen();
     let nonce_hex = hex::encode(nonce);
     let ts = chrono::Utc::now().timestamp();
     let ts_hex = format!("{:x}", ts);
-    let mut hasher = Sha256::new();
-    hasher.update(secret.as_bytes());
-    hasher.update(b":");
-    hasher.update(nonce_hex.as_bytes());
-    hasher.update(b":");
-    hasher.update(ts_hex.as_bytes());
-    let sig = hex::encode(hasher.finalize());
+    let sig = hex::encode(oauth_state_signature(secret, &nonce_hex, &ts_hex));
     format!("{}.{}.{}", nonce_hex, ts_hex, sig)
 }
 
 fn verify_oauth_state(secret: &str, state_param: &str) -> bool {
     let mut parts = state_param.splitn(3, '.');
-    let (nonce, ts_hex, sig) = match (parts.next(), parts.next(), parts.next()) {
+    let (nonce, ts_hex, sig_hex) = match (parts.next(), parts.next(), parts.next()) {
         (Some(n), Some(t), Some(s)) => (n, t, s),
         _ => return false,
     };
@@ -61,13 +71,13 @@ fn verify_oauth_state(secret: &str, state_param: &str) -> bool {
     if !(0..=OAUTH_STATE_TTL_SECS).contains(&age) {
         return false;
     }
-    let mut hasher = Sha256::new();
-    hasher.update(secret.as_bytes());
-    hasher.update(b":");
-    hasher.update(nonce.as_bytes());
-    hasher.update(b":");
-    hasher.update(ts_hex.as_bytes());
-    hex::encode(hasher.finalize()) == sig
+    let Ok(supplied_sig) = hex::decode(sig_hex) else {
+        return false;
+    };
+    let expected_sig = oauth_state_signature(secret, nonce, ts_hex);
+    // Constant-time compare so a near-miss signature can't be brute-forced
+    // byte-by-byte through response-time differences.
+    expected_sig.ct_eq(&supplied_sig).into()
 }
 
 /// URL-safe base64 without padding (RFC 4648 §5), which is what PKCE requires.
