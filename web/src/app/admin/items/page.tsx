@@ -8,10 +8,12 @@ import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { SafeImage } from "@/components/SafeImage";
-import ItemCard, { type CardLayout } from "@/components/ItemCard";
+import { type CardLayout } from "@/components/ItemCard";
 import { buildAttrMap } from "@/lib/attrs";
 import { revalidateGame } from "@/lib/revalidate";
+import { InlineAttrCreatorForm } from "./_components/InlineAttrCreatorForm";
+import { ItemTable } from "./_components/ItemTable";
+import { ItemCardGrid } from "./_components/ItemCardGrid";
 
 interface Game { id: string; slug: string; name: string }
 interface Section { id: string; slug: string; name: string }
@@ -93,9 +95,10 @@ export default function AdminItemsPage() {
   const [formError, setFormError] = useState("");
   const [showRawJson, setShowRawJson] = useState(false);
 
-  // Inline attribute creation
+  // Inline attribute creation. The name is owned by the child
+  // InlineAttrCreatorForm — each open mounts a fresh instance, so resetting
+  // here would be redundant.
   const [inlineAttrField, setInlineAttrField] = useState<string | null>(null);
-  const [inlineAttrName, setInlineAttrName] = useState("");
   const [inlineAttrSaving, setInlineAttrSaving] = useState(false);
 
   useEffect(() => {
@@ -210,17 +213,17 @@ export default function AdminItemsPage() {
     return s.toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 32);
   }
 
-  const saveInlineAttr = async (fieldKey: string, attrType: string) => {
-    const name = inlineAttrName.trim();
-    if (!name || !selectedGame) return;
-    const key = slugifyAttrKey(name);
+  const saveInlineAttr = async (fieldKey: string, attrType: string, name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed || !selectedGame) return;
+    const key = slugifyAttrKey(trimmed);
     if (!key) return;
     setInlineAttrSaving(true);
     try {
       const res = await adminApi.games.createAttribute(selectedGame.slug, {
         attr_type: attrType,
         key,
-        name,
+        name: trimmed,
         color: null,
         icon_url: null,
         sort_order: 999,
@@ -249,7 +252,6 @@ export default function AdminItemsPage() {
         setFieldValue(fieldKey, created.key);
       }
       setInlineAttrField(null);
-      setInlineAttrName("");
     } catch {
       // silently fail — user can retry
     } finally {
@@ -448,117 +450,22 @@ export default function AdminItemsPage() {
       )}
 
       {selectedGame && !loadingItems && viewMode === "cards" && visibleItems.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-6">
-          {visibleItems.map((item) => {
-            const schema = schemas.find((s) => s.id === item.type_schema_id);
-            return (
-              <ItemCard
-                key={item.id}
-                item={item}
-                attrMap={attrMap}
-                layout={schema?.card_layout ?? null}
-                schemaFields={schema?.fields}
-                linkMode="image"
-                footer={
-                  <div className="flex gap-1 mt-1.5">
-                    <button
-                      onClick={() => openEdit(item)}
-                      className="flex-1 text-xs py-1 rounded bg-gray-800 hover:bg-gray-700 transition"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => setDeleteTarget(item.id)}
-                      className="text-xs px-2 py-1 rounded bg-gray-800 hover:bg-red-900 text-red-400 transition"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                }
-              />
-            );
-          })}
-        </div>
+        <ItemCardGrid
+          visibleItems={visibleItems}
+          schemas={schemas}
+          attrMap={attrMap}
+          onEdit={openEdit}
+          onDelete={setDeleteTarget}
+        />
       )}
 
       {selectedGame && !loadingItems && viewMode === "table" && (
-        <div className="overflow-hidden rounded-xl border border-gray-800">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-800 bg-gray-900">
-                <th className="text-left px-4 py-3 text-gray-400 w-14" />
-                <th className="text-left px-4 py-3 text-gray-400">Name</th>
-                <th className="text-left px-4 py-3 text-gray-400">Slug</th>
-                <th className="text-left px-4 py-3 text-gray-400">Updated</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody>
-              {items.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                    No items yet. Click &quot;+ Add Item&quot; to create the first one.
-                  </td>
-                </tr>
-              ) : visibleItems.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                    No items match the current filters.
-                  </td>
-                </tr>
-              ) : (
-                visibleItems.map((item) => {
-                  const name = (item.data?.name as string) ?? item.slug;
-                  const img = item.data?.image_url as string | undefined;
-                  return (
-                    <tr key={item.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-900/50">
-                      <td className="px-4 py-2">
-                        {img ? (
-                          <SafeImage src={img} alt={name} width={40} height={40} className="w-10 h-10 rounded object-cover" fallback={
-                            <div className="w-10 h-10 rounded bg-gray-800 flex items-center justify-center text-gray-600 font-semibold">
-                              {name[0]?.toUpperCase()}
-                            </div>
-                          } />
-                        ) : (
-                          <div className="w-10 h-10 rounded bg-gray-800 flex items-center justify-center text-gray-600 font-semibold">
-                            {name[0]?.toUpperCase()}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">{name}</td>
-                      <td className="px-4 py-3 text-gray-400 font-mono text-xs">{item.slug}</td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">
-                        {new Date(item.updated_at).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex gap-2 justify-end">
-                          <Link
-                            href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/items/${item.id}`}
-                            className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition"
-                          >
-                            View
-                          </Link>
-                          <button
-                            onClick={() => openEdit(item)}
-                            className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => setDeleteTarget(item.id)}
-                            className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-red-900 text-red-400 transition"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+        <ItemTable
+          items={items}
+          visibleItems={visibleItems}
+          onEdit={openEdit}
+          onDelete={setDeleteTarget}
+        />
       )}
 
       <ConfirmDialog
@@ -712,10 +619,7 @@ export default function AdminItemsPage() {
                             <button
                               type="button"
                               title={`Create new ${field.label.toLowerCase()}`}
-                              onClick={() => {
-                                setInlineAttrField(isCreating ? null : field.key);
-                                setInlineAttrName("");
-                              }}
+                              onClick={() => setInlineAttrField(isCreating ? null : field.key)}
                               className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs border transition ${
                                 isCreating
                                   ? "border-white text-white"
@@ -726,40 +630,13 @@ export default function AdminItemsPage() {
                             </button>
                           </div>
                           {isCreating && (
-                            <div className="mt-2 flex items-center gap-2">
-                              <input
-                                autoFocus
-                                type="text"
-                                value={inlineAttrName}
-                                onChange={(e) => setInlineAttrName(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") saveInlineAttr(field.key, attrType);
-                                  if (e.key === "Escape") { setInlineAttrField(null); setInlineAttrName(""); }
-                                }}
-                                placeholder={`New ${field.label.toLowerCase()} name…`}
-                                className="flex-1 px-3 py-1.5 rounded-lg bg-gray-800 border border-amber-500/60 text-sm focus:outline-none focus:border-amber-400"
-                              />
-                              {inlineAttrName.trim() && (
-                                <span className="text-xs text-gray-500 shrink-0 font-mono">
-                                  key: {slugifyAttrKey(inlineAttrName)}
-                                </span>
-                              )}
-                              <button
-                                type="button"
-                                onClick={() => saveInlineAttr(field.key, attrType)}
-                                disabled={inlineAttrSaving || !inlineAttrName.trim()}
-                                className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-500 text-black text-xs font-semibold disabled:opacity-40 hover:bg-amber-400 transition"
-                              >
-                                {inlineAttrSaving ? "…" : "Create"}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => { setInlineAttrField(null); setInlineAttrName(""); }}
-                                className="shrink-0 text-gray-500 hover:text-white text-xs transition"
-                              >
-                                Cancel
-                              </button>
-                            </div>
+                            <InlineAttrCreatorForm
+                              fieldLabel={field.label}
+                              saving={inlineAttrSaving}
+                              slugify={slugifyAttrKey}
+                              onSubmit={(name) => saveInlineAttr(field.key, attrType, name)}
+                              onCancel={() => setInlineAttrField(null)}
+                            />
                           )}
                         </div>
                       );
@@ -793,10 +670,7 @@ export default function AdminItemsPage() {
                             <button
                               type="button"
                               title="Create new"
-                              onClick={() => {
-                                setInlineAttrField(isCreating ? null : field.key);
-                                setInlineAttrName("");
-                              }}
+                              onClick={() => setInlineAttrField(isCreating ? null : field.key)}
                               className={`shrink-0 w-7 h-7 rounded-lg border text-sm font-semibold transition flex items-center justify-center ${
                                 isCreating
                                   ? "border-white text-white"
@@ -807,40 +681,13 @@ export default function AdminItemsPage() {
                             </button>
                           </div>
                           {isCreating && (
-                            <div className="mt-2 flex items-center gap-2">
-                              <input
-                                autoFocus
-                                type="text"
-                                value={inlineAttrName}
-                                onChange={(e) => setInlineAttrName(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") saveInlineAttr(field.key, attrType);
-                                  if (e.key === "Escape") { setInlineAttrField(null); setInlineAttrName(""); }
-                                }}
-                                placeholder={`New ${field.label.toLowerCase()} name…`}
-                                className="flex-1 px-3 py-1.5 rounded-lg bg-gray-800 border border-amber-500/60 text-sm focus:outline-none focus:border-amber-400"
-                              />
-                              {inlineAttrName.trim() && (
-                                <span className="text-xs text-gray-500 shrink-0 font-mono">
-                                  key: {slugifyAttrKey(inlineAttrName)}
-                                </span>
-                              )}
-                              <button
-                                type="button"
-                                onClick={() => saveInlineAttr(field.key, attrType)}
-                                disabled={inlineAttrSaving || !inlineAttrName.trim()}
-                                className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-500 text-black text-xs font-semibold disabled:opacity-40 hover:bg-amber-400 transition"
-                              >
-                                {inlineAttrSaving ? "…" : "Create"}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => { setInlineAttrField(null); setInlineAttrName(""); }}
-                                className="shrink-0 text-gray-500 hover:text-white text-xs transition"
-                              >
-                                Cancel
-                              </button>
-                            </div>
+                            <InlineAttrCreatorForm
+                              fieldLabel={field.label}
+                              saving={inlineAttrSaving}
+                              slugify={slugifyAttrKey}
+                              onSubmit={(name) => saveInlineAttr(field.key, attrType, name)}
+                              onCancel={() => setInlineAttrField(null)}
+                            />
                           )}
                         </div>
                       );
