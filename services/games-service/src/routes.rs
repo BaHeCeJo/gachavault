@@ -26,12 +26,66 @@ pub async fn list_games(
         .map_err(AppError::Database)?;
 
     let locale = query.locale.as_deref().unwrap_or("en");
-    let mut result = Vec::with_capacity(games.len());
-    for game in games {
-        let translated = apply_game_translation(&pool, game, locale).await;
-        result.push(translated);
-    }
+
+    // Batch-load translations in one query (was N+1: one SELECT per game).
+    // Empty map for en, since the en handler skips the lookup entirely.
+    let translations = if locale != "en" && !games.is_empty() {
+        let ids: Vec<Uuid> = games.iter().map(|g| g.id).collect();
+        load_game_translations(&pool, &ids, locale).await?
+    } else {
+        std::collections::HashMap::new()
+    };
+
+    let result: Vec<serde_json::Value> = games
+        .into_iter()
+        .map(|game| {
+            let t = translations.get(&game.id).cloned();
+            render_game(game, t)
+        })
+        .collect();
     Ok(Json(ApiResponse::success(result)))
+}
+
+type GameTranslation = (String, Option<String>);
+
+/// Single SQL round-trip that returns the (name, description) override for
+/// every supplied game id. Callers convert to a HashMap and look up by id.
+async fn load_game_translations(
+    pool: &PgPool,
+    game_ids: &[Uuid],
+    locale: &str,
+) -> AppResult<std::collections::HashMap<Uuid, GameTranslation>> {
+    let rows: Vec<(Uuid, String, Option<String>)> = sqlx::query_as(
+        "SELECT game_id, name, description \
+         FROM games.translations \
+         WHERE game_id = ANY($1) AND locale = $2",
+    )
+    .bind(game_ids)
+    .bind(locale)
+    .fetch_all(pool)
+    .await
+    .map_err(AppError::Database)?;
+    Ok(rows.into_iter().map(|(id, n, d)| (id, (n, d))).collect())
+}
+
+/// Build the public JSON shape for a game, applying a translation override
+/// if one was found for the requested locale.
+fn render_game(game: DbGame, translation: Option<GameTranslation>) -> serde_json::Value {
+    let (name, description) = match translation {
+        Some((t_name, t_desc)) => (t_name, t_desc.or(game.description)),
+        None => (game.name, game.description),
+    };
+    serde_json::json!({
+        "id": game.id,
+        "slug": game.slug,
+        "name": name,
+        "description": description,
+        "logo_url": game.logo_url,
+        "banner_url": game.banner_url,
+        "is_active": game.is_active,
+        "created_at": game.created_at,
+        "updated_at": game.updated_at,
+    })
 }
 
 #[derive(Debug, Deserialize)]
@@ -50,42 +104,14 @@ pub async fn get_game(
         .ok_or_else(|| AppError::NotFound(format!("Game '{}' not found", slug)))?;
 
     let locale = query.locale.as_deref().unwrap_or("en");
-    let translated = apply_game_translation(&pool, game, locale).await;
-    Ok(Json(ApiResponse::success(translated)))
-}
-
-async fn apply_game_translation(pool: &PgPool, game: DbGame, locale: &str) -> serde_json::Value {
-    let mut obj = serde_json::json!({
-        "id": game.id,
-        "slug": game.slug,
-        "name": game.name,
-        "description": game.description,
-        "logo_url": game.logo_url,
-        "banner_url": game.banner_url,
-        "is_active": game.is_active,
-        "created_at": game.created_at,
-        "updated_at": game.updated_at,
-    });
-
-    if locale != "en" {
-        if let Ok(Some(row)) = sqlx::query(
-            "SELECT name, description FROM games.translations WHERE game_id = $1 AND locale = $2",
-        )
-        .bind(game.id)
-        .bind(locale)
-        .fetch_optional(pool)
-        .await
-        {
-            if let Ok(name) = row.try_get::<String, _>("name") {
-                obj["name"] = serde_json::Value::String(name);
-            }
-            if let Ok(desc) = row.try_get::<Option<String>, _>("description") {
-                obj["description"] = serde_json::json!(desc);
-            }
-        }
-    }
-
-    obj
+    let translation = if locale != "en" {
+        load_game_translations(&pool, &[game.id], locale)
+            .await?
+            .remove(&game.id)
+    } else {
+        None
+    };
+    Ok(Json(ApiResponse::success(render_game(game, translation))))
 }
 
 pub async fn create_game(

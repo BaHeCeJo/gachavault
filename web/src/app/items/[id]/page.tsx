@@ -12,7 +12,12 @@ interface Item {
   id: string;
   slug: string;
   game_id: string;
+  // game_slug + section_slug are populated by items-service's lookup_slugs
+  // and used by /items/[id] to fire game-scoped fetches (schemas, attrs)
+  // without first round-tripping through gamesApi.getSection.
+  game_slug?: string;
   section_id: string;
+  section_slug?: string;
   data: Record<string, unknown>;
   version: number;
   created_at: string;
@@ -103,59 +108,82 @@ export default function ItemDetailPage() {
   const admin = isAdmin(user);
 
   useEffect(() => {
+    // Fan-out from a single round-trip. The item response from items-service
+    // already includes game_slug and section_slug, so we can fire schemas,
+    // attributes, related items, AND the section config (for tab list) all
+    // in parallel as soon as the item resolves — none of them depend on each
+    // other. Previously they ran as: item -> section -> Promise.all([schemas,
+    // attrs]), plus a separate useEffect-triggered related-items fetch that
+    // had to wait for the React render after setItem(). That was a 3-deep
+    // waterfall; this is 1-deep.
+    let cancelled = false;
     itemsApi
       .get(id)
       .then((res) => {
+        if (cancelled) return;
         const loaded: Item = res.data.data;
         setItem(loaded);
-        // Load section config (tabs + game_slug) then load schemas + attributes
-        gamesApi.getSection(loaded.section_id)
-          .then(async (r) => {
+
+        const gameSlug = loaded.game_slug;
+
+        // Fire-and-render — each promise updates its own slice of state when
+        // it lands. Failures fall back to whatever the initial state was
+        // (empty list / default tabs) so a flaky downstream doesn't blank
+        // the page.
+        gamesApi
+          .getSection(loaded.section_id)
+          .then((r) => {
+            if (cancelled) return;
             const section = r.data.data;
             const tabs: string[] = section?.tabs ?? ["skills", "changelog"];
             setSectionTabs(tabs.filter((t): t is Tab => ALL_TABS.includes(t as Tab)));
-
-            const gameSlug: string | undefined = section?.game_slug;
-            if (!gameSlug) return;
-
-            const [schemasRes, attrsRes] = await Promise.all([
-              gamesApi.listSchemas(gameSlug),
-              gamesApi.getAttributes(gameSlug),
-            ]);
-
-            // Find schema for this section
-            const allSchemas: Schema[] = schemasRes.data.data ?? [];
-            const sectionSchema = allSchemas.find((s) => s.section_id === loaded.section_id);
-            setSchemaFields(sectionSchema?.fields ?? []);
-
-            // Build attr lookup: attr_type → key → attribute
-            const attrs: GameAttribute[] = attrsRes.data.data ?? [];
-            const map = new Map<string, Map<string, GameAttribute>>();
-            for (const a of attrs) {
-              if (!map.has(a.attr_type)) map.set(a.attr_type, new Map());
-              map.get(a.attr_type)!.set(a.key, a);
-            }
-            setAttrsByType(map);
           })
-          .catch(() => {}); // fallback: keep defaults
+          .catch(() => {});
+
+        if (gameSlug) {
+          Promise.all([
+            gamesApi.listSchemas(gameSlug),
+            gamesApi.getAttributes(gameSlug),
+          ])
+            .then(([schemasRes, attrsRes]) => {
+              if (cancelled) return;
+              const allSchemas: Schema[] = schemasRes.data.data ?? [];
+              const sectionSchema = allSchemas.find((s) => s.section_id === loaded.section_id);
+              setSchemaFields(sectionSchema?.fields ?? []);
+              const attrs: GameAttribute[] = attrsRes.data.data ?? [];
+              const map = new Map<string, Map<string, GameAttribute>>();
+              for (const a of attrs) {
+                if (!map.has(a.attr_type)) map.set(a.attr_type, new Map());
+                map.get(a.attr_type)!.set(a.key, a);
+              }
+              setAttrsByType(map);
+            })
+            .catch(() => {});
+        }
+
+        itemsApi
+          .list({ section_id: loaded.section_id, limit: 7 })
+          .then((r) => {
+            if (cancelled) return;
+            setRelatedItems(
+              (r.data.data ?? []).filter((i: RelatedItem) => i.id !== id).slice(0, 6),
+            );
+          })
+          .catch(() => {});
       })
       .catch(() => setError("Item not found"))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   // Sync lore text when item loads
   useEffect(() => {
     if (item) setLoreText((item.data?.lore as string) ?? "");
   }, [item]);
-
-  // Load related items (same section, excluding current)
-  useEffect(() => {
-    if (!item) return;
-    itemsApi
-      .list({ section_id: item.section_id, limit: 7 })
-      .then((r) => setRelatedItems((r.data.data ?? []).filter((i: RelatedItem) => i.id !== id).slice(0, 6)))
-      .catch(() => {});
-  }, [item, id]);
 
   useEffect(() => {
     if (!item) return;

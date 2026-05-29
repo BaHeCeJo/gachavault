@@ -314,48 +314,43 @@ pub async fn upvote_tierlist(
     auth: AuthUser,
     Path(id): Path<Uuid>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
-    // Verify tier list exists and is public
-    let exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM tierlists.tier_lists WHERE id = $1 AND is_public = TRUE)",
+    // Single round-trip: existence + visibility check, idempotent insert into
+    // upvotes (PK enforces one row per (tierlist, user) — double-tap returns
+    // the same count without double-incrementing), counter bump on first
+    // insert, and counter readback all happen as one CTE chain. Previously
+    // four separate queries; same row-level safety (ON CONFLICT DO NOTHING
+    // remains the source of truth on the count).
+    let row: Option<(bool, i64)> = sqlx::query_as(
+        "WITH target AS ( \
+             SELECT id, is_public, upvote_count \
+             FROM tierlists.tier_lists \
+             WHERE id = $1 \
+         ), \
+         inserted AS ( \
+             INSERT INTO tierlists.upvotes (tierlist_id, user_id) \
+             SELECT t.id, $2::uuid FROM target t WHERE t.is_public = TRUE \
+             ON CONFLICT DO NOTHING \
+             RETURNING 1 \
+         ), \
+         bumped AS ( \
+             UPDATE tierlists.tier_lists \
+             SET upvote_count = upvote_count + 1 \
+             WHERE id = $1 AND EXISTS (SELECT 1 FROM inserted) \
+             RETURNING upvote_count \
+         ) \
+         SELECT t.is_public, COALESCE((SELECT upvote_count FROM bumped), t.upvote_count) AS upvote_count \
+         FROM target t",
     )
     .bind(id)
-    .fetch_one(&pool)
+    .bind(auth.id())
+    .fetch_optional(&pool)
     .await
     .map_err(AppError::Database)?;
 
-    if !exists {
+    let (is_public, count) = row.ok_or_else(|| AppError::NotFound("Tier list not found".into()))?;
+    if !is_public {
         return Err(AppError::NotFound("Tier list not found".into()));
     }
-
-    // Atomic upsert: the (tierlist_id, user_id) primary key ensures only one
-    // INSERT can win per user. We use rows_affected to know whether ours was
-    // the winner, and bump the counter only then — closes the COUNT/INSERT
-    // race where two concurrent requests could both pass the "already == 0"
-    // check and double-increment.
-    let insert_result =
-        sqlx::query("INSERT INTO tierlists.upvotes (tierlist_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING")
-            .bind(id)
-            .bind(auth.id())
-            .execute(&pool)
-            .await
-            .map_err(AppError::Database)?;
-
-    if insert_result.rows_affected() > 0 {
-        sqlx::query(
-            "UPDATE tierlists.tier_lists SET upvote_count = upvote_count + 1 WHERE id = $1",
-        )
-        .bind(id)
-        .execute(&pool)
-        .await
-        .map_err(AppError::Database)?;
-    }
-
-    let count: i64 =
-        sqlx::query_scalar("SELECT upvote_count FROM tierlists.tier_lists WHERE id = $1")
-            .bind(id)
-            .fetch_one(&pool)
-            .await
-            .map_err(AppError::Database)?;
 
     Ok(Json(ApiResponse::success(serde_json::json!({
         "upvote_count": count,
@@ -368,30 +363,34 @@ pub async fn remove_upvote(
     auth: AuthUser,
     Path(id): Path<Uuid>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
-    let result =
-        sqlx::query("DELETE FROM tierlists.upvotes WHERE tierlist_id = $1 AND user_id = $2")
-            .bind(id)
-            .bind(auth.id())
-            .execute(&pool)
-            .await
-            .map_err(AppError::Database)?;
+    // Same CTE shape as upvote_tierlist: delete the row if present, decrement
+    // the counter iff the delete actually removed something, then return the
+    // current count in one round-trip. GREATEST(..., 0) guards the counter
+    // from ever going negative if a stale request slips through.
+    let count: Option<i64> = sqlx::query_scalar(
+        "WITH deleted AS ( \
+             DELETE FROM tierlists.upvotes \
+             WHERE tierlist_id = $1 AND user_id = $2 \
+             RETURNING 1 \
+         ), \
+         decremented AS ( \
+             UPDATE tierlists.tier_lists \
+             SET upvote_count = GREATEST(upvote_count - 1, 0) \
+             WHERE id = $1 AND EXISTS (SELECT 1 FROM deleted) \
+             RETURNING upvote_count \
+         ) \
+         SELECT COALESCE( \
+             (SELECT upvote_count FROM decremented), \
+             (SELECT upvote_count FROM tierlists.tier_lists WHERE id = $1) \
+         )",
+    )
+    .bind(id)
+    .bind(auth.id())
+    .fetch_one(&pool)
+    .await
+    .map_err(AppError::Database)?;
 
-    if result.rows_affected() > 0 {
-        sqlx::query(
-            "UPDATE tierlists.tier_lists SET upvote_count = GREATEST(upvote_count - 1, 0) WHERE id = $1",
-        )
-        .bind(id)
-        .execute(&pool)
-        .await
-        .map_err(AppError::Database)?;
-    }
-
-    let count: i64 =
-        sqlx::query_scalar("SELECT upvote_count FROM tierlists.tier_lists WHERE id = $1")
-            .bind(id)
-            .fetch_one(&pool)
-            .await
-            .map_err(AppError::Database)?;
+    let count = count.ok_or_else(|| AppError::NotFound("Tier list not found".into()))?;
 
     Ok(Json(ApiResponse::success(serde_json::json!({
         "upvote_count": count,

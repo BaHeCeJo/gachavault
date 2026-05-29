@@ -1,12 +1,12 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     Json,
 };
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use shared_auth::AuthUser;
 use shared_errors::{AppError, AppResult};
-use shared_types::ApiResponse;
+use shared_types::{ApiResponse, PaginationQuery};
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -35,12 +35,20 @@ pub struct UpsertEntryRequest {
 pub async fn get_my_collection(
     State(pool): State<PgPool>,
     auth: AuthUser,
+    Query(pagination): Query<PaginationQuery>,
 ) -> AppResult<Json<ApiResponse<Vec<DbEntry>>>> {
-    let entries = sqlx::query_as!(
-        DbEntry,
-        "SELECT * FROM collections.entries WHERE user_id = $1 ORDER BY updated_at DESC",
-        auth.id()
+    // Cap unbounded reads — a power user with thousands of items used to
+    // serialise the whole set on every page load. Default page size is 20
+    // (PaginationQuery::DEFAULT_PER_PAGE), max 100.
+    let entries: Vec<DbEntry> = sqlx::query_as(
+        "SELECT * FROM collections.entries \
+         WHERE user_id = $1 \
+         ORDER BY updated_at DESC \
+         LIMIT $2 OFFSET $3",
     )
+    .bind(auth.id())
+    .bind(pagination.limit())
+    .bind(pagination.offset())
     .fetch_all(&pool)
     .await
     .map_err(AppError::Database)?;
