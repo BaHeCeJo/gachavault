@@ -165,13 +165,17 @@ export default function ItemCard({
       : "border-gray-800 hover:border-amber-500/60 hover:shadow-amber-500/10";
 
   // When a border-color attribute resolves (e.g. rarity → SSR yellow), also
-  // tint the card body so cards aren't all the same flat gray. Use the
-  // color at low alpha as a gradient that fades into the base background.
+  // tint the card body so cards aren't all the same flat gray. The image
+  // (object-cover) covers the whole top of the card, so the *only* visible
+  // body region is the footer strip at the bottom — the tint has to reach it.
+  // Layer a low-alpha color gradient over a solid gray base so the colour is
+  // present across the full card height (footer included), not just up top
+  // where it'd be hidden behind the portrait.
   const cardStyle: React.CSSProperties | undefined = borderAttr?.color
     ? {
         borderColor: borderAttr.color,
         boxShadow: `0 0 0 1px ${borderAttr.color}30, 0 4px 12px -2px ${borderAttr.color}30`,
-        background: `linear-gradient(180deg, ${borderAttr.color}24 0%, ${borderAttr.color}10 60%, rgba(17,24,39,1) 100%)`,
+        background: `linear-gradient(180deg, ${borderAttr.color}33 0%, ${borderAttr.color}1f 100%), rgb(17,24,39)`,
       }
     : undefined;
 
