@@ -28,3 +28,9 @@ uploads/
 
 # Docker secrets - per-host populated, never committed
 secrets/
+
+# TS incremental build cache - regenerated on every build, no value in git
+*.tsbuildinfo
+
+# Claude Code per-machine settings (the shared .claude/settings.json IS tracked)
+.claude/settings.local.json

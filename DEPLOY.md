@@ -165,11 +165,20 @@ docker exec -i $(docker ps -qf name=postgres) psql -U gachavault -d gachavault -
 ## 8. Subsequent deploys
 
 After step 5 is set up, every `git push` to `main` automatically:
-1. Builds all Docker images on GitHub's servers (free, ~15 minutes)
+1. Detects which services actually changed and builds **only those** on
+   GitHub's servers; unchanged services are retagged to the new commit SHA
+   without rebuilding (see `.github/scripts/detect-changed-services.sh`). A
+   one-service change is a couple of minutes; a shared-crate / `Cargo.lock` /
+   `.sqlx` change rebuilds everything (~15 min).
 2. Pushes images to GitHub Container Registry
 3. SSHes into your VPS and does `docker compose pull && up -d`
 
 You never compile Rust on your laptop again.
+
+> **Actions minutes:** unlimited and free while the repo is **public**. If you
+> switch it to **private**, GitHub Free meters builds at **2,000 min/month**
+> (Pro: 3,000), then ~$0.006/min on Linux — which is why the pipeline only
+> rebuilds changed services.
 
 ---
 
@@ -179,8 +188,8 @@ You never compile Rust on your laptop again.
 |---|---|
 | Hetzner CX32 | ~€8.29/month |
 | Domain (.com) | ~$10/year |
-| GitHub Actions | Free (2000 min/month on free tier) |
-| GHCR storage | Free for public repos; ~$0.50/GB for private |
+| GitHub Actions | Free & unlimited on public repos; 2,000 min/month on private (Free tier) |
+| GHCR storage | Free — ghcr.io container storage & bandwidth are currently free regardless of repo visibility |
 | Brevo email | Free (300 emails/day) |
 | Let's Encrypt SSL | Free |
 | **Total** | **~€9/month** |
