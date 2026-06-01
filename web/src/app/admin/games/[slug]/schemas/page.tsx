@@ -1049,6 +1049,8 @@ function CardLayoutEditor({
           <div className="space-y-3">
             <Slot label="Border color" value={layout.border_color_attr ?? ""} candidates={candidates}
               onChange={(v) => patch({ border_color_attr: v || null })} />
+            <Slot label="Background color" value={layout.background_color_attr ?? ""} candidates={candidates}
+              onChange={(v) => patch({ background_color_attr: v || null })} />
             <Slot label="Top-left badge" value={layout.badge_top_left ?? ""} candidates={candidates}
               onChange={(v) => patch({ badge_top_left: v || null })} />
             <Slot label="Top-right badge" value={layout.badge_top_right ?? ""} candidates={candidates}

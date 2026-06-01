@@ -17,6 +17,10 @@ import {
 // off the schema's attribute-type fields; null/missing = use defaults.
 export interface CardLayout {
   border_color_attr?: string | null;
+  // Drives the card body fill (e.g. rarity → tinted card background). When
+  // set it produces a prominent, full-card tint; the border slot only tints
+  // the chrome edges. Leave null to keep the plain gray body.
+  background_color_attr?: string | null;
   badge_top_left?: string | null;
   badge_top_right?: string | null;
   watermark_attr?: string | null;
@@ -141,6 +145,7 @@ export default function ItemCard({
   // attribute always wins over the legacy RARITY_BORDER class.
   const isConfigured = !!layout;
   const borderAttr = slotAttr(attrMap, item, layout?.border_color_attr, fieldsByKey, schemaFields);
+  const bgAttr = slotAttr(attrMap, item, layout?.background_color_attr, fieldsByKey, schemaFields);
   const topLeftAttr = slotAttr(attrMap, item, layout?.badge_top_left, fieldsByKey, schemaFields);
   const topRightAttr = isConfigured
     ? slotAttr(attrMap, item, layout?.badge_top_right, fieldsByKey, schemaFields)
@@ -153,6 +158,7 @@ export default function ItemCard({
   // conveys it and the duplication just clutters the corner.
   const rarityRepresented = isConfigured && [
     layout?.border_color_attr,
+    layout?.background_color_attr,
     layout?.badge_top_left,
     layout?.badge_top_right,
     layout?.watermark_attr,
@@ -164,20 +170,36 @@ export default function ItemCard({
       ? `${RARITY_CLASSES[rarityStr].border} hover:shadow-lg ${RARITY_CLASSES[rarityStr].glow}`
       : "border-gray-800 hover:border-amber-500/60 hover:shadow-amber-500/10";
 
-  // When a border-color attribute resolves (e.g. rarity → SSR yellow), also
-  // tint the card body so cards aren't all the same flat gray. The image
-  // (object-cover) covers the whole top of the card, so the *only* visible
-  // body region is the footer strip at the bottom — the tint has to reach it.
-  // Layer a low-alpha color gradient over a solid gray base so the colour is
-  // present across the full card height (footer included), not just up top
-  // where it'd be hidden behind the portrait.
-  const cardStyle: React.CSSProperties | undefined = borderAttr?.color
-    ? {
-        borderColor: borderAttr.color,
-        boxShadow: `0 0 0 1px ${borderAttr.color}30, 0 4px 12px -2px ${borderAttr.color}30`,
-        background: `linear-gradient(180deg, ${borderAttr.color}33 0%, ${borderAttr.color}1f 100%), rgb(17,24,39)`,
-      }
-    : undefined;
+  // Two independent color drivers:
+  //  - borderAttr tints the card edges (border + glow) and, for backwards
+  //    compat with configs that only set a border color, adds a faint body
+  //    tint.
+  //  - bgAttr (the dedicated "Background color" slot) fills the card body
+  //    prominently. The portrait covers the top, so the body color is most
+  //    visible in the footer; we also fade the image bottom into it (below)
+  //    so the whole card reads as colored, not just a thin strip.
+  // Whichever color drives the fill, layer it over a solid gray base so the
+  // tint survives across the full card height.
+  const fillColor = bgAttr?.color ?? borderAttr?.color;
+  const strongFill = !!bgAttr?.color;
+  const cardStyle: React.CSSProperties | undefined =
+    borderAttr?.color || fillColor
+      ? {
+          ...(borderAttr?.color
+            ? {
+                borderColor: borderAttr.color,
+                boxShadow: `0 0 0 1px ${borderAttr.color}30, 0 4px 12px -2px ${borderAttr.color}30`,
+              }
+            : {}),
+          ...(fillColor
+            ? {
+                background: strongFill
+                  ? `linear-gradient(180deg, ${fillColor}59 0%, ${fillColor}3d 100%), rgb(17,24,39)`
+                  : `linear-gradient(180deg, ${fillColor}33 0%, ${fillColor}1f 100%), rgb(17,24,39)`,
+              }
+            : {}),
+        }
+      : undefined;
 
   const link = href
     ?? (item.game_slug && item.section_slug
@@ -210,6 +232,16 @@ export default function ItemCard({
           </div>
         }
       />
+      {/* Blend the portrait's bottom edge into the colored card body so the
+          background tint reads as one continuous fill rather than stopping
+          at a hard line above the footer. */}
+      {strongFill && fillColor && (
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-10 pointer-events-none"
+          style={{ background: `linear-gradient(to top, ${fillColor}b3, transparent)` }}
+        />
+      )}
       {topLeftAttr && (
         <div className="absolute top-1.5 left-1.5 w-9 h-9 rounded-full bg-black/50 flex items-center justify-center backdrop-blur-sm">
           <AttrIcon attr={topLeftAttr} />
