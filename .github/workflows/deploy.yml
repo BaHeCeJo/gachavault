@@ -13,6 +13,7 @@ on:
       - ".github/workflows/ci.yml"
       - ".github/workflows/clean-cache.yml"
       - ".github/workflows/security-audit.yml"
+      - ".github/workflows/ghcr-cleanup.yml"
   workflow_dispatch:
 
 # Serialize deploys per branch. cancel-in-progress is false on purpose: an
@@ -184,6 +185,13 @@ jobs:
             export IMAGE_TAG
             cd /opt/gachavault
 
+            # Remember the currently-deployed tag so we can auto-roll back if
+            # the new images don't come up healthy. This file is updated only
+            # at the very end, after both health gates pass, so it always
+            # points at a deploy that actually came up (see end of script).
+            PREV_TAG=$(cat /opt/gachavault/.deployed_sha 2>/dev/null || echo "")
+            echo "[deploy] new tag=$IMAGE_TAG  previous-healthy tag=${PREV_TAG:-<none>}"
+
             git pull origin main
 
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_ACTOR" --password-stdin
@@ -218,6 +226,60 @@ jobs:
             # so the existing container keeps the old content even after
             # `nginx -s reload`. Full recreate re-resolves the mount.
             GHCR_OWNER=$GHCR_OWNER IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.prod.yml up -d --force-recreate nginx
+
+            # --- Health gate: wait for the app containers to come up healthy.
+            # The nginx smoke test below only proves nginx is routing; it does
+            # NOT catch a backend service that's crash-looping behind it. This
+            # gate inspects each app container's actual state/health and, if any
+            # fail to come up within the window, auto-rolls back to PREV_TAG.
+            #
+            # notifications-service has no healthcheck, so "running" alone is
+            # treated as healthy for services without one. A container that's
+            # exited/dead/unhealthy, or still restarting/starting at the end of
+            # the window, counts as a failed deploy.
+            APP_SERVICES="api-gateway auth-service games-service items-service collections-service tierlists-service media-service search-service notifications-service web"
+            HEALTHY=0
+            bad=""; pending=""
+            for attempt in $(seq 1 36); do
+              bad=""; pending=""
+              for svc in $APP_SERVICES; do
+                cid=$(docker compose -f docker-compose.prod.yml ps -q "$svc" 2>/dev/null || true)
+                if [ -z "$cid" ]; then pending="$pending $svc(no-container)"; continue; fi
+                status=$(docker inspect -f '{{.State.Status}}' "$cid" 2>/dev/null || echo unknown)
+                health=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$cid" 2>/dev/null || echo none)
+                case "$status" in
+                  running)
+                    case "$health" in
+                      healthy|none) : ;;
+                      starting) pending="$pending $svc(starting)" ;;
+                      *) bad="$bad $svc(unhealthy)" ;;
+                    esac ;;
+                  restarting|created) pending="$pending $svc($status)" ;;
+                  *) bad="$bad $svc($status)" ;;
+                esac
+              done
+              if [ -z "$bad" ] && [ -z "$pending" ]; then HEALTHY=1; break; fi
+              echo "[health] attempt $attempt/36 — pending:[$pending ] bad:[$bad ]"
+              sleep 5
+            done
+
+            if [ "$HEALTHY" != 1 ]; then
+              echo "[health] FAILED — app services not healthy after ~180s" >&2
+              echo "[health]   bad:[$bad ] pending:[$pending ]" >&2
+              docker compose -f docker-compose.prod.yml ps >&2 || true
+              if [ -n "$PREV_TAG" ]; then
+                echo "[rollback] reverting app services to previous healthy tag $PREV_TAG" >&2
+                GHCR_OWNER=$GHCR_OWNER IMAGE_TAG=$PREV_TAG docker compose -f docker-compose.prod.yml pull $APP_SERVICES || true
+                GHCR_OWNER=$GHCR_OWNER IMAGE_TAG=$PREV_TAG docker compose -f docker-compose.prod.yml up -d --force-recreate $APP_SERVICES
+                echo "[rollback] done — app services restored to $PREV_TAG (failed tag was $IMAGE_TAG)" >&2
+                echo "[rollback] NOTE: migrations run on container boot and are FORWARD-ONLY — they were NOT reverted." >&2
+                echo "[rollback] If the failure was a bad migration, a code rollback may be schema-incompatible; fix forward." >&2
+              else
+                echo "[rollback] no previously-recorded healthy tag — cannot auto-roll back; fix forward." >&2
+              fi
+              exit 1
+            fi
+            echo "[health] all app services healthy"
 
             # Post-deploy smoke test. We've been bitten three times by
             # smoke tests that were stricter than the actual failure mode
@@ -255,6 +317,11 @@ jobs:
               fi
               sleep 5
             done
+
+            # Both gates passed — record this tag as the new known-good
+            # rollback target for the next deploy, then prune. (Written here,
+            # last, so PREV_TAG never points at a deploy that didn't come up.)
+            echo "$IMAGE_TAG" > /opt/gachavault/.deployed_sha
 
             # Clean up old images
             docker image prune -f

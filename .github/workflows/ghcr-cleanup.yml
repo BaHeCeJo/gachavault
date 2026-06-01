@@ -1,0 +1,111 @@
+name: GHCR Cleanup
+
+# Every deploy tags 10 gachavault-* images with the commit SHA; nothing ever
+# removes the old versions, so GHCR accumulates them indefinitely. (ghcr.io
+# storage is currently free, so this is housekeeping rather than cost control —
+# but it keeps the package list readable and bounds future exposure/cost.)
+#
+# Keeps the newest KEEP versions of each package, plus anything still tagged
+# `latest`, and deletes the rest. Runs weekly + on demand.
+#
+# REQUIRES a repo secret GHCR_CLEANUP_TOKEN: a classic PAT with `read:packages`
+# and `delete:packages`. The automatic GITHUB_TOKEN canNOT delete versions of
+# user-account (non-org) packages, which is why a dedicated PAT is needed.
+# Until that secret exists the job logs a notice and exits cleanly (no failure).
+on:
+  schedule:
+    - cron: "30 6 * * 1" # Mondays 06:30 UTC (just after the security audit)
+  workflow_dispatch:
+    inputs:
+      keep:
+        description: "How many recent versions to keep per package"
+        required: false
+        default: "10"
+      dry_run:
+        description: "List only, don't delete"
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+
+concurrency:
+  group: ghcr-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: Prune old container versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prune
+        env:
+          GH_TOKEN: ${{ secrets.GHCR_CLEANUP_TOKEN }}
+          KEEP: ${{ github.event.inputs.keep || '10' }}
+          # Scheduled runs (no inputs) default to a real delete; the manual
+          # form defaults to a dry-run preview so you can eyeball it first.
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::notice::GHCR_CLEANUP_TOKEN not set — skipping. Create a classic PAT with"\
+                 "read:packages + delete:packages and add it as a repo secret to enable cleanup."
+            exit 0
+          fi
+
+          PACKAGES="api-gateway auth-service games-service items-service collections-service tierlists-service media-service search-service notifications-service web"
+
+          {
+            echo "## GHCR cleanup"
+            echo ""
+            echo "- Keep newest: \`$KEEP\` per package"
+            echo "- Dry run: \`$DRY_RUN\`"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          total=0
+          for pkg in $PACKAGES; do
+            name="gachavault-$pkg"
+            echo "==> $name"
+
+            # id + created_at + comma-joined tags, one version per line.
+            if ! gh api --paginate \
+                  "/user/packages/container/${name}/versions?per_page=100" \
+                  -q '.[] | [(.id|tostring), .created_at, ((.metadata.container.tags // []) | join(","))] | @tsv' \
+                  > /tmp/versions.tsv 2>/tmp/err; then
+              echo "  ! could not list $name (missing? token scope?): $(cat /tmp/err)"
+              echo "- \`$name\`: skipped (list failed)" >> "$GITHUB_STEP_SUMMARY"
+              continue
+            fi
+
+            # Newest first, then drop the protected newest KEEP from the delete set.
+            sort -k2,2r /tmp/versions.tsv > /tmp/sorted.tsv
+            candidates="$(tail -n +$((KEEP + 1)) /tmp/sorted.tsv || true)"
+
+            del=0
+            while IFS=$'\t' read -r id created tags; do
+              [ -z "$id" ] && continue
+              # Never delete a version still tagged `latest` (the live image).
+              if echo ",$tags," | grep -q ',latest,'; then
+                echo "  keep (latest) $id"
+                continue
+              fi
+              if [ "$DRY_RUN" = "true" ]; then
+                echo "  would delete $id (created $created, tags=[$tags])"
+              else
+                if gh api -X DELETE "/user/packages/container/${name}/versions/$id" >/dev/null 2>&1; then
+                  echo "  deleted $id (created $created)"
+                else
+                  echo "  ! failed to delete $id"; continue
+                fi
+              fi
+              del=$((del + 1))
+            done <<< "$candidates"
+
+            total=$((total + del))
+            verb=$([ "$DRY_RUN" = "true" ] && echo "would remove" || echo "removed")
+            echo "- \`$name\`: $verb $del" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Total: $total**" >> "$GITHUB_STEP_SUMMARY"
