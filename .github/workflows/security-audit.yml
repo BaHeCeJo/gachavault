@@ -1,0 +1,63 @@
+name: Security Audit
+
+# Dependency advisories don't change between two pushes minutes apart, so
+# auditing on every push (and compiling cargo-audit from source each time)
+# was wasted CI minutes. Run it weekly instead — plus on demand via the
+# Actions tab when you want an immediate check.
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: security-audit
+  cancel-in-progress: true
+
+jobs:
+  rust-audit:
+    name: cargo audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-audit (prebuilt binary)
+        # taiki-e/install-action fetches a prebuilt cargo-audit instead of
+        # `cargo install` compiling it from source — seconds vs minutes.
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+
+      - name: Run cargo audit
+        # RUSTSEC-2023-0071: rsa timing side-channel, no fix available.
+        # Only reachable via sqlx-mysql (compile-time macro dep); we use
+        # PostgreSQL only. (audit.toml at the repo root also records ignores.)
+        run: cargo audit --ignore RUSTSEC-2023-0071
+
+  npm-audit:
+    name: npm audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        # Advisory, not a gate — npm advisories are frequently in dev-only or
+        # transitively-unreachable deps. Surfaces in the run log without
+        # failing the workflow.
+        continue-on-error: true

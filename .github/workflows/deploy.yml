@@ -3,20 +3,62 @@ name: Deploy to VPS
 on:
   push:
     branches: [main]
+    # Doc-only and sibling-workflow changes never affect the running site,
+    # so don't spend build minutes (or a VPS deploy) on them. A change to
+    # deploy.yml itself is NOT ignored — we want to exercise it.
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/clean-cache.yml"
+      - ".github/workflows/security-audit.yml"
   workflow_dispatch:
+
+# Serialize deploys per branch. cancel-in-progress is false on purpose: an
+# in-flight deploy is mid-SSH on the VPS (compose up, migrations, nginx
+# recreate) and must NOT be killed halfway — a superseding push waits its turn.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   REGISTRY: ghcr.io
 
 jobs:
-  build-and-push:
-    name: Build & push Docker images
+  changes:
+    name: Detect changed services
     runs-on: ubuntu-latest
+    outputs:
+      changed_services: ${{ steps.detect.outputs.changed_services }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need history back to the previous commit to diff against it.
+          fetch-depth: 0
+
+      - name: Detect which services changed
+        id: detect
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+        run: bash .github/scripts/detect-changed-services.sh
+
+  build-and-push:
+    name: Build/retag ${{ matrix.service.name }}
+    runs-on: ubuntu-latest
+    needs: changes
     permissions:
       contents: read
       packages: write
 
     strategy:
+      # Don't let one service's failure cancel the siblings — we want every
+      # service to end up with a :<sha> image (built or retagged) so the
+      # SHA-pinned deploy has a complete set. A real failure still fails the
+      # job, which gates the deploy below.
+      fail-fast: false
       matrix:
         service:
           - name: api-gateway
@@ -46,6 +88,21 @@ jobs:
       - name: Set image owner (lowercase)
         run: echo "IMAGE_PREFIX=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
+      - name: Decide build vs retag
+        id: decide
+        env:
+          CHANGED: ${{ needs.changes.outputs.changed_services }}
+          SVC: ${{ matrix.service.name }}
+        run: |
+          # Build this service if the detector said ALL, or named it explicitly.
+          if [ "$CHANGED" = "ALL" ] || echo " $CHANGED " | grep -q " $SVC "; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            echo "[$SVC] -> BUILD"
+          else
+            echo "build=false" >> "$GITHUB_OUTPUT"
+            echo "[$SVC] -> retag :latest -> :${{ github.sha }} (unchanged)"
+          fi
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -54,9 +111,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
+        if: steps.decide.outputs.build == 'true'
         uses: docker/setup-buildx-action@v3
 
       - name: Build and push ${{ matrix.service.name }}
+        if: steps.decide.outputs.build == 'true'
         uses: docker/build-push-action@v5
         with:
           context: ${{ matrix.service.name == 'web' && 'web' || '.' }}
@@ -80,6 +139,18 @@ jobs:
           # Skip the SLSA provenance attestation; we're not consuming it
           # downstream and it adds 30–60s per service push.
           provenance: false
+
+      - name: Retag :latest -> :sha (unchanged service)
+        if: steps.decide.outputs.build == 'false'
+        env:
+          IMG: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/gachavault-${{ matrix.service.name }}
+        run: |
+          # Registry-side manifest copy — no pull, no build, a few seconds.
+          # The unchanged service is already running this exact image; we just
+          # give it the new :<sha> tag so the SHA-pinned compose deploy below
+          # finds an image for every service. :latest is left untouched (it
+          # already points at the most recent build of this service).
+          docker buildx imagetools create --tag "$IMG:${{ github.sha }}" "$IMG:latest"
 
   deploy:
     name: Deploy to VPS

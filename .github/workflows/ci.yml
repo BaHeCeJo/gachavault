@@ -3,8 +3,22 @@ name: CI
 on:
   push:
     branches: [main, develop]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+
+# Cancel an in-progress CI run when a newer commit is pushed to the same
+# ref — no point finishing a build for code that's already superseded.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
@@ -69,8 +83,14 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
-      - name: Build (all services)
-        run: cargo build --workspace --release
+      # NOTE: the standalone `cargo build --workspace --release` step was
+      # removed to save CI minutes (it was the slowest single step). Clippy
+      # (--all-targets, dev profile) already compiles the whole workspace and
+      # catches the vast majority of breakage, and the deploy workflow's
+      # per-service Docker build IS a `cargo build --release`, so the release
+      # profile is still exercised before anything ships. Trade-off: a
+      # release-profile-ONLY break (e.g. an lto/codegen issue) now surfaces at
+      # deploy time rather than in CI. Re-add this step if that bites.
 
       - name: Run tests
         # SQLX_OFFLINE=false so sqlx::test can verify queries against the
@@ -79,10 +99,11 @@ jobs:
           SQLX_OFFLINE: "false"
         run: cargo test --workspace --all-targets
 
-      - name: Security audit (Rust)
-        # RUSTSEC-2023-0071: rsa timing side-channel, no fix available.
-        # Only reachable via sqlx-mysql (compile-time macro dep); we use PostgreSQL only.
-        run: cargo install cargo-audit --quiet && cargo audit --ignore RUSTSEC-2023-0071
+      # Security audits (cargo-audit + npm audit) moved out of the per-push
+      # hot path into .github/workflows/security-audit.yml, which runs weekly
+      # on a schedule. `cargo install cargo-audit` compiled the tool from
+      # source on every CI run (~2–4 min); a dependency advisory does not
+      # change between two pushes minutes apart, so per-push was pure waste.
 
   frontend-check:
     name: Next.js build & lint
@@ -107,7 +128,4 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: http://localhost:3000
-
-      - name: Security audit (npm)
-        run: npm audit --audit-level=high
-        continue-on-error: true
+        # npm audit moved to .github/workflows/security-audit.yml (weekly).
