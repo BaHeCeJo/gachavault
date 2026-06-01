@@ -20,6 +20,7 @@ export function ItemTable({
 }) {
   return (
     <div className="overflow-hidden rounded-xl border border-gray-800">
+      <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-800 bg-gray-900">
@@ -109,6 +110,7 @@ export function ItemTable({
           )}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

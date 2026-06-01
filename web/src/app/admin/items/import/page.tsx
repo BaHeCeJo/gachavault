@@ -180,6 +180,7 @@ export default function BulkImportPage() {
           </div>
 
           <div className="rounded-xl border border-gray-800 overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead className="bg-gray-900 text-gray-400">
                 <tr>
@@ -219,6 +220,7 @@ export default function BulkImportPage() {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}

@@ -132,6 +132,7 @@ export default function GameTranslationsPage() {
       {/* Existing translations */}
       {translations.length > 0 && (
         <div className="rounded-xl border border-gray-800 overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
@@ -172,6 +173,7 @@ export default function GameTranslationsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

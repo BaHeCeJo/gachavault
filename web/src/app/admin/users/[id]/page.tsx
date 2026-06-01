@@ -147,6 +147,7 @@ export default function UserDetailPage() {
         </p>
 
         <div className="rounded-xl border border-gray-800 overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
@@ -222,6 +223,7 @@ export default function UserDetailPage() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       </section>
 

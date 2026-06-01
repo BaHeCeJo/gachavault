@@ -414,6 +414,7 @@ export default function AdminGameSchemasPage() {
         </p>
       ) : (
         <div className="overflow-hidden rounded-xl border border-gray-800">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
@@ -457,6 +458,7 @@ export default function AdminGameSchemasPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

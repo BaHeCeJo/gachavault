@@ -127,7 +127,7 @@ export default function TierListsPage() {
           {tierlists.map((tl) => (
             <div
               key={tl.id}
-              className="flex items-center gap-4 rounded-xl border border-gray-800 bg-gray-900 p-4 hover:border-gray-600 transition"
+              className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 rounded-xl border border-gray-800 bg-gray-900 p-4 hover:border-gray-600 transition"
             >
               <Link href={`/tierlists/${tl.id}`} className="flex-1 min-w-0">
                 <p className="truncate">{tl.title}</p>
@@ -141,7 +141,7 @@ export default function TierListsPage() {
                   · {new Date(tl.updated_at).toLocaleDateString()}
                 </p>
               </Link>
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex gap-2 flex-shrink-0 flex-wrap">
                 {tl.is_public && (
                   <Link
                     href={`/tierlists/share/${tl.share_slug}`}
@@ -181,11 +181,11 @@ export default function TierListsPage() {
       {/* Create modal */}
       {creating && (
         <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
           onClick={() => setCreating(false)}
         >
           <div
-            className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-96 space-y-4"
+            className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-sm space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-semibold text-lg">New Tier List</h2>

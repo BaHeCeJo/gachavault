@@ -197,6 +197,7 @@ export default function AdminAttributesPage() {
                   </button>
                 </div>
                 <div className="overflow-hidden rounded-xl border border-gray-800">
+                  <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-gray-800 bg-gray-900">
@@ -256,6 +257,7 @@ export default function AdminAttributesPage() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             );
@@ -276,11 +278,11 @@ export default function AdminAttributesPage() {
       {/* Modal */}
       {modal && (
         <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
           onClick={() => setModal(null)}
         >
           <div
-            className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-[420px] space-y-4 max-h-[90vh] overflow-y-auto"
+            className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-[420px] space-y-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-semibold text-lg">

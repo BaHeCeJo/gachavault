@@ -151,6 +151,7 @@ export default function AdminGameSectionsPage() {
         <p className="text-gray-400">No sections yet. Sections group items (e.g. Characters, Weapons, Artifacts).</p>
       ) : (
         <div className="overflow-hidden rounded-xl border border-gray-800">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
@@ -190,6 +191,7 @@ export default function AdminGameSectionsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

@@ -159,6 +159,7 @@ export default function AdminGamesPage() {
         <p className="text-gray-400">No games yet. Add the first one.</p>
       ) : (
         <div className="overflow-hidden rounded-xl border border-gray-800">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
@@ -192,6 +193,7 @@ export default function AdminGamesPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -199,8 +201,8 @@ export default function AdminGamesPage() {
 
       {/* Edit/Create modal */}
       {modal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50" onClick={() => setModal(null)}>
-          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-[480px] space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setModal(null)}>
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-[480px] space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h2 className="font-semibold text-lg">{modal.mode === "create" ? "Add Game" : "Edit Game"}</h2>
             <div>
               <label className="text-xs text-gray-400 block mb-1">Name</label>

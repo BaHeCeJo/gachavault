@@ -481,11 +481,11 @@ export default function AdminItemsPage() {
       {/* Modal */}
       {modal && (
         <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
           onClick={() => setModal(null)}
         >
           <div
-            className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-[600px] space-y-4 max-h-[90vh] overflow-y-auto"
+            className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-[600px] space-y-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-semibold text-lg">{modal.mode === "create" ? "Add Item" : "Edit Item"}</h2>

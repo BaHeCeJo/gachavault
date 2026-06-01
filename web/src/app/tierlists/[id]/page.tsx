@@ -55,6 +55,9 @@ export default function TierListEditorPage() {
   const [search, setSearch] = useState("");
   const [showTierConfig, setShowTierConfig] = useState(false);
   const [sectionName, setSectionName] = useState<string | null>(null);
+  // Touch devices have no hover, so the tier-assign popover below is also
+  // toggled on tap via this id. null = no picker open.
+  const [openPicker, setOpenPicker] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) router.replace(`/auth/login?redirect=/tierlists/${id}`);
@@ -161,7 +164,7 @@ export default function TierListEditorPage() {
   return (
     <main className="max-w-5xl mx-auto px-6 py-10">
       {/* Header */}
-      <div className="flex items-start justify-between mb-8 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-8 gap-4">
         <div className="flex-1">
           {editTitle ? (
             <input
@@ -182,7 +185,7 @@ export default function TierListEditorPage() {
               {title}
             </h1>
           )}
-          <div className="flex items-center gap-4 mt-2">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
             <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
               <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
               Public
@@ -322,17 +325,23 @@ export default function TierListEditorPage() {
             const img = item.data?.image_url as string | undefined;
             return (
               <div key={item.id} className="relative group">
-                <div title={name}>
+                <div
+                  title={name}
+                  className="cursor-pointer"
+                  onClick={() => setOpenPicker((cur) => (cur === item.id ? null : item.id))}
+                >
                   <SafeImage src={img} alt={name} width={48} height={48} className="w-12 h-12 rounded-lg object-cover" fallback={
                     <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center text-lg font-semibold text-gray-600">
                       {name[0]?.toUpperCase()}
                     </div>
                   } />
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:flex gap-0.5 bg-gray-900 border border-gray-700 rounded-lg p-1 z-10">
+                  <div
+                    className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-1 ${openPicker === item.id ? "flex" : "hidden group-hover:flex"} gap-0.5 bg-gray-900 border border-gray-700 rounded-lg p-1 z-10`}
+                  >
                     {tiers.map((t) => (
                       <button
                         key={t.key}
-                        onClick={() => setItemTier(item.id, t.key)}
+                        onClick={(e) => { e.stopPropagation(); setItemTier(item.id, t.key); setOpenPicker(null); }}
                         className="w-7 h-7 rounded text-xs font-semibold hover:bg-gray-700 transition"
                         style={{ color: t.color }}
                       >
