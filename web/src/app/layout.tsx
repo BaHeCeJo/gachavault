@@ -9,13 +9,20 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://hotarumi.com";
+// ~55 chars — long enough to fill the SERP title slot and carry the primary
+// keywords ("gacha", "tier lists", game names live elsewhere), short enough
+// that Google won't truncate it with an ellipsis.
+const defaultTitle = "Hotarumi — Track Your Gacha Characters & Tier Lists";
+// ~150 chars — sits inside Google's ~155-char description window while naming
+// the concrete things people search for (roster tracking, tier lists, the
+// flagship games) instead of a vague one-liner.
 const defaultDescription =
-  "Hotarumi tracks characters, items, tier lists and events across multiple gacha games — in English and French.";
+  "Track every character you own across Arknights, Honkai: Star Rail, Genshin Impact and more — build and share gacha tier lists. Free, synced, in EN & FR.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Hotarumi — Multi-game gacha tracker",
+    default: defaultTitle,
     template: "%s | Hotarumi",
   },
   description: defaultDescription,
@@ -24,13 +31,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Hotarumi",
-    title: "Hotarumi — Multi-game gacha tracker",
+    title: defaultTitle,
     description: defaultDescription,
     url: siteUrl,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hotarumi — Multi-game gacha tracker",
+    title: defaultTitle,
     description: defaultDescription,
   },
   robots: { index: true, follow: true },
