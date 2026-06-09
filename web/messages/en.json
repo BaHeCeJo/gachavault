@@ -27,7 +27,18 @@
     "featureTierTitle": "Build tier lists",
     "featureTierDesc": "Drag-and-drop tier lists for any game. Save them privately or publish a shareable link.",
     "featureShareTitle": "Share with friends",
-    "featureShareDesc": "Public profile shows your collection. Send a friend your tier list and they can comment without signing up."
+    "featureShareDesc": "Public profile shows your collection. Send a friend your tier list and they can comment without signing up.",
+    "aboutTitle": "What is Hotarumi?",
+    "aboutBody": "Hotarumi is a free, multi-game gacha tracker. Instead of juggling a spreadsheet or a different app for every game, you keep your whole roster — every character you own, their levels and constellations — in one place that syncs across all your devices. Build drag-and-drop tier lists, keep them private or publish a shareable link, and compare collections with friends. It works right in your browser, in English and French, with nothing to download.",
+    "faqTitle": "Frequently asked questions",
+    "faqQ1": "Is Hotarumi free to use?",
+    "faqA1": "Yes — Hotarumi is completely free. Create an account to save your collection and sync it across every device you sign in on.",
+    "faqQ2": "Which gacha games are supported?",
+    "faqA2": "Hotarumi currently tracks Arknights, Honkai: Star Rail, Zenless Zone Zero, Wuthering Waves, Genshin Impact and Arknights: Endfield, with more games added over time.",
+    "faqQ3": "Do I need to install an app?",
+    "faqA3": "No installation needed. Hotarumi runs in any modern web browser on desktop, tablet or phone, and your data stays in sync wherever you sign in.",
+    "faqQ4": "Is my collection private?",
+    "faqA4": "Your collection is private by default. You decide what to share — publish a tier list as a public link or show your roster on your public profile whenever you choose."
   },
   "auth": {
     "login": {

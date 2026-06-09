@@ -27,7 +27,18 @@
     "featureTierTitle": "Créez des tier lists",
     "featureTierDesc": "Tier lists glisser-déposer pour n'importe quel jeu. Privées ou publiées via un lien partageable.",
     "featureShareTitle": "Partagez avec vos amis",
-    "featureShareDesc": "Votre profil public affiche votre collection. Envoyez une tier list à un ami : il peut commenter sans inscription."
+    "featureShareDesc": "Votre profil public affiche votre collection. Envoyez une tier list à un ami : il peut commenter sans inscription.",
+    "aboutTitle": "Qu'est-ce que Hotarumi ?",
+    "aboutBody": "Hotarumi est un tracker gacha multi-jeux et gratuit. Plutôt que de jongler avec un tableur ou une application différente pour chaque jeu, vous regroupez tout votre roster — chaque personnage que vous possédez, leurs niveaux et constellations — au même endroit, synchronisé sur tous vos appareils. Créez des tier lists en glisser-déposer, gardez-les privées ou publiez un lien partageable, et comparez vos collections entre amis. Tout se passe dans votre navigateur, en français et en anglais, sans rien à télécharger.",
+    "faqTitle": "Questions fréquentes",
+    "faqQ1": "Hotarumi est-il gratuit ?",
+    "faqA1": "Oui, Hotarumi est entièrement gratuit. Créez un compte pour enregistrer votre collection et la synchroniser sur tous vos appareils.",
+    "faqQ2": "Quels jeux gacha sont pris en charge ?",
+    "faqA2": "Hotarumi suit actuellement Arknights, Honkai: Star Rail, Zenless Zone Zero, Wuthering Waves, Genshin Impact et Arknights: Endfield, et d'autres jeux sont ajoutés régulièrement.",
+    "faqQ3": "Faut-il installer une application ?",
+    "faqA3": "Aucune installation nécessaire. Hotarumi fonctionne dans n'importe quel navigateur récent, sur ordinateur, tablette ou téléphone, et vos données restent synchronisées partout où vous vous connectez.",
+    "faqQ4": "Ma collection est-elle privée ?",
+    "faqA4": "Votre collection est privée par défaut. Vous choisissez ce que vous partagez : publiez une tier list via un lien public ou affichez votre roster sur votre profil public quand vous le souhaitez."
   },
   "auth": {
     "login": {

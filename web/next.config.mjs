@@ -8,6 +8,9 @@ const apiHost = new URL(apiUrl).hostname;
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  // Strip the `X-Powered-By: Next.js` response header — it leaks the framework
+  // (minor info disclosure) and SEO crawlers flag its presence.
+  poweredByHeader: false,
   productionBrowserSourceMaps: false,
   eslint: { ignoreDuringBuilds: true },
   images: {

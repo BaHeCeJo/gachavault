@@ -26,6 +26,10 @@ export default async function HomePage() {
   // an unfinished site and the audit explicitly called this out as proof rot.
   const featured = bundle.stats.filter((s) => s.characterCount > 0).slice(0, 8);
 
+  // Visible FAQ + its matching FAQPage structured data are built from the same
+  // strings so the markup never drifts from what users read.
+  const faqs = [1, 2, 3, 4].map((n) => ({ q: t(`faqQ${n}`), a: t(`faqA${n}`) }));
+
   // Organization + WebSite schema. The Organization entry gives Google the
   // canonical site name + logo for the knowledge panel; WebSite + the
   // SearchAction declares a Sitelinks searchbox pointing at /search so
@@ -36,7 +40,7 @@ export default async function HomePage() {
       "@type": "Organization",
       name: "Hotarumi",
       url: SITE_URL,
-      logo: `${SITE_URL}/icon.png`,
+      logo: `${SITE_URL}/logo.png`,
     },
     {
       "@context": "https://schema.org",
@@ -48,6 +52,15 @@ export default async function HomePage() {
         target: `${SITE_URL}/search?q={search_term_string}`,
         "query-input": "required name=search_term_string",
       },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqs.map(({ q, a }) => ({
+        "@type": "Question",
+        name: q,
+        acceptedAnswer: { "@type": "Answer", text: a },
+      })),
     },
   ];
 
@@ -63,8 +76,14 @@ export default async function HomePage() {
           <div className="w-[600px] h-[400px] rounded-full bg-amber-500/15 blur-[120px]" />
         </div>
 
-        <h1 className="relative text-5xl sm:text-6xl font-semibold tracking-tight mb-4">{t("title")}</h1>
-        <p className="relative text-xl text-gray-400 mb-10 max-w-xl">{t("subtitle")}</p>
+        {/* Brand + value-prop in a single H1. The descriptive second line is
+            what makes the heading meaningful to search engines (a brand-only
+            "Hotarumi" H1 is 8 chars / one word and reads as content-less);
+            the visual hierarchy is unchanged from the previous h1 + p. */}
+        <h1 className="relative mb-10 max-w-xl">
+          <span className="block text-5xl sm:text-6xl font-semibold tracking-tight">{t("title")}</span>
+          <span className="block text-xl text-gray-400 font-normal mt-4">{t("subtitle")}</span>
+        </h1>
 
         <HomeSearchForm placeholder={t("searchPlaceholder")} buttonLabel={t("searchButton")} />
 
@@ -158,6 +177,24 @@ export default async function HomePage() {
               </svg>
             }
           />
+        </div>
+      </section>
+
+      {/* About + FAQ — gives the landing page real indexable prose (it was
+          under the ~250-word threshold) and answers the questions a first-time
+          visitor actually has. Mirrored by FAQPage JSON-LD above. */}
+      <section className="max-w-3xl mx-auto w-full px-6 pb-24">
+        <h2 className="text-xl font-semibold mb-3">{t("aboutTitle")}</h2>
+        <p className="text-sm text-gray-400 leading-relaxed mb-12">{t("aboutBody")}</p>
+
+        <h2 className="text-xl font-semibold mb-4">{t("faqTitle")}</h2>
+        <div className="space-y-3">
+          {faqs.map(({ q, a }, i) => (
+            <div key={i} className="rounded-xl border border-gray-800 bg-gray-900/60 p-5">
+              <h3 className="text-base font-semibold mb-1">{q}</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">{a}</p>
+            </div>
+          ))}
         </div>
       </section>
     </main>
