@@ -33,7 +33,7 @@ jobs:
     outputs:
       changed_services: ${{ steps.detect.outputs.changed_services }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # Need history back to the previous commit to diff against it.
           fetch-depth: 0
@@ -84,7 +84,7 @@ jobs:
             dockerfile: web/Dockerfile
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set image owner (lowercase)
         run: echo "IMAGE_PREFIX=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
@@ -105,7 +105,7 @@ jobs:
           fi
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -113,11 +113,11 @@ jobs:
 
       - name: Set up Docker Buildx
         if: steps.decide.outputs.build == 'true'
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Build and push ${{ matrix.service.name }}
         if: steps.decide.outputs.build == 'true'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: ${{ matrix.service.name == 'web' && 'web' || '.' }}
           file: ${{ matrix.service.dockerfile }}
@@ -160,7 +160,7 @@ jobs:
     environment: production
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
