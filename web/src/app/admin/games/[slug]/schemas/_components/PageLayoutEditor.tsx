@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ItemPageClient from "@/app/games/[slug]/[sectionSlug]/[itemSlug]/ItemPageClient";
+import { itemsApi } from "@/lib/api";
 import type { ItemPageBundle, SeoGameAttribute, SeoSchemaField } from "@/lib/seo";
 import {
   BLOCK_TYPES,
@@ -83,6 +84,8 @@ export function PageLayoutEditor({
   fields,
   attrs,
   gameName,
+  gameId,
+  sectionId,
   sectionName,
   value,
   onChange,
@@ -90,6 +93,8 @@ export function PageLayoutEditor({
   fields: EditorField[];
   attrs: EditorAttr[];
   gameName: string;
+  gameId: string;
+  sectionId: string | null;
   sectionName: string;
   value: PageLayout | null;
   onChange: (next: PageLayout | null) => void;
@@ -97,7 +102,29 @@ export function PageLayoutEditor({
   const isAuto = value === null;
   const blocks = value?.blocks ?? [];
 
+  // Real items of this section, so the preview can render an actual splash art
+  // instead of the synthesized sample.
+  const [realItems, setRealItems] = useState<{ id: string; name: string; data: Record<string, unknown> }[]>([]);
+  const [previewId, setPreviewId] = useState<string>("__sample");
+
+  useEffect(() => {
+    if (!gameId) return;
+    let cancelled = false;
+    itemsApi
+      .list({ game_id: gameId, section_id: sectionId ?? undefined, limit: 50, offset: 0 })
+      .then((res) => {
+        if (cancelled) return;
+        const list = (res?.data?.data ?? []) as Array<{ id: string; slug: string; data: Record<string, unknown> }>;
+        setRealItems(list.map((it) => ({ id: it.id, name: (it.data?.name as string) ?? it.slug, data: it.data ?? {} })));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [gameId, sectionId]);
+
   const attributeFields = useMemo(() => fields.filter((f) => f.type === "attribute"), [fields]);
+  const imageFields = useMemo(() => fields.filter((f) => f.type === "image" || f.type === "url"), [fields]);
   const textFields = useMemo(
     () => fields.filter((f) => f.type === "textarea" || f.type === "text"),
     [fields],
@@ -108,16 +135,18 @@ export function PageLayoutEditor({
   );
 
   const previewBundle = useMemo<ItemPageBundle>(() => {
+    const selected = realItems.find((i) => i.id === previewId);
+    const data = selected ? selected.data : sampleData(fields, attrs);
     return {
       item: {
-        id: "preview",
+        id: selected?.id ?? "preview",
         slug: "sample",
         game_id: "",
         game_slug: "",
         section_id: "",
         section_slug: "",
         type_schema_id: null,
-        data: sampleData(fields, attrs),
+        data,
       },
       game: { id: "", slug: "", name: gameName, description: null, banner_url: null, logo_url: null },
       fields: fields as unknown as SeoSchemaField[],
@@ -126,7 +155,7 @@ export function PageLayoutEditor({
       locale: "en",
       pageLayout: value,
     };
-  }, [fields, attrs, gameName, sectionName, value]);
+  }, [fields, attrs, gameName, sectionName, value, realItems, previewId]);
 
   function setBlocks(next: PageBlock[]) {
     onChange({ version: 1, blocks: next });
@@ -203,6 +232,7 @@ export function PageLayoutEditor({
                   index={idx}
                   total={blocks.length}
                   attributeFields={attributeFields}
+                  imageFields={imageFields}
                   textFields={textFields}
                   refFields={refFields}
                   allFields={fields}
@@ -230,14 +260,27 @@ export function PageLayoutEditor({
 
           {/* Live preview */}
           <div>
-            <p className="text-xs text-gray-500 mb-2">Preview (sample item)</p>
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <p className="text-xs text-gray-500">Preview</p>
+              <select
+                value={previewId}
+                onChange={(e) => setPreviewId(e.target.value)}
+                className="text-xs px-2 py-1 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:border-white max-w-[60%] truncate"
+                title="Preview the template against a real item"
+              >
+                <option value="__sample">Sample item</option>
+                {realItems.map((it) => (
+                  <option key={it.id} value={it.id}>{it.name}</option>
+                ))}
+              </select>
+            </div>
             <div className="rounded-lg border border-gray-800 bg-gray-950 overflow-hidden max-h-[60vh] overflow-y-auto">
               <div className="scale-[0.92] origin-top">
                 <ItemPageClient initial={previewBundle} preview />
               </div>
             </div>
             <p className="text-[11px] text-gray-600 mt-1">
-              Related-item and reference grids stay empty here — they only fill in on the live page.
+              Pick a real item to see its art. Related-item and reference grids stay empty here — they only fill in on the live page.
             </p>
           </div>
         </div>
@@ -247,12 +290,13 @@ export function PageLayoutEditor({
 }
 
 function BlockCard({
-  block, index, total, attributeFields, textFields, refFields, allFields, onPatch, onMove, onRemove,
+  block, index, total, attributeFields, imageFields, textFields, refFields, allFields, onPatch, onMove, onRemove,
 }: {
   block: PageBlock;
   index: number;
   total: number;
   attributeFields: EditorField[];
+  imageFields: EditorField[];
   textFields: EditorField[];
   refFields: EditorField[];
   allFields: EditorField[];
@@ -274,7 +318,7 @@ function BlockCard({
       </div>
 
       {block.type === "hero" && (
-        <HeroConfigPanel config={(block.config ?? {}) as HeroConfig} attributeFields={attributeFields} onPatch={onPatch} />
+        <HeroConfigPanel config={(block.config ?? {}) as HeroConfig} attributeFields={attributeFields} imageFields={imageFields} onPatch={onPatch} />
       )}
       {block.type === "stats_table" && (
         <StatsConfigPanel config={(block.config ?? {}) as StatsTableConfig} allFields={allFields} onPatch={onPatch} />
@@ -289,15 +333,24 @@ function BlockCard({
   );
 }
 
-function HeroConfigPanel({ config, attributeFields, onPatch }: { config: HeroConfig; attributeFields: EditorField[]; onPatch: (p: Record<string, unknown>) => void }) {
+function HeroConfigPanel({ config, attributeFields, imageFields, onPatch }: { config: HeroConfig; attributeFields: EditorField[]; imageFields: EditorField[]; onPatch: (p: Record<string, unknown>) => void }) {
   const selected = new Set(config.badge_fields ?? []);
   const toggle = (key: string) => {
     const next = new Set(selected);
     if (next.has(key)) next.delete(key); else next.add(key);
     onPatch({ badge_fields: Array.from(next) });
   };
+  const extraImageFields = imageFields.filter((f) => f.key !== "image_url" && f.key !== "icon_url");
   return (
     <div className="space-y-2">
+      <div>
+        <label className="text-xs text-gray-500 block mb-1">Image field</label>
+        <select value={config.image_field ?? "image_url"} onChange={(e) => onPatch({ image_field: e.target.value })} className={inputCls}>
+          <option value="image_url">image_url (default)</option>
+          <option value="icon_url">icon_url</option>
+          {extraImageFields.map((f) => <option key={f.key} value={f.key}>{f.label} ({f.key})</option>)}
+        </select>
+      </div>
       <label className="flex items-center gap-2 text-sm text-gray-300">
         <input type="checkbox" checked={config.show_section_tag ?? false} onChange={(e) => onPatch({ show_section_tag: e.target.checked })} className="accent-amber-500" />
         Show section tag

@@ -180,6 +180,7 @@ export default function AdminGameSchemasPage() {
   const [attrTypes, setAttrTypes] = useState<string[]>([]);
   const [allAttrs, setAllAttrs] = useState<GameAttributeFull[]>([]);
   const [gameName, setGameName] = useState(slug);
+  const [gameId, setGameId] = useState("");
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<ModalState>(null);
 
@@ -212,6 +213,7 @@ export default function AdminGameSchemasPage() {
     ])
       .then(([gameRes, sectRes, schemaRes, attrRes]) => {
         setGameName(gameRes.data.data.name);
+        setGameId(gameRes.data.data.id);
         setSections(sectRes.data.data ?? []);
         setSchemas(schemaRes.data.data ?? []);
         const attrs = (attrRes.data.data ?? []) as GameAttributeFull[];
@@ -625,6 +627,8 @@ export default function AdminGameSchemasPage() {
               fields={fields}
               attrs={allAttrs}
               gameName={gameName}
+              gameId={gameId}
+              sectionId={modal.mode === "edit" ? modal.schema.section_id : (sectionId || null)}
               sectionName={sectionName(modal.mode === "edit" ? modal.schema.section_id : (sectionId || null))}
               value={pageLayout}
               onChange={setPageLayout}
