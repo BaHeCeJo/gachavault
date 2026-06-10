@@ -8,6 +8,7 @@ import {
   BLOCK_TYPES,
   BLOCK_LABELS,
   defaultLayoutFromSchema,
+  parsePageLayout,
   makeBlockId,
   type PageBlock,
   type PageLayout,
@@ -125,6 +126,26 @@ export function PageLayoutEditor({
   const [realItems, setRealItems] = useState<{ id: string; name: string; data: Record<string, unknown> }[]>([]);
   const [previewId, setPreviewId] = useState<string>("__sample");
 
+  // Paste/export the whole layout as JSON — far faster than clicking in a large
+  // template by hand.
+  const [showJson, setShowJson] = useState(false);
+  const [jsonDraft, setJsonDraft] = useState("");
+  const [jsonError, setJsonError] = useState("");
+  function openJson() {
+    setJsonDraft(JSON.stringify(value ?? { version: 1, blocks: [] }, null, 2));
+    setJsonError("");
+    setShowJson(true);
+  }
+  function applyJson() {
+    const parsed = parsePageLayout(jsonDraft);
+    if (!parsed) {
+      setJsonError("Couldn't parse that — it must be a JSON object with a \"blocks\" array.");
+      return;
+    }
+    onChange(parsed);
+    setShowJson(false);
+  }
+
   useEffect(() => {
     if (!gameId) return;
     let cancelled = false;
@@ -189,11 +210,34 @@ export function PageLayoutEditor({
             </button>
           </div>
         ) : (
-          <button type="button" onClick={() => onChange(null)} className="text-xs text-amber-400 hover:text-amber-300">
-            Reset to default
-          </button>
+          <div className="flex gap-3">
+            <button type="button" onClick={() => (showJson ? setShowJson(false) : openJson())} className="text-xs text-amber-400 hover:text-amber-300">
+              {showJson ? "Close JSON" : "Edit as JSON"}
+            </button>
+            <button type="button" onClick={() => onChange(null)} className="text-xs text-amber-400 hover:text-amber-300">
+              Reset to default
+            </button>
+          </div>
         )}
       </div>
+
+      {!isAuto && showJson && (
+        <div className="mb-3 space-y-2">
+          <textarea
+            rows={12}
+            value={jsonDraft}
+            onChange={(e) => { setJsonDraft(e.target.value); setJsonError(""); }}
+            spellCheck={false}
+            className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-xs font-mono focus:outline-none focus:border-white resize-y"
+          />
+          {jsonError && <p className="text-xs text-red-400">{jsonError}</p>}
+          <div className="flex gap-2">
+            <button type="button" onClick={applyJson} className="text-xs px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold hover:bg-amber-400 transition">Apply JSON</button>
+            <button type="button" onClick={() => setShowJson(false)} className="text-xs px-3 py-1.5 rounded-lg border border-gray-700 hover:border-white transition">Cancel</button>
+          </div>
+          <p className="text-[11px] text-gray-600">Paste a full template here and Apply — then Save the schema as usual.</p>
+        </div>
+      )}
 
       {isAuto ? (
         <p className="text-xs text-gray-500 py-3 px-3 border border-dashed border-gray-800 rounded-lg">
