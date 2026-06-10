@@ -39,7 +39,20 @@ export function RarityStars({ value }: { value: unknown }) {
       </div>
     );
   }
-  const str = String(value);
+  const str = String(value).trim();
+  // A numeric rarity stored as a string (e.g. "5") still renders as gold stars.
+  if (/^\d+$/.test(str)) {
+    const n = parseInt(str, 10);
+    if (n > 0 && n <= 7) {
+      return (
+        <div className="flex gap-0.5">
+          {Array.from({ length: n }).map((_, i) => (
+            <span key={i} className="text-yellow-400 text-lg">★</span>
+          ))}
+        </div>
+      );
+    }
+  }
   const badge = RARITY_CLASSES[str]?.badge ?? RARITY_BADGE_FALLBACK;
   return (
     <span className={`px-3 py-0.5 rounded-full text-sm font-semibold border ${badge}`}>
