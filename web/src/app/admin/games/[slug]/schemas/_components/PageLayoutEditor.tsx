@@ -1,9 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import ItemPageClient from "@/app/games/[slug]/[sectionSlug]/[itemSlug]/ItemPageClient";
 import { itemsApi } from "@/lib/api";
 import type { ItemPageBundle, SeoGameAttribute, SeoSchemaField } from "@/lib/seo";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  arrayMove,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   BLOCK_TYPES,
   BLOCK_LABELS,
@@ -178,6 +195,19 @@ export function PageLayoutEditor({
     setBlocks([...blocks, { id: makeBlockId(), type, config: meta?.defaultConfig() ?? {} }]);
   }
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = blocks.findIndex((b) => b.id === active.id);
+    const newIndex = blocks.findIndex((b) => b.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+    setBlocks(arrayMove(blocks, oldIndex, newIndex));
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
@@ -225,22 +255,28 @@ export function PageLayoutEditor({
                 No blocks yet — add one below.
               </p>
             ) : (
-              blocks.map((block, idx) => (
-                <BlockCard
-                  key={block.id}
-                  block={block}
-                  index={idx}
-                  total={blocks.length}
-                  attributeFields={attributeFields}
-                  imageFields={imageFields}
-                  textFields={textFields}
-                  refFields={refFields}
-                  allFields={fields}
-                  onPatch={(patch) => patchBlockConfig(idx, patch)}
-                  onMove={(dir) => moveBlock(idx, dir)}
-                  onRemove={() => removeBlock(idx)}
-                />
-              ))
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
+                  <div className="space-y-3">
+                    {blocks.map((block, idx) => (
+                      <BlockCard
+                        key={block.id}
+                        block={block}
+                        index={idx}
+                        total={blocks.length}
+                        attributeFields={attributeFields}
+                        imageFields={imageFields}
+                        textFields={textFields}
+                        refFields={refFields}
+                        allFields={fields}
+                        onPatch={(patch) => patchBlockConfig(idx, patch)}
+                        onMove={(dir) => moveBlock(idx, dir)}
+                        onRemove={() => removeBlock(idx)}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
             )}
 
             <div className="flex flex-wrap gap-2 pt-1">
@@ -304,9 +340,24 @@ function BlockCard({
   onMove: (dir: -1 | 1) => void;
   onRemove: () => void;
 }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
+  const style: CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : undefined,
+  };
   return (
-    <div className="rounded-xl border border-gray-800 bg-gray-950/40 p-3 space-y-3">
+    <div ref={setNodeRef} style={style} className="rounded-xl border border-gray-800 bg-gray-950/40 p-3 space-y-3">
       <div className="flex items-center gap-2">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          aria-label="Drag to reorder"
+          className="w-5 shrink-0 cursor-grab active:cursor-grabbing touch-none text-gray-600 hover:text-gray-300 leading-none"
+        >
+          ⠿
+        </button>
         <span className="text-xs text-gray-500 w-6 shrink-0">#{index + 1}</span>
         <span className="text-sm text-gray-300 flex-1 truncate">{BLOCK_LABELS[block.type] ?? block.type}</span>
         <button type="button" onClick={() => onMove(-1)} disabled={index === 0} aria-label="Move up"
