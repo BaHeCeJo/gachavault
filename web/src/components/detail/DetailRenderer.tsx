@@ -5,6 +5,10 @@ import type { ItemPageBundle } from "@/lib/seo";
 import type { PageBlock, PageLayout } from "@/lib/pageLayout";
 import type { ItemRelations } from "@/components/detail/types";
 import { LegacyDetailLayout } from "@/components/detail/LegacyDetailLayout";
+import { HeroBlock } from "@/components/detail/blocks/HeroBlock";
+import { StatsTableBlock } from "@/components/detail/blocks/StatsTableBlock";
+import { RichTextBlock } from "@/components/detail/blocks/RichTextBlock";
+import { ItemGridBlock } from "@/components/detail/blocks/ItemGridBlock";
 
 interface BlockProps {
   block: PageBlock;
@@ -29,6 +33,14 @@ function BlockRenderer({ block, bundle, preview, relations, attrMap }: BlockProp
           attrMap={attrMap}
         />
       );
+    case "hero":
+      return <HeroBlock config={block.config} bundle={bundle} attrMap={attrMap} />;
+    case "stats_table":
+      return <StatsTableBlock config={block.config} bundle={bundle} attrMap={attrMap} relations={relations} preview={preview} />;
+    case "rich_text":
+      return <RichTextBlock config={block.config} bundle={bundle} />;
+    case "item_grid":
+      return <ItemGridBlock config={block.config} bundle={bundle} relations={relations} />;
     default:
       return null;
   }

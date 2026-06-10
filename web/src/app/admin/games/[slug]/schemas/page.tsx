@@ -11,6 +11,7 @@ import ItemCard, { type CardLayout } from "@/components/ItemCard";
 import { buildAttrMap, type GameAttribute as GameAttributeFull } from "@/lib/attrs";
 import { revalidateGame } from "@/lib/revalidate";
 import { type PageLayout, parsePageLayout } from "@/lib/pageLayout";
+import { PageLayoutEditor } from "./_components/PageLayoutEditor";
 
 interface Section { id: string; slug: string; name: string }
 interface GameAttribute { attr_type: string }
@@ -618,6 +619,15 @@ export default function AdminGameSchemasPage() {
               attrs={allAttrs}
               value={cardLayout}
               onChange={setCardLayout}
+            />
+
+            <PageLayoutEditor
+              fields={fields}
+              attrs={allAttrs}
+              gameName={gameName}
+              sectionName={sectionName(modal.mode === "edit" ? modal.schema.section_id : (sectionId || null))}
+              value={pageLayout}
+              onChange={setPageLayout}
             />
 
             {error && <p className="text-red-400 text-sm">{error}</p>}

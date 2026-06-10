@@ -44,6 +44,9 @@ export interface ResolvedRef {
   name: string;
   game_slug?: string;
   section_slug?: string;
+  // Portrait/icon for image-card grids (item_grid block). Populated when the
+  // full source item was fetched anyway (itemref/backref).
+  image_url?: string;
 }
 
 // Secondary data hydrated client-side after the server render: itemref

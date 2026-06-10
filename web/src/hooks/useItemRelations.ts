@@ -52,6 +52,7 @@ export function useItemRelations({
                 name: (refItem.data?.name as string) ?? refItem.slug,
                 game_slug: refItem.game_slug,
                 section_slug: refItem.section_slug,
+                image_url: (refItem.data?.image_url ?? refItem.data?.icon_url) as string | undefined,
               });
             }
           });
@@ -102,6 +103,7 @@ export function useItemRelations({
                   name: (sourceItem.data?.name as string) ?? sourceItem.slug,
                   game_slug: sourceItem.game_slug,
                   section_slug: sourceItem.section_slug,
+                  image_url: (sourceItem.data?.image_url ?? sourceItem.data?.icon_url) as string | undefined,
                 });
               }
             }
