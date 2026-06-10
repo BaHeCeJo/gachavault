@@ -14,6 +14,7 @@ import { revalidateGame } from "@/lib/revalidate";
 import { InlineAttrCreatorForm } from "./_components/InlineAttrCreatorForm";
 import { ItemTable } from "./_components/ItemTable";
 import { ItemCardGrid } from "./_components/ItemCardGrid";
+import { ItemDetailPreview } from "./_components/ItemDetailPreview";
 
 interface Game { id: string; slug: string; name: string }
 interface Section { id: string; slug: string; name: string }
@@ -94,6 +95,8 @@ export default function AdminItemsPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
   const [showRawJson, setShowRawJson] = useState(false);
+  // Live detail-page preview alongside the editor (md+ screens only).
+  const [showPreview, setShowPreview] = useState(true);
 
   // Inline attribute creation. The name is owned by the child
   // InlineAttrCreatorForm — each open mounts a fresh instance, so resetting
@@ -485,10 +488,20 @@ export default function AdminItemsPage() {
           onClick={() => setModal(null)}
         >
           <div
-            className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-[600px] space-y-4 max-h-[90vh] overflow-y-auto"
+            className={`bg-gray-900 border border-gray-700 rounded-xl w-full max-w-[600px] max-h-[90vh] flex overflow-hidden ${showPreview ? "md:max-w-[1100px]" : ""}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-semibold text-lg">{modal.mode === "create" ? "Add Item" : "Edit Item"}</h2>
+            <div className="w-full md:w-[600px] shrink-0 p-6 space-y-4 overflow-y-auto">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-lg">{modal.mode === "create" ? "Add Item" : "Edit Item"}</h2>
+              <button
+                type="button"
+                onClick={() => setShowPreview((v) => !v)}
+                className="hidden md:inline-flex text-xs px-3 py-1.5 rounded-lg border border-gray-700 hover:border-white transition"
+              >
+                {showPreview ? "Hide preview" : "Show preview"}
+              </button>
+            </div>
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs text-gray-400">Slug</label>
@@ -966,6 +979,22 @@ export default function AdminItemsPage() {
                 Cancel
               </button>
             </div>
+            </div>
+            {showPreview && (
+              <div className="hidden md:flex flex-1 min-w-0 flex-col border-l border-gray-800 bg-gray-950/60 overflow-y-auto">
+                <div className="sticky top-0 z-10 bg-gray-950/90 backdrop-blur px-4 py-2 border-b border-gray-800 text-xs text-gray-400 shrink-0">
+                  Live preview — public item page
+                </div>
+                <ItemDetailPreview
+                  game={selectedGame}
+                  sections={sections}
+                  schemas={schemas}
+                  attrList={attrList}
+                  form={form}
+                  itemId={modal.mode === "edit" ? modal.item?.id : undefined}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}

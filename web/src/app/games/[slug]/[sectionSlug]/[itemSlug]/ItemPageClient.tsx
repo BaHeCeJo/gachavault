@@ -97,7 +97,7 @@ function itemHref(item: { id: string; slug: string; game_slug?: string; section_
 }
 
 function FieldValue({
-  fieldKey, value, attrMap, fieldType, fieldAttrType, resolvedRef, backRefItems,
+  fieldKey, value, attrMap, fieldType, fieldAttrType, resolvedRef, backRefItems, preview,
 }: {
   fieldKey: string;
   value: unknown;
@@ -106,6 +106,9 @@ function FieldValue({
   fieldAttrType?: string;
   resolvedRef?: { id: string; slug: string; name: string; game_slug?: string; section_slug?: string };
   backRefItems?: { id: string; slug: string; name: string; game_slug?: string; section_slug?: string }[];
+  // In the admin live preview the cross-item lookups don't run, so render the
+  // raw stored value instead of a perpetual "Loading…".
+  preview?: boolean;
 }) {
   if (fieldType === "backref") {
     if (!backRefItems || backRefItems.length === 0) return <span className="text-gray-600">—</span>;
@@ -200,6 +203,7 @@ function FieldValue({
         </a>
       );
     }
+    if (preview) return <span className="text-gray-300 text-sm">{String(value)}</span>;
     return <span className="text-gray-500 text-sm text-xs italic">Loading…</span>;
   }
 
@@ -253,9 +257,13 @@ const HIDDEN_IN_DETAILS = new Set(["image_url", "icon_url", "name"]);
 
 interface ClientProps {
   initial: ItemPageBundle;
+  // When true (admin live preview), skip the secondary cross-item/related
+  // fetches so editing keystrokes don't spam the API, and render itemref
+  // values inline rather than waiting on a lookup that never runs.
+  preview?: boolean;
 }
 
-export default function ItemPageClient({ initial }: ClientProps) {
+export default function ItemPageClient({ initial, preview = false }: ClientProps) {
   const item = initial.item as Item;
   const slug = item.game_slug;
   const itemSlug = item.slug;
@@ -273,6 +281,7 @@ export default function ItemPageClient({ initial }: ClientProps) {
     // hydrates secondary data the SSR pass intentionally skips: cross-item
     // refs, backrefs (which require scanning whole sections), and the
     // related-items grid.
+    if (preview) return;
     const it = item;
 
     const itemrefIds = fields
@@ -360,7 +369,7 @@ export default function ItemPageClient({ initial }: ClientProps) {
         }
       })
       .catch(() => {});
-  }, [item, fields, slug, itemSlug]);
+  }, [item, fields, slug, itemSlug, preview]);
 
   const name = (item.data?.name as string) ?? item.slug;
   const imageUrl = item.data?.image_url as string | undefined;
@@ -452,6 +461,7 @@ export default function ItemPageClient({ initial }: ClientProps) {
                       fieldAttrType={attribute_type}
                       resolvedRef={type === "itemref" ? resolvedRefs.get(String(value)) : undefined}
                       backRefItems={isBackref ? (backRefs.get(key) ?? []) : undefined}
+                      preview={preview}
                     />
                   </div>
                 </div>
@@ -480,7 +490,7 @@ export default function ItemPageClient({ initial }: ClientProps) {
       </div>
 
       {/* Related items */}
-      {relatedItems.length > 0 && (
+      {!preview && relatedItems.length > 0 && (
         <section>
           <h2 className="text-xl font-semibold mb-4">More {sectionName || "Items"}</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
