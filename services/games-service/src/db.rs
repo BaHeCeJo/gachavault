@@ -129,6 +129,9 @@ pub async fn list_schemas(pool: &PgPool, game_id: Uuid) -> Result<Vec<DbSchema>,
     .await
 }
 
+// One bind per schema column; grouping into a struct would just move the
+// argument list elsewhere for no real clarity gain.
+#[allow(clippy::too_many_arguments)]
 pub async fn create_schema(
     pool: &PgPool,
     game_id: Uuid,
@@ -137,10 +140,11 @@ pub async fn create_schema(
     fields: &serde_json::Value,
     filter_attrs: Option<&serde_json::Value>,
     card_layout: Option<&serde_json::Value>,
+    page_layout: Option<&serde_json::Value>,
 ) -> Result<DbSchema, sqlx::Error> {
     sqlx::query_as::<_, DbSchema>(
-        r#"INSERT INTO games.item_type_schemas (game_id, section_id, name, fields, filter_attrs, card_layout)
-           VALUES ($1, $2, $3, $4, $5, $6)
+        r#"INSERT INTO games.item_type_schemas (game_id, section_id, name, fields, filter_attrs, card_layout, page_layout)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
            RETURNING *"#,
     )
     .bind(game_id)
@@ -149,6 +153,7 @@ pub async fn create_schema(
     .bind(fields)
     .bind(filter_attrs)
     .bind(card_layout)
+    .bind(page_layout)
     .fetch_one(pool)
     .await
 }

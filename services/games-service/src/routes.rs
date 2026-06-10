@@ -570,6 +570,7 @@ pub async fn create_schema(
         &body.fields,
         body.filter_attrs.as_ref(),
         body.card_layout.as_ref(),
+        body.page_layout.as_ref(),
     )
     .await
     .map_err(|e| {
@@ -614,6 +615,12 @@ pub async fn update_schema(
             Some(None) => (true, None),
             Some(Some(v)) => (true, Some(v)),
         };
+    let (page_layout_present, page_layout_value): (bool, Option<serde_json::Value>) =
+        match body.page_layout {
+            None => (false, None),
+            Some(None) => (true, None),
+            Some(Some(v)) => (true, Some(v)),
+        };
 
     let row = sqlx::query_as::<_, DbSchema>(
         "UPDATE games.item_type_schemas SET
@@ -621,6 +628,7 @@ pub async fn update_schema(
             fields = COALESCE($4, fields),
             filter_attrs = CASE WHEN $6 THEN $5 ELSE filter_attrs END,
             card_layout = CASE WHEN $8 THEN $7 ELSE card_layout END,
+            page_layout = CASE WHEN $10 THEN $9 ELSE page_layout END,
             updated_at = NOW()
          WHERE id = $1 AND game_id = $2
          RETURNING *",
@@ -633,6 +641,8 @@ pub async fn update_schema(
     .bind(filter_attrs_present)
     .bind(card_layout_value)
     .bind(card_layout_present)
+    .bind(page_layout_value)
+    .bind(page_layout_present)
     .fetch_optional(&pool)
     .await
     .map_err(AppError::Database)?

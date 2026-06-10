@@ -10,6 +10,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import ItemCard, { type CardLayout } from "@/components/ItemCard";
 import { buildAttrMap, type GameAttribute as GameAttributeFull } from "@/lib/attrs";
 import { revalidateGame } from "@/lib/revalidate";
+import { type PageLayout, parsePageLayout } from "@/lib/pageLayout";
 
 interface Section { id: string; slug: string; name: string }
 interface GameAttribute { attr_type: string }
@@ -22,6 +23,9 @@ interface Schema {
   // [] = no filters, ["path","rarity"] = only those.
   filter_attrs: string[] | null;
   card_layout: CardLayout | null;
+  // Raw detail-page template JSON; round-tripped here, edited via the
+  // dedicated block editor (later stage). Parsed at the edge.
+  page_layout?: unknown;
   created_at: string;
 }
 
@@ -186,6 +190,9 @@ export default function AdminGameSchemasPage() {
   const [filterAttrs, setFilterAttrs] = useState<string[] | null>(null);
   // null = legacy hardcoded defaults; object = explicit per-slot config.
   const [cardLayout, setCardLayout] = useState<CardLayout | null>(null);
+  // Detail-page template. Round-tripped now (preserved across saves); the
+  // visual block editor lands in a later stage. null = legacy fixed page.
+  const [pageLayout, setPageLayout] = useState<PageLayout | null>(null);
   const [viewMode, setViewMode] = useState<"visual" | "json">("visual");
   const [jsonDraft, setJsonDraft] = useState("");
   const [jsonError, setJsonError] = useState("");
@@ -224,6 +231,7 @@ export default function AdminGameSchemasPage() {
     setFields(DEFAULT_FIELDS);
     setFilterAttrs(null);
     setCardLayout(null);
+    setPageLayout(null);
     setJsonDraft(JSON.stringify(DEFAULT_FIELDS, null, 2));
     setViewMode("visual");
     setJsonError("");
@@ -242,6 +250,7 @@ export default function AdminGameSchemasPage() {
     setFields(parsed);
     setFilterAttrs(Array.isArray(schema.filter_attrs) ? schema.filter_attrs : null);
     setCardLayout(schema.card_layout ?? null);
+    setPageLayout(parsePageLayout(schema.page_layout));
     setJsonDraft(JSON.stringify(schema.fields, null, 2));
     setViewMode("visual");
     setJsonError("");
@@ -332,6 +341,7 @@ export default function AdminGameSchemasPage() {
           fields: fs,
           filter_attrs: filterAttrs,
           card_layout: cardLayout,
+          page_layout: pageLayout,
         });
         setSchemas((prev) => [...prev, res.data.data]);
       } else if (modal?.mode === "edit") {
@@ -340,6 +350,7 @@ export default function AdminGameSchemasPage() {
           fields: fs,
           filter_attrs: filterAttrs,
           card_layout: cardLayout,
+          page_layout: pageLayout,
         });
         setSchemas((prev) => prev.map((s) => (s.id === modal.schema.id ? res.data.data : s)));
       }

@@ -8,6 +8,7 @@ import type {
   SeoGameAttribute,
   SeoSchemaField,
 } from "@/lib/seo";
+import { parsePageLayout } from "@/lib/pageLayout";
 
 interface Game {
   id: string;
@@ -24,6 +25,7 @@ interface Schema {
   name: string;
   section_id: string | null;
   fields: unknown;
+  page_layout?: unknown;
 }
 interface GameAttribute {
   id: string;
@@ -87,6 +89,7 @@ export function ItemDetailPreview({ game, sections, schemas, attrList, form, ite
       attributes: attrList as SeoGameAttribute[],
       sectionName: section?.name ?? "",
       locale: "en",
+      pageLayout: parsePageLayout(schema?.page_layout),
     };
   }, [parsed.data, sections, schemas, attrList, game, form.section_id, form.type_schema_id, form.slug, itemId]);
 

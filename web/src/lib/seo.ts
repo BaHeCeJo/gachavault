@@ -2,6 +2,8 @@
 // Uses the Next.js native fetch (with built-in caching) rather than the
 // axios client in `api.ts`, because that one is wired for browser cookies.
 
+import { type PageLayout, parsePageLayout } from "@/lib/pageLayout";
+
 const API_BASE =
   process.env.INTERNAL_API_URL ??
   process.env.NEXT_PUBLIC_API_URL ??
@@ -153,6 +155,9 @@ export interface SeoSchema {
   fields: SeoSchemaField[];
   filter_attrs: string[] | null;
   card_layout: SeoSchemaCardLayout | null;
+  // Raw per-section detail-page template (arbitrary JSON); parsed at the edge
+  // by parsePageLayout. Absent/null/malformed → legacy fixed layout.
+  page_layout?: unknown;
 }
 
 export interface SeoGameAttribute {
@@ -247,6 +252,8 @@ export interface ItemPageBundle {
   attributes: SeoGameAttribute[];
   sectionName: string;
   locale: string;
+  // Parsed detail-page template, or null = render the legacy fixed layout.
+  pageLayout: PageLayout | null;
 }
 
 export async function getItemPageBundle(
@@ -273,6 +280,7 @@ export async function getItemPageBundle(
     attributes: attributes ?? [],
     sectionName: section?.name ?? "",
     locale,
+    pageLayout: parsePageLayout(schema?.page_layout),
   };
 }
 
