@@ -9,14 +9,25 @@
 // type written by a future admin build degrades to "unknown → skipped" on an
 // older frontend instead of corrupting the whole layout.
 
-export type BlockType = "legacy" | "hero" | "stats_table" | "rich_text" | "item_grid";
+export type BlockType =
+  | "legacy"
+  | "hero"
+  | "stats_table"
+  | "rich_text"
+  | "item_grid"
+  | "columns"
+  | "tabs"
+  | "gallery"
+  | "ratings"
+  | "skills"
+  | "divider";
 
 export interface PageBlock {
   // Stable across reorder — used as the React key and the drag id.
   id: string;
   // Discriminator the renderer switches on.
   type: string;
-  // Block-specific settings (field keys, titles, toggles). Shape depends on type.
+  // Block-specific settings (field keys, titles, toggles, child blocks).
   config?: Record<string, unknown>;
 }
 
@@ -57,13 +68,54 @@ export interface ItemGridConfig {
   limit?: number; // default 12
 }
 
+export interface DividerConfig {
+  label?: string;
+}
+
+export interface GalleryConfig {
+  title?: string;
+  image_fields?: string[]; // schema image/url field keys to show
+  columns?: number; // 2 | 3 | 4 (default 3)
+}
+
+export interface RatingsConfig {
+  title?: string;
+  entries?: { label: string; field: string }[]; // each reads item.data[field]
+  style?: "badge" | "bar";
+}
+
+export interface SkillsConfig {
+  title?: string;
+  list_field?: string; // a field whose value is an array of skill objects
+  name_key?: string; // default "name"
+  desc_key?: string; // default "description"
+  icon_key?: string; // default "icon_url"
+}
+
+export interface ColumnsConfig {
+  ratio?: "1-1" | "1-2" | "2-1"; // default "1-1"
+  columns?: PageBlock[][]; // child blocks per column (2 columns)
+}
+
+export interface TabConfig {
+  id: string;
+  label: string;
+  blocks: PageBlock[];
+}
+
+export interface TabsConfig {
+  tabs?: TabConfig[];
+}
+
 // ---- Editor palette: blocks an admin can add (legacy is the null-equivalent
-// fallback and intentionally not offered here). ----
+// fallback and intentionally not offered here). `container` blocks hold child
+// blocks and are only offered at the top level (nesting cap = 2). ----
 
 export interface BlockTypeMeta {
   type: BlockType;
   label: string;
   help: string;
+  container?: boolean;
   defaultConfig: () => Record<string, unknown>;
 }
 
@@ -72,11 +124,19 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: "stats_table", label: "Stats table", help: "A table of fields — auto, or pick which ones", defaultConfig: () => ({}) },
   { type: "rich_text", label: "Rich text", help: "Heading + a text field (description, lore) or custom text", defaultConfig: () => ({ style: "plain" }) },
   { type: "item_grid", label: "Item grid", help: "Card grid: related items, or an item-reference field", defaultConfig: () => ({ source: "related", columns: 6, limit: 12 }) },
+  { type: "ratings", label: "Ratings", help: "Labeled badges or bars from fields", defaultConfig: () => ({ style: "badge", entries: [] }) },
+  { type: "skills", label: "Skills", help: "A list of skills/abilities from a list field", defaultConfig: () => ({}) },
+  { type: "gallery", label: "Gallery", help: "A grid of images from image fields", defaultConfig: () => ({ columns: 3 }) },
+  { type: "divider", label: "Divider", help: "A separator line with an optional label", defaultConfig: () => ({}) },
+  { type: "columns", label: "Columns", help: "Two side-by-side columns of blocks", container: true, defaultConfig: () => ({ ratio: "1-1", columns: [[], []] }) },
+  { type: "tabs", label: "Tabs", help: "Tabbed sections (e.g. Kit / Build / Lore)", container: true, defaultConfig: () => ({ tabs: [{ id: makeBlockId(), label: "Tab 1", blocks: [] }] }) },
 ];
 
 export const BLOCK_LABELS: Record<string, string> = Object.fromEntries(
   BLOCK_TYPES.map((b) => [b.type, b.label]),
 );
+
+export const CONTAINER_TYPES = new Set(BLOCK_TYPES.filter((b) => b.container).map((b) => b.type));
 
 // Stable-enough id for a freshly added block (client-only use).
 export function makeBlockId(): string {
@@ -88,6 +148,45 @@ export function makeBlockId(): string {
     /* fall through */
   }
   return `b_${Date.now().toString(36)}_${Math.floor(Math.random() * 1e6).toString(36)}`;
+}
+
+// Parse one level of a block array. `depth` enforces the nesting cap: container
+// children are parsed at depth+1, and at the cap any nested container's
+// children are dropped (no container-in-container).
+function parseBlocks(arr: unknown, depth: number): PageBlock[] {
+  if (!Array.isArray(arr)) return [];
+  const out: PageBlock[] = [];
+  for (const b of arr) {
+    if (!b || typeof b !== "object" || Array.isArray(b)) continue;
+    const bb = b as Record<string, unknown>;
+    if (typeof bb.id !== "string" || typeof bb.type !== "string") continue;
+    const block: PageBlock = { id: bb.id, type: bb.type };
+    const rawConfig =
+      bb.config && typeof bb.config === "object" && !Array.isArray(bb.config)
+        ? { ...(bb.config as Record<string, unknown>) }
+        : undefined;
+    if (rawConfig) {
+      if (depth < 1 && bb.type === "columns" && Array.isArray(rawConfig.columns)) {
+        rawConfig.columns = (rawConfig.columns as unknown[]).map((col) => parseBlocks(col, depth + 1));
+      } else if (depth < 1 && bb.type === "tabs" && Array.isArray(rawConfig.tabs)) {
+        rawConfig.tabs = (rawConfig.tabs as unknown[]).map((t) => {
+          const tt = t && typeof t === "object" ? (t as Record<string, unknown>) : {};
+          return {
+            id: typeof tt.id === "string" ? tt.id : makeBlockId(),
+            label: typeof tt.label === "string" ? tt.label : "Tab",
+            blocks: parseBlocks(tt.blocks, depth + 1),
+          };
+        });
+      } else if (depth >= 1) {
+        // At the cap, strip any nested container children.
+        delete rawConfig.columns;
+        delete rawConfig.tabs;
+      }
+      block.config = rawConfig;
+    }
+    out.push(block);
+  }
+  return out;
 }
 
 // Runtime trust boundary: turn the raw JSON coming back from the API (or an
@@ -105,19 +204,7 @@ export function parsePageLayout(raw: unknown): PageLayout | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const obj = value as Record<string, unknown>;
   if (!Array.isArray(obj.blocks)) return null;
-
-  const blocks: PageBlock[] = [];
-  for (const b of obj.blocks) {
-    if (!b || typeof b !== "object" || Array.isArray(b)) continue;
-    const bb = b as Record<string, unknown>;
-    if (typeof bb.id !== "string" || typeof bb.type !== "string") continue;
-    const block: PageBlock = { id: bb.id, type: bb.type };
-    if (bb.config && typeof bb.config === "object" && !Array.isArray(bb.config)) {
-      block.config = bb.config as Record<string, unknown>;
-    }
-    blocks.push(block);
-  }
-  return { version: 1, blocks };
+  return { version: 1, blocks: parseBlocks(obj.blocks, 0) };
 }
 
 // Seed for the admin "mirror current page" action: decompose the legacy fixed
