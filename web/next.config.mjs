@@ -30,33 +30,13 @@ const nextConfig = {
       },
     ],
   },
-  async headers() {
-    // CSP is generated per-request in middleware.ts with a unique nonce so that
-    // 'unsafe-inline' is no longer needed for scripts.  The headers here are
-    // static security headers that don't need to change per request.
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          // DENY is consistent with frame-ancestors 'none' in the CSP (middleware).
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
-          },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
-          },
-          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
-        ],
-      },
-    ];
-  },
+  // NOTE: static security headers (X-Frame-Options, X-Content-Type-Options,
+  // HSTS, Referrer-Policy, Permissions-Policy, COOP, CORP) are intentionally
+  // NOT set here. They are owned by the edge in nginx/nginx.conf so they apply
+  // uniformly to every upstream — including api-gateway and media-service
+  // responses that never pass through Next. Setting them in both places emitted
+  // duplicate headers (and a conflicting HSTS max-age: 2y here vs 1y at nginx).
+  // CSP is still generated per-request, with a nonce, in src/middleware.ts.
 };
 
 export default withNextIntl(nextConfig);

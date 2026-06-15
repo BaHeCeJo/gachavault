@@ -46,7 +46,18 @@ api.interceptors.response.use(
       // error so callers can show "please sign in again" instead of the
       // confusing generic 401 from the original request.
       refreshQueue = [];
-      console.error("[api] refresh failed; session expired", refreshError);
+      // A 401 from /auth/refresh is the *expected* anonymous / expired-session
+      // path: every page load (incl. the public landing page) probes an authed
+      // endpoint like /auth/me before we know who the visitor is, so for a
+      // logged-out user this branch runs on every visit. Logging it as
+      // console.error was noise — it dinged Lighthouse "Best Practices" and
+      // alarmed anyone reading the console. Only surface a *genuinely*
+      // unexpected refresh failure (network error, 5xx).
+      const refreshStatus = (refreshError as AxiosError)?.response?.status;
+      if (refreshStatus !== 401) {
+        // 5xx, or a network error with no response at all — worth knowing about.
+        console.warn("[api] token refresh failed unexpectedly", refreshError);
+      }
       const sessionError = new Error("Session expired — please sign in again");
       (sessionError as Error & { code?: string }).code = "SESSION_EXPIRED";
       return Promise.reject(sessionError);
