@@ -963,10 +963,22 @@ pub fn set_auth_cookie_headers(headers: &mut HeaderMap, tokens: &AuthTokens) {
         "refresh_token={}; HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth/refresh; Max-Age=604800",
         tokens.refresh_token
     );
+    // Non-HttpOnly UX hint so the SPA can tell *before* issuing a request
+    // whether a session might exist, and skip the /auth/me probe (which would
+    // 401 and trigger a 401'ing /auth/refresh) on every anonymous page load.
+    // This is NOT a security boundary: the httpOnly access_token above is the
+    // real credential and is validated server-side on every request; a forged
+    // `logged_in` cookie only makes the client attempt /auth/me and get a 401.
+    // Lifetime matches the refresh token (7d), since the session is
+    // recoverable for that long via /auth/refresh.
+    let session_hint = "logged_in=1; Secure; SameSite=Lax; Path=/; Max-Age=604800";
     if let Ok(v) = access.parse() {
         headers.append(SET_COOKIE, v);
     }
     if let Ok(v) = refresh.parse() {
+        headers.append(SET_COOKIE, v);
+    }
+    if let Ok(v) = session_hint.parse() {
         headers.append(SET_COOKIE, v);
     }
 }
@@ -975,10 +987,16 @@ pub fn clear_auth_cookie_headers(headers: &mut HeaderMap) {
     let clear_access = "access_token=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0";
     let clear_refresh =
         "refresh_token=; HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth/refresh; Max-Age=0";
+    // Clear the UX hint set in set_auth_cookie_headers (same attributes minus
+    // value) so a logged-out client stops probing /auth/me.
+    let clear_hint = "logged_in=; Secure; SameSite=Lax; Path=/; Max-Age=0";
     if let Ok(v) = clear_access.parse() {
         headers.append(SET_COOKIE, v);
     }
     if let Ok(v) = clear_refresh.parse() {
+        headers.append(SET_COOKIE, v);
+    }
+    if let Ok(v) = clear_hint.parse() {
         headers.append(SET_COOKIE, v);
     }
 }

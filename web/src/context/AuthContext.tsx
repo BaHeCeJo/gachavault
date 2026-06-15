@@ -14,6 +14,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// The auth-service sets a non-HttpOnly `logged_in` hint cookie alongside the
+// real (HttpOnly) tokens. Reading it lets us skip the /auth/me probe for
+// anonymous visitors — that probe would 401, trigger a /auth/refresh that also
+// 401s, and spam the network tab + console on every public page load. The hint
+// is advisory only: a present cookie still gets verified by /auth/me against
+// the real token, and a forged one just yields a 401 we already handle.
+function hasSessionHint(): boolean {
+  if (typeof document === "undefined") return false;
+  return document.cookie
+    .split("; ")
+    .some((c) => c.startsWith("logged_in="));
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,6 +41,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // No hint cookie → definitely anonymous; resolve immediately without a
+    // doomed round-trip to /auth/me + /auth/refresh.
+    if (!hasSessionHint()) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
     refreshUser().finally(() => setIsLoading(false));
   }, [refreshUser]);
 
