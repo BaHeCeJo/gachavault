@@ -3,7 +3,7 @@ use axum::{
     Router,
 };
 
-use auth_service::{oauth, routes};
+use auth_service::{monitoring, oauth, routes};
 
 const SERVICE: &str = "auth-service";
 
@@ -99,6 +99,13 @@ async fn main() {
         .route(
             "/api/v1/admin/sessions",
             axum::routing::delete(routes::revoke_all_sessions),
+        )
+        // Observability proxy → Loki (admin-gated; see monitoring.rs).
+        .route("/api/v1/admin/logs", get(monitoring::get_admin_logs))
+        .route("/api/v1/admin/alerts", get(monitoring::get_admin_alerts))
+        .route(
+            "/api/v1/admin/log-stats",
+            get(monitoring::get_admin_log_stats),
         )
         .with_state(pool);
 

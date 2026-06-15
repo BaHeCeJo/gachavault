@@ -11,6 +11,7 @@ export default function AdminPage() {
         <AdminCard title="Media" description="Browse and delete uploaded files" href="/admin/media" />
         <AdminCard title="Backups" description="Database backup status and restore instructions" href="/admin/backups" />
         <AdminCard title="Statistics" description="User counts, content totals, and site activity" href="/admin/stats" />
+        <AdminCard title="Monitoring" description="Live logs, alert status, and error rates from Loki" href="/admin/monitoring" />
       </div>
     </main>
   );

@@ -4,6 +4,7 @@
 pub mod crypto;
 pub mod db;
 pub mod models;
+pub mod monitoring;
 pub mod notifications;
 pub mod oauth;
 pub mod routes;

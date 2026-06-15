@@ -151,6 +151,9 @@ services:
       BACKEND_URL: ${BACKEND_URL}
       NOTIFICATIONS_SERVICE_URL: http://notifications-service:3008
       INTERNAL_SECRET_FILE: /run/secrets/internal_secret
+      # Read-only log queries for the admin Monitoring page (see monitoring.rs).
+      # Same `internal` network; this is also the in-code default.
+      LOKI_URL: http://loki:3100
     secrets:
       - database_url
       - redis_url

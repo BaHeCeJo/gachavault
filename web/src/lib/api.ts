@@ -228,4 +228,11 @@ export const adminApi = {
     removeGameRole: (userId: string, gameId: string) =>
       api.delete(`/users/${userId}/game-roles/${gameId}`),
   },
+  // Read-only observability proxied through auth-service to Loki (admin-gated).
+  monitoring: {
+    logs: (params?: { service?: string; level?: string; search?: string; limit?: number }) =>
+      api.get("/admin/logs", { params }),
+    alerts: () => api.get("/admin/alerts"),
+    logStats: () => api.get("/admin/log-stats"),
+  },
 };

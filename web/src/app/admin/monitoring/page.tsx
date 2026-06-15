@@ -1,0 +1,302 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { adminApi } from "@/lib/api";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
+
+// Polls auth-service's admin Loki proxy (see services/auth-service/src/monitoring.rs)
+// so admins get live logs + alert state + error rates in-app, without exposing
+// Grafana/Loki to the internet.
+
+const REFRESH_MS = 4000;
+
+// Compose services Promtail labels logs by, plus infra. Used for the filter
+// dropdown. Keep roughly in sync with docker-compose.prod.yml service names.
+const SERVICES = [
+  "auth-service",
+  "api-gateway",
+  "games-service",
+  "items-service",
+  "collections-service",
+  "tierlists-service",
+  "media-service",
+  "search-service",
+  "notifications-service",
+  "web",
+  "nginx",
+  "postgres",
+];
+
+const LEVELS = ["error", "warn", "info", "debug"];
+
+interface AlertState {
+  id: string;
+  title: string;
+  severity: string;
+  value: number;
+  threshold: number;
+  firing: boolean;
+}
+
+interface LogLine {
+  ns: string;
+  line: string;
+  service: string;
+  level?: string | null;
+  container?: string | null;
+}
+
+interface ServiceErrCount {
+  service: string;
+  errors: number;
+  warns: number;
+}
+
+function levelClasses(level?: string | null): string {
+  switch (level) {
+    case "error":
+      return "text-red-400";
+    case "warn":
+      return "text-amber-400";
+    case "info":
+      return "text-sky-400";
+    default:
+      return "text-gray-400";
+  }
+}
+
+function fmtTime(ns: string): string {
+  const ms = Number(ns) / 1e6;
+  if (!Number.isFinite(ms)) return "";
+  return new Date(ms).toLocaleTimeString([], { hour12: false });
+}
+
+export default function AdminMonitoringPage() {
+  const { user, isLoading } = useAdminGuard("/admin/monitoring");
+
+  const [alerts, setAlerts] = useState<AlertState[]>([]);
+  const [errStats, setErrStats] = useState<ServiceErrCount[]>([]);
+  const [logs, setLogs] = useState<LogLine[]>([]);
+  const [service, setService] = useState("");
+  const [level, setLevel] = useState("");
+  const [search, setSearch] = useState("");
+  const [paused, setPaused] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+
+  // Keep the latest filters in a ref so the polling interval always reads
+  // current values without being torn down/recreated on every keystroke.
+  const filters = useRef({ service, level, search });
+  filters.current = { service, level, search };
+
+  const refresh = useCallback(async () => {
+    try {
+      const { service: svc, level: lvl, search: q } = filters.current;
+      const [alertsRes, statsRes, logsRes] = await Promise.all([
+        adminApi.monitoring.alerts(),
+        adminApi.monitoring.logStats(),
+        adminApi.monitoring.logs({
+          service: svc || undefined,
+          level: lvl || undefined,
+          search: q || undefined,
+          limit: 200,
+        }),
+      ]);
+      setAlerts(alertsRes.data.data?.alerts ?? []);
+      setErrStats(statsRes.data.data?.by_service ?? []);
+      setLogs(logsRes.data.data?.lines ?? []);
+      setLastUpdated(Date.now());
+      setError(null);
+    } catch {
+      setError("Couldn't reach the log backend (Loki). Retrying…");
+    } finally {
+      setReady(true);
+    }
+  }, []);
+
+  // Initial load + immediate refetch when filters change.
+  useEffect(() => {
+    if (!user) return;
+    refresh();
+  }, [user, refresh, service, level, search]);
+
+  // Auto-refresh poll.
+  useEffect(() => {
+    if (!user || paused) return;
+    const id = setInterval(refresh, REFRESH_MS);
+    return () => clearInterval(id);
+  }, [user, paused, refresh]);
+
+  if (isLoading || !user) {
+    return (
+      <main className="max-w-6xl mx-auto px-6 py-10">
+        <div className="h-8 w-48 rounded bg-gray-800 animate-pulse" />
+      </main>
+    );
+  }
+
+  const firingCount = alerts.filter((a) => a.firing).length;
+
+  return (
+    <main className="max-w-6xl mx-auto px-6 py-10 space-y-8">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h1 className="text-3xl font-semibold">Monitoring</h1>
+        <div className="flex items-center gap-3 text-sm">
+          <span className="flex items-center gap-1.5 text-gray-400">
+            <span
+              className={`inline-block w-2 h-2 rounded-full ${paused ? "bg-gray-500" : "bg-emerald-400 animate-pulse"}`}
+            />
+            {paused ? "Paused" : `Live · ${REFRESH_MS / 1000}s`}
+          </span>
+          <button
+            onClick={() => setPaused((p) => !p)}
+            className="px-3 py-1 rounded-lg border border-gray-700 hover:border-gray-500 transition"
+          >
+            {paused ? "Resume" : "Pause"}
+          </button>
+          <Link href="/admin" className="text-gray-400 hover:text-white">
+            ← Admin
+          </Link>
+        </div>
+      </div>
+
+      {error && (
+        <div className="rounded-lg border border-red-800 bg-red-950/40 text-red-300 text-sm px-4 py-3">
+          {error}
+        </div>
+      )}
+
+      {/* Alerts */}
+      <section>
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          Alerts {firingCount > 0 && <span className="text-red-400">· {firingCount} firing</span>}
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {!ready
+            ? Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-16 rounded-xl bg-gray-800 animate-pulse" />
+              ))
+            : alerts.map((a) => {
+                const unknown = a.value < 0;
+                const dot = a.firing ? "bg-red-500" : unknown ? "bg-gray-600" : "bg-emerald-500";
+                return (
+                  <div
+                    key={a.id}
+                    className={`flex items-center gap-3 rounded-xl border p-3 ${
+                      a.firing ? "border-red-800 bg-red-950/30" : "border-gray-800 bg-gray-900"
+                    }`}
+                  >
+                    <span className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${dot}`} />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{a.title}</p>
+                      <p className="text-xs text-gray-400">
+                        {unknown
+                          ? "unknown"
+                          : a.firing
+                            ? `FIRING · ${a.value} (limit ${a.threshold})`
+                            : "OK"}
+                        <span className="text-gray-600"> · {a.severity}</span>
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+        </div>
+      </section>
+
+      {/* Error-rate summary */}
+      <section>
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          Errors / warnings · last hour
+        </h2>
+        {ready && errStats.length === 0 ? (
+          <p className="text-sm text-gray-500">No errors or warnings logged in the last hour. 🎉</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {errStats.map((s) => (
+              <div key={s.service} className="rounded-xl border border-gray-800 bg-gray-900 p-4">
+                <p className="text-xs text-gray-400 truncate mb-1">{s.service}</p>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-2xl font-semibold text-red-400">{s.errors}</span>
+                  <span className="text-xs text-gray-500">err</span>
+                  <span className="text-lg font-medium text-amber-400">{s.warns}</span>
+                  <span className="text-xs text-gray-500">warn</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Live log tail */}
+      <section>
+        <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Live logs</h2>
+          <div className="flex items-center gap-2 text-sm">
+            <select
+              value={service}
+              onChange={(e) => setService(e.target.value)}
+              className="bg-gray-900 border border-gray-700 rounded-lg px-2 py-1"
+            >
+              <option value="">All services</option>
+              {SERVICES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <select
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              className="bg-gray-900 border border-gray-700 rounded-lg px-2 py-1"
+            >
+              <option value="">All levels</option>
+              {LEVELS.map((l) => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
+            </select>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="search…"
+              className="bg-gray-900 border border-gray-700 rounded-lg px-2 py-1 w-32"
+            />
+          </div>
+        </div>
+        <div className="rounded-xl border border-gray-800 bg-black/40 font-mono text-xs h-[28rem] overflow-auto">
+          {!ready ? (
+            <div className="p-4 text-gray-500">Loading logs…</div>
+          ) : logs.length === 0 ? (
+            <div className="p-4 text-gray-500">No log lines match the current filters.</div>
+          ) : (
+            logs.map((l, i) => (
+              <div
+                key={`${l.ns}-${i}`}
+                className="flex gap-3 px-3 py-1 border-b border-gray-900 hover:bg-gray-900/60"
+              >
+                <span className="text-gray-600 shrink-0 tabular-nums">{fmtTime(l.ns)}</span>
+                <span className="text-violet-300 shrink-0 w-36 truncate" title={l.service}>
+                  {l.service || l.container || "—"}
+                </span>
+                {l.level && (
+                  <span className={`shrink-0 w-12 uppercase ${levelClasses(l.level)}`}>{l.level}</span>
+                )}
+                <span className="text-gray-300 whitespace-pre-wrap break-all">{l.line}</span>
+              </div>
+            ))
+          )}
+        </div>
+        {lastUpdated && (
+          <p className="text-xs text-gray-600 mt-2">
+            Updated {new Date(lastUpdated).toLocaleTimeString([], { hour12: false })} · showing{" "}
+            {logs.length} lines (last hour)
+          </p>
+        )}
+      </section>
+    </main>
+  );
+}
