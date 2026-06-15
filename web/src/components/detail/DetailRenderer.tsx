@@ -3,8 +3,19 @@
 import type { ReactNode } from "react";
 import { type AttrMap } from "@/lib/attrs";
 import type { ItemPageBundle } from "@/lib/seo";
-import type { ColumnsConfig, DividerConfig, PageBlock, PageLayout } from "@/lib/pageLayout";
-import type { ItemRelations } from "@/components/detail/types";
+import type {
+  ColumnsConfig,
+  DividerConfig,
+  GalleryConfig,
+  PageBlock,
+  PageLayout,
+  RatingsConfig,
+  RichTextConfig,
+  SkillsConfig,
+  StatsTableConfig,
+} from "@/lib/pageLayout";
+import type { ItemRelations, SchemaField } from "@/components/detail/types";
+import { HIDDEN_IN_DETAILS } from "@/components/detail/FieldValue";
 import { LegacyDetailLayout } from "@/components/detail/LegacyDetailLayout";
 import { HeroBlock } from "@/components/detail/blocks/HeroBlock";
 import { StatsTableBlock } from "@/components/detail/blocks/StatsTableBlock";
@@ -48,7 +59,9 @@ function DividerBlock({ config }: { config?: Record<string, unknown> }) {
     return (
       <div className="my-8 flex items-center gap-3">
         <div className="h-px flex-1 bg-gray-800" />
-        <span className="text-xs uppercase tracking-wide text-gray-500">{c.label}</span>
+        {/* gray-400 (not gray-500): gray-500 on the near-black page bg is 4.09:1,
+            just under the WCAG AA 4.5:1 floor for this xs text. */}
+        <span className="text-xs uppercase tracking-wide text-gray-400">{c.label}</span>
         <div className="h-px flex-1 bg-gray-800" />
       </div>
     );
@@ -91,6 +104,63 @@ function BlockRenderer({ block, bundle, preview, relations, attrMap }: BlockProp
   }
 }
 
+// Mirrors each content block's own "render nothing when empty" guard so the
+// renderer can tell, ahead of render, whether a block will actually show
+// anything. MUST stay in sync with the matching component in blocks/. Block
+// types not handled here (hero, item_grid, columns, tabs, legacy) are treated
+// as always-present: being conservative here can only keep a divider a stricter
+// check would drop — it can never hide real content.
+function blockHasContent(block: PageBlock, bundle: ItemPageBundle, relations: ItemRelations): boolean {
+  const data = bundle.item.data as Record<string, unknown>;
+  const nonEmpty = (v: unknown) => v !== undefined && v !== null && v !== "";
+  switch (block.type) {
+    case "rich_text": {
+      const c = (block.config ?? {}) as RichTextConfig;
+      const text = c.source_field
+        ? typeof data[c.source_field] === "string"
+          ? (data[c.source_field] as string)
+          : ""
+        : (c.static_text ?? "");
+      return Boolean(text);
+    }
+    case "skills": {
+      const c = (block.config ?? {}) as SkillsConfig;
+      const raw = c.list_field ? data[c.list_field] : undefined;
+      return Array.isArray(raw) && raw.length > 0;
+    }
+    case "gallery": {
+      const c = (block.config ?? {}) as GalleryConfig;
+      return (c.image_fields ?? []).some((k) => {
+        const v = data[k];
+        return (
+          (typeof v === "string" && v.length > 0) ||
+          (Array.isArray(v) && v.some((u) => typeof u === "string" && u.length > 0))
+        );
+      });
+    }
+    case "ratings": {
+      const c = (block.config ?? {}) as RatingsConfig;
+      return (c.entries ?? []).some((e) => e && e.field && nonEmpty(data[e.field]));
+    }
+    case "stats_table": {
+      const c = (block.config ?? {}) as StatsTableConfig;
+      const schemaFields = bundle.fields as SchemaField[];
+      const byKey = new Map(schemaFields.map((f) => [f.key, f]));
+      const autoKeys = (schemaFields.length > 0 ? schemaFields.map((f) => f.key) : Object.keys(data)).filter(
+        (k) => !HIDDEN_IN_DETAILS.has(k) && k !== "description" && k !== "lore"
+      );
+      const keys = c.fields && c.fields.length > 0 ? c.fields : autoKeys;
+      return keys.some((k) => {
+        const f = byKey.get(k);
+        if (f?.type === "backref") return (relations.backRefs.get(k) ?? []).length > 0;
+        return nonEmpty(data[k]);
+      });
+    }
+    default:
+      return true;
+  }
+}
+
 // Renders a templated detail page from an ordered block list. Owns the same
 // page container the legacy layout used, so a single `legacy` block produces
 // output identical to the no-template page.
@@ -107,9 +177,30 @@ export function DetailRenderer({
   relations: ItemRelations;
   attrMap: AttrMap;
 }) {
+  const blocks = layout.blocks;
+
+  // A labelled divider introduces a section. If everything between it and the
+  // next divider renders nothing (e.g. an item with no `lore` filled in), the
+  // divider becomes an orphaned header — "LORE" over empty space — making
+  // sparse items look broken. Drop those. Plain (unlabelled) <hr> dividers are
+  // harmless separators and always kept. Skipped in preview so template authors
+  // still see every block they placed.
+  const keepDivider = (i: number): boolean => {
+    const cfg = (blocks[i].config ?? {}) as DividerConfig;
+    if (!cfg.label) return true;
+    for (let j = i + 1; j < blocks.length; j++) {
+      if (blocks[j].type === "divider") break;
+      if (blockHasContent(blocks[j], bundle, relations)) return true;
+    }
+    return false;
+  };
+  const visibleBlocks = preview
+    ? blocks
+    : blocks.filter((b, i) => (b.type === "divider" ? keepDivider(i) : true));
+
   return (
     <main className="max-w-5xl mx-auto px-6 py-10">
-      {layout.blocks.map((block) => (
+      {visibleBlocks.map((block) => (
         <BlockRenderer
           key={block.id}
           block={block}
