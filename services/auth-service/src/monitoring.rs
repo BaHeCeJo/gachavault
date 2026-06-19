@@ -270,10 +270,14 @@ const RULES: &[RuleDef] = &[
         fire_when_gt: true,
     },
     RuleDef {
-        id: "offsite-backup-stale",
-        title: "Off-site backup stale (48h)",
+        // |= (literal) not |~: the match contains regex metacharacters ([ ]).
+        // Fires when db-backup logged no successful `[backup] Saved` in 48h —
+        // i.e. the daily on-VPS pg_dump is broken. We intentionally run local
+        // backups only, so this deliberately does not track off-site.
+        id: "db-backup-stale",
+        title: "Database backup stale (48h)",
         severity: "warning",
-        expr: r#"sum(count_over_time({container=~".*db-backup.*"} |~ "Off-site upload OK" [48h]))"#,
+        expr: r#"sum(count_over_time({container=~".*db-backup.*"} |= "[backup] Saved" [48h]))"#,
         threshold: 1.0,
         fire_when_gt: false,
     },

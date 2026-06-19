@@ -140,19 +140,23 @@ groups:
           summary: certbot has logged a renewal failure in the last 24h
           description: "Investigate before the cert hits the 7-day expiry healthcheck threshold"
 
-      # Off-site backup hasn't succeeded recently. scripts/db-backup.sh
-      # prints `[backup] Off-site upload OK` after a successful push;
-      # absence of that line for 48h means restore-from-off-site is no
-      # longer current.
-      - uid: offsite-backup-stale
-        title: Off-site backup hasn't succeeded in 48h
+      # No successful DB backup recently. scripts/db-backup.sh prints
+      # `[backup] Saved` only after a complete pg_dump (pipefail guards
+      # against the empty-dump case, where it logs a FAILED line and deletes
+      # the partial file instead). Absence of `Saved` for 48h means the daily
+      # backup is broken (crash-loop, auth failure, disk full) and the
+      # on-VPS backups are stale. Uses |= (literal) not |~ because the match
+      # contains regex metacharacters ([ ]). Local backups only by design —
+      # this does NOT cover off-site, which we intentionally don't run.
+      - uid: db-backup-stale
+        title: Database backup hasn't succeeded in 48h
         condition: B
         data:
           - refId: A
             relativeTimeRange: { from: 172800, to: 0 }
             datasourceUid: loki
             model:
-              expr: 'sum(count_over_time({container=~".*db-backup.*"} |~ "Off-site upload OK" [48h]))'
+              expr: 'sum(count_over_time({container=~".*db-backup.*"} |= "[backup] Saved" [48h]))'
               queryType: instant
               refId: A
           - refId: B
@@ -168,5 +172,5 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: No successful off-site backup logged in the last 48 hours
-          description: "Either OFFSITE_UPLOAD_CMD is unset, or every upload in the last 48h has failed. VPS disk failure is now a data-loss event."
+          summary: No successful database backup logged in the last 48 hours
+          description: "db-backup hasn't logged `[backup] Saved` in 48h — the daily pg_dump is failing. Check `docker logs gachavault-db-backup-1`. The on-VPS backups under the db_backups volume are now stale."
