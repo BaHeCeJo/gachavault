@@ -231,6 +231,8 @@ struct RuleDef {
     threshold: f64,
     // true → fire when value > threshold; false → fire when value < threshold.
     fire_when_gt: bool,
+    // true → evaluate `expr` against Prometheus (metrics); false → Loki (logs).
+    prometheus: bool,
 }
 
 // Mirrors observability/grafana-provisioning/alerting/rules.yml so the admin
@@ -249,6 +251,7 @@ const RULES: &[RuleDef] = &[
         expr: r#"sum(count_over_time({container=~"gachavault-.*", container!~"gachavault-(loki|grafana|promtail).*"} |~ "(?i)panicked at" [5m]))"#,
         threshold: 0.0,
         fire_when_gt: true,
+        prometheus: false,
     },
     RuleDef {
         id: "nginx-5xx-spike",
@@ -257,6 +260,7 @@ const RULES: &[RuleDef] = &[
         expr: r#"sum(count_over_time({container=~".*nginx.*"} |~ " 5[0-9][0-9] " [5m]))"#,
         threshold: 10.0,
         fire_when_gt: true,
+        prometheus: false,
     },
     RuleDef {
         id: "postgres-fatal",
@@ -265,6 +269,7 @@ const RULES: &[RuleDef] = &[
         expr: r#"sum(count_over_time({service="postgres"} |~ "(?i)\b(fatal|panic)\b" [5m]))"#,
         threshold: 0.0,
         fire_when_gt: true,
+        prometheus: false,
     },
     RuleDef {
         id: "certbot-renew-failed",
@@ -273,6 +278,7 @@ const RULES: &[RuleDef] = &[
         expr: r#"sum(count_over_time({container=~".*certbot.*"} |~ "renew FAILED" [24h]))"#,
         threshold: 0.0,
         fire_when_gt: true,
+        prometheus: false,
     },
     RuleDef {
         // |= (literal) not |~: the match contains regex metacharacters ([ ]).
@@ -285,6 +291,37 @@ const RULES: &[RuleDef] = &[
         expr: r#"sum(count_over_time({container=~".*db-backup.*"} |= "[backup] Saved" [48h]))"#,
         threshold: 1.0,
         fire_when_gt: false,
+        prometheus: false,
+    },
+    // ── Resource alerts (Prometheus / node-exporter) ────────────────────────
+    RuleDef {
+        id: "disk-high",
+        title: "Disk usage above 85%",
+        severity: "warning",
+        expr: r#"(1 - (node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs|ramfs|devtmpfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs|ramfs|devtmpfs"})) * 100"#,
+        threshold: 85.0,
+        fire_when_gt: true,
+        prometheus: true,
+    },
+    RuleDef {
+        id: "ram-high",
+        title: "Memory usage above 90%",
+        severity: "warning",
+        expr: r#"(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100"#,
+        threshold: 90.0,
+        fire_when_gt: true,
+        prometheus: true,
+    },
+    RuleDef {
+        // 10m rate window so a brief spike doesn't show as firing (Grafana's
+        // copy adds a 10m `for` on top for the actual notification).
+        id: "cpu-high",
+        title: "CPU usage above 90% (10m)",
+        severity: "warning",
+        expr: r#"100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[10m])) * 100)"#,
+        threshold: 90.0,
+        fire_when_gt: true,
+        prometheus: true,
     },
 ];
 
@@ -306,7 +343,13 @@ pub async fn get_admin_alerts(auth: AuthUser) -> AppResult<Json<ApiResponse<serd
     for rule in RULES {
         // One failing query shouldn't blank the whole panel: treat it as
         // value -1 ("unknown", not firing) and keep evaluating the rest.
-        let value = loki_instant(&client, rule.expr).await.unwrap_or(-1.0);
+        // prom_scalar already returns -1.0 on failure; loki_instant needs the
+        // unwrap_or to match that convention.
+        let value = if rule.prometheus {
+            prom_scalar(&client, rule.expr).await
+        } else {
+            loki_instant(&client, rule.expr).await.unwrap_or(-1.0)
+        };
         let firing = value >= 0.0
             && if rule.fire_when_gt {
                 value > rule.threshold

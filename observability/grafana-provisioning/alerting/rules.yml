@@ -182,3 +182,96 @@ groups:
         annotations:
           summary: No successful database backup logged in the last 48 hours
           description: "db-backup hasn't logged `[backup] Saved` in 48h — the daily pg_dump is failing. Check `docker logs gachavault-db-backup-1`. The on-VPS backups under the db_backups volume are now stale."
+
+      # ── Resource alerts (Prometheus / node-exporter) ────────────────────────
+      # These query Prometheus, not Loki. Mirrored in auth-service monitoring.rs
+      # (RuleDef { prometheus: true }) so the in-app alerts panel shows them too.
+
+      # Root filesystem above 85% full. Disk fills slowly on a single VPS so a
+      # 5m `for` is plenty; gives days of lead time before it gets critical.
+      - uid: disk-high
+        title: Disk usage above 85%
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 900, to: 0 }
+            datasourceUid: prometheus
+            model:
+              expr: '(1 - (node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs|ramfs|devtmpfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs|ramfs|devtmpfs"})) * 100'
+              instant: true
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "__expr__"
+            model:
+              type: threshold
+              refId: B
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [85] }
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Root filesystem is over 85% full
+          description: "Disk on / is above 85%. Prune docker images/volumes or old backups before it fills — `df -h /` and `docker system df`."
+
+      # Host memory above 90% used (MemAvailable < 10%).
+      - uid: ram-high
+        title: Memory usage above 90%
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 900, to: 0 }
+            datasourceUid: prometheus
+            model:
+              expr: '(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100'
+              instant: true
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "__expr__"
+            model:
+              type: threshold
+              refId: B
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [90] }
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host memory is over 90% used
+          description: "Available memory under 10%. Check the per-container breakdown on /admin/monitoring for the culprit."
+
+      # CPU above 90% averaged over 10m (rate window) AND sustained for 10m, so
+      # normal short bursts (a deploy, a backup) don't trip it.
+      - uid: cpu-high
+        title: CPU usage above 90% (10m)
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 900, to: 0 }
+            datasourceUid: prometheus
+            model:
+              expr: '100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[10m])) * 100)'
+              instant: true
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "__expr__"
+            model:
+              type: threshold
+              refId: B
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [90] }
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: CPU above 90% sustained for 10 minutes
+          description: "Sustained high CPU. Check per-container CPU on /admin/monitoring or the cAdvisor dashboard in Grafana."
