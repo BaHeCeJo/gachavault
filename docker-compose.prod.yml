@@ -39,8 +39,14 @@ services:
   meilisearch:
     image: getmeili/meilisearch:v1.11
     restart: always
+    # Unlike Postgres/Grafana, the meilisearch image does NOT honor the
+    # `<KEY>_FILE` secret convention — MEILI_MASTER_KEY_FILE is ignored and the
+    # server refuses to boot in production with no key. Read the secret into the
+    # real env var in an entrypoint wrapper instead (same pattern as db-backup).
+    # $$ escapes compose interpolation; the container runs as root so it can
+    # read the 600/uid-10000 secret file.
+    entrypoint: ["/bin/sh", "-c", "export MEILI_MASTER_KEY=$$(cat /run/secrets/meilisearch_master_key); exec meilisearch"]
     environment:
-      MEILI_MASTER_KEY_FILE: /run/secrets/meilisearch_master_key
       MEILI_ENV: production
     secrets:
       - meilisearch_master_key
@@ -471,7 +477,10 @@ services:
     # The official postgres image's libpq reads PGPASSWORD from env. Source
     # it from the secret file in the entrypoint wrapper before exec'ing the
     # backup script.
-    entrypoint: ["/bin/sh", "-c", "export PGPASSWORD=$$(cat /run/secrets/postgres_password); exec /scripts/db-backup.sh"]
+    # Invoke the bind-mounted script via `sh` rather than exec'ing it directly:
+    # the repo file is committed 0644 (no exec bit, esp. from Windows/git), so a
+    # bare `exec /scripts/db-backup.sh` fails with "Permission denied" (exit 126).
+    entrypoint: ["/bin/sh", "-c", "export PGPASSWORD=$$(cat /run/secrets/postgres_password); exec sh /scripts/db-backup.sh"]
     environment:
       PGHOST: postgres
       PGUSER: gachavault

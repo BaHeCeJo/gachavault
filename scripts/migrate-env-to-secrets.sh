@@ -134,6 +134,17 @@ fi
 # secrets created by earlier runs get fixed on the next deploy.
 chown -R 10000:10000 "$SECRETS_DIR" 2>/dev/null || true
 
+# Grafana is the one consumer that does NOT run as appuser uid 10000 — its
+# image runs as uid 472. A 600/uid-10000 file is therefore unreadable to it
+# and Grafana crash-loops with "/run/secrets/grafana_admin_password:
+# Permission denied". Widen just this one file to world-readable (0444). The
+# SECRETS_DIR itself stays 700/uid-10000, so the value is still protected at
+# the directory level on the host; only the in-container bind-mount (which
+# Docker mounts the file directly into) becomes readable by uid 472.
+if [ -f "$SECRETS_DIR/grafana_admin_password" ]; then
+  chmod 0444 "$SECRETS_DIR/grafana_admin_password" 2>/dev/null || true
+fi
+
 echo
 echo "Done. Verify with: ls -la $SECRETS_DIR"
 echo "Remaining env-only vars (kept in .env): FRONTEND_URL, BACKEND_URL,"
