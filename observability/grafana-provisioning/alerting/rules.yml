@@ -22,6 +22,14 @@ groups:
       # Any Rust service panicked in the last 5 minutes. Rust panics print
       # "panicked at" with backtrace info; restart loops re-emit it on
       # every cycle so this fires within a minute of the first crash.
+      #
+      # The container!~ clause excludes the observability stack: Loki logs
+      # every LogQL query it runs (including THIS one), and that log line
+      # contains the literal "panicked at" from the query text. Promtail
+      # ships Loki's own logs back into Loki, so without the exclusion the
+      # alert matches its own query echo and self-fires forever. Grafana
+      # (which evaluates the rule) can echo the query too. Excluding these
+      # keeps every real app/infra panic (meilisearch included) in scope.
       - uid: service-panic
         title: Service panicked
         condition: B
@@ -30,7 +38,7 @@ groups:
             relativeTimeRange: { from: 300, to: 0 }
             datasourceUid: loki
             model:
-              expr: 'sum(count_over_time({container=~"gachavault-.*"} |~ "(?i)panicked at" [5m]))'
+              expr: 'sum(count_over_time({container=~"gachavault-.*", container!~"gachavault-(loki|grafana|promtail).*"} |~ "(?i)panicked at" [5m]))'
               queryType: instant
               refId: A
           - refId: B

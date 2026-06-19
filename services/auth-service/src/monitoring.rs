@@ -238,10 +238,15 @@ struct RuleDef {
 // KEEP IN SYNC with rules.yml.
 const RULES: &[RuleDef] = &[
     RuleDef {
+        // container!~ excludes the observability stack: Loki logs every query
+        // it runs (this one included), and that log line contains the literal
+        // "panicked at" from the query text; promtail ships Loki's logs back
+        // into Loki, so without the exclusion the rule matches its own query
+        // echo and self-fires forever. Real app/infra panics stay in scope.
         id: "service-panic",
         title: "Service panicked",
         severity: "critical",
-        expr: r#"sum(count_over_time({container=~"gachavault-.*"} |~ "(?i)panicked at" [5m]))"#,
+        expr: r#"sum(count_over_time({container=~"gachavault-.*", container!~"gachavault-(loki|grafana|promtail).*"} |~ "(?i)panicked at" [5m]))"#,
         threshold: 0.0,
         fire_when_gt: true,
     },
