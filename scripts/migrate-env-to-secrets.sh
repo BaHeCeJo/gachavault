@@ -132,17 +132,6 @@ fi
 # the matching container UID can read — without widening the at-rest
 # perms. Apply to every file (not just newly written ones) so existing
 # secrets created by earlier runs get fixed on the next deploy.
-# rclone.conf for off-site backups is operator-provided (multi-line, holds
-# remote credentials) so it can't be derived from a single .env value. Create
-# an empty placeholder if absent so the compose `rclone_conf` secret mount never
-# aborts the deploy (a missing bind source fails the entire recreate). Fill it
-# in on the VPS to enable off-site upload — see DEPLOY/off-site instructions.
-if [ ! -f "$SECRETS_DIR/rclone_conf" ]; then
-  : > "$SECRETS_DIR/rclone_conf"
-  chmod 600 "$SECRETS_DIR/rclone_conf"
-  echo "created empty placeholder: $SECRETS_DIR/rclone_conf (fill in to enable off-site backup)"
-fi
-
 chown -R 10000:10000 "$SECRETS_DIR" 2>/dev/null || true
 
 # Grafana is the one consumer that does NOT run as appuser uid 10000 — its

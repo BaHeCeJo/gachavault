@@ -547,11 +547,7 @@ services:
     # Invoke via `sh` rather than exec'ing the script directly: the bind-mounted
     # repo file is committed 0644 (no exec bit from Windows/git), so a bare
     # `exec /scripts/db-backup.sh` fails with "Permission denied" (exit 126).
-    # When off-site upload is enabled (OFFSITE_UPLOAD_CMD set in .env), install
-    # rclone first — the stock postgres image doesn't ship it. The apk runs only
-    # on (re)create, only when off-site is on, and only if rclone isn't already
-    # present; `|| true` keeps a transient apk failure from blocking local dumps.
-    entrypoint: ["/bin/sh", "-c", "{ [ -n \"$$OFFSITE_UPLOAD_CMD\" ] && ! command -v rclone >/dev/null 2>&1 && apk add --no-cache rclone; } || true; export POSTGRES_PASSWORD=$$(cat /run/secrets/postgres_password); exec sh /scripts/db-backup.sh"]
+    entrypoint: ["/bin/sh", "-c", "export POSTGRES_PASSWORD=$$(cat /run/secrets/postgres_password); exec sh /scripts/db-backup.sh"]
     environment:
       PGHOST: postgres
       PGUSER: gachavault
@@ -564,10 +560,6 @@ services:
       OFFSITE_UPLOAD_CMD: ${OFFSITE_UPLOAD_CMD:-}
     secrets:
       - postgres_password
-      # rclone remote config for off-site upload. Operator-provided on the VPS
-      # at ./secrets/rclone_conf; reference it as /run/secrets/rclone_conf in
-      # OFFSITE_UPLOAD_CMD (e.g. `rclone --config /run/secrets/rclone_conf ...`).
-      - rclone_conf
     volumes:
       - ./scripts/db-backup.sh:/scripts/db-backup.sh:ro
       - db_backups:/backups
@@ -603,8 +595,6 @@ secrets:
     file: ./secrets/smtp_password
   grafana_admin_password:
     file: ./secrets/grafana_admin_password
-  rclone_conf:
-    file: ./secrets/rclone_conf
 
 volumes:
   postgres_data:

@@ -160,7 +160,11 @@ pub async fn get_admin_logs(
         matchers.push(format!("level=\"{level}\""));
     }
     let selector = if matchers.is_empty() {
-        "{container=~\"gachavault-.*\"}".to_string()
+        // Default "all" view excludes the observability/metrics stack — their
+        // own logs (especially Loki echoing every query it runs) are noise
+        // here, not application logs. A specific service filter still reaches
+        // them via the `service=` label branch below.
+        "{container=~\"gachavault-.*\", container!~\"gachavault-(loki|grafana|promtail|prometheus|cadvisor|node-exporter).*\"}".to_string()
     } else {
         format!("{{{}}}", matchers.join(","))
     };
