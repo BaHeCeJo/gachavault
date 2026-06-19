@@ -471,6 +471,68 @@ services:
     networks:
       - internal
 
+  # ── Metrics (Prometheus) ────────────────────────────────────────────────────
+  # node-exporter = host metrics (cpu/ram/disk/net), cadvisor = per-container
+  # metrics, prometheus scrapes both. Loki/Promtail handle logs; this stack
+  # handles numbers. All internal-only — viewed via Grafana (SSH tunnel) and the
+  # in-app /admin/monitoring page (which queries prometheus through auth-service).
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    pid: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - internal
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    restart: unless-stopped
+    # docker_only + a slower housekeeping interval keep cAdvisor's CPU use
+    # modest; it's the heaviest of the three but still light on this box.
+    command:
+      - '--housekeeping_interval=30s'
+      - '--docker_only=true'
+      - '--store_container_labels=false'
+    privileged: true
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - internal
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    restart: unless-stopped
+    # --web.enable-lifecycle exposes POST /-/reload so a prometheus.yml edit can
+    # be applied without a full recreate (the single-file bind mount otherwise
+    # has the same inode trap as nginx.conf — see feedback on nginx bind mounts).
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - node-exporter
+      - cadvisor
+    networks:
+      - internal
+
   db-backup:
     image: postgres:16-alpine
     restart: always
@@ -552,6 +614,7 @@ volumes:
   loki_data:
   grafana_data:
   promtail_positions:
+  prometheus_data:
 
 networks:
   internal:
