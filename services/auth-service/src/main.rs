@@ -107,6 +107,12 @@ async fn main() {
             "/api/v1/admin/log-stats",
             get(monitoring::get_admin_log_stats),
         )
+        // Metrics proxy → Prometheus (host/container CPU/RAM/disk).
+        .route("/api/v1/admin/metrics", get(monitoring::get_admin_metrics))
+        .route(
+            "/api/v1/admin/metrics-range",
+            get(monitoring::get_admin_metrics_range),
+        )
         .with_state(pool);
 
     shared_server::serve(SERVICE, 3001, app).await;

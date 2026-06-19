@@ -234,5 +234,8 @@ export const adminApi = {
       api.get("/admin/logs", { params }),
     alerts: () => api.get("/admin/alerts"),
     logStats: () => api.get("/admin/log-stats"),
+    // Server resources via Prometheus (host + per-container CPU/RAM/disk).
+    metrics: () => api.get("/admin/metrics"),
+    metricsRange: () => api.get("/admin/metrics-range"),
   },
 };

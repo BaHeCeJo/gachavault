@@ -386,3 +386,260 @@ pub async fn get_admin_log_stats(
         "by_service": rows,
     }))))
 }
+
+// ── Server resource metrics (Prometheus) ────────────────────────────────────
+// Logs come from Loki (above); host/container numbers come from Prometheus
+// (node-exporter + cadvisor). Same `internal` network, admin-gated, read-only.
+
+const DEFAULT_PROMETHEUS_URL: &str = "http://prometheus:9090";
+
+fn prom_base() -> String {
+    std::env::var("PROMETHEUS_URL").unwrap_or_else(|_| DEFAULT_PROMETHEUS_URL.to_string())
+}
+
+fn prom_err(ctx: &str, e: impl std::fmt::Display) -> AppError {
+    AppError::Internal(anyhow::anyhow!("prometheus {ctx}: {e}"))
+}
+
+// Prometheus instant query → resultType "vector". Same JSON shape as Loki's
+// vector response, so VectorResp/VectorSample are reused. Returns every sample
+// (host queries have one; per-container queries have one per `name`).
+async fn prom_query(client: &reqwest::Client, query: &str) -> AppResult<Vec<VectorSample>> {
+    let resp = client
+        .get(format!("{}/api/v1/query", prom_base()))
+        .query(&[("query", query)])
+        .send()
+        .await
+        .map_err(|e| prom_err("query", e))?;
+    if !resp.status().is_success() {
+        let code = resp.status();
+        let body = resp.text().await.unwrap_or_default();
+        return Err(prom_err("query", format!("HTTP {code}: {body}")));
+    }
+    let parsed: VectorResp = resp.json().await.map_err(|e| prom_err("decode", e))?;
+    Ok(parsed.data.result)
+}
+
+// First sample's value, or -1.0 when the query failed or returned nothing
+// (the UI renders negative as "—"/unknown rather than a real reading).
+async fn prom_scalar(client: &reqwest::Client, query: &str) -> f64 {
+    prom_query(client, query)
+        .await
+        .ok()
+        .and_then(|v| v.first().map(|s| s.number()))
+        .unwrap_or(-1.0)
+}
+
+// Prometheus range query → resultType "matrix". Returns the first series'
+// points as (unix_seconds, value).
+#[derive(Deserialize)]
+struct MatrixResp {
+    data: MatrixData,
+}
+#[derive(Deserialize)]
+struct MatrixData {
+    #[serde(default)]
+    result: Vec<MatrixEntry>,
+}
+#[derive(Deserialize)]
+struct MatrixEntry {
+    // Each value is [ <ts:number>, "<value:string>" ].
+    #[serde(default)]
+    values: Vec<Vec<serde_json::Value>>,
+}
+
+async fn prom_range(
+    client: &reqwest::Client,
+    query: &str,
+    start: i64,
+    end: i64,
+    step: i64,
+) -> AppResult<Vec<(f64, f64)>> {
+    let resp = client
+        .get(format!("{}/api/v1/query_range", prom_base()))
+        .query(&[
+            ("query", query),
+            ("start", &start.to_string()),
+            ("end", &end.to_string()),
+            ("step", &step.to_string()),
+        ])
+        .send()
+        .await
+        .map_err(|e| prom_err("query_range", e))?;
+    if !resp.status().is_success() {
+        let code = resp.status();
+        let body = resp.text().await.unwrap_or_default();
+        return Err(prom_err("query_range", format!("HTTP {code}: {body}")));
+    }
+    let parsed: MatrixResp = resp.json().await.map_err(|e| prom_err("decode", e))?;
+    let points = parsed
+        .data
+        .result
+        .first()
+        .map(|e| {
+            e.values
+                .iter()
+                .filter_map(|p| {
+                    let t = p.first().and_then(|v| v.as_f64())?;
+                    let v = p
+                        .get(1)
+                        .and_then(|v| v.as_str())
+                        .and_then(|s| s.parse::<f64>().ok())?;
+                    Some((t, v))
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    Ok(points)
+}
+
+// Exclude pseudo-filesystems so the "disk" reading reflects the real root disk.
+const ROOT_FS: &str = r#"{mountpoint="/",fstype!~"tmpfs|overlay|squashfs|ramfs|devtmpfs"}"#;
+
+// Current host + per-container snapshot.
+pub async fn get_admin_metrics(auth: AuthUser) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    require_admin(&auth)?;
+    let client = reqwest::Client::new();
+
+    let cpu_pct = prom_scalar(
+        &client,
+        r#"100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100)"#,
+    )
+    .await;
+    let mem_total = prom_scalar(&client, "node_memory_MemTotal_bytes").await;
+    let mem_avail = prom_scalar(&client, "node_memory_MemAvailable_bytes").await;
+    let disk_total = prom_scalar(&client, &format!("node_filesystem_size_bytes{ROOT_FS}")).await;
+    let disk_avail = prom_scalar(&client, &format!("node_filesystem_avail_bytes{ROOT_FS}")).await;
+    let load1 = prom_scalar(&client, "node_load1").await;
+
+    let mem_used = if mem_total > 0.0 && mem_avail >= 0.0 {
+        mem_total - mem_avail
+    } else {
+        0.0
+    };
+    let mem_pct = if mem_total > 0.0 && mem_avail >= 0.0 {
+        (1.0 - mem_avail / mem_total) * 100.0
+    } else {
+        -1.0
+    };
+    let disk_used = if disk_total > 0.0 && disk_avail >= 0.0 {
+        disk_total - disk_avail
+    } else {
+        0.0
+    };
+    let disk_pct = if disk_total > 0.0 && disk_avail >= 0.0 {
+        (1.0 - disk_avail / disk_total) * 100.0
+    } else {
+        -1.0
+    };
+
+    // Per-container CPU (cores) and working-set memory (bytes), merged by name.
+    let cpu_samples = prom_query(
+        &client,
+        r#"sum by (name) (rate(container_cpu_usage_seconds_total{name!=""}[2m]))"#,
+    )
+    .await
+    .unwrap_or_default();
+    let mem_samples = prom_query(
+        &client,
+        r#"sum by (name) (container_memory_working_set_bytes{name!=""})"#,
+    )
+    .await
+    .unwrap_or_default();
+
+    let mut by_name: HashMap<String, (f64, f64)> = HashMap::new(); // name -> (cpu_cores, mem_bytes)
+    for s in &cpu_samples {
+        if let Some(name) = s.metric.get("name") {
+            by_name.entry(name.clone()).or_default().0 = s.number();
+        }
+    }
+    for s in &mem_samples {
+        if let Some(name) = s.metric.get("name") {
+            by_name.entry(name.clone()).or_default().1 = s.number();
+        }
+    }
+    let mut containers: Vec<serde_json::Value> = by_name
+        .into_iter()
+        .map(|(name, (cpu, mem))| {
+            serde_json::json!({ "name": name, "cpu_cores": cpu, "mem_bytes": mem })
+        })
+        .collect();
+    containers.sort_by(|a, b| {
+        b["mem_bytes"]
+            .as_f64()
+            .unwrap_or(0.0)
+            .partial_cmp(&a["mem_bytes"].as_f64().unwrap_or(0.0))
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+    containers.truncate(20);
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "host": {
+            "cpu_pct": cpu_pct,
+            "mem_pct": mem_pct,
+            "mem_used_bytes": mem_used,
+            "mem_total_bytes": mem_total,
+            "disk_pct": disk_pct,
+            "disk_used_bytes": disk_used,
+            "disk_total_bytes": disk_total,
+            "load1": load1,
+        },
+        "containers": containers,
+    }))))
+}
+
+// Last-hour time series for the CPU/RAM/disk charts (1-minute step).
+pub async fn get_admin_metrics_range(
+    auth: AuthUser,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    require_admin(&auth)?;
+    let client = reqwest::Client::new();
+    let end = chrono::Utc::now().timestamp();
+    let start = end - 3600;
+    let step = 60i64;
+
+    let cpu = prom_range(
+        &client,
+        r#"100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100)"#,
+        start,
+        end,
+        step,
+    )
+    .await
+    .unwrap_or_default();
+    let mem = prom_range(
+        &client,
+        r#"(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100"#,
+        start,
+        end,
+        step,
+    )
+    .await
+    .unwrap_or_default();
+    let disk = prom_range(
+        &client,
+        &format!(
+            r#"(1 - (node_filesystem_avail_bytes{ROOT_FS} / node_filesystem_size_bytes{ROOT_FS})) * 100"#
+        ),
+        start,
+        end,
+        step,
+    )
+    .await
+    .unwrap_or_default();
+
+    let to_points = |pts: Vec<(f64, f64)>| -> Vec<serde_json::Value> {
+        pts.into_iter()
+            .map(|(t, v)| serde_json::json!({ "t": t, "v": v }))
+            .collect()
+    };
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "step_s": step,
+        "series": {
+            "cpu_pct": to_points(cpu),
+            "mem_pct": to_points(mem),
+            "disk_pct": to_points(disk),
+        },
+    }))))
+}

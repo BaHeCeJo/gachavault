@@ -160,6 +160,9 @@ services:
       # Read-only log queries for the admin Monitoring page (see monitoring.rs).
       # Same `internal` network; this is also the in-code default.
       LOKI_URL: http://loki:3100
+      # Read-only metric queries (host/container CPU/RAM/disk) for the admin
+      # Monitoring page's Server Resources charts. In-code default matches this.
+      PROMETHEUS_URL: http://prometheus:9090
     secrets:
       - database_url
       - redis_url
