@@ -474,13 +474,15 @@ services:
   db-backup:
     image: postgres:16-alpine
     restart: always
-    # The official postgres image's libpq reads PGPASSWORD from env. Source
-    # it from the secret file in the entrypoint wrapper before exec'ing the
-    # backup script.
-    # Invoke the bind-mounted script via `sh` rather than exec'ing it directly:
-    # the repo file is committed 0644 (no exec bit, esp. from Windows/git), so a
-    # bare `exec /scripts/db-backup.sh` fails with "Permission denied" (exit 126).
-    entrypoint: ["/bin/sh", "-c", "export PGPASSWORD=$$(cat /run/secrets/postgres_password); exec sh /scripts/db-backup.sh"]
+    # db-backup.sh reads the DB password from $POSTGRES_PASSWORD (the same var
+    # the dev compose injects). Source it from the secret file and export it
+    # under THAT name — exporting PGPASSWORD instead silently blanks it, because
+    # the script runs `PGPASSWORD="$POSTGRES_PASSWORD" pg_dump` and would clobber
+    # a good value with an empty one (-> pg_dump "no password supplied").
+    # Invoke via `sh` rather than exec'ing the script directly: the bind-mounted
+    # repo file is committed 0644 (no exec bit from Windows/git), so a bare
+    # `exec /scripts/db-backup.sh` fails with "Permission denied" (exit 126).
+    entrypoint: ["/bin/sh", "-c", "export POSTGRES_PASSWORD=$$(cat /run/secrets/postgres_password); exec sh /scripts/db-backup.sh"]
     environment:
       PGHOST: postgres
       PGUSER: gachavault

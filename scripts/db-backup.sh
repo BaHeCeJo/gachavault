@@ -1,5 +1,10 @@
 #!/bin/sh
 set -e
+# pipefail so a failed pg_dump is detected even though gzip is the last stage of
+# the dump pipeline. Without it, a failed dump still produces a tiny valid .gz
+# and we silently accumulate empty "successful" backups. Runs under busybox sh
+# (postgres:*-alpine), which supports pipefail.
+set -o pipefail
 
 BACKUP_DIR="${BACKUP_DIR:-/backups}"
 KEEP_DAYS="${KEEP_DAYS:-7}"
@@ -24,14 +29,21 @@ run_backup() {
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
     FILENAME="$BACKUP_DIR/gachavault_${TIMESTAMP}.sql.gz"
     echo "[backup] Starting pg_dump at $(date)"
-    PGPASSWORD="$POSTGRES_PASSWORD" pg_dump \
+    # `! pipeline` + pipefail: catch a pg_dump failure here rather than writing a
+    # bogus tiny .gz and reporting success. On failure, drop the partial file and
+    # return so the loop retries next interval (don't crash the container).
+    if ! PGPASSWORD="$POSTGRES_PASSWORD" pg_dump \
         -h "$PGHOST" \
         -U "$PGUSER" \
         --no-password \
         --format=plain \
         --clean \
         --if-exists \
-        "$PGDATABASE" | gzip > "$FILENAME"
+        "$PGDATABASE" | gzip > "$FILENAME"; then
+        echo "[backup] pg_dump FAILED at $(date) — removing partial file, will retry next interval" >&2
+        rm -f "$FILENAME"
+        return
+    fi
     SIZE=$(du -sh "$FILENAME" | cut -f1)
     echo "[backup] Saved: $FILENAME ($SIZE)"
     find "$BACKUP_DIR" -name "gachavault_*.sql.gz" -mtime "+${KEEP_DAYS}" -delete
