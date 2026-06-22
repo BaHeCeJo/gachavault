@@ -75,7 +75,9 @@ export interface DividerConfig {
 export interface GalleryConfig {
   title?: string;
   image_fields?: string[]; // schema image/url field keys to show
-  columns?: number; // 2 | 3 | 4 (default 3)
+  columns?: number; // 1 | 2 | 3 | 4 (default 3)
+  aspect?: "video" | "square" | "portrait"; // tile shape (default "video")
+  fit?: "cover" | "contain"; // crop-to-fill vs. letterbox uncropped (default "cover")
 }
 
 export interface RatingsConfig {
