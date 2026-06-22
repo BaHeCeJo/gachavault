@@ -35,17 +35,42 @@ interface BlockProps {
 
 // Two side-by-side columns of child blocks (rendered via renderBlock so the
 // renderer stays the single block→component map). Stacks on mobile.
-function ColumnsBlock({ config, renderBlock }: { config?: Record<string, unknown>; renderBlock: (b: PageBlock) => ReactNode }) {
+function ColumnsBlock({
+  config,
+  bundle,
+  relations,
+  preview,
+  renderBlock,
+}: {
+  config?: Record<string, unknown>;
+  bundle: ItemPageBundle;
+  relations: ItemRelations;
+  preview: boolean;
+  renderBlock: (b: PageBlock) => ReactNode;
+}) {
   const c = (config ?? {}) as ColumnsConfig;
   const cols = Array.isArray(c.columns) ? c.columns : [];
   if (cols.length === 0) return null;
   const ratio = c.ratio ?? "1-1";
   const basis = ratio === "1-2" ? ["md:w-1/3", "md:w-2/3"] : ratio === "2-1" ? ["md:w-2/3", "md:w-1/3"] : ["md:w-1/2", "md:w-1/2"];
+
+  // Drop columns whose blocks all render nothing — otherwise a collapsed column
+  // (e.g. an empty Profile on a sparse item) reserves dead space next to the
+  // surviving column, leaving it stranded in half the row. Preview keeps every
+  // column so template authors still see the full layout they placed.
+  const visible = cols
+    .slice(0, 2)
+    .map((colBlocks, i) => ({ blocks: Array.isArray(colBlocks) ? colBlocks : [], basis: basis[i] ?? "md:w-1/2" }))
+    .filter(({ blocks }) => preview || blocks.some((b) => blockHasContent(b, bundle, relations)));
+  if (visible.length === 0) return null;
+
+  // A lone surviving column spans the full width instead of its ratio fraction.
+  const full = visible.length === 1;
   return (
     <div className="mb-8 flex flex-col md:flex-row gap-6">
-      {cols.slice(0, 2).map((colBlocks, i) => (
-        <div key={i} className={`w-full ${basis[i] ?? "md:w-1/2"}`}>
-          {(Array.isArray(colBlocks) ? colBlocks : []).map((b) => renderBlock(b))}
+      {visible.map(({ blocks, basis }, i) => (
+        <div key={i} className={`w-full ${full ? "" : basis}`}>
+          {blocks.map((b) => renderBlock(b))}
         </div>
       ))}
     </div>
@@ -95,7 +120,7 @@ function BlockRenderer({ block, bundle, preview, relations, attrMap }: BlockProp
     case "divider":
       return <DividerBlock config={block.config} />;
     case "columns":
-      return <ColumnsBlock config={block.config} renderBlock={renderChild} />;
+      return <ColumnsBlock config={block.config} bundle={bundle} relations={relations} preview={preview} renderBlock={renderChild} />;
     case "tabs":
       return <TabsBlock config={block.config} renderBlock={renderChild} />;
     default:
