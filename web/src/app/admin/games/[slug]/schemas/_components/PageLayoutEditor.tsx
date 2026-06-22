@@ -608,6 +608,7 @@ function GalleryConfigPanel({ config, imageFields, onPatch }: { config: GalleryC
       <div>
         <label className="text-xs text-gray-500 block mb-1">Columns</label>
         <select value={config.columns ?? 3} onChange={(e) => onPatch({ columns: Number(e.target.value) })} className={inputCls}>
+          <option value={1}>1 (single, fills width)</option>
           <option value={2}>2</option>
           <option value={3}>3</option>
           <option value={4}>4</option>
