@@ -92,6 +92,8 @@ export interface SkillsConfig {
   name_key?: string; // default "name"
   desc_key?: string; // default "description"
   icon_key?: string; // default "icon_url"
+  type_key?: string; // default "type" — rendered as a category tag (e.g. "Skill", "Ultimate")
+  group_key?: string; // default "group" — a value change starts a labelled subsection (e.g. "Memosprite")
 }
 
 export interface ColumnsConfig {
