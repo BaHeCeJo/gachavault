@@ -179,10 +179,15 @@ export function FieldValue({
     return <span className="text-gray-500 text-sm text-xs italic">Loading…</span>;
   }
 
+  // Attribute values resolve against their pool, which is the field's
+  // attribute_type (e.g. `element` → `type`), not the field key. Fall back to
+  // the key for fields where the two coincide.
+  const attrPool = fieldAttrType ?? fieldKey;
+
   // Multi-value attribute: render each entry as its own pill.
   if (Array.isArray(value)) {
     const pills = value
-      .map((v) => lookupAttr(attrMap, fieldKey, v))
+      .map((v) => lookupAttr(attrMap, attrPool, v))
       .filter((a): a is GameAttribute => a !== null);
     if (pills.length > 0) {
       return (
@@ -193,7 +198,7 @@ export function FieldValue({
     }
   }
 
-  const attr = lookupAttr(attrMap, fieldKey, value);
+  const attr = lookupAttr(attrMap, attrPool, value);
   if (attr) return <AttrPill attr={attr} value={String(value)} />;
 
   if (fieldKey === "rarity") return <RarityStars value={value} />;

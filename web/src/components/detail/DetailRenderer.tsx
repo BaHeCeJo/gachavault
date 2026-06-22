@@ -14,11 +14,10 @@ import type {
   SkillsConfig,
   StatsTableConfig,
 } from "@/lib/pageLayout";
-import type { ItemRelations, SchemaField } from "@/components/detail/types";
-import { HIDDEN_IN_DETAILS } from "@/components/detail/FieldValue";
+import type { ItemRelations } from "@/components/detail/types";
 import { LegacyDetailLayout } from "@/components/detail/LegacyDetailLayout";
 import { HeroBlock } from "@/components/detail/blocks/HeroBlock";
-import { StatsTableBlock } from "@/components/detail/blocks/StatsTableBlock";
+import { StatsTableBlock, statsTableHasContent } from "@/components/detail/blocks/StatsTableBlock";
 import { RichTextBlock } from "@/components/detail/blocks/RichTextBlock";
 import { ItemGridBlock } from "@/components/detail/blocks/ItemGridBlock";
 import { GalleryBlock } from "@/components/detail/blocks/GalleryBlock";
@@ -142,20 +141,8 @@ function blockHasContent(block: PageBlock, bundle: ItemPageBundle, relations: It
       const c = (block.config ?? {}) as RatingsConfig;
       return (c.entries ?? []).some((e) => e && e.field && nonEmpty(data[e.field]));
     }
-    case "stats_table": {
-      const c = (block.config ?? {}) as StatsTableConfig;
-      const schemaFields = bundle.fields as SchemaField[];
-      const byKey = new Map(schemaFields.map((f) => [f.key, f]));
-      const autoKeys = (schemaFields.length > 0 ? schemaFields.map((f) => f.key) : Object.keys(data)).filter(
-        (k) => !HIDDEN_IN_DETAILS.has(k) && k !== "description" && k !== "lore"
-      );
-      const keys = c.fields && c.fields.length > 0 ? c.fields : autoKeys;
-      return keys.some((k) => {
-        const f = byKey.get(k);
-        if (f?.type === "backref") return (relations.backRefs.get(k) ?? []).length > 0;
-        return nonEmpty(data[k]);
-      });
-    }
+    case "stats_table":
+      return statsTableHasContent((block.config ?? {}) as StatsTableConfig, bundle, relations);
     default:
       return true;
   }

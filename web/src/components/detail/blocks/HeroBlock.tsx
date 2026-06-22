@@ -6,6 +6,7 @@ import { type AttrMap, type GameAttribute, lookupAttr } from "@/lib/attrs";
 import type { ItemPageBundle } from "@/lib/seo";
 import { AttrPill, RarityStars } from "@/components/detail/FieldValue";
 import type { HeroConfig } from "@/lib/pageLayout";
+import type { SchemaField } from "@/components/detail/types";
 
 // Art + name + rarity + attribute badge pills. The portrait and the title.
 export function HeroBlock({
@@ -24,16 +25,22 @@ export function HeroBlock({
   const rarity = data[c.rarity_field || "rarity"];
   const sectionName = bundle.sectionName;
 
+  // A badge field's value lives at data[key], but the matching attribute pool
+  // is keyed by the schema field's attribute_type — which is NOT always the key
+  // (HSR's `element` field draws from attribute_type `type`). Resolve it from
+  // the schema; fall back to the key when they coincide (path, availability…).
+  const fieldByKey = new Map(((bundle.fields ?? []) as SchemaField[]).map((f) => [f.key, f]));
   const badges: GameAttribute[] = [];
   for (const key of c.badge_fields ?? []) {
+    const attrType = fieldByKey.get(key)?.attribute_type ?? key;
     const v = data[key];
     if (Array.isArray(v)) {
       for (const entry of v) {
-        const a = lookupAttr(attrMap, key, entry);
+        const a = lookupAttr(attrMap, attrType, entry);
         if (a) badges.push(a);
       }
     } else {
-      const a = lookupAttr(attrMap, key, v);
+      const a = lookupAttr(attrMap, attrType, v);
       if (a) badges.push(a);
     }
   }
