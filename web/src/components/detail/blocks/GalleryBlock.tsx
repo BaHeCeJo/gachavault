@@ -24,7 +24,10 @@ export function GalleryBlock({
   }
   if (urls.length === 0) return null;
 
-  const columns = c.columns ?? 3;
+  // A single image fills its column by default — one tile in a multi-column
+  // grid renders at 1/columns width (a tiny sliver inside a half-width column).
+  // An explicit `columns` is still honored if the author really wants it.
+  const columns = c.columns ?? (urls.length === 1 ? 1 : 3);
   const colClass =
     columns === 1 ? "grid-cols-1"
     : columns === 2 ? "grid-cols-2"
