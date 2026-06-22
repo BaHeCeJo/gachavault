@@ -180,9 +180,13 @@ function parseBlocks(arr: unknown, depth: number): PageBlock[] {
           };
         });
       } else if (depth >= 1) {
-        // At the cap, strip any nested container children.
-        delete rawConfig.columns;
-        delete rawConfig.tabs;
+        // At the nesting cap a container can't hold children — strip them. Only
+        // for the actual container types: a `gallery`/`item_grid` block also has
+        // a `columns` key, but it's a NUMBER (grid width), not child blocks, and
+        // must survive. (Deleting it indiscriminately reset nested galleries to
+        // the default 3-wide grid.)
+        if (bb.type === "columns") delete rawConfig.columns;
+        if (bb.type === "tabs") delete rawConfig.tabs;
       }
       block.config = rawConfig;
     }
