@@ -15,13 +15,14 @@ import { InlineAttrCreatorForm } from "./_components/InlineAttrCreatorForm";
 import { ItemTable } from "./_components/ItemTable";
 import { ItemCardGrid } from "./_components/ItemCardGrid";
 import { ItemDetailPreview } from "./_components/ItemDetailPreview";
+import { SkillListField } from "./_components/SkillListField";
 
 interface Game { id: string; slug: string; name: string }
 interface Section { id: string; slug: string; name: string }
 interface SchemaField {
   key: string;
   label: string;
-  type: "text" | "number" | "url" | "image" | "textarea" | "select" | "attribute" | "date" | "itemref" | "itemlist" | "resistances" | "backref";
+  type: "text" | "number" | "url" | "image" | "textarea" | "select" | "attribute" | "date" | "itemref" | "itemlist" | "resistances" | "skilllist" | "backref";
   options?: string[];
   attribute_type?: string;
   multi?: boolean;
@@ -836,6 +837,18 @@ export default function AdminItemsPage() {
                             Computed automatically from other items
                           </p>
                         </div>
+                      );
+                    }
+                    if (field.type === "skilllist") {
+                      return (
+                        <SkillListField
+                          key={field.key}
+                          label={field.label}
+                          value={getRawFieldValue(field.key)}
+                          onChange={(next) => setFieldValue(field.key, next)}
+                          gameSlug={selectedGame?.slug}
+                          gameName={selectedGame?.name}
+                        />
                       );
                     }
                     if (field.type === "resistances") {

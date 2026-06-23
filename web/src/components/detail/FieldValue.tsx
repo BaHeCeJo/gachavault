@@ -101,6 +101,15 @@ export function FieldValue({
 
   if (value === null || value === undefined || value === "") return <span className="text-gray-600">—</span>;
 
+  // A skill-list field is rendered by the Skills block, not as a table cell.
+  // If one ends up here (legacy layout, or explicitly added to a stats table)
+  // show a count instead of dumping raw objects.
+  if (fieldType === "skilllist") {
+    const list = Array.isArray(value) ? value : [];
+    if (list.length === 0) return <span className="text-gray-600">—</span>;
+    return <span className="text-gray-400 text-sm">{list.length} {list.length === 1 ? "ability" : "abilities"}</span>;
+  }
+
   if (fieldType === "itemlist") {
     type ItemEntry = { id: string; name: string; qty?: number; qty_min?: number; qty_max?: number };
     const entries: ItemEntry[] = Array.isArray(value) ? (value as ItemEntry[]) : [];

@@ -42,6 +42,7 @@ type FieldType =
   | "itemref"
   | "itemlist"
   | "resistances"
+  | "skilllist"
   | "backref";
 
 interface BackrefSource {
@@ -77,6 +78,7 @@ const FIELD_TYPES: { value: FieldType; label: string; help: string }[] = [
   { value: "itemref", label: "Item reference", help: "Link to one item in another section" },
   { value: "itemlist", label: "Item list", help: "List of items with optional quantities" },
   { value: "resistances", label: "Resistances", help: "Per-attribute resistance grid" },
+  { value: "skilllist", label: "Skill list", help: "Editable list of abilities (type, name, description, icon) — rendered by a Skills block" },
   { value: "backref", label: "Back-reference", help: "Auto-resolved list of items that reference this one" },
 ];
 
