@@ -17,8 +17,8 @@ export interface SkillPreset {
 const PRESETS: SkillPreset[] = [
   {
     match: ["honkai-star-rail", "star-rail", "star rail", "hsr"],
-    types: ["Basic ATK", "Enhanced Basic ATK", "Skill", "Ultimate", "Talent", "Technique", "Elation Skill", "Memosprite Skill", "Memosprite Talent"],
-    groups: ["Memosprite", "Elation", "Traces", "Eidolons"],
+    types: ["Basic ATK", "Enhanced Basic ATK", "Skill", "Enhanced Skill", "Ultimate", "Talent", "Technique", "Elation Skill", "Memosprite Skill", "Memosprite Talent"],
+    groups: ["Memosprite", "Elation", "Transformation", "Traces", "Eidolons"],
   },
   {
     match: ["genshin"],
