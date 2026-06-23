@@ -18,7 +18,7 @@ const PRESETS: SkillPreset[] = [
   {
     match: ["honkai-star-rail", "star-rail", "star rail", "hsr"],
     types: ["Basic ATK", "Enhanced Basic ATK", "Skill", "Ultimate", "Talent", "Technique", "Elation Skill", "Memosprite Skill", "Memosprite Talent"],
-    groups: ["Memosprite", "Traces", "Eidolons"],
+    groups: ["Memosprite", "Elation", "Traces", "Eidolons"],
   },
   {
     match: ["genshin"],
