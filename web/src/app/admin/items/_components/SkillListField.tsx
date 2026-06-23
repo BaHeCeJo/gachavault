@@ -6,12 +6,19 @@ import { skillPresetFor } from "@/lib/skillPresets";
 
 // One ability row. All keys optional so a half-filled row is still valid JSON;
 // the SkillsBlock skips rows with no name/desc/icon/type at render time.
+export interface SkillScaling {
+  label?: string;
+  // values[i] is the multiplier at skill level i+1 (e.g. ["12%","15.7%",…]).
+  values?: string[];
+}
+
 export interface SkillRow {
   type?: string;
   group?: string;
   name?: string;
   description?: string;
   icon_url?: string;
+  scalings?: SkillScaling[];
 }
 
 // Form UI for a `skilllist` schema field: a reorderable list of ability rows
@@ -42,6 +49,16 @@ export function SkillListField({
     update(rows.map((r, i) => (i === idx ? { ...r, ...p } : r)));
   const add = () => update([...rows, { type: preset.types[0] ?? "", name: "", description: "" }]);
   const remove = (idx: number) => update(rows.filter((_, i) => i !== idx));
+
+  // Per-ability scaling rows. `values` is stored as an array (one entry per
+  // level); the input edits it as a comma-separated string so a datamined list
+  // pastes straight in.
+  const scalingsOf = (idx: number) => rows[idx].scalings ?? [];
+  const setScalings = (idx: number, next: SkillScaling[]) => patch(idx, { scalings: next });
+  const addScaling = (idx: number) => setScalings(idx, [...scalingsOf(idx), { label: "", values: [] }]);
+  const removeScaling = (idx: number, j: number) => setScalings(idx, scalingsOf(idx).filter((_, k) => k !== j));
+  const patchScaling = (idx: number, j: number, p: Partial<SkillScaling>) =>
+    setScalings(idx, scalingsOf(idx).map((sc, k) => (k === j ? { ...sc, ...p } : sc)));
   const move = (idx: number, dir: -1 | 1) => {
     const next = idx + dir;
     if (next < 0 || next >= rows.length) return;
@@ -114,6 +131,48 @@ export function SkillListField({
               placeholder="https://… or upload →"
               previewHeight="h-10"
             />
+
+            <div className="pt-1 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] uppercase tracking-wide text-gray-500">Scalings (per level)</span>
+                <button
+                  type="button"
+                  onClick={() => addScaling(idx)}
+                  className="text-xs text-gray-400 hover:text-white transition"
+                >
+                  + value
+                </button>
+              </div>
+              {(row.scalings ?? []).map((sc, j) => (
+                <div key={j} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={sc.label ?? ""}
+                    onChange={(e) => patchScaling(idx, j, { label: e.target.value })}
+                    placeholder="Label (e.g. DMG Boost)"
+                    className="w-40 shrink-0 px-2.5 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                  />
+                  <input
+                    type="text"
+                    value={(sc.values ?? []).join(", ")}
+                    onChange={(e) => patchScaling(idx, j, { values: e.target.value.split(",").map((v) => v.trim()).filter(Boolean) })}
+                    placeholder="12%, 15.7%, … (one per level)"
+                    className="flex-1 min-w-0 px-2.5 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                  />
+                  <span className="text-[11px] text-gray-600 w-12 text-right shrink-0">
+                    {(sc.values ?? []).length} lvl
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeScaling(idx, j)}
+                    aria-label="Remove scaling"
+                    className="w-7 h-7 rounded border border-gray-700 text-red-400 hover:border-red-900 transition shrink-0"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
 

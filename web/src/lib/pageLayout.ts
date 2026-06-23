@@ -94,6 +94,7 @@ export interface SkillsConfig {
   icon_key?: string; // default "icon_url"
   type_key?: string; // default "type" — rendered as a category tag (e.g. "Skill", "Ultimate")
   group_key?: string; // default "group" — a value change starts a labelled subsection (e.g. "Memosprite")
+  scalings_key?: string; // default "scalings" — array of { label, values[] } per-level multipliers, shown via a level slider
 }
 
 export interface ColumnsConfig {
