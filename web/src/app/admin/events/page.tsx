@@ -10,8 +10,9 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 const EVENT_TYPES = ["banner", "version", "limited_event", "maintenance"] as const;
 
-// Common server-reset zones offered as datalist suggestions; the field is a
-// free text input so any IANA zone works.
+// Server-reset zones offered in the timezone dropdown. Covers the regional
+// servers gacha games actually run on; an event loaded with some other IANA
+// zone keeps it (it's prepended to the options at render time).
 const COMMON_TZ = [
   "UTC",
   "Asia/Shanghai",
@@ -19,7 +20,9 @@ const COMMON_TZ = [
   "Asia/Seoul",
   "America/New_York",
   "America/Los_Angeles",
+  "America/Sao_Paulo",
   "Europe/Paris",
+  "Europe/London",
 ];
 
 interface FeaturedItem {
@@ -294,6 +297,10 @@ export default function AdminEventsPage() {
     return it.slug.toLowerCase().includes(q) || itemName(it.data, it.slug).toLowerCase().includes(q);
   });
 
+  // Keep an existing event's custom zone selectable even if it's not in the list.
+  const tzOptions =
+    form.timezone && !COMMON_TZ.includes(form.timezone) ? [form.timezone, ...COMMON_TZ] : COMMON_TZ;
+
   const fmtWindow = (ev: EventRow) => {
     const f = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
     return ev.end_at ? `${f.format(new Date(ev.start_at))} – ${f.format(new Date(ev.end_at))}` : `From ${f.format(new Date(ev.start_at))}`;
@@ -505,19 +512,15 @@ export default function AdminEventsPage() {
 
             <div>
               <label className="text-xs text-gray-400 block mb-1">Server region / timezone</label>
-              <input
-                type="text"
-                list="tz-list"
+              <select
                 value={form.timezone}
                 onChange={(e) => setForm((f) => ({ ...f, timezone: e.target.value }))}
-                placeholder="UTC"
                 className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
-              />
-              <datalist id="tz-list">
-                {COMMON_TZ.map((tz) => (
-                  <option key={tz} value={tz} />
+              >
+                {tzOptions.map((tz) => (
+                  <option key={tz} value={tz}>{tz}</option>
                 ))}
-              </datalist>
+              </select>
             </div>
 
             <ImageUploadField
