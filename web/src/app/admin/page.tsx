@@ -7,6 +7,7 @@ export default function AdminPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <AdminCard title="Games" description="Add and manage gacha games" href="/admin/games" />
         <AdminCard title="Items" description="Add and edit game items" href="/admin/items" />
+        <AdminCard title="Events" description="Banners, version updates, and calendar events" href="/admin/events" />
         <AdminCard title="Users" description="Manage user roles and permissions" href="/admin/users" />
         <AdminCard title="Media" description="Browse and delete uploaded files" href="/admin/media" />
         <AdminCard title="Backups" description="Database backup status and restore instructions" href="/admin/backups" />

@@ -2,17 +2,19 @@
 
 import { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { collectionsApi, itemsApi, tierlistsApi } from "@/lib/api";
+import { useTranslations, useLocale } from "next-intl";
+import { collectionsApi, eventsApi, itemsApi, tierlistsApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
 import { SafeImage } from "@/components/SafeImage";
 import { cardGradient } from "@/lib/theme";
 import ItemCard, { type CardLayout } from "@/components/ItemCard";
+import { CalendarView } from "@/components/CalendarView";
 import { type AttrMap, type GameAttribute, type SchemaFieldLite, buildAttrMap } from "@/lib/attrs";
+import type { CalendarEvent } from "@/lib/events";
 import type { GamePageBundle } from "@/lib/seo";
 
-type Tab = "overview" | "sections" | "tierlists" | "collection";
+type Tab = "overview" | "sections" | "calendar" | "tierlists" | "collection";
 
 interface CollectionEntry {
   item_id: string;
@@ -85,6 +87,7 @@ interface ClientProps {
 
 export default function GamePageClient({ initial }: ClientProps) {
   const t = useTranslations("games");
+  const locale = useLocale();
   const { user } = useAuth();
   const game = initial.game as Game;
   const sections = initial.sections as Section[];
@@ -103,6 +106,10 @@ export default function GamePageClient({ initial }: ClientProps) {
   // first time the user opens the tab.
   const [collectionEntries, setCollectionEntries] = useState<CollectionEntry[] | null>(null);
   const [allGameItems, setAllGameItems] = useState<Item[] | null>(null);
+
+  // Calendar tab — current + upcoming events for this game, lazy-loaded the
+  // first time the tab opens.
+  const [events, setEvents] = useState<CalendarEvent[] | null>(null);
 
   useEffect(() => {
     if (!game.id) return;
@@ -131,6 +138,14 @@ export default function GamePageClient({ initial }: ClientProps) {
       .then((all) => setAllGameItems(all))
       .catch(() => setAllGameItems([]));
   }, [activeTab, user, game.id, allGameItems]);
+
+  useEffect(() => {
+    if (activeTab !== "calendar" || events !== null) return;
+    eventsApi
+      .list({ game: game.slug, from: new Date().toISOString(), locale })
+      .then((r) => setEvents(r.data.data ?? []))
+      .catch(() => setEvents([]));
+  }, [activeTab, game.slug, events, locale]);
 
   // Skip the fetch on first render — the server already shipped items for
   // the initial section. Subsequent section switches do a client-side fetch.
@@ -214,7 +229,7 @@ export default function GamePageClient({ initial }: ClientProps) {
 
       {/* Top-level tabs */}
       <div className="flex gap-1 mb-6 border-b border-gray-800 overflow-x-auto -mx-1 px-1">
-        {(["overview", "sections", "tierlists", "collection"] as Tab[]).map((tab) => (
+        {(["overview", "sections", "calendar", "tierlists", "collection"] as Tab[]).map((tab) => (
           <button
             key={tab}
             type="button"
@@ -309,6 +324,10 @@ export default function GamePageClient({ initial }: ClientProps) {
             </div>
           )}
         </>
+      )}
+
+      {activeTab === "calendar" && (
+        <CalendarView events={events ?? []} showGame={false} isLoading={events === null} />
       )}
 
       {activeTab === "tierlists" && (

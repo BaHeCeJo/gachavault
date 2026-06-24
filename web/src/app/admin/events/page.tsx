@@ -1,0 +1,537 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { adminApi, eventsApi, itemsApi } from "@/lib/api";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { extractApiError } from "@/lib/errors";
+import ImageUploadField from "@/components/ImageUploadField";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+
+const EVENT_TYPES = ["banner", "version", "limited_event", "maintenance"] as const;
+
+// Common server-reset zones offered as datalist suggestions; the field is a
+// free text input so any IANA zone works.
+const COMMON_TZ = [
+  "UTC",
+  "Asia/Shanghai",
+  "Asia/Tokyo",
+  "Asia/Seoul",
+  "America/New_York",
+  "America/Los_Angeles",
+  "Europe/Paris",
+];
+
+interface FeaturedItem {
+  item_id: string;
+  slug: string;
+  role: string;
+  order: number;
+  data: Record<string, unknown>;
+}
+
+interface EventRow {
+  id: string;
+  game_id: string;
+  game_slug: string;
+  game_name: string;
+  event_type: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  image_url: string | null;
+  start_at: string;
+  end_at: string | null;
+  timezone: string;
+  is_published: boolean;
+  featured_items: FeaturedItem[];
+}
+
+interface GameOpt {
+  id: string;
+  slug: string;
+  name: string;
+}
+
+interface ItemOpt {
+  id: string;
+  slug: string;
+  data: Record<string, unknown>;
+}
+
+interface EventForm {
+  game_id: string;
+  event_type: string;
+  slug: string;
+  title: string;
+  description: string;
+  image_url: string;
+  start_at: string;
+  end_at: string;
+  timezone: string;
+  is_published: boolean;
+  featuredIds: string[];
+}
+
+function isoToLocalInput(iso: string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function itemName(data: Record<string, unknown>, slug: string): string {
+  for (const k of ["name", "title", "display_name"]) {
+    const v = data[k];
+    if (typeof v === "string" && v.length > 0) return v;
+  }
+  return slug;
+}
+
+const emptyForm = (): EventForm => ({
+  game_id: "",
+  event_type: "banner",
+  slug: "",
+  title: "",
+  description: "",
+  image_url: "",
+  start_at: isoToLocalInput(new Date().toISOString()),
+  end_at: "",
+  timezone: "UTC",
+  is_published: true,
+  featuredIds: [],
+});
+
+export default function AdminEventsPage() {
+  const { user, isLoading } = useAdminGuard("/admin/events");
+  const [events, setEvents] = useState<EventRow[]>([]);
+  const [games, setGames] = useState<GameOpt[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [gameFilter, setGameFilter] = useState("");
+
+  const [modal, setModal] = useState<{ mode: "create" | "edit"; event?: EventRow } | null>(null);
+  const [form, setForm] = useState<EventForm>(emptyForm());
+  const [gameItems, setGameItems] = useState<ItemOpt[]>([]);
+  const [itemsLoading, setItemsLoading] = useState(false);
+  const [itemSearch, setItemSearch] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<EventRow | null>(null);
+
+  const loadEvents = (gameSlug: string) => {
+    setLoading(true);
+    eventsApi
+      .list({ include_unpublished: true, ...(gameSlug ? { game: gameSlug } : {}) })
+      .then((r) => setEvents(r.data.data ?? []))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    adminApi.games.list().then((r) => setGames(r.data.data ?? []));
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    loadEvents(gameFilter);
+  }, [user, gameFilter]);
+
+  // Load the selected game's items for the featured-item picker.
+  const loadGameItems = (gameId: string) => {
+    if (!gameId) {
+      setGameItems([]);
+      return;
+    }
+    setItemsLoading(true);
+    itemsApi
+      .listAll<ItemOpt>({ game_id: gameId })
+      .then((all) => setGameItems(all))
+      .catch(() => setGameItems([]))
+      .finally(() => setItemsLoading(false));
+  };
+
+  const openCreate = () => {
+    setForm(emptyForm());
+    setGameItems([]);
+    setItemSearch("");
+    setError("");
+    setModal({ mode: "create" });
+  };
+
+  const openEdit = (ev: EventRow) => {
+    setForm({
+      game_id: ev.game_id,
+      event_type: ev.event_type,
+      slug: ev.slug,
+      title: ev.title,
+      description: ev.description ?? "",
+      image_url: ev.image_url ?? "",
+      start_at: isoToLocalInput(ev.start_at),
+      end_at: isoToLocalInput(ev.end_at),
+      timezone: ev.timezone,
+      is_published: ev.is_published,
+      featuredIds: ev.featured_items.map((f) => f.item_id),
+    });
+    setItemSearch("");
+    setError("");
+    setModal({ mode: "edit", event: ev });
+    loadGameItems(ev.game_id);
+  };
+
+  const onGameChange = (gameId: string) => {
+    // Featured items belong to a single game — switching games clears them.
+    setForm((f) => ({ ...f, game_id: gameId, featuredIds: [] }));
+    loadGameItems(gameId);
+  };
+
+  const toggleFeatured = (itemId: string) => {
+    setForm((f) => ({
+      ...f,
+      featuredIds: f.featuredIds.includes(itemId)
+        ? f.featuredIds.filter((id) => id !== itemId)
+        : [...f.featuredIds, itemId],
+    }));
+  };
+
+  const save = async () => {
+    setError("");
+    if (!form.game_id || !form.slug || !form.title || !form.start_at) {
+      setError("Game, slug, title and start date are required.");
+      return;
+    }
+    setSaving(true);
+    try {
+      const featured = form.featuredIds.map((item_id, i) => ({
+        item_id,
+        role: "featured",
+        order: i,
+      }));
+      const payload = {
+        game_id: form.game_id,
+        event_type: form.event_type,
+        slug: form.slug,
+        title: form.title,
+        description: form.description || null,
+        image_url: form.image_url || null,
+        start_at: new Date(form.start_at).toISOString(),
+        end_at: form.end_at ? new Date(form.end_at).toISOString() : null,
+        timezone: form.timezone || "UTC",
+        is_published: form.is_published,
+      };
+
+      if (modal?.mode === "create") {
+        await eventsApi.create({ ...payload, featured_items: featured });
+      } else if (modal?.event) {
+        await eventsApi.update(modal.event.id, payload);
+        await eventsApi.setItems(modal.event.id, featured);
+      }
+      setModal(null);
+      loadEvents(gameFilter);
+    } catch (e: unknown) {
+      setError(extractApiError(e, "Failed to save event"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await eventsApi.delete(deleteTarget.id);
+      setEvents((prev) => prev.filter((e) => e.id !== deleteTarget.id));
+    } catch (e: unknown) {
+      setError(extractApiError(e, "Failed to delete event"));
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
+
+  if (isLoading || !user) {
+    return (
+      <main className="flex min-h-[calc(100vh-57px)] items-center justify-center">
+        <div className="text-gray-400 animate-pulse">Loading…</div>
+      </main>
+    );
+  }
+
+  const filteredItems = gameItems.filter((it) => {
+    if (!itemSearch) return true;
+    const q = itemSearch.toLowerCase();
+    return it.slug.toLowerCase().includes(q) || itemName(it.data, it.slug).toLowerCase().includes(q);
+  });
+
+  const fmtWindow = (ev: EventRow) => {
+    const f = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+    return ev.end_at ? `${f.format(new Date(ev.start_at))} – ${f.format(new Date(ev.end_at))}` : `From ${f.format(new Date(ev.start_at))}`;
+  };
+
+  return (
+    <main className="max-w-6xl mx-auto px-6 py-10">
+      <div className="flex items-center gap-4 mb-2">
+        <Link href="/admin" className="text-gray-400 hover:text-white text-sm">← Admin</Link>
+      </div>
+      <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
+        <h1 className="text-3xl font-semibold">Manage Events</h1>
+        <div className="flex items-center gap-3">
+          <select
+            value={gameFilter}
+            onChange={(e) => setGameFilter(e.target.value)}
+            className="rounded-lg bg-gray-800 border border-gray-700 px-3 py-2 text-sm focus:outline-none focus:border-white"
+          >
+            <option value="">All games</option>
+            {games.map((g) => (
+              <option key={g.id} value={g.slug}>{g.name}</option>
+            ))}
+          </select>
+          <button
+            onClick={openCreate}
+            className="px-4 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-gray-200 transition"
+          >
+            + Add Event
+          </button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="space-y-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-14 rounded-xl bg-gray-800 animate-pulse" />
+          ))}
+        </div>
+      ) : events.length === 0 ? (
+        <p className="text-gray-400">No events yet. Add the first one.</p>
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-gray-800">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-800 bg-gray-900">
+                  <th className="text-left px-4 py-3 text-gray-400">Title</th>
+                  <th className="text-left px-4 py-3 text-gray-400">Game</th>
+                  <th className="text-left px-4 py-3 text-gray-400">Type</th>
+                  <th className="text-left px-4 py-3 text-gray-400">Window</th>
+                  <th className="text-left px-4 py-3 text-gray-400">Status</th>
+                  <th className="px-4 py-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((ev) => (
+                  <tr key={ev.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-900/50">
+                    <td className="px-4 py-3">
+                      {ev.title}
+                      {ev.featured_items.length > 0 && (
+                        <span className="text-gray-500"> · {ev.featured_items.length}★</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-gray-400">{ev.game_name}</td>
+                    <td className="px-4 py-3 text-gray-400">{ev.event_type}</td>
+                    <td className="px-4 py-3 text-gray-400 whitespace-nowrap">{fmtWindow(ev)}</td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs px-2 py-0.5 rounded ${ev.is_published ? "bg-green-900 text-green-300" : "bg-gray-800 text-gray-500"}`}>
+                        {ev.is_published ? "Published" : "Draft"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex gap-2 justify-end">
+                        <button onClick={() => openEdit(ev)} className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-white transition">Edit</button>
+                        <button onClick={() => setDeleteTarget(ev)} className="text-xs px-3 py-1 rounded border border-gray-700 hover:border-red-900 text-red-400 transition">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {error && !modal && <p className="text-red-400 text-sm mt-4">{error}</p>}
+
+      {modal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setModal(null)}>
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-[560px] space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <h2 className="font-semibold text-lg">{modal.mode === "create" ? "Add Event" : "Edit Event"}</h2>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-gray-400 block mb-1">Game</label>
+                <select
+                  value={form.game_id}
+                  onChange={(e) => onGameChange(e.target.value)}
+                  disabled={modal.mode === "edit"}
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white disabled:opacity-50"
+                >
+                  <option value="">Select game…</option>
+                  {games.map((g) => (
+                    <option key={g.id} value={g.id}>{g.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs text-gray-400 block mb-1">Type</label>
+                <select
+                  value={form.event_type}
+                  onChange={(e) => setForm((f) => ({ ...f, event_type: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                >
+                  {EVENT_TYPES.map((ty) => (
+                    <option key={ty} value={ty}>{ty}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">Title</label>
+              <input
+                type="text"
+                value={form.title}
+                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                placeholder="e.g. Rate-Up: Hotaru"
+                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">Slug (unique per game)</label>
+              <input
+                type="text"
+                value={form.slug}
+                onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
+                placeholder="e.g. hotaru-rate-up-1"
+                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">Description</label>
+              <textarea
+                value={form.description}
+                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                placeholder="Optional"
+                rows={2}
+                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-gray-400 block mb-1">Starts</label>
+                <input
+                  type="datetime-local"
+                  value={form.start_at}
+                  onChange={(e) => setForm((f) => ({ ...f, start_at: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-400 block mb-1">Ends (optional)</label>
+                <input
+                  type="datetime-local"
+                  value={form.end_at}
+                  onChange={(e) => setForm((f) => ({ ...f, end_at: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                />
+              </div>
+            </div>
+            <p className="text-[11px] text-gray-500 -mt-2">
+              Times are entered in your local timezone and stored as UTC. Set the region below for the server-reset label shown to users.
+            </p>
+
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">Server region / timezone</label>
+              <input
+                type="text"
+                list="tz-list"
+                value={form.timezone}
+                onChange={(e) => setForm((f) => ({ ...f, timezone: e.target.value }))}
+                placeholder="UTC"
+                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+              />
+              <datalist id="tz-list">
+                {COMMON_TZ.map((tz) => (
+                  <option key={tz} value={tz} />
+                ))}
+              </datalist>
+            </div>
+
+            <ImageUploadField
+              label="Banner image"
+              value={form.image_url}
+              onChange={(url) => setForm((f) => ({ ...f, image_url: url }))}
+              placeholder="https://… or upload →"
+              previewHeight="h-24"
+            />
+
+            {/* Featured items picker */}
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">
+                Featured items {form.featuredIds.length > 0 && `(${form.featuredIds.length})`}
+              </label>
+              {!form.game_id ? (
+                <p className="text-xs text-gray-500">Select a game to pick featured items.</p>
+              ) : itemsLoading ? (
+                <p className="text-xs text-gray-500">Loading items…</p>
+              ) : gameItems.length === 0 ? (
+                <p className="text-xs text-gray-500">This game has no items yet.</p>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    value={itemSearch}
+                    onChange={(e) => setItemSearch(e.target.value)}
+                    placeholder="Search items…"
+                    className="w-full px-3 py-2 mb-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                  />
+                  <div className="max-h-40 overflow-y-auto rounded-lg border border-gray-800 divide-y divide-gray-800">
+                    {filteredItems.map((it) => (
+                      <label key={it.id} className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-gray-800/60">
+                        <input
+                          type="checkbox"
+                          checked={form.featuredIds.includes(it.id)}
+                          onChange={() => toggleFeatured(it.id)}
+                        />
+                        <span>{itemName(it.data, it.slug)}</span>
+                        <span className="text-gray-500 font-mono text-xs">{it.slug}</span>
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.is_published}
+                onChange={(e) => setForm((f) => ({ ...f, is_published: e.target.checked }))}
+              />
+              Published (visible on calendars)
+            </label>
+
+            {error && <p className="text-red-400 text-sm">{error}</p>}
+
+            <div className="flex gap-3 pt-1">
+              <button onClick={save} disabled={saving} className="flex-1 py-2 rounded-lg bg-white text-black text-sm font-semibold hover:bg-gray-200 transition disabled:opacity-50">
+                {saving ? "Saving…" : modal.mode === "create" ? "Create" : "Save"}
+              </button>
+              <button onClick={() => setModal(null)} className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete event"
+        description={`Delete "${deleteTarget?.title}"? This cannot be undone.`}
+        confirmLabel="Delete"
+        destructive
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
+    </main>
+  );
+}

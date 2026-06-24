@@ -88,6 +88,7 @@
     "tabs": {
       "overview": "Overview",
       "sections": "Sections",
+      "calendar": "Calendar",
       "tierlists": "Tier Lists",
       "collection": "Collection"
     },
@@ -102,6 +103,41 @@
       "signInDesc": "Mark what you own, set levels, see completion at a glance — and it syncs across devices.",
       "summary": "{owned} of {total} owned",
       "empty": "You haven't added anything from this game yet. Open any character to add it."
+    }
+  },
+  "calendar": {
+    "title": "Calendar",
+    "subtitle": "Banners, events and version updates across every game.",
+    "empty": "No events to show.",
+    "failedToLoad": "Failed to load events.",
+    "activeNow": "Active now",
+    "upcoming": "Upcoming",
+    "ended": "Ended",
+    "ongoing": "Ongoing",
+    "startsRel": "Starts {rel}",
+    "endsRel": "Ends {rel}",
+    "allGames": "All games",
+    "allTypes": "All types",
+    "filterGame": "Filter by game",
+    "filterType": "Filter by type",
+    "myCalendar": "Your calendar",
+    "manageTracked": "Manage tracked games",
+    "trackedTitle": "Tracked games",
+    "trackedSubtitle": "Follow the games you play to build your personal calendar, and pick which event types you care about.",
+    "noFollows": "Follow your games to see their banners and events here.",
+    "trackCTA": "Choose games to track",
+    "follow": "Follow",
+    "following": "Following",
+    "signInToTrack": "Sign in to track games and build your calendar.",
+    "scope": {
+      "current": "Current & upcoming",
+      "past": "Past"
+    },
+    "types": {
+      "banner": "Banner",
+      "version": "Version",
+      "limited_event": "Event",
+      "maintenance": "Maintenance"
     }
   },
   "items": {

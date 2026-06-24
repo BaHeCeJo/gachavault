@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { getHomePageBundle, SITE_URL } from "@/lib/seo";
 import { SafeImage } from "@/components/SafeImage";
 import HomeSearchForm from "@/components/HomeSearchForm";
+import HomeCalendarWidget from "@/components/HomeCalendarWidget";
 import { cardGradient } from "@/lib/theme";
 
 function FeatureCard({ title, description, icon }: { title: string; description: string; icon: React.ReactNode }) {
@@ -103,6 +104,9 @@ export default async function HomePage() {
         </div>
         <p className="relative text-xs text-gray-400 mt-3 max-w-md">{t("createAccountHint")}</p>
       </section>
+
+      {/* Personalized calendar — only renders for signed-in users. */}
+      <HomeCalendarWidget />
 
       {/* Tracked games grid with counts */}
       {featured.length > 0 && (

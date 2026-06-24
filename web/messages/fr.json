@@ -88,6 +88,7 @@
     "tabs": {
       "overview": "Vue d'ensemble",
       "sections": "Sections",
+      "calendar": "Calendrier",
       "tierlists": "Tier Lists",
       "collection": "Collection"
     },
@@ -102,6 +103,41 @@
       "signInDesc": "Marquez ce que vous possédez, indiquez les niveaux, visualisez votre progression — synchronisé sur tous vos appareils.",
       "summary": "{owned} sur {total} possédés",
       "empty": "Vous n'avez encore rien ajouté pour ce jeu. Ouvrez un personnage pour l'ajouter."
+    }
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "subtitle": "Bannières, événements et mises à jour de version sur tous les jeux.",
+    "empty": "Aucun événement à afficher.",
+    "failedToLoad": "Échec du chargement des événements.",
+    "activeNow": "En cours",
+    "upcoming": "À venir",
+    "ended": "Terminé",
+    "ongoing": "En cours",
+    "startsRel": "Commence {rel}",
+    "endsRel": "Se termine {rel}",
+    "allGames": "Tous les jeux",
+    "allTypes": "Tous les types",
+    "filterGame": "Filtrer par jeu",
+    "filterType": "Filtrer par type",
+    "myCalendar": "Votre calendrier",
+    "manageTracked": "Gérer les jeux suivis",
+    "trackedTitle": "Jeux suivis",
+    "trackedSubtitle": "Suivez les jeux auxquels vous jouez pour composer votre calendrier personnel, et choisissez les types d'événements qui vous intéressent.",
+    "noFollows": "Suivez vos jeux pour voir ici leurs bannières et événements.",
+    "trackCTA": "Choisir des jeux à suivre",
+    "follow": "Suivre",
+    "following": "Suivi",
+    "signInToTrack": "Connectez-vous pour suivre des jeux et composer votre calendrier.",
+    "scope": {
+      "current": "En cours et à venir",
+      "past": "Passés"
+    },
+    "types": {
+      "banner": "Bannière",
+      "version": "Version",
+      "limited_event": "Événement",
+      "maintenance": "Maintenance"
     }
   },
   "items": {

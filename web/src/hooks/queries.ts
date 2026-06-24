@@ -9,6 +9,8 @@ import {
   usersApi,
   adminApi,
   authApi,
+  eventsApi,
+  type EventsQueryParams,
 } from "@/lib/api";
 
 // ── Games ────────────────────────────────────────────────────────────────────
@@ -170,6 +172,63 @@ export const useSearch = (
     queryFn: () => searchApi.search(q, params).then((r) => r.data.data),
     enabled: q.length > 0,
   });
+
+// ── Events / Calendar ──────────────────────────────────────────────────────────
+
+export const useEvents = (params?: Omit<EventsQueryParams, "locale">, locale?: string) =>
+  useQuery({
+    queryKey: ["events", params, locale],
+    queryFn: () => eventsApi.list({ ...params, ...(locale ? { locale } : {}) }).then((r) => r.data.data),
+  });
+
+export const useEvent = (id: string, locale?: string) =>
+  useQuery({
+    queryKey: ["event", id, locale],
+    queryFn: () => eventsApi.get(id, locale).then((r) => r.data.data),
+    enabled: !!id,
+  });
+
+export const useMyCalendar = (
+  params?: Omit<EventsQueryParams, "game" | "game_id" | "locale">,
+  locale?: string,
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["my-calendar", params, locale],
+    queryFn: () =>
+      eventsApi.myCalendar({ ...params, ...(locale ? { locale } : {}) }).then((r) => r.data.data),
+    enabled,
+  });
+
+export const useEventFollows = (enabled = true) =>
+  useQuery({
+    queryKey: ["event-follows"],
+    queryFn: () => eventsApi.listFollows().then((r) => r.data.data),
+    enabled,
+  });
+
+export const useUpsertFollow = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ gameId, eventTypes }: { gameId: string; eventTypes: string[] | null }) =>
+      eventsApi.upsertFollow(gameId, { event_types: eventTypes }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["event-follows"] });
+      qc.invalidateQueries({ queryKey: ["my-calendar"] });
+    },
+  });
+};
+
+export const useDeleteFollow = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (gameId: string) => eventsApi.deleteFollow(gameId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["event-follows"] });
+      qc.invalidateQueries({ queryKey: ["my-calendar"] });
+    },
+  });
+};
 
 // ── Media ────────────────────────────────────────────────────────────────────
 

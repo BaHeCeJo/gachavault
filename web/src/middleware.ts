@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PROTECTED_ROUTES = ["/admin", "/profile", "/collections", "/tierlists"];
+const PROTECTED_ROUTES = ["/admin", "/profile", "/collections", "/tierlists", "/calendar/tracked"];
 const PUBLIC_OVERRIDES = ["/tierlists/share"];
 const ADMIN_ROLES = new Set(["admin", "superadmin"]);
 

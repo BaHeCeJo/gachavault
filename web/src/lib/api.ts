@@ -168,6 +168,42 @@ export const searchApi = {
     api.get("/search", { params: { q, ...params } }),
 };
 
+export interface EventsQueryParams {
+  game?: string;
+  game_id?: string;
+  event_type?: string;
+  status?: string;
+  from?: string;
+  to?: string;
+  locale?: string;
+  // Admin-only: include unpublished/draft events in the listing.
+  include_unpublished?: boolean;
+}
+
+export const eventsApi = {
+  list: (params?: EventsQueryParams) => api.get("/events", { params }),
+  get: (id: string, locale?: string) =>
+    api.get(`/events/${id}`, { params: locale ? { locale } : {} }),
+  // Personalized calendar — events for the games the signed-in user follows.
+  myCalendar: (params?: Omit<EventsQueryParams, "game" | "game_id">) =>
+    api.get("/events/my-calendar", { params }),
+  // Per-user game follows (the personalized-calendar drivers).
+  listFollows: () => api.get("/events/follows"),
+  upsertFollow: (gameId: string, data: { event_types: string[] | null }) =>
+    api.put(`/events/follows/${gameId}`, data),
+  deleteFollow: (gameId: string) => api.delete(`/events/follows/${gameId}`),
+  // Admin authoring.
+  create: (data: object) => api.post("/events", data),
+  update: (id: string, data: object) => api.put(`/events/${id}`, data),
+  delete: (id: string) => api.delete(`/events/${id}`),
+  setItems: (id: string, items: object[]) => api.put(`/events/${id}/items`, { items }),
+  listTranslations: (id: string) => api.get(`/events/${id}/translations`),
+  upsertTranslation: (id: string, locale: string, data: { title: string; description?: string }) =>
+    api.put(`/events/${id}/translations/${locale}`, data),
+  deleteTranslation: (id: string, locale: string) =>
+    api.delete(`/events/${id}/translations/${locale}`),
+};
+
 export const mediaApi = {
   list: () => api.get("/media"),
   get: (id: string) => api.get(`/media/${id}`),
