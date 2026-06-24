@@ -9,6 +9,7 @@ members = [
     "services/media-service",
     "services/search-service",
     "services/notifications-service",
+    "services/events-service",
     "crates/shared-types",
     "crates/shared-auth",
     "crates/shared-errors",

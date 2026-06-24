@@ -1,0 +1,489 @@
+use axum::{
+    extract::{Path, Query, State},
+    Json,
+};
+use chrono::{DateTime, Utc};
+use serde::Deserialize;
+use shared_auth::{AuthUser, OptionalAuthUser};
+use shared_errors::{AppError, AppResult};
+use shared_types::ApiResponse;
+use sqlx::PgPool;
+use uuid::Uuid;
+
+use crate::db;
+use crate::models::*;
+
+#[derive(Debug, Deserialize)]
+pub struct EventsQuery {
+    /// Filter to a single game by slug (resolved to an id) ...
+    pub game: Option<String>,
+    /// ... or directly by id.
+    pub game_id: Option<Uuid>,
+    pub event_type: Option<String>,
+    pub status: Option<String>,
+    pub from: Option<DateTime<Utc>>,
+    pub to: Option<DateTime<Utc>>,
+    pub locale: Option<String>,
+    /// Admin-only: include unpublished/draft events in the listing.
+    pub include_unpublished: Option<bool>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CalendarQuery {
+    pub event_type: Option<String>,
+    pub status: Option<String>,
+    pub from: Option<DateTime<Utc>>,
+    pub to: Option<DateTime<Utc>>,
+    pub locale: Option<String>,
+}
+
+// ── Public calendar ──────────────────────────────────────────────────────────
+
+pub async fn list_events(
+    State(pool): State<PgPool>,
+    auth: OptionalAuthUser,
+    Query(q): Query<EventsQuery>,
+) -> AppResult<Json<ApiResponse<Vec<serde_json::Value>>>> {
+    // Resolve a game slug to an id when one was supplied (id takes precedence).
+    let game_id = match (q.game_id, q.game.as_deref()) {
+        (Some(id), _) => Some(id),
+        (None, Some(slug)) => db::resolve_game_id(&pool, slug)
+            .await
+            .map_err(AppError::Database)?,
+        (None, None) => None,
+    };
+    // If a slug was given but matched no game, the calendar is simply empty.
+    if q.game.is_some() && game_id.is_none() {
+        return Ok(Json(ApiResponse::success(vec![])));
+    }
+
+    let is_admin = matches!(&auth.0, Some(c) if c.role == shared_auth::ROLE_ADMIN || c.role == shared_auth::ROLE_SUPERADMIN);
+    let include_unpublished = is_admin && q.include_unpublished.unwrap_or(false);
+
+    let filter = EventFilter {
+        game_id,
+        event_type: q.event_type.clone(),
+        status: q.status.clone(),
+        from: q.from,
+        to: q.to,
+    };
+
+    let events = db::list_events(&pool, &filter, include_unpublished)
+        .await
+        .map_err(AppError::Database)?;
+
+    let locale = q.locale.as_deref().unwrap_or("en");
+    let rendered = render_events(&pool, events, locale).await?;
+    Ok(Json(ApiResponse::success(rendered)))
+}
+
+pub async fn get_event(
+    State(pool): State<PgPool>,
+    Path(id): Path<Uuid>,
+    Query(q): Query<EventsQuery>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    let event = db::find_event(&pool, id)
+        .await
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("Event not found".into()))?;
+
+    let locale = q.locale.as_deref().unwrap_or("en");
+    let mut rendered = render_events(&pool, vec![event], locale).await?;
+    Ok(Json(ApiResponse::success(rendered.remove(0))))
+}
+
+// ── Personalized calendar (auth) ─────────────────────────────────────────────
+
+pub async fn my_calendar(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Query(q): Query<CalendarQuery>,
+) -> AppResult<Json<ApiResponse<Vec<serde_json::Value>>>> {
+    let filter = EventFilter {
+        game_id: None,
+        event_type: q.event_type.clone(),
+        status: q.status.clone(),
+        from: q.from,
+        to: q.to,
+    };
+    let events = db::list_my_calendar(&pool, auth.id(), &filter)
+        .await
+        .map_err(AppError::Database)?;
+
+    let locale = q.locale.as_deref().unwrap_or("en");
+    let rendered = render_events(&pool, events, locale).await?;
+    Ok(Json(ApiResponse::success(rendered)))
+}
+
+// ── Follows (auth) ───────────────────────────────────────────────────────────
+
+pub async fn list_follows(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+) -> AppResult<Json<ApiResponse<Vec<serde_json::Value>>>> {
+    let follows = db::list_follows(&pool, auth.id())
+        .await
+        .map_err(AppError::Database)?;
+
+    let game_ids: Vec<Uuid> = follows.iter().map(|f| f.game_id).collect();
+    let games = db::load_game_info(&pool, &game_ids)
+        .await
+        .map_err(AppError::Database)?;
+
+    let result: Vec<serde_json::Value> = follows
+        .into_iter()
+        .map(|f| {
+            let (slug, name) = games
+                .get(&f.game_id)
+                .cloned()
+                .unwrap_or_else(|| (String::new(), String::new()));
+            serde_json::json!({
+                "game_id": f.game_id,
+                "game_slug": slug,
+                "game_name": name,
+                "event_types": f.event_types,
+                "created_at": f.created_at,
+            })
+        })
+        .collect();
+    Ok(Json(ApiResponse::success(result)))
+}
+
+pub async fn upsert_follow(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(game_id): Path<Uuid>,
+    Json(body): Json<UpsertFollowRequest>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    if !db::game_exists(&pool, game_id)
+        .await
+        .map_err(AppError::Database)?
+    {
+        return Err(AppError::NotFound("Game not found".into()));
+    }
+
+    let follow = db::upsert_follow(&pool, auth.id(), game_id, body.event_types.as_deref())
+        .await
+        .map_err(AppError::Database)?;
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "game_id": follow.game_id,
+        "event_types": follow.event_types,
+        "created_at": follow.created_at,
+    }))))
+}
+
+pub async fn delete_follow(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(game_id): Path<Uuid>,
+) -> AppResult<Json<ApiResponse<()>>> {
+    let removed = db::delete_follow(&pool, auth.id(), game_id)
+        .await
+        .map_err(AppError::Database)?;
+    if !removed {
+        return Err(AppError::NotFound("You are not following this game".into()));
+    }
+    Ok(Json(ApiResponse::success(())))
+}
+
+// ── Admin authoring ──────────────────────────────────────────────────────────
+
+pub async fn create_event(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Json(body): Json<CreateEventRequest>,
+) -> AppResult<Json<ApiResponse<DbEvent>>> {
+    ensure_admin(&auth)?;
+    validate_event_fields(&body.slug, &body.title, body.start_at, body.end_at)?;
+
+    if !db::game_exists(&pool, body.game_id)
+        .await
+        .map_err(AppError::Database)?
+    {
+        return Err(AppError::NotFound("Game not found".into()));
+    }
+
+    let event = db::create_event(&pool, auth.id(), &body)
+        .await
+        .map_err(|e| {
+            let msg = format!(
+                "An event with slug '{}' already exists for this game",
+                body.slug
+            );
+            shared_errors::map_unique_violation(e, &[("events_game_id_slug_key", &msg)])
+        })?;
+
+    Ok(Json(ApiResponse::success(event)))
+}
+
+pub async fn update_event(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(id): Path<Uuid>,
+    Json(body): Json<UpdateEventRequest>,
+) -> AppResult<Json<ApiResponse<DbEvent>>> {
+    ensure_admin(&auth)?;
+
+    if let (Some(start), Some(end)) = (body.start_at, body.end_at) {
+        if end < start {
+            return Err(AppError::BadRequest("end_at must be after start_at".into()));
+        }
+    }
+
+    let event = db::update_event(&pool, id, &body)
+        .await
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("Event not found".into()))?;
+
+    Ok(Json(ApiResponse::success(event)))
+}
+
+pub async fn delete_event(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(id): Path<Uuid>,
+) -> AppResult<Json<ApiResponse<()>>> {
+    ensure_admin(&auth)?;
+    let removed = db::delete_event(&pool, id)
+        .await
+        .map_err(AppError::Database)?;
+    if !removed {
+        return Err(AppError::NotFound("Event not found".into()));
+    }
+    Ok(Json(ApiResponse::success(())))
+}
+
+pub async fn set_event_items(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(id): Path<Uuid>,
+    Json(body): Json<SetEventItemsRequest>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    ensure_admin(&auth)?;
+
+    // 404 rather than a foreign-key error if the event doesn't exist.
+    if db::find_event(&pool, id)
+        .await
+        .map_err(AppError::Database)?
+        .is_none()
+    {
+        return Err(AppError::NotFound("Event not found".into()));
+    }
+
+    db::replace_event_items(&pool, id, &body.items)
+        .await
+        .map_err(|e| {
+            // An item_id that doesn't exist trips the cross-schema FK.
+            shared_errors::map_unique_violation(
+                e,
+                &[("event_items_item_id_fkey", "One or more items do not exist")],
+            )
+        })?;
+
+    let featured = db::load_featured_items(&pool, &[id])
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "event_id": id,
+        "featured_items": featured.get(&id).cloned().unwrap_or_default(),
+    }))))
+}
+
+// ── Event translations (admin) ───────────────────────────────────────────────
+
+#[derive(Debug, Deserialize)]
+pub struct UpsertEventTranslationRequest {
+    pub title: String,
+    pub description: Option<String>,
+}
+
+pub async fn list_event_translations(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(id): Path<Uuid>,
+) -> AppResult<Json<ApiResponse<Vec<serde_json::Value>>>> {
+    ensure_admin(&auth)?;
+
+    let rows: Vec<(String, String, Option<String>, DateTime<Utc>)> = sqlx::query_as(
+        "SELECT locale, title, description, updated_at \
+         FROM events.event_translations WHERE event_id = $1 ORDER BY locale",
+    )
+    .bind(id)
+    .fetch_all(&pool)
+    .await
+    .map_err(AppError::Database)?;
+
+    let translations: Vec<serde_json::Value> = rows
+        .into_iter()
+        .map(|(locale, title, description, updated_at)| {
+            serde_json::json!({
+                "locale": locale,
+                "title": title,
+                "description": description,
+                "updated_at": updated_at,
+            })
+        })
+        .collect();
+    Ok(Json(ApiResponse::success(translations)))
+}
+
+pub async fn upsert_event_translation(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path((id, locale)): Path<(Uuid, String)>,
+    Json(body): Json<UpsertEventTranslationRequest>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    ensure_admin(&auth)?;
+
+    if body.title.is_empty() {
+        return Err(AppError::BadRequest("title is required".into()));
+    }
+    if locale == "en" {
+        return Err(AppError::BadRequest(
+            "Use the event update endpoint to edit English content".into(),
+        ));
+    }
+
+    sqlx::query(
+        "INSERT INTO events.event_translations (event_id, locale, title, description) \
+         VALUES ($1, $2, $3, $4) \
+         ON CONFLICT (event_id, locale) DO UPDATE \
+           SET title = EXCLUDED.title, description = EXCLUDED.description, updated_at = NOW()",
+    )
+    .bind(id)
+    .bind(&locale)
+    .bind(&body.title)
+    .bind(body.description.as_deref())
+    .execute(&pool)
+    .await
+    .map_err(AppError::Database)?;
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "event_id": id,
+        "locale": locale,
+        "title": body.title,
+        "description": body.description,
+    }))))
+}
+
+pub async fn delete_event_translation(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path((id, locale)): Path<(Uuid, String)>,
+) -> AppResult<Json<ApiResponse<()>>> {
+    ensure_admin(&auth)?;
+
+    let result =
+        sqlx::query("DELETE FROM events.event_translations WHERE event_id = $1 AND locale = $2")
+            .bind(id)
+            .bind(&locale)
+            .execute(&pool)
+            .await
+            .map_err(AppError::Database)?;
+
+    if result.rows_affected() == 0 {
+        return Err(AppError::NotFound(format!(
+            "No '{}' translation found for this event",
+            locale
+        )));
+    }
+    Ok(Json(ApiResponse::success(())))
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+/// Enrich a set of events with their game info, featured items and (for
+/// non-English locales) translated title/description, then render the public
+/// JSON shape. Batch-loads each side table in a single query to avoid N+1.
+async fn render_events(
+    pool: &PgPool,
+    events: Vec<DbEvent>,
+    locale: &str,
+) -> AppResult<Vec<serde_json::Value>> {
+    if events.is_empty() {
+        return Ok(vec![]);
+    }
+
+    let event_ids: Vec<Uuid> = events.iter().map(|e| e.id).collect();
+    let game_ids: Vec<Uuid> = events.iter().map(|e| e.game_id).collect();
+
+    let games = db::load_game_info(pool, &game_ids)
+        .await
+        .map_err(AppError::Database)?;
+    let mut featured = db::load_featured_items(pool, &event_ids)
+        .await
+        .map_err(AppError::Database)?;
+    let translations = if locale != "en" {
+        db::load_event_translations(pool, &event_ids, locale)
+            .await
+            .map_err(AppError::Database)?
+    } else {
+        std::collections::HashMap::new()
+    };
+
+    let result = events
+        .into_iter()
+        .map(|event| {
+            let (game_slug, game_name) = games
+                .get(&event.game_id)
+                .cloned()
+                .unwrap_or_else(|| (String::new(), String::new()));
+            let items = featured.remove(&event.id).unwrap_or_default();
+            let (title, description) = match translations.get(&event.id) {
+                Some((t_title, t_desc)) => (t_title.clone(), t_desc.clone().or(event.description)),
+                None => (event.title, event.description),
+            };
+            serde_json::json!({
+                "id": event.id,
+                "game_id": event.game_id,
+                "game_slug": game_slug,
+                "game_name": game_name,
+                "event_type": event.event_type,
+                "slug": event.slug,
+                "title": title,
+                "description": description,
+                "image_url": event.image_url,
+                "start_at": event.start_at,
+                "end_at": event.end_at,
+                "timezone": event.timezone,
+                "data": event.data,
+                "is_published": event.is_published,
+                "featured_items": items,
+                "created_at": event.created_at,
+                "updated_at": event.updated_at,
+            })
+        })
+        .collect();
+    Ok(result)
+}
+
+fn validate_event_fields(
+    slug: &str,
+    title: &str,
+    start_at: DateTime<Utc>,
+    end_at: Option<DateTime<Utc>>,
+) -> AppResult<()> {
+    if slug.is_empty() || title.is_empty() {
+        return Err(AppError::BadRequest("slug and title are required".into()));
+    }
+    if !slug.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
+        return Err(AppError::BadRequest(
+            "slug must only contain letters, numbers, and hyphens".into(),
+        ));
+    }
+    if let Some(end) = end_at {
+        if end < start_at {
+            return Err(AppError::BadRequest("end_at must be after start_at".into()));
+        }
+    }
+    Ok(())
+}
+
+fn ensure_admin(auth: &AuthUser) -> AppResult<()> {
+    if auth.is_admin() {
+        Ok(())
+    } else {
+        Err(AppError::Forbidden("Admin role required".into()))
+    }
+}
