@@ -29,6 +29,7 @@ struct AppState {
     tierlists_url: String,
     media_url: String,
     search_url: String,
+    events_url: String,
     users_url: String,
     jwt_secret: String,
     redis_client: Option<Arc<redis::Client>>,
@@ -70,6 +71,7 @@ async fn main() {
             .expect("TIERLISTS_SERVICE_URL required"),
         media_url: std::env::var("MEDIA_SERVICE_URL").expect("MEDIA_SERVICE_URL required"),
         search_url: std::env::var("SEARCH_SERVICE_URL").expect("SEARCH_SERVICE_URL required"),
+        events_url: std::env::var("EVENTS_SERVICE_URL").expect("EVENTS_SERVICE_URL required"),
         jwt_secret,
         redis_client,
         allowed_origins: Arc::new(allowed_origin_strings),
@@ -115,6 +117,7 @@ async fn main() {
         .route("/api/v1/tierlists", any(proxy_tierlists))
         .route("/api/v1/media", any(proxy_media))
         .route("/api/v1/search", any(proxy_search))
+        .route("/api/v1/events", any(proxy_events))
         .route("/api/v1/users", any(proxy_users))
         // Wildcard routes (with path segments)
         .route("/api/v1/auth/*path", any(proxy_auth))
@@ -124,6 +127,7 @@ async fn main() {
         .route("/api/v1/tierlists/*path", any(proxy_tierlists))
         .route("/api/v1/media/*path", any(proxy_media))
         .route("/api/v1/search/*path", any(proxy_search))
+        .route("/api/v1/events/*path", any(proxy_events))
         .route("/api/v1/users/*path", any(proxy_users))
         .merge(admin_router)
         .layer(middleware::from_fn_with_state(
@@ -272,6 +276,12 @@ async fn proxy_search(
     req: axum::extract::Request,
 ) -> Result<Response, StatusCode> {
     proxy_request(&s, &s.search_url.clone(), req).await
+}
+async fn proxy_events(
+    State(s): State<AppState>,
+    req: axum::extract::Request,
+) -> Result<Response, StatusCode> {
+    proxy_request(&s, &s.events_url.clone(), req).await
 }
 async fn proxy_users(
     State(s): State<AppState>,

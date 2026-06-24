@@ -53,7 +53,7 @@ jobs:
             exit 0
           fi
 
-          PACKAGES="api-gateway auth-service games-service items-service collections-service tierlists-service media-service search-service notifications-service web"
+          PACKAGES="api-gateway auth-service games-service items-service collections-service tierlists-service media-service search-service notifications-service events-service web"
 
           {
             echo "## GHCR cleanup"

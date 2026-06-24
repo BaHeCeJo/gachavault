@@ -13,6 +13,7 @@ $services = @(
     "tierlists-service",
     "media-service",
     "search-service",
+    "events-service",
     "api-gateway",
     "web"
 )

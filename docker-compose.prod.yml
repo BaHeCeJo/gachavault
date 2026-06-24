@@ -86,6 +86,7 @@ services:
       MEDIA_SERVICE_URL: http://media-service:3006
       SEARCH_SERVICE_URL: http://search-service:3007
       NOTIFICATIONS_SERVICE_URL: http://notifications-service:3008
+      EVENTS_SERVICE_URL: http://events-service:3010
     secrets:
       - jwt_secret
       - redis_url
@@ -106,6 +107,8 @@ services:
         condition: service_healthy
       search-service:
         condition: service_started
+      events-service:
+        condition: service_healthy
     networks:
       - internal
       - external
@@ -342,6 +345,37 @@ services:
     secrets:
       - smtp_password
       - internal_secret
+    networks:
+      - internal
+
+  events-service:
+    image: ghcr.io/${GHCR_OWNER}/gachavault-events-service:${IMAGE_TAG:-latest}
+    restart: always
+    environment:
+      PORT: 3010
+      RUST_LOG: info
+      DATABASE_URL_FILE: /run/secrets/database_url
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    secrets:
+      - database_url
+      - jwt_secret
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/3010' 2>/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # Boot after games/auth/items so the conditional cross-schema FK migration
+    # finds its referent tables (events → games, items, auth.users).
+    depends_on:
+      postgres:
+        condition: service_healthy
+      games-service:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
+      items-service:
+        condition: service_healthy
     networks:
       - internal
 

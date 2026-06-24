@@ -283,7 +283,7 @@ docker compose -f docker-compose.prod.yml exec db-backup \
 # 2. Stop services that write to the DB
 docker compose -f docker-compose.prod.yml stop \
   auth-service games-service items-service collections-service \
-  tierlists-service media-service notifications-service
+  tierlists-service media-service notifications-service events-service
 
 # 3. Restore (replace TIMESTAMP)
 docker compose -f docker-compose.prod.yml exec -T postgres \

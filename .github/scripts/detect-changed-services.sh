@@ -19,7 +19,7 @@
 # minutes; under-building ships a stale image silently — the worse failure.
 set -euo pipefail
 
-ALL_RUST="api-gateway auth-service games-service items-service collections-service tierlists-service media-service search-service notifications-service"
+ALL_RUST="api-gateway auth-service games-service items-service collections-service tierlists-service media-service search-service notifications-service events-service"
 
 emit() {
   echo "changed_services=$1" >> "$GITHUB_OUTPUT"

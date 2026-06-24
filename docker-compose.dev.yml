@@ -65,6 +65,7 @@ services:
       MEDIA_SERVICE_URL: http://media-service:3006
       SEARCH_SERVICE_URL: http://search-service:3007
       NOTIFICATIONS_SERVICE_URL: http://notifications-service:3008
+      EVENTS_SERVICE_URL: http://events-service:3010
     depends_on:
       redis:
         condition: service_healthy
@@ -81,6 +82,8 @@ services:
       media-service:
         condition: service_started
       search-service:
+        condition: service_started
+      events-service:
         condition: service_started
 
   auth-service:
@@ -225,6 +228,21 @@ services:
       FROM_EMAIL: ${FROM_EMAIL:-noreply@gachavault.com}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3009}
       INTERNAL_SECRET: ${INTERNAL_SECRET}
+
+  events-service:
+    build:
+      context: .
+      dockerfile: services/events-service/Dockerfile
+    ports:
+      - "3010:3010"
+    environment:
+      PORT: 3010
+      RUST_LOG: info
+      DATABASE_URL: postgres://gachavault:${POSTGRES_PASSWORD}@postgres:5432/gachavault
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   web:
     build:

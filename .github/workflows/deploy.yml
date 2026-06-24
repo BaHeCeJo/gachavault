@@ -80,6 +80,8 @@ jobs:
             dockerfile: services/search-service/Dockerfile
           - name: notifications-service
             dockerfile: services/notifications-service/Dockerfile
+          - name: events-service
+            dockerfile: services/events-service/Dockerfile
           - name: web
             dockerfile: web/Dockerfile
 
@@ -226,7 +228,7 @@ jobs:
             # already on the VPS and rarely change; the `up -d` below re-pulls
             # any that are genuinely missing (compose pull policy "missing").
             # Keep APP_SERVICES in sync with the health gate / rollback below.
-            APP_SERVICES="api-gateway auth-service games-service items-service collections-service tierlists-service media-service search-service notifications-service web"
+            APP_SERVICES="api-gateway auth-service games-service items-service collections-service tierlists-service media-service search-service notifications-service events-service web"
             GHCR_OWNER=$GHCR_OWNER IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.prod.yml pull $APP_SERVICES
             GHCR_OWNER=$GHCR_OWNER IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
