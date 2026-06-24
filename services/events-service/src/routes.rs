@@ -111,7 +111,26 @@ pub async fn my_calendar(
         .map_err(AppError::Database)?;
 
     let locale = q.locale.as_deref().unwrap_or("en");
-    let rendered = render_events(&pool, events, locale).await?;
+    let mut rendered = render_events(&pool, events, locale).await?;
+
+    // Stamp each event with the user's chosen home server for its game, so the
+    // frontend shows that server's window/countdown as the primary one.
+    let server_by_game: std::collections::HashMap<String, String> =
+        db::list_follows(&pool, auth.id())
+            .await
+            .map_err(AppError::Database)?
+            .into_iter()
+            .filter_map(|f| f.server.map(|s| (f.game_id.to_string(), s)))
+            .collect();
+    if !server_by_game.is_empty() {
+        for ev in rendered.iter_mut() {
+            if let Some(gid) = ev.get("game_id").and_then(|v| v.as_str()) {
+                if let Some(server) = server_by_game.get(gid) {
+                    ev["your_server"] = serde_json::json!(server);
+                }
+            }
+        }
+    }
     Ok(Json(ApiResponse::success(rendered)))
 }
 
@@ -142,6 +161,7 @@ pub async fn list_follows(
                 "game_slug": slug,
                 "game_name": name,
                 "event_types": f.event_types,
+                "server": f.server,
                 "created_at": f.created_at,
             })
         })
@@ -162,13 +182,20 @@ pub async fn upsert_follow(
         return Err(AppError::NotFound("Game not found".into()));
     }
 
-    let follow = db::upsert_follow(&pool, auth.id(), game_id, body.event_types.as_deref())
-        .await
-        .map_err(AppError::Database)?;
+    let follow = db::upsert_follow(
+        &pool,
+        auth.id(),
+        game_id,
+        body.event_types.as_deref(),
+        body.server.as_deref(),
+    )
+    .await
+    .map_err(AppError::Database)?;
 
     Ok(Json(ApiResponse::success(serde_json::json!({
         "game_id": follow.game_id,
         "event_types": follow.event_types,
+        "server": follow.server,
         "created_at": follow.created_at,
     }))))
 }
@@ -287,6 +314,88 @@ pub async fn set_event_items(
     Ok(Json(ApiResponse::success(serde_json::json!({
         "event_id": id,
         "featured_items": featured.get(&id).cloned().unwrap_or_default(),
+    }))))
+}
+
+// ── Game servers ─────────────────────────────────────────────────────────────
+
+pub async fn list_game_servers(
+    State(pool): State<PgPool>,
+    Path(game_id): Path<Uuid>,
+) -> AppResult<Json<ApiResponse<Vec<DbGameServer>>>> {
+    let servers = db::list_game_servers(&pool, game_id)
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(servers)))
+}
+
+pub async fn set_game_servers(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(game_id): Path<Uuid>,
+    Json(body): Json<SetServersRequest>,
+) -> AppResult<Json<ApiResponse<Vec<DbGameServer>>>> {
+    ensure_admin(&auth)?;
+
+    let mut seen = std::collections::HashSet::new();
+    for s in &body.servers {
+        if s.key.is_empty() || s.name.is_empty() {
+            return Err(AppError::BadRequest(
+                "each server needs a key and a name".into(),
+            ));
+        }
+        if !s
+            .key
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+        {
+            return Err(AppError::BadRequest(
+                "server key may only contain letters, numbers, '-' and '_'".into(),
+            ));
+        }
+        if !seen.insert(s.key.as_str()) {
+            return Err(AppError::BadRequest(format!(
+                "duplicate server key '{}'",
+                s.key
+            )));
+        }
+    }
+
+    db::replace_game_servers(&pool, game_id, &body.servers)
+        .await
+        .map_err(AppError::Database)?;
+    let servers = db::list_game_servers(&pool, game_id)
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(servers)))
+}
+
+pub async fn set_event_server_times(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(id): Path<Uuid>,
+    Json(body): Json<SetServerTimesRequest>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    ensure_admin(&auth)?;
+
+    if db::find_event(&pool, id)
+        .await
+        .map_err(AppError::Database)?
+        .is_none()
+    {
+        return Err(AppError::NotFound("Event not found".into()));
+    }
+
+    db::replace_event_server_times(&pool, id, &body.times)
+        .await
+        .map_err(AppError::Database)?;
+
+    let times = db::load_event_server_times(&pool, &[id])
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "event_id": id,
+        "server_times": times.get(&id).cloned().unwrap_or_default(),
     }))))
 }
 
@@ -414,6 +523,9 @@ async fn render_events(
     let mut featured = db::load_featured_items(pool, &event_ids)
         .await
         .map_err(AppError::Database)?;
+    let mut server_times = db::load_event_server_times(pool, &event_ids)
+        .await
+        .map_err(AppError::Database)?;
     let translations = if locale != "en" {
         db::load_event_translations(pool, &event_ids, locale)
             .await
@@ -430,6 +542,7 @@ async fn render_events(
                 .cloned()
                 .unwrap_or_else(|| (String::new(), String::new()));
             let items = featured.remove(&event.id).unwrap_or_default();
+            let servers = server_times.remove(&event.id).unwrap_or_default();
             let (title, description) = match translations.get(&event.id) {
                 Some((t_title, t_desc)) => (t_title.clone(), t_desc.clone().or(event.description)),
                 None => (event.title, event.description),
@@ -450,6 +563,8 @@ async fn render_events(
                 "data": event.data,
                 "is_published": event.is_published,
                 "featured_items": items,
+                "server_times": servers,
+                "your_server": serde_json::Value::Null,
                 "created_at": event.created_at,
                 "updated_at": event.updated_at,
             })

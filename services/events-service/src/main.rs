@@ -31,6 +31,10 @@ async fn main() {
         // Static segments are registered before `/events/:id` — axum routes
         // these to the specific handler rather than the id param.
         .route("/api/v1/events/my-calendar", get(routes::my_calendar))
+        .route(
+            "/api/v1/events/servers/:game_id",
+            get(routes::list_game_servers).put(routes::set_game_servers),
+        )
         .route("/api/v1/events/follows", get(routes::list_follows))
         .route(
             "/api/v1/events/follows/:game_id",
@@ -43,6 +47,10 @@ async fn main() {
                 .delete(routes::delete_event),
         )
         .route("/api/v1/events/:id/items", put(routes::set_event_items))
+        .route(
+            "/api/v1/events/:id/server-times",
+            put(routes::set_event_server_times),
+        )
         .route(
             "/api/v1/events/:id/translations",
             get(routes::list_event_translations),

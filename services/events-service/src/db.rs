@@ -3,7 +3,10 @@ use std::collections::HashMap;
 use sqlx::{PgPool, Postgres, QueryBuilder};
 use uuid::Uuid;
 
-use crate::models::{CreateEventRequest, DbEvent, DbFollow, EventFilter, FeaturedItemInput};
+use crate::models::{
+    CreateEventRequest, DbEvent, DbFollow, DbGameServer, EventFilter, FeaturedItemInput,
+    GameServerInput, ServerTimeInput,
+};
 
 // Runtime query forms (not the `query_as!` macros) throughout this service, so
 // editing SQL never requires regenerating the `.sqlx` offline cache — the
@@ -77,7 +80,10 @@ pub async fn list_events(
 }
 
 /// Personalized calendar: published events for the games a user follows,
-/// honoring each follow's optional event-type filter.
+/// honoring each follow's optional event-type filter. The `from` cutoff is
+/// server-aware — an event still counts as relevant if it's ongoing on the
+/// primary time OR on any of its per-server windows, so a banner that already
+/// ended on Asia but not on America isn't dropped for an America player.
 pub async fn list_my_calendar(
     pool: &PgPool,
     user_id: Uuid,
@@ -90,7 +96,22 @@ pub async fn list_my_calendar(
     );
     qb.push_bind(user_id);
     qb.push(" AND (f.event_types IS NULL OR e.event_type = ANY(f.event_types))");
-    apply_filters(&mut qb, filter);
+    if let Some(ref t) = filter.event_type {
+        qb.push(" AND e.event_type = ").push_bind(t.clone());
+    }
+    if let Some(from) = filter.from {
+        qb.push(" AND (e.end_at IS NULL OR e.end_at >= ")
+            .push_bind(from)
+            .push(
+                " OR EXISTS (SELECT 1 FROM events.event_server_times est \
+                 WHERE est.event_id = e.id AND (est.end_at IS NULL OR est.end_at >= ",
+            )
+            .push_bind(from)
+            .push(")))");
+    }
+    if let Some(to) = filter.to {
+        qb.push(" AND e.start_at <= ").push_bind(to);
+    }
     qb.push(" ORDER BY e.start_at ASC");
     qb.build_query_as::<DbEvent>().fetch_all(pool).await
 }
@@ -133,6 +154,9 @@ pub async fn create_event(
 
     if let Some(items) = &body.featured_items {
         insert_event_items(&mut tx, event.id, items).await?;
+    }
+    if let Some(times) = &body.server_times {
+        insert_event_server_times(&mut tx, event.id, times).await?;
     }
 
     tx.commit().await?;
@@ -216,6 +240,137 @@ async fn insert_event_items(
         .await?;
     }
     Ok(())
+}
+
+/// Replace the full per-server time set of an event in one transaction.
+pub async fn replace_event_server_times(
+    pool: &PgPool,
+    event_id: Uuid,
+    times: &[ServerTimeInput],
+) -> Result<(), sqlx::Error> {
+    let mut tx = pool.begin().await?;
+    sqlx::query("DELETE FROM events.event_server_times WHERE event_id = $1")
+        .bind(event_id)
+        .execute(&mut *tx)
+        .await?;
+    insert_event_server_times(&mut tx, event_id, times).await?;
+    tx.commit().await
+}
+
+async fn insert_event_server_times(
+    tx: &mut sqlx::Transaction<'_, Postgres>,
+    event_id: Uuid,
+    times: &[ServerTimeInput],
+) -> Result<(), sqlx::Error> {
+    for t in times {
+        sqlx::query(
+            r#"INSERT INTO events.event_server_times (event_id, server_key, start_at, end_at)
+               VALUES ($1, $2, $3, $4)
+               ON CONFLICT (event_id, server_key) DO UPDATE
+                 SET start_at = EXCLUDED.start_at, end_at = EXCLUDED.end_at"#,
+        )
+        .bind(event_id)
+        .bind(&t.server_key)
+        .bind(t.start_at)
+        .bind(t.end_at)
+        .execute(&mut **tx)
+        .await?;
+    }
+    Ok(())
+}
+
+// (event_id, server_key, server_name, timezone, start_at, end_at)
+type ServerTimeRow = (
+    Uuid,
+    String,
+    Option<String>,
+    Option<String>,
+    chrono::DateTime<chrono::Utc>,
+    Option<chrono::DateTime<chrono::Utc>>,
+);
+
+/// Per-server time windows grouped by event id, joined to game_servers for the
+/// display name / timezone (left join so a removed server def still shows the
+/// raw key). Ordered by the server's sort_order.
+pub async fn load_event_server_times(
+    pool: &PgPool,
+    event_ids: &[Uuid],
+) -> Result<HashMap<Uuid, Vec<serde_json::Value>>, sqlx::Error> {
+    if event_ids.is_empty() {
+        return Ok(HashMap::new());
+    }
+    let rows: Vec<ServerTimeRow> = sqlx::query_as(
+        r#"SELECT est.event_id, est.server_key, gs.name, gs.timezone, est.start_at, est.end_at
+           FROM events.event_server_times est
+           JOIN events.events e ON e.id = est.event_id
+           LEFT JOIN events.game_servers gs ON gs.game_id = e.game_id AND gs.key = est.server_key
+           WHERE est.event_id = ANY($1)
+           ORDER BY est.event_id, COALESCE(gs.sort_order, 0) ASC, est.server_key"#,
+    )
+    .bind(event_ids)
+    .fetch_all(pool)
+    .await?;
+
+    let mut map: HashMap<Uuid, Vec<serde_json::Value>> = HashMap::new();
+    for (event_id, server_key, name, timezone, start_at, end_at) in rows {
+        map.entry(event_id).or_default().push(serde_json::json!({
+            "server_key": server_key,
+            "server_name": name.unwrap_or_else(|| server_key_title(&server_key)),
+            "timezone": timezone.unwrap_or_else(|| "UTC".to_string()),
+            "start_at": start_at,
+            "end_at": end_at,
+        }));
+    }
+    Ok(map)
+}
+
+fn server_key_title(key: &str) -> String {
+    let mut chars = key.chars();
+    match chars.next() {
+        Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+        None => String::new(),
+    }
+}
+
+// ── Game servers ─────────────────────────────────────────────────────────────
+
+pub async fn list_game_servers(
+    pool: &PgPool,
+    game_id: Uuid,
+) -> Result<Vec<DbGameServer>, sqlx::Error> {
+    sqlx::query_as::<_, DbGameServer>(
+        "SELECT * FROM events.game_servers WHERE game_id = $1 ORDER BY sort_order ASC, name ASC",
+    )
+    .bind(game_id)
+    .fetch_all(pool)
+    .await
+}
+
+/// Replace a game's full server list in one transaction.
+pub async fn replace_game_servers(
+    pool: &PgPool,
+    game_id: Uuid,
+    servers: &[GameServerInput],
+) -> Result<(), sqlx::Error> {
+    let mut tx = pool.begin().await?;
+    sqlx::query("DELETE FROM events.game_servers WHERE game_id = $1")
+        .bind(game_id)
+        .execute(&mut *tx)
+        .await?;
+    for (idx, s) in servers.iter().enumerate() {
+        sqlx::query(
+            "INSERT INTO events.game_servers (game_id, key, name, timezone, sort_order) \
+             VALUES ($1, $2, $3, $4, $5)",
+        )
+        .bind(game_id)
+        .bind(&s.key)
+        .bind(&s.name)
+        .bind(s.timezone.as_deref().unwrap_or("UTC"))
+        .bind(s.sort_order.unwrap_or(idx as i32))
+        .execute(&mut *tx)
+        .await?;
+    }
+    tx.commit().await
 }
 
 /// (slug, name) for each requested game id, for embedding in event responses.
@@ -309,16 +464,19 @@ pub async fn upsert_follow(
     user_id: Uuid,
     game_id: Uuid,
     event_types: Option<&[String]>,
+    server: Option<&str>,
 ) -> Result<DbFollow, sqlx::Error> {
     sqlx::query_as::<_, DbFollow>(
-        r#"INSERT INTO events.user_game_follows (user_id, game_id, event_types)
-           VALUES ($1, $2, $3)
-           ON CONFLICT (user_id, game_id) DO UPDATE SET event_types = EXCLUDED.event_types
+        r#"INSERT INTO events.user_game_follows (user_id, game_id, event_types, server)
+           VALUES ($1, $2, $3, $4)
+           ON CONFLICT (user_id, game_id) DO UPDATE
+             SET event_types = EXCLUDED.event_types, server = EXCLUDED.server
            RETURNING *"#,
     )
     .bind(user_id)
     .bind(game_id)
     .bind(event_types)
+    .bind(server)
     .fetch_one(pool)
     .await
 }
