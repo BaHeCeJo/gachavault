@@ -88,6 +88,30 @@ function itemName(data: Record<string, unknown>, slug: string): string {
   return slug;
 }
 
+function toSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+// Auto-derived slugs must stay unique per game — the backend enforces
+// UNIQUE(game_id, slug) and 409s on collision. De-dupe against the events we
+// already know about for this game by appending -2, -3, …; the backend stays
+// the hard guarantee for anything the client hasn't loaded.
+function uniqueSlug(base: string, gameId: string, events: EventRow[]): string {
+  if (!base) return base;
+  const taken = new Set(events.filter((e) => e.game_id === gameId).map((e) => e.slug));
+  if (!taken.has(base)) return base;
+  let n = 2;
+  while (taken.has(`${base}-${n}`)) n += 1;
+  return `${base}-${n}`;
+}
+
 const emptyForm = (): EventForm => ({
   game_id: "",
   event_type: "banner",
@@ -114,6 +138,7 @@ export default function AdminEventsPage() {
   const [gameItems, setGameItems] = useState<ItemOpt[]>([]);
   const [itemsLoading, setItemsLoading] = useState(false);
   const [itemSearch, setItemSearch] = useState("");
+  const [slugLocked, setSlugLocked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<EventRow | null>(null);
@@ -154,6 +179,7 @@ export default function AdminEventsPage() {
     setForm(emptyForm());
     setGameItems([]);
     setItemSearch("");
+    setSlugLocked(false);
     setError("");
     setModal({ mode: "create" });
   };
@@ -173,6 +199,7 @@ export default function AdminEventsPage() {
       featuredIds: ev.featured_items.map((f) => f.item_id),
     });
     setItemSearch("");
+    setSlugLocked(true); // slug is immutable once created
     setError("");
     setModal({ mode: "edit", event: ev });
     loadGameItems(ev.game_id);
@@ -180,7 +207,14 @@ export default function AdminEventsPage() {
 
   const onGameChange = (gameId: string) => {
     // Featured items belong to a single game — switching games clears them.
-    setForm((f) => ({ ...f, game_id: gameId, featuredIds: [] }));
+    // Re-derive the auto-slug against the new game's existing slugs unless the
+    // admin has hand-edited it.
+    setForm((f) => ({
+      ...f,
+      game_id: gameId,
+      featuredIds: [],
+      slug: slugLocked ? f.slug : uniqueSlug(toSlug(f.title), gameId, events),
+    }));
     loadGameItems(gameId);
   };
 
@@ -386,20 +420,51 @@ export default function AdminEventsPage() {
               <input
                 type="text"
                 value={form.title}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                onChange={(e) => {
+                  const title = e.target.value;
+                  setForm((f) => ({
+                    ...f,
+                    title,
+                    slug: slugLocked ? f.slug : uniqueSlug(toSlug(title), f.game_id, events),
+                  }));
+                }}
                 placeholder="e.g. Rate-Up: Hotaru"
                 className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
               />
             </div>
 
             <div>
-              <label className="text-xs text-gray-400 block mb-1">Slug (unique per game)</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs text-gray-400">Slug (unique per game)</label>
+                {modal.mode === "create" && (
+                  <span className="text-xs text-gray-500">
+                    {slugLocked ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSlugLocked(false);
+                          setForm((f) => ({ ...f, slug: uniqueSlug(toSlug(f.title), f.game_id, events) }));
+                        }}
+                        className="text-blue-400 hover:text-blue-300"
+                      >
+                        reset to auto
+                      </button>
+                    ) : (
+                      "auto from title"
+                    )}
+                  </span>
+                )}
+              </div>
               <input
                 type="text"
                 value={form.slug}
-                onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-                placeholder="e.g. hotaru-rate-up-1"
-                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                onChange={(e) => {
+                  setSlugLocked(true);
+                  setForm((f) => ({ ...f, slug: e.target.value }));
+                }}
+                disabled={modal.mode === "edit"}
+                placeholder="auto from title"
+                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white disabled:opacity-50"
               />
             </div>
 
