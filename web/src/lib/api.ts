@@ -189,14 +189,22 @@ export const eventsApi = {
     api.get("/events/my-calendar", { params }),
   // Per-user game follows (the personalized-calendar drivers).
   listFollows: () => api.get("/events/follows"),
-  upsertFollow: (gameId: string, data: { event_types: string[] | null }) =>
-    api.put(`/events/follows/${gameId}`, data),
+  upsertFollow: (
+    gameId: string,
+    data: { event_types?: string[] | null; server?: string | null },
+  ) => api.put(`/events/follows/${gameId}`, data),
   deleteFollow: (gameId: string) => api.delete(`/events/follows/${gameId}`),
+  // Per-game servers (regional accounts).
+  getServers: (gameId: string) => api.get(`/events/servers/${gameId}`),
+  setServers: (gameId: string, servers: object[]) =>
+    api.put(`/events/servers/${gameId}`, { servers }),
   // Admin authoring.
   create: (data: object) => api.post("/events", data),
   update: (id: string, data: object) => api.put(`/events/${id}`, data),
   delete: (id: string) => api.delete(`/events/${id}`),
   setItems: (id: string, items: object[]) => api.put(`/events/${id}/items`, { items }),
+  setServerTimes: (id: string, times: object[]) =>
+    api.put(`/events/${id}/server-times`, { times }),
   listTranslations: (id: string) => api.get(`/events/${id}/translations`),
   upsertTranslation: (id: string, locale: string, data: { title: string; description?: string }) =>
     api.put(`/events/${id}/translations/${locale}`, data),

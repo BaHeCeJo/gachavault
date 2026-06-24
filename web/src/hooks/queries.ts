@@ -207,11 +207,27 @@ export const useEventFollows = (enabled = true) =>
     enabled,
   });
 
+export const useGameServers = (gameId: string) =>
+  useQuery({
+    queryKey: ["game-servers", gameId],
+    queryFn: () => eventsApi.getServers(gameId).then((r) => r.data.data),
+    enabled: !!gameId,
+  });
+
 export const useUpsertFollow = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ gameId, eventTypes }: { gameId: string; eventTypes: string[] | null }) =>
-      eventsApi.upsertFollow(gameId, { event_types: eventTypes }),
+    // event_types AND server are both replaced on every upsert, so callers pass
+    // the full intended state (preserving whichever they're not changing).
+    mutationFn: ({
+      gameId,
+      eventTypes,
+      server,
+    }: {
+      gameId: string;
+      eventTypes: string[] | null;
+      server: string | null;
+    }) => eventsApi.upsertFollow(gameId, { event_types: eventTypes, server }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["event-follows"] });
       qc.invalidateQueries({ queryKey: ["my-calendar"] });

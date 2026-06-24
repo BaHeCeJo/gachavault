@@ -129,6 +129,8 @@
     "follow": "Follow",
     "following": "Following",
     "signInToTrack": "Sign in to track games and build your calendar.",
+    "allServers": "All servers",
+    "yourServer": "Your server",
     "scope": {
       "current": "Current & upcoming",
       "past": "Past"

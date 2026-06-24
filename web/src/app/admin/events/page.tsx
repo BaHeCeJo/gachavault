@@ -33,6 +33,14 @@ interface FeaturedItem {
   data: Record<string, unknown>;
 }
 
+interface ServerTimeRow {
+  server_key: string;
+  server_name: string;
+  timezone: string;
+  start_at: string;
+  end_at: string | null;
+}
+
 interface EventRow {
   id: string;
   game_id: string;
@@ -48,6 +56,7 @@ interface EventRow {
   timezone: string;
   is_published: boolean;
   featured_items: FeaturedItem[];
+  server_times: ServerTimeRow[];
 }
 
 interface GameOpt {
@@ -62,6 +71,13 @@ interface ItemOpt {
   data: Record<string, unknown>;
 }
 
+interface ServerDef {
+  key: string;
+  name: string;
+  timezone: string;
+  sort_order: number;
+}
+
 interface EventForm {
   game_id: string;
   event_type: string;
@@ -74,6 +90,9 @@ interface EventForm {
   timezone: string;
   is_published: boolean;
   featuredIds: string[];
+  // Per-server datetime-local inputs, keyed by server key. Used only when the
+  // selected game has servers defined.
+  serverTimes: Record<string, { start: string; end: string }>;
 }
 
 function isoToLocalInput(iso: string | null): string {
@@ -127,6 +146,7 @@ const emptyForm = (): EventForm => ({
   timezone: "UTC",
   is_published: true,
   featuredIds: [],
+  serverTimes: {},
 });
 
 export default function AdminEventsPage() {
@@ -139,6 +159,7 @@ export default function AdminEventsPage() {
   const [modal, setModal] = useState<{ mode: "create" | "edit"; event?: EventRow } | null>(null);
   const [form, setForm] = useState<EventForm>(emptyForm());
   const [gameItems, setGameItems] = useState<ItemOpt[]>([]);
+  const [gameServers, setGameServers] = useState<ServerDef[]>([]);
   const [itemsLoading, setItemsLoading] = useState(false);
   const [itemSearch, setItemSearch] = useState("");
   const [slugLocked, setSlugLocked] = useState(false);
@@ -178,9 +199,23 @@ export default function AdminEventsPage() {
       .finally(() => setItemsLoading(false));
   };
 
+  // Load the selected game's servers — drives whether the form shows per-server
+  // time inputs or a single start/end.
+  const loadGameServers = (gameId: string) => {
+    if (!gameId) {
+      setGameServers([]);
+      return;
+    }
+    eventsApi
+      .getServers(gameId)
+      .then((r) => setGameServers(r.data.data ?? []))
+      .catch(() => setGameServers([]));
+  };
+
   const openCreate = () => {
     setForm(emptyForm());
     setGameItems([]);
+    setGameServers([]);
     setItemSearch("");
     setSlugLocked(false);
     setError("");
@@ -188,6 +223,13 @@ export default function AdminEventsPage() {
   };
 
   const openEdit = (ev: EventRow) => {
+    const serverTimes: Record<string, { start: string; end: string }> = {};
+    for (const s of ev.server_times) {
+      serverTimes[s.server_key] = {
+        start: isoToLocalInput(s.start_at),
+        end: isoToLocalInput(s.end_at),
+      };
+    }
     setForm({
       game_id: ev.game_id,
       event_type: ev.event_type,
@@ -200,26 +242,39 @@ export default function AdminEventsPage() {
       timezone: ev.timezone,
       is_published: ev.is_published,
       featuredIds: ev.featured_items.map((f) => f.item_id),
+      serverTimes,
     });
     setItemSearch("");
     setSlugLocked(true); // slug is immutable once created
     setError("");
     setModal({ mode: "edit", event: ev });
     loadGameItems(ev.game_id);
+    loadGameServers(ev.game_id);
   };
 
   const onGameChange = (gameId: string) => {
-    // Featured items belong to a single game — switching games clears them.
-    // Re-derive the auto-slug against the new game's existing slugs unless the
-    // admin has hand-edited it.
+    // Featured items and per-server times belong to a single game — switching
+    // games clears them. Re-derive the auto-slug against the new game's slugs
+    // unless the admin has hand-edited it.
     setForm((f) => ({
       ...f,
       game_id: gameId,
       featuredIds: [],
+      serverTimes: {},
       slug: slugLocked ? f.slug : uniqueSlug(toSlug(f.title), gameId, events),
     }));
     loadGameItems(gameId);
+    loadGameServers(gameId);
   };
+
+  const setServerTime = (key: string, field: "start" | "end", value: string) =>
+    setForm((f) => {
+      const cur = f.serverTimes[key] ?? { start: "", end: "" };
+      return {
+        ...f,
+        serverTimes: { ...f.serverTimes, [key]: { ...cur, [field]: value } },
+      };
+    });
 
   const toggleFeatured = (itemId: string) => {
     setForm((f) => ({
@@ -232,10 +287,47 @@ export default function AdminEventsPage() {
 
   const save = async () => {
     setError("");
-    if (!form.game_id || !form.slug || !form.title || !form.start_at) {
-      setError("Game, slug, title and start date are required.");
+    if (!form.game_id || !form.slug || !form.title) {
+      setError("Game, slug and title are required.");
       return;
     }
+
+    // Per-server timing when the game has servers; otherwise a single window.
+    let startIso: string;
+    let endIso: string | null;
+    let timezone: string;
+    let serverTimes: { server_key: string; start_at: string; end_at: string | null }[] | null = null;
+
+    if (gameServers.length > 0) {
+      const sorted = [...gameServers].sort((a, b) => a.sort_order - b.sort_order);
+      serverTimes = sorted
+        .filter((s) => form.serverTimes[s.key]?.start)
+        .map((s) => ({
+          server_key: s.key,
+          start_at: new Date(form.serverTimes[s.key].start).toISOString(),
+          end_at: form.serverTimes[s.key].end
+            ? new Date(form.serverTimes[s.key].end).toISOString()
+            : null,
+        }));
+      if (serverTimes.length === 0) {
+        setError("Enter a start time for at least one server.");
+        return;
+      }
+      // The first server (by sort order) with times is the canonical/primary.
+      const primaryKey = serverTimes[0].server_key;
+      startIso = serverTimes[0].start_at;
+      endIso = serverTimes[0].end_at;
+      timezone = sorted.find((s) => s.key === primaryKey)?.timezone ?? "UTC";
+    } else {
+      if (!form.start_at) {
+        setError("Start date is required.");
+        return;
+      }
+      startIso = new Date(form.start_at).toISOString();
+      endIso = form.end_at ? new Date(form.end_at).toISOString() : null;
+      timezone = form.timezone || "UTC";
+    }
+
     setSaving(true);
     try {
       const featured = form.featuredIds.map((item_id, i) => ({
@@ -250,17 +342,23 @@ export default function AdminEventsPage() {
         title: form.title,
         description: form.description || null,
         image_url: form.image_url || null,
-        start_at: new Date(form.start_at).toISOString(),
-        end_at: form.end_at ? new Date(form.end_at).toISOString() : null,
-        timezone: form.timezone || "UTC",
+        start_at: startIso,
+        end_at: endIso,
+        timezone,
         is_published: form.is_published,
       };
 
       if (modal?.mode === "create") {
-        await eventsApi.create({ ...payload, featured_items: featured });
+        await eventsApi.create({
+          ...payload,
+          featured_items: featured,
+          ...(serverTimes ? { server_times: serverTimes } : {}),
+        });
       } else if (modal?.event) {
         await eventsApi.update(modal.event.id, payload);
         await eventsApi.setItems(modal.event.id, featured);
+        // Replace (or clear) per-server times to match the form.
+        await eventsApi.setServerTimes(modal.event.id, serverTimes ?? []);
       }
       setModal(null);
       loadEvents(gameFilter);
@@ -314,6 +412,12 @@ export default function AdminEventsPage() {
       <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
         <h1 className="text-3xl font-semibold">Manage Events</h1>
         <div className="flex items-center gap-3">
+          <Link
+            href="/admin/events/servers"
+            className="px-4 py-2 rounded-lg border border-gray-700 text-sm hover:border-amber-500/60 hover:text-amber-300 transition"
+          >
+            Servers
+          </Link>
           <select
             value={gameFilter}
             onChange={(e) => setGameFilter(e.target.value)}
@@ -486,42 +590,80 @@ export default function AdminEventsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            {gameServers.length > 0 ? (
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Starts</label>
-                <input
-                  type="datetime-local"
-                  value={form.start_at}
-                  onChange={(e) => setForm((f) => ({ ...f, start_at: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
-                />
+                <label className="text-xs text-gray-400 block mb-1">Per-server times</label>
+                <div className="space-y-2 rounded-lg border border-gray-800 p-3">
+                  {[...gameServers]
+                    .sort((a, b) => a.sort_order - b.sort_order)
+                    .map((s) => (
+                      <div key={s.key} className="grid grid-cols-[5rem_1fr_1fr] gap-2 items-center">
+                        <span className="text-xs text-gray-300 truncate" title={s.timezone}>{s.name}</span>
+                        <input
+                          type="datetime-local"
+                          value={form.serverTimes[s.key]?.start ?? ""}
+                          onChange={(e) => setServerTime(s.key, "start", e.target.value)}
+                          className="w-full px-2 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-xs focus:outline-none focus:border-white"
+                        />
+                        <input
+                          type="datetime-local"
+                          value={form.serverTimes[s.key]?.end ?? ""}
+                          onChange={(e) => setServerTime(s.key, "end", e.target.value)}
+                          className="w-full px-2 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-xs focus:outline-none focus:border-white"
+                        />
+                      </div>
+                    ))}
+                </div>
+                <p className="text-[11px] text-gray-500 mt-1">
+                  Enter each server&apos;s start / end in your local time (stored as UTC). Leave a
+                  server blank to skip it. The first filled server is the primary/fallback time.
+                </p>
               </div>
-              <div>
-                <label className="text-xs text-gray-400 block mb-1">Ends (optional)</label>
-                <input
-                  type="datetime-local"
-                  value={form.end_at}
-                  onChange={(e) => setForm((f) => ({ ...f, end_at: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
-                />
-              </div>
-            </div>
-            <p className="text-[11px] text-gray-500 -mt-2">
-              Times are entered in your local timezone and stored as UTC. Set the region below for the server-reset label shown to users.
-            </p>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-400 block mb-1">Starts</label>
+                    <input
+                      type="datetime-local"
+                      value={form.start_at}
+                      onChange={(e) => setForm((f) => ({ ...f, start_at: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-400 block mb-1">Ends (optional)</label>
+                    <input
+                      type="datetime-local"
+                      value={form.end_at}
+                      onChange={(e) => setForm((f) => ({ ...f, end_at: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                    />
+                  </div>
+                </div>
+                <p className="text-[11px] text-gray-500 -mt-2">
+                  Times are entered in your local timezone and stored as UTC. Set the region below
+                  for the server-reset label shown to users. Need different times per server?{" "}
+                  <Link href="/admin/events/servers" className="text-blue-400 hover:text-blue-300">
+                    Define this game&apos;s servers
+                  </Link>
+                  .
+                </p>
 
-            <div>
-              <label className="text-xs text-gray-400 block mb-1">Server region / timezone</label>
-              <select
-                value={form.timezone}
-                onChange={(e) => setForm((f) => ({ ...f, timezone: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
-              >
-                {tzOptions.map((tz) => (
-                  <option key={tz} value={tz}>{tz}</option>
-                ))}
-              </select>
-            </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Server region / timezone</label>
+                  <select
+                    value={form.timezone}
+                    onChange={(e) => setForm((f) => ({ ...f, timezone: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                  >
+                    {tzOptions.map((tz) => (
+                      <option key={tz} value={tz}>{tz}</option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
 
             <ImageUploadField
               label="Banner image"

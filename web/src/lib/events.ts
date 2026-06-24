@@ -1,6 +1,6 @@
 // Shared types + presentation helpers for the calendar feature. Used by the
-// global /calendar page, the per-game Calendar tab, and (Phase 3) the
-// logged-in homepage widget.
+// global /calendar page, the per-game Calendar tab, the logged-in homepage
+// widget, and the admin authoring UI.
 
 export interface FeaturedItem {
   item_id: string;
@@ -8,6 +8,14 @@ export interface FeaturedItem {
   role: string;
   order: number;
   data: Record<string, unknown>;
+}
+
+export interface ServerTime {
+  server_key: string;
+  server_name: string;
+  timezone: string;
+  start_at: string;
+  end_at: string | null;
 }
 
 export interface CalendarEvent {
@@ -26,15 +34,43 @@ export interface CalendarEvent {
   data: Record<string, unknown>;
   is_published: boolean;
   featured_items: FeaturedItem[];
+  // Per-server windows (empty for single-server games / events without them).
+  server_times: ServerTime[];
+  // On the personalized calendar, the viewer's chosen home server for this
+  // event's game; drives which window is shown as primary.
+  your_server?: string | null;
 }
 
 export type EventStatus = "active" | "upcoming" | "ended";
 
-export function eventStatus(e: CalendarEvent, now: number = Date.now()): EventStatus {
-  const start = new Date(e.start_at).getTime();
-  if (start > now) return "upcoming";
-  if (e.end_at && new Date(e.end_at).getTime() < now) return "ended";
+/** The window to treat as primary: the viewer's chosen server's times when set
+ *  and present, otherwise the event's canonical start/end. */
+export function effectiveTimes(e: CalendarEvent): { start: string; end: string | null } {
+  if (e.your_server) {
+    const s = e.server_times.find((t) => t.server_key === e.your_server);
+    if (s) return { start: s.start_at, end: s.end_at };
+  }
+  return { start: e.start_at, end: e.end_at };
+}
+
+/** Label for the primary window's server/timezone. */
+export function effectiveServerLabel(e: CalendarEvent): string {
+  if (e.your_server) {
+    const s = e.server_times.find((t) => t.server_key === e.your_server);
+    if (s) return s.server_name;
+  }
+  return e.timezone;
+}
+
+export function statusOf(start: string, end: string | null, now: number = Date.now()): EventStatus {
+  if (new Date(start).getTime() > now) return "upcoming";
+  if (end && new Date(end).getTime() < now) return "ended";
   return "active";
+}
+
+export function eventStatus(e: CalendarEvent, now: number = Date.now()): EventStatus {
+  const { start, end } = effectiveTimes(e);
+  return statusOf(start, end, now);
 }
 
 export interface GroupedEvents {
@@ -89,15 +125,20 @@ export function relativeTime(target: string, locale: string, now: number = Date.
 }
 
 /** "Mar 12, 14:00 – Apr 2, 14:00" in the viewer's locale, or "From …" for an
- *  open-ended event. */
-export function formatDateRange(e: CalendarEvent, locale: string): string {
+ *  open-ended window. */
+export function formatRange(start: string, end: string | null, locale: string): string {
   const fmt = new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
   });
-  const start = fmt.format(new Date(e.start_at));
-  if (!e.end_at) return start;
-  return `${start} – ${fmt.format(new Date(e.end_at))}`;
+  const s = fmt.format(new Date(start));
+  if (!end) return s;
+  return `${s} – ${fmt.format(new Date(end))}`;
+}
+
+export function formatDateRange(e: CalendarEvent, locale: string): string {
+  const { start, end } = effectiveTimes(e);
+  return formatRange(start, end, locale);
 }

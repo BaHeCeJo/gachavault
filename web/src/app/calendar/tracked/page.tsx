@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useGames, useEventFollows, useUpsertFollow, useDeleteFollow } from "@/hooks/queries";
+import { eventsApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
 interface GameOption {
@@ -11,11 +13,17 @@ interface GameOption {
   name: string;
 }
 
+interface ServerDef {
+  key: string;
+  name: string;
+}
+
 interface Follow {
   game_id: string;
   game_slug: string;
   game_name: string;
   event_types: string[] | null;
+  server: string | null;
   created_at: string;
 }
 
@@ -45,6 +53,18 @@ export default function TrackedGamesPage() {
 
   const followByGame = new Map<string, Follow>(follows.map((f: Follow) => [f.game_id, f]));
   const busy = upsert.isPending || remove.isPending;
+
+  // Lazy-load each followed game's servers so we can offer a home-server picker.
+  const [serversByGame, setServersByGame] = useState<Record<string, ServerDef[]>>({});
+  useEffect(() => {
+    for (const f of follows as Follow[]) {
+      if (serversByGame[f.game_id] !== undefined) continue;
+      eventsApi
+        .getServers(f.game_id)
+        .then((r) => setServersByGame((m) => ({ ...m, [f.game_id]: r.data.data ?? [] })))
+        .catch(() => setServersByGame((m) => ({ ...m, [f.game_id]: [] })));
+    }
+  }, [follows, serversByGame]);
 
   if (!authLoading && !user) {
     return (
@@ -86,7 +106,7 @@ export default function TrackedGamesPage() {
                     onClick={() =>
                       following
                         ? remove.mutate(g.id)
-                        : upsert.mutate({ gameId: g.id, eventTypes: null })
+                        : upsert.mutate({ gameId: g.id, eventTypes: null, server: null })
                     }
                     className={`px-4 py-1.5 rounded-lg text-sm font-medium transition disabled:opacity-50 ${
                       following
@@ -99,30 +119,57 @@ export default function TrackedGamesPage() {
                 </div>
 
                 {following && (
-                  <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-gray-800">
-                    {EVENT_TYPES.map((ty) => {
-                      const active = follow!.event_types === null || follow!.event_types.includes(ty);
-                      return (
-                        <button
-                          key={ty}
-                          type="button"
+                  <div className="mt-3 pt-3 border-t border-gray-800 space-y-3">
+                    <div className="flex flex-wrap gap-2">
+                      {EVENT_TYPES.map((ty) => {
+                        const active =
+                          follow!.event_types === null || follow!.event_types.includes(ty);
+                        return (
+                          <button
+                            key={ty}
+                            type="button"
+                            disabled={busy}
+                            onClick={() =>
+                              upsert.mutate({
+                                gameId: g.id,
+                                eventTypes: nextTypes(follow!.event_types, ty),
+                                server: follow!.server ?? null,
+                              })
+                            }
+                            className={`text-xs px-3 py-1 rounded-full border transition disabled:opacity-50 ${
+                              active
+                                ? "border-amber-600/60 bg-amber-900/20 text-amber-300"
+                                : "border-gray-700 text-gray-500 hover:text-gray-300"
+                            }`}
+                          >
+                            {t(`types.${ty}`)}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {(serversByGame[g.id]?.length ?? 0) > 0 && (
+                      <label className="flex items-center gap-2 text-xs text-gray-400">
+                        {t("yourServer")}
+                        <select
                           disabled={busy}
-                          onClick={() =>
+                          value={follow!.server ?? ""}
+                          onChange={(e) =>
                             upsert.mutate({
                               gameId: g.id,
-                              eventTypes: nextTypes(follow!.event_types, ty),
+                              eventTypes: follow!.event_types ?? null,
+                              server: e.target.value || null,
                             })
                           }
-                          className={`text-xs px-3 py-1 rounded-full border transition disabled:opacity-50 ${
-                            active
-                              ? "border-amber-600/60 bg-amber-900/20 text-amber-300"
-                              : "border-gray-700 text-gray-500 hover:text-gray-300"
-                          }`}
+                          className="rounded-lg bg-gray-800 border border-gray-700 px-2 py-1 text-xs text-gray-200 focus:outline-none focus:border-white disabled:opacity-50"
                         >
-                          {t(`types.${ty}`)}
-                        </button>
-                      );
-                    })}
+                          <option value="">{t("allServers")}</option>
+                          {serversByGame[g.id].map((s) => (
+                            <option key={s.key} value={s.key}>{s.name}</option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
                   </div>
                 )}
               </div>
