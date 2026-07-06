@@ -9,6 +9,7 @@ import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
 import DateTimeField from "@/components/DateTimeField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { isoToZonedInput, zonedInputToIso } from "@/lib/zonedTime";
 
 const EVENT_TYPES = ["banner", "version", "limited_event", "maintenance"] as const;
 
@@ -170,6 +171,81 @@ export default function AdminEventsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<EventRow | null>(null);
+  // Whether the datetime fields are typed in the author's local time or in the
+  // server's time (e.g. HSR "Server Time" = the game's server zone). Only
+  // affects how typed numbers convert to/from the stored UTC instant; the
+  // stored value is always UTC either way.
+  const [entryMode, setEntryMode] = useState<"local" | "server">("local");
+
+  // Wall-clock <-> UTC honouring the current entry mode. In "server" mode the
+  // typed numbers are read as local to `tz`; in "local" mode as the browser's
+  // zone (legacy behaviour). The stored value is always a UTC ISO string.
+  const inputToUtc = (wall: string, tz: string): string =>
+    !wall ? "" : entryMode === "server" ? zonedInputToIso(wall, tz) : new Date(wall).toISOString();
+  const utcToInput = (iso: string | null, tz: string): string =>
+    entryMode === "server" ? isoToZonedInput(iso, tz) : isoToLocalInput(iso);
+
+  // "17 May, 14:00 UTC · 16:00 your time" — the resolved instant for a typed
+  // value, so the author can sanity-check the conversion at a glance.
+  const utcPreview = (wall: string, tz: string): string => {
+    const iso = inputToUtc(wall, tz);
+    if (!iso) return "";
+    const d = new Date(iso);
+    const utc = new Intl.DateTimeFormat(undefined, {
+      timeZone: "UTC",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(d);
+    const local = new Intl.DateTimeFormat(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(d);
+    return `${utc} UTC · ${local} your time`;
+  };
+
+  // Re-express a wall clock from one mode to another while keeping the same
+  // absolute instant — used when the author flips the toggle so the displayed
+  // numbers don't silently change meaning.
+  const reinterpret = (
+    wall: string,
+    tz: string,
+    from: "local" | "server",
+    to: "local" | "server",
+  ): string => {
+    if (!wall) return wall;
+    const iso = from === "server" ? zonedInputToIso(wall, tz) : new Date(wall).toISOString();
+    return to === "server" ? isoToZonedInput(iso, tz) : isoToLocalInput(iso);
+  };
+
+  const switchEntryMode = (next: "local" | "server") => {
+    if (next === entryMode) return;
+    const reconv = (prev: EventForm): EventForm => {
+      const tz = prev.timezone || "UTC";
+      const serverTimes: EventForm["serverTimes"] = {};
+      for (const [k, v] of Object.entries(prev.serverTimes)) {
+        const stz = gameServers.find((s) => s.key === k)?.timezone ?? tz;
+        serverTimes[k] = {
+          start: reinterpret(v.start, stz, entryMode, next),
+          end: reinterpret(v.end, stz, entryMode, next),
+        };
+      }
+      return {
+        ...prev,
+        start_at: reinterpret(prev.start_at, tz, entryMode, next),
+        end_at: reinterpret(prev.end_at, tz, entryMode, next),
+        serverTimes,
+      };
+    };
+    // Reconvert both current and baseline so flipping the view basis alone
+    // isn't treated as an unsaved edit.
+    setForm(reconv);
+    setInitialForm(reconv);
+    setEntryMode(next);
+  };
 
   const loadEvents = (gameSlug: string) => {
     setLoading(true);
@@ -232,8 +308,8 @@ export default function AdminEventsPage() {
     const serverTimes: Record<string, { start: string; end: string }> = {};
     for (const s of ev.server_times) {
       serverTimes[s.server_key] = {
-        start: isoToLocalInput(s.start_at),
-        end: isoToLocalInput(s.end_at),
+        start: utcToInput(s.start_at, s.timezone),
+        end: utcToInput(s.end_at, s.timezone),
       };
     }
     const loaded: EventForm = {
@@ -243,8 +319,8 @@ export default function AdminEventsPage() {
       title: ev.title,
       description: ev.description ?? "",
       image_url: ev.image_url ?? "",
-      start_at: isoToLocalInput(ev.start_at),
-      end_at: isoToLocalInput(ev.end_at),
+      start_at: utcToInput(ev.start_at, ev.timezone),
+      end_at: utcToInput(ev.end_at, ev.timezone),
       timezone: ev.timezone,
       is_published: ev.is_published,
       featuredIds: ev.featured_items.map((f) => f.item_id),
@@ -312,9 +388,10 @@ export default function AdminEventsPage() {
         .filter((s) => form.serverTimes[s.key]?.start)
         .map((s) => ({
           server_key: s.key,
-          start_at: new Date(form.serverTimes[s.key].start).toISOString(),
+          // In server mode each row is read as local to its own server zone.
+          start_at: inputToUtc(form.serverTimes[s.key].start, s.timezone),
           end_at: form.serverTimes[s.key].end
-            ? new Date(form.serverTimes[s.key].end).toISOString()
+            ? inputToUtc(form.serverTimes[s.key].end, s.timezone)
             : null,
         }));
       if (serverTimes.length === 0) {
@@ -331,9 +408,9 @@ export default function AdminEventsPage() {
         setError("Start date is required.");
         return;
       }
-      startIso = new Date(form.start_at).toISOString();
-      endIso = form.end_at ? new Date(form.end_at).toISOString() : null;
       timezone = form.timezone || "UTC";
+      startIso = inputToUtc(form.start_at, timezone);
+      endIso = form.end_at ? inputToUtc(form.end_at, timezone) : null;
     }
 
     setSaving(true);
@@ -602,6 +679,37 @@ export default function AdminEventsPage() {
               />
             </div>
 
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-gray-400">Enter times as</span>
+              <div
+                className="inline-flex rounded-lg border border-gray-700 overflow-hidden text-xs"
+                role="group"
+                aria-label="Time entry basis"
+              >
+                <button
+                  type="button"
+                  onClick={() => switchEntryMode("local")}
+                  aria-pressed={entryMode === "local"}
+                  className={`px-3 py-1.5 transition ${entryMode === "local" ? "bg-white text-black font-medium" : "text-gray-300 hover:bg-gray-800"}`}
+                >
+                  My local time
+                </button>
+                <button
+                  type="button"
+                  onClick={() => switchEntryMode("server")}
+                  aria-pressed={entryMode === "server"}
+                  className={`px-3 py-1.5 transition border-l border-gray-700 ${entryMode === "server" ? "bg-white text-black font-medium" : "text-gray-300 hover:bg-gray-800"}`}
+                >
+                  Server time
+                </button>
+              </div>
+              <span className="text-[11px] text-gray-500">
+                {entryMode === "server"
+                  ? "type the source's “Server Time” numbers verbatim"
+                  : "type times in your own timezone"}
+              </span>
+            </div>
+
             {gameServers.length > 0 ? (
               <div>
                 <label className="text-xs text-gray-400 block mb-1">Per-server times</label>
@@ -631,27 +739,41 @@ export default function AdminEventsPage() {
                     ))}
                 </div>
                 <p className="text-[11px] text-gray-500 mt-1">
-                  Enter each server&apos;s start / end in your local time (stored as UTC). Leave a
-                  server blank to skip it. The first filled server is the primary/fallback time.
+                  {entryMode === "server"
+                    ? "Enter each server’s start / end in that server’s own time (stored as UTC)."
+                    : "Enter each server’s start / end in your local time (stored as UTC)."}{" "}
+                  Leave a server blank to skip it. The first filled server is the primary/fallback time.
                 </p>
               </div>
             ) : (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <DateTimeField
-                    label="Starts"
-                    value={form.start_at}
-                    onChange={(v) => setForm((f) => ({ ...f, start_at: v }))}
-                  />
-                  <DateTimeField
-                    label="Ends (optional)"
-                    value={form.end_at}
-                    onChange={(v) => setForm((f) => ({ ...f, end_at: v }))}
-                  />
+                  <div>
+                    <DateTimeField
+                      label="Starts"
+                      value={form.start_at}
+                      onChange={(v) => setForm((f) => ({ ...f, start_at: v }))}
+                    />
+                    {form.start_at && (
+                      <p className="text-[11px] text-gray-500 mt-1">→ {utcPreview(form.start_at, form.timezone)}</p>
+                    )}
+                  </div>
+                  <div>
+                    <DateTimeField
+                      label="Ends (optional)"
+                      value={form.end_at}
+                      onChange={(v) => setForm((f) => ({ ...f, end_at: v }))}
+                    />
+                    {form.end_at && (
+                      <p className="text-[11px] text-gray-500 mt-1">→ {utcPreview(form.end_at, form.timezone)}</p>
+                    )}
+                  </div>
                 </div>
-                <p className="text-[11px] text-gray-500 -mt-2">
-                  Times are entered in your local timezone and stored as UTC. Set the region below
-                  for the server-reset label shown to users. Need different times per server?{" "}
+                <p className="text-[11px] text-gray-500">
+                  {entryMode === "server"
+                    ? "Times are read in the server timezone selected below and stored as UTC."
+                    : "Times are entered in your local timezone and stored as UTC; the region below is just the server-reset label shown to users."}{" "}
+                  Need different times per server?{" "}
                   <Link href="/admin/events/servers" className="text-blue-400 hover:text-blue-300">
                     Define this game&apos;s servers
                   </Link>
@@ -659,7 +781,11 @@ export default function AdminEventsPage() {
                 </p>
 
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Server region / timezone</label>
+                  <label className="text-xs text-gray-400 block mb-1">
+                    {entryMode === "server"
+                      ? "Server timezone (interprets the times above)"
+                      : "Server region / timezone"}
+                  </label>
                   <select
                     value={form.timezone}
                     onChange={(e) => setForm((f) => ({ ...f, timezone: e.target.value }))}
