@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
 import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import ItemCard, { type CardLayout } from "@/components/ItemCard";
@@ -173,6 +174,27 @@ function pruneField(f: SchemaField): SchemaField {
   return out;
 }
 
+// Stable string of the editable schema state, for detecting unsaved edits on
+// close. Normalised through pruneField so it's independent of visual/JSON view
+// mode — toggling modes without changing content doesn't read as dirty.
+function schemaSnapshot(v: {
+  name: string;
+  sectionId: string;
+  fields: SchemaField[];
+  filterAttrs: string[] | null;
+  cardLayout: CardLayout | null;
+  pageLayout: PageLayout | null;
+}): string {
+  return JSON.stringify({
+    name: v.name,
+    sectionId: v.sectionId,
+    fields: v.fields.map(pruneField),
+    filterAttrs: v.filterAttrs,
+    cardLayout: v.cardLayout,
+    pageLayout: v.pageLayout,
+  });
+}
+
 export default function AdminGameSchemasPage() {
   const { slug } = useParams<{ slug: string }>();
   const { user, isLoading } = useAdminGuard(`/admin/games/${slug}/schemas`);
@@ -204,6 +226,8 @@ export default function AdminGameSchemasPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Schema | null>(null);
+  // Snapshot of the form as opened, to detect unsaved edits on close.
+  const [initialSnapshot, setInitialSnapshot] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -245,21 +269,43 @@ export default function AdminGameSchemasPage() {
 
   const openCreate = () => {
     resetForm();
+    setInitialSnapshot(
+      schemaSnapshot({
+        name: "",
+        sectionId: "",
+        fields: DEFAULT_FIELDS,
+        filterAttrs: null,
+        cardLayout: null,
+        pageLayout: null,
+      }),
+    );
     setModal({ mode: "create" });
   };
 
   const openEdit = (schema: Schema) => {
     const parsed = parseFieldsValue(schema.fields);
+    const loadedFilterAttrs = Array.isArray(schema.filter_attrs) ? schema.filter_attrs : null;
+    const loadedPageLayout = parsePageLayout(schema.page_layout);
     setName(schema.name);
     setSectionId(schema.section_id ?? "");
     setFields(parsed);
-    setFilterAttrs(Array.isArray(schema.filter_attrs) ? schema.filter_attrs : null);
+    setFilterAttrs(loadedFilterAttrs);
     setCardLayout(schema.card_layout ?? null);
-    setPageLayout(parsePageLayout(schema.page_layout));
+    setPageLayout(loadedPageLayout);
     setJsonDraft(JSON.stringify(schema.fields, null, 2));
     setViewMode("visual");
     setJsonError("");
     setError("");
+    setInitialSnapshot(
+      schemaSnapshot({
+        name: schema.name,
+        sectionId: schema.section_id ?? "",
+        fields: parsed,
+        filterAttrs: loadedFilterAttrs,
+        cardLayout: schema.card_layout ?? null,
+        pageLayout: loadedPageLayout,
+      }),
+    );
     setModal({ mode: "edit", schema });
   };
 
@@ -381,6 +427,26 @@ export default function AdminGameSchemasPage() {
     }
   };
 
+  const closeModal = useCallback(() => setModal(null), []);
+  // Normalise the current fields regardless of edit mode: in JSON view the
+  // authoritative content is the draft text, so parse it (falling back to the
+  // visual list if it's mid-edit and unparseable).
+  const currentFields =
+    viewMode === "json"
+      ? (() => {
+          try {
+            return parseFieldsValue(JSON.parse(jsonDraft));
+          } catch {
+            return fields;
+          }
+        })()
+      : fields;
+  const dirty =
+    !!modal &&
+    schemaSnapshot({ name, sectionId, fields: currentFields, filterAttrs, cardLayout, pageLayout }) !==
+      initialSnapshot;
+  const guard = useModalCloseGuard({ open: !!modal, dirty, onClose: closeModal });
+
   if (isLoading || !user) {
     return (
       <main className="flex min-h-[calc(100vh-57px)] items-center justify-center">
@@ -488,10 +554,20 @@ export default function AdminGameSchemasPage() {
         onCancel={() => setDeleteTarget(null)}
       />
 
+      <ConfirmDialog
+        open={guard.confirming}
+        title="Discard changes?"
+        description="You have unsaved changes. If you leave now they will not be saved."
+        confirmLabel="Discard"
+        destructive
+        onConfirm={guard.confirmClose}
+        onCancel={guard.cancelClose}
+      />
+
       {modal && (
         <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
-          onClick={() => setModal(null)}
+          onClick={guard.requestClose}
         >
           <div
             className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto space-y-5"
@@ -647,7 +723,7 @@ export default function AdminGameSchemasPage() {
                 {saving ? "Saving…" : modal.mode === "create" ? "Create" : "Save"}
               </button>
               <button
-                onClick={() => setModal(null)}
+                onClick={guard.requestClose}
                 className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition"
               >
                 Cancel

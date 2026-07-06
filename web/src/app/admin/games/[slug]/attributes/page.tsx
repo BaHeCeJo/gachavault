@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
 import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -47,6 +48,15 @@ export default function AdminAttributesPage() {
     color: "#888888",
     sort_order: "0",
   });
+  // Snapshot of the form as opened, to detect unsaved edits on close.
+  const [initialForm, setInitialForm] = useState({
+    attr_type: "",
+    key: "",
+    name: "",
+    icon_url: "",
+    color: "#888888",
+    sort_order: "0",
+  });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<GameAttribute | null>(null);
@@ -64,28 +74,32 @@ export default function AdminAttributesPage() {
   const attrTypes = Array.from(new Set(attributes.map((a) => a.attr_type)));
 
   const openCreate = (prefillType?: string) => {
-    setForm({
+    const fresh = {
       attr_type: prefillType ?? "",
       key: "",
       name: "",
       icon_url: "",
       color: "#888888",
       sort_order: "0",
-    });
+    };
+    setForm(fresh);
+    setInitialForm(fresh);
     setKeyLocked(false);
     setError("");
     setModal({ mode: "create", prefillType });
   };
 
   const openEdit = (attr: GameAttribute) => {
-    setForm({
+    const loaded = {
       attr_type: attr.attr_type,
       key: attr.key,
       name: attr.name,
       icon_url: attr.icon_url ?? "",
       color: attr.color ?? "#888888",
       sort_order: String(attr.sort_order),
-    });
+    };
+    setForm(loaded);
+    setInitialForm(loaded);
     setError("");
     setModal({ mode: "edit", attr });
   };
@@ -139,6 +153,10 @@ export default function AdminAttributesPage() {
       setDeleteTarget(null);
     }
   };
+
+  const closeModal = useCallback(() => setModal(null), []);
+  const dirty = !!modal && JSON.stringify(form) !== JSON.stringify(initialForm);
+  const guard = useModalCloseGuard({ open: !!modal, dirty, onClose: closeModal });
 
   if (isLoading || !user) {
     return (
@@ -266,6 +284,16 @@ export default function AdminAttributesPage() {
       )}
 
       <ConfirmDialog
+        open={guard.confirming}
+        title="Discard changes?"
+        description="You have unsaved changes. If you leave now they will not be saved."
+        confirmLabel="Discard"
+        destructive
+        onConfirm={guard.confirmClose}
+        onCancel={guard.cancelClose}
+      />
+
+      <ConfirmDialog
         open={!!deleteTarget}
         title="Delete attribute"
         description={`Delete "${deleteTarget?.name}"? This cannot be undone.`}
@@ -279,7 +307,7 @@ export default function AdminAttributesPage() {
       {modal && (
         <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
-          onClick={() => setModal(null)}
+          onClick={guard.requestClose}
         >
           <div
             className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-[420px] space-y-4 max-h-[90vh] overflow-y-auto"
@@ -403,7 +431,7 @@ export default function AdminAttributesPage() {
                 {saving ? "Saving…" : modal.mode === "create" ? "Create" : "Save"}
               </button>
               <button
-                onClick={() => setModal(null)}
+                onClick={guard.requestClose}
                 className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition"
               >
                 Cancel

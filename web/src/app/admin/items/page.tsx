@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { adminApi, gamesApi, itemsApi } from "@/lib/api";
 import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
@@ -92,6 +93,8 @@ export default function AdminItemsPage() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [modal, setModal] = useState<{ mode: "create" | "edit"; item?: Item } | null>(null);
   const [form, setForm] = useState({ slug: "", section_id: "", type_schema_id: "", dataJson: "{}" });
+  // Snapshot of the form as it was opened, to detect unsaved edits on close.
+  const [initialForm, setInitialForm] = useState({ slug: "", section_id: "", type_schema_id: "", dataJson: "{}" });
   const [slugLocked, setSlugLocked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
@@ -152,12 +155,14 @@ export default function AdminItemsPage() {
   const openCreate = () => {
     const firstSectionId = sections[0]?.id ?? "";
     const matchedSchema = firstSectionId ? schemaForSection(schemas, firstSectionId) : null;
-    setForm({
+    const fresh = {
       slug: "",
       section_id: firstSectionId,
       type_schema_id: matchedSchema?.id ?? "",
       dataJson: JSON.stringify({ name: "", image_url: "" }, null, 2),
-    });
+    };
+    setForm(fresh);
+    setInitialForm(fresh);
     setSlugLocked(false);
     setFormError("");
     setShowRawJson(false);
@@ -165,12 +170,14 @@ export default function AdminItemsPage() {
   };
 
   const openEdit = (item: Item) => {
-    setForm({
+    const loaded = {
       slug: item.slug,
       section_id: item.section_id,
       type_schema_id: item.type_schema_id,
       dataJson: JSON.stringify(item.data, null, 2),
-    });
+    };
+    setForm(loaded);
+    setInitialForm(loaded);
     setSlugLocked(true);
     setFormError("");
     setShowRawJson(false);
@@ -351,6 +358,10 @@ export default function AdminItemsPage() {
     });
   }
 
+  const closeModal = useCallback(() => setModal(null), []);
+  const dirty = !!modal && JSON.stringify(form) !== JSON.stringify(initialForm);
+  const guard = useModalCloseGuard({ open: !!modal, dirty, onClose: closeModal });
+
   if (isLoading || !user) {
     return (
       <main className="flex min-h-[calc(100vh-57px)] items-center justify-center">
@@ -473,6 +484,16 @@ export default function AdminItemsPage() {
       )}
 
       <ConfirmDialog
+        open={guard.confirming}
+        title="Discard changes?"
+        description="You have unsaved changes. If you leave now they will not be saved."
+        confirmLabel="Discard"
+        destructive
+        onConfirm={guard.confirmClose}
+        onCancel={guard.cancelClose}
+      />
+
+      <ConfirmDialog
         open={!!deleteTarget}
         title="Delete item"
         description="Delete this item? This cannot be undone."
@@ -486,7 +507,7 @@ export default function AdminItemsPage() {
       {modal && (
         <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
-          onClick={() => setModal(null)}
+          onClick={guard.requestClose}
         >
           <div
             className={`bg-gray-900 border border-gray-700 rounded-xl w-full max-w-[600px] max-h-[90vh] flex overflow-hidden ${showPreview ? "md:max-w-[1100px]" : ""}`}
@@ -986,7 +1007,7 @@ export default function AdminItemsPage() {
                 {saving ? "Saving…" : modal.mode === "create" ? "Create" : "Save"}
               </button>
               <button
-                onClick={() => setModal(null)}
+                onClick={guard.requestClose}
                 className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition"
               >
                 Cancel

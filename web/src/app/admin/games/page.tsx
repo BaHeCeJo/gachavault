@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { adminApi } from "@/lib/api";
 import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -49,6 +50,8 @@ export default function AdminGamesPage() {
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<{ mode: "create" | "edit"; game?: Game } | null>(null);
   const [form, setForm] = useState<GameForm>(emptyForm());
+  // Snapshot of the form as opened, to detect unsaved edits on close.
+  const [initialForm, setInitialForm] = useState<GameForm>(emptyForm());
   const [slugLocked, setSlugLocked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -63,7 +66,9 @@ export default function AdminGamesPage() {
   }, [user]);
 
   const openCreate = () => {
-    setForm(emptyForm());
+    const fresh = emptyForm();
+    setForm(fresh);
+    setInitialForm(fresh);
     setSlugLocked(false);
     setError("");
     setModal({ mode: "create" });
@@ -71,14 +76,16 @@ export default function AdminGamesPage() {
 
   const openEdit = (game: Game) => {
     setSlugLocked(true);
-    setForm({
+    const loaded: GameForm = {
       slug: game.slug,
       name: game.name,
       description: game.description ?? "",
       logo_url: game.logo_url ?? "",
       banner_url: game.banner_url ?? "",
       is_active: game.is_active,
-    });
+    };
+    setForm(loaded);
+    setInitialForm(loaded);
     setError("");
     setModal({ mode: "edit", game });
   };
@@ -125,6 +132,10 @@ export default function AdminGamesPage() {
       setDeleteTarget(null);
     }
   };
+
+  const closeModal = useCallback(() => setModal(null), []);
+  const dirty = !!modal && JSON.stringify(form) !== JSON.stringify(initialForm);
+  const guard = useModalCloseGuard({ open: !!modal, dirty, onClose: closeModal });
 
   if (isLoading || !user) {
     return (
@@ -201,7 +212,7 @@ export default function AdminGamesPage() {
 
       {/* Edit/Create modal */}
       {modal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setModal(null)}>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={guard.requestClose}>
           <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-[480px] space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h2 className="font-semibold text-lg">{modal.mode === "create" ? "Add Game" : "Edit Game"}</h2>
             <div>
@@ -262,13 +273,23 @@ export default function AdminGamesPage() {
               <button onClick={save} disabled={saving} className="flex-1 py-2 rounded-lg bg-white text-black text-sm font-semibold hover:bg-gray-200 transition disabled:opacity-50">
                 {saving ? "Saving…" : modal.mode === "create" ? "Create" : "Save"}
               </button>
-              <button onClick={() => setModal(null)} className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition">
+              <button onClick={guard.requestClose} className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition">
                 Cancel
               </button>
             </div>
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={guard.confirming}
+        title="Discard changes?"
+        description="You have unsaved changes. If you leave now they will not be saved."
+        confirmLabel="Discard"
+        destructive
+        onConfirm={guard.confirmClose}
+        onCancel={guard.cancelClose}
+      />
 
       <ConfirmDialog
         open={!!deleteTarget}

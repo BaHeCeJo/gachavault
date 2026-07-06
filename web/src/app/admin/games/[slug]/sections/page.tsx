@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { adminApi, gamesApi } from "@/lib/api";
 import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { revalidateGame } from "@/lib/revalidate";
@@ -35,6 +36,8 @@ export default function AdminGameSectionsPage() {
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<ModalState>(null);
   const [form, setForm] = useState({ slug: "", name: "", order: "0", tabs: DEFAULT_TABS });
+  // Snapshot of the form as opened, to detect unsaved edits on close.
+  const [initialForm, setInitialForm] = useState({ slug: "", name: "", order: "0", tabs: DEFAULT_TABS });
   const [slugLocked, setSlugLocked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -51,19 +54,23 @@ export default function AdminGameSectionsPage() {
   }, [user, slug]);
 
   const openCreate = () => {
-    setForm({ slug: "", name: "", order: "0", tabs: DEFAULT_TABS });
+    const fresh = { slug: "", name: "", order: "0", tabs: DEFAULT_TABS };
+    setForm(fresh);
+    setInitialForm(fresh);
     setSlugLocked(false);
     setError("");
     setModal({ mode: "create" });
   };
 
   const openEdit = (section: Section) => {
-    setForm({
+    const loaded = {
       slug: section.slug,
       name: section.name,
       order: String(section.order),
       tabs: section.tabs ?? DEFAULT_TABS,
-    });
+    };
+    setForm(loaded);
+    setInitialForm(loaded);
     setError("");
     setModal({ mode: "edit", section });
   };
@@ -113,6 +120,10 @@ export default function AdminGameSectionsPage() {
       setDeleteTarget(null);
     }
   };
+
+  const closeModal = useCallback(() => setModal(null), []);
+  const dirty = !!modal && JSON.stringify(form) !== JSON.stringify(initialForm);
+  const guard = useModalCloseGuard({ open: !!modal, dirty, onClose: closeModal });
 
   if (isLoading || !user) {
     return (
@@ -196,6 +207,16 @@ export default function AdminGameSectionsPage() {
       )}
 
       <ConfirmDialog
+        open={guard.confirming}
+        title="Discard changes?"
+        description="You have unsaved changes. If you leave now they will not be saved."
+        confirmLabel="Discard"
+        destructive
+        onConfirm={guard.confirmClose}
+        onCancel={guard.cancelClose}
+      />
+
+      <ConfirmDialog
         open={!!deleteTarget}
         title="Delete section"
         description={`Delete section "${deleteTarget?.name}"? Items in this section will lose their section reference.`}
@@ -208,7 +229,7 @@ export default function AdminGameSectionsPage() {
       {modal && (
         <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-          onClick={() => setModal(null)}
+          onClick={guard.requestClose}
         >
           <div
             className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-96 space-y-4"
@@ -296,7 +317,7 @@ export default function AdminGameSectionsPage() {
                 {saving ? "Saving…" : modal.mode === "create" ? "Create" : "Save"}
               </button>
               <button
-                onClick={() => setModal(null)}
+                onClick={guard.requestClose}
                 className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition"
               >
                 Cancel

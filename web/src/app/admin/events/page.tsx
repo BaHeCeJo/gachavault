@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { adminApi, eventsApi, itemsApi } from "@/lib/api";
 import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
+import DateTimeField from "@/components/DateTimeField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 const EVENT_TYPES = ["banner", "version", "limited_event", "maintenance"] as const;
@@ -158,6 +160,8 @@ export default function AdminEventsPage() {
 
   const [modal, setModal] = useState<{ mode: "create" | "edit"; event?: EventRow } | null>(null);
   const [form, setForm] = useState<EventForm>(emptyForm());
+  // Snapshot of the form as it was opened, to detect unsaved edits on close.
+  const [initialForm, setInitialForm] = useState<EventForm>(emptyForm());
   const [gameItems, setGameItems] = useState<ItemOpt[]>([]);
   const [gameServers, setGameServers] = useState<ServerDef[]>([]);
   const [itemsLoading, setItemsLoading] = useState(false);
@@ -213,7 +217,9 @@ export default function AdminEventsPage() {
   };
 
   const openCreate = () => {
-    setForm(emptyForm());
+    const fresh = emptyForm();
+    setForm(fresh);
+    setInitialForm(fresh);
     setGameItems([]);
     setGameServers([]);
     setItemSearch("");
@@ -230,7 +236,7 @@ export default function AdminEventsPage() {
         end: isoToLocalInput(s.end_at),
       };
     }
-    setForm({
+    const loaded: EventForm = {
       game_id: ev.game_id,
       event_type: ev.event_type,
       slug: ev.slug,
@@ -243,7 +249,9 @@ export default function AdminEventsPage() {
       is_published: ev.is_published,
       featuredIds: ev.featured_items.map((f) => f.item_id),
       serverTimes,
-    });
+    };
+    setForm(loaded);
+    setInitialForm(loaded);
     setItemSearch("");
     setSlugLocked(true); // slug is immutable once created
     setError("");
@@ -381,6 +389,10 @@ export default function AdminEventsPage() {
     }
   };
 
+  const closeModal = useCallback(() => setModal(null), []);
+  const dirty = !!modal && JSON.stringify(form) !== JSON.stringify(initialForm);
+  const guard = useModalCloseGuard({ open: !!modal, dirty, onClose: closeModal });
+
   if (isLoading || !user) {
     return (
       <main className="flex min-h-[calc(100vh-57px)] items-center justify-center">
@@ -493,7 +505,7 @@ export default function AdminEventsPage() {
       {error && !modal && <p className="text-red-400 text-sm mt-4">{error}</p>}
 
       {modal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setModal(null)}>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={guard.requestClose}>
           <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-[560px] space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h2 className="font-semibold text-lg">{modal.mode === "create" ? "Add Event" : "Edit Event"}</h2>
 
@@ -593,24 +605,28 @@ export default function AdminEventsPage() {
             {gameServers.length > 0 ? (
               <div>
                 <label className="text-xs text-gray-400 block mb-1">Per-server times</label>
-                <div className="space-y-2 rounded-lg border border-gray-800 p-3">
+                <div className="space-y-3 rounded-lg border border-gray-800 p-3">
                   {[...gameServers]
                     .sort((a, b) => a.sort_order - b.sort_order)
                     .map((s) => (
-                      <div key={s.key} className="grid grid-cols-[5rem_1fr_1fr] gap-2 items-center">
-                        <span className="text-xs text-gray-300 truncate" title={s.timezone}>{s.name}</span>
-                        <input
-                          type="datetime-local"
-                          value={form.serverTimes[s.key]?.start ?? ""}
-                          onChange={(e) => setServerTime(s.key, "start", e.target.value)}
-                          className="w-full px-2 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-xs focus:outline-none focus:border-white"
-                        />
-                        <input
-                          type="datetime-local"
-                          value={form.serverTimes[s.key]?.end ?? ""}
-                          onChange={(e) => setServerTime(s.key, "end", e.target.value)}
-                          className="w-full px-2 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-xs focus:outline-none focus:border-white"
-                        />
+                      <div key={s.key} className="space-y-1.5">
+                        <span className="text-xs font-medium text-gray-300" title={s.timezone}>{s.name}</span>
+                        <div className="grid grid-cols-[2.5rem_1fr] gap-2 items-center">
+                          <span className="text-[11px] text-gray-500">Start</span>
+                          <DateTimeField
+                            compact
+                            ariaLabel={`${s.name} start`}
+                            value={form.serverTimes[s.key]?.start ?? ""}
+                            onChange={(v) => setServerTime(s.key, "start", v)}
+                          />
+                          <span className="text-[11px] text-gray-500">End</span>
+                          <DateTimeField
+                            compact
+                            ariaLabel={`${s.name} end`}
+                            value={form.serverTimes[s.key]?.end ?? ""}
+                            onChange={(v) => setServerTime(s.key, "end", v)}
+                          />
+                        </div>
                       </div>
                     ))}
                 </div>
@@ -621,25 +637,17 @@ export default function AdminEventsPage() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs text-gray-400 block mb-1">Starts</label>
-                    <input
-                      type="datetime-local"
-                      value={form.start_at}
-                      onChange={(e) => setForm((f) => ({ ...f, start_at: e.target.value }))}
-                      className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-400 block mb-1">Ends (optional)</label>
-                    <input
-                      type="datetime-local"
-                      value={form.end_at}
-                      onChange={(e) => setForm((f) => ({ ...f, end_at: e.target.value }))}
-                      className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
-                    />
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <DateTimeField
+                    label="Starts"
+                    value={form.start_at}
+                    onChange={(v) => setForm((f) => ({ ...f, start_at: v }))}
+                  />
+                  <DateTimeField
+                    label="Ends (optional)"
+                    value={form.end_at}
+                    onChange={(v) => setForm((f) => ({ ...f, end_at: v }))}
+                  />
                 </div>
                 <p className="text-[11px] text-gray-500 -mt-2">
                   Times are entered in your local timezone and stored as UTC. Set the region below
@@ -725,13 +733,23 @@ export default function AdminEventsPage() {
               <button onClick={save} disabled={saving} className="flex-1 py-2 rounded-lg bg-white text-black text-sm font-semibold hover:bg-gray-200 transition disabled:opacity-50">
                 {saving ? "Saving…" : modal.mode === "create" ? "Create" : "Save"}
               </button>
-              <button onClick={() => setModal(null)} className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition">
+              <button onClick={guard.requestClose} className="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-white transition">
                 Cancel
               </button>
             </div>
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={guard.confirming}
+        title="Discard changes?"
+        description="You have unsaved changes. If you leave now they will not be saved."
+        confirmLabel="Discard"
+        destructive
+        onConfirm={guard.confirmClose}
+        onCancel={guard.cancelClose}
+      />
 
       <ConfirmDialog
         open={!!deleteTarget}
