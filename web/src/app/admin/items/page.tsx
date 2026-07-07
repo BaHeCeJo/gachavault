@@ -7,6 +7,7 @@ import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
+import { focusKeyFor } from "@/lib/imageFocus";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { type CardLayout } from "@/components/ItemCard";
@@ -596,6 +597,8 @@ export default function AdminItemsPage() {
                     label="Image"
                     value={getFieldValue("image_url")}
                     onChange={(url) => setFieldValue("image_url", url)}
+                    focus={getFieldValue(focusKeyFor("image_url"))}
+                    onFocusChange={(f) => setFieldValue(focusKeyFor("image_url"), f)}
                     placeholder="https://… or upload →"
                     previewHeight="h-20"
                   />
@@ -734,6 +737,8 @@ export default function AdminItemsPage() {
                           label={field.label}
                           value={currentVal}
                           onChange={(url) => setFieldValue(field.key, url)}
+                          focus={getFieldValue(focusKeyFor(field.key))}
+                          onFocusChange={(f) => setFieldValue(focusKeyFor(field.key), f)}
                           placeholder="https://… or upload →"
                           previewHeight="h-20"
                         />

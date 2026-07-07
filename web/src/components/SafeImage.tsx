@@ -20,6 +20,9 @@ interface SafeImageProps {
   priority?: boolean;
   loading?: "eager" | "lazy";
   quality?: number;
+  // CSS object-position for object-cover crops (e.g. "50% 30%"). Anchors the
+  // crop on the subject instead of the image center. See lib/imageFocus.
+  focus?: string;
 }
 
 // The Next image optimizer (powered by sharp in the standalone runtime — see
@@ -39,6 +42,7 @@ export function SafeImage({
   priority,
   loading,
   quality,
+  focus,
 }: SafeImageProps) {
   const [error, setError] = useState(false);
 
@@ -60,6 +64,7 @@ export function SafeImage({
       priority={priority}
       loading={priority ? undefined : (loading ?? "lazy")}
       quality={quality}
+      style={focus ? { objectPosition: focus } : undefined}
       {...sized}
     />
   );

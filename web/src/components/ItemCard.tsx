@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
+import { imageFocus } from "@/lib/imageFocus";
 import { cardGradient, RARITY_CLASSES } from "@/lib/theme";
 import {
   type AttrMap,
@@ -224,6 +225,7 @@ export default function ItemCard({
         src={imageUrl}
         alt={name}
         fill
+        focus={imageFocus(item.data)}
         sizes="(min-width: 1024px) 200px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
         className="object-cover group-hover:scale-105 transition-transform duration-200"
         fallback={

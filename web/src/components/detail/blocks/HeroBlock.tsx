@@ -1,6 +1,7 @@
 "use client";
 
 import { SafeImage } from "@/components/SafeImage";
+import { imageFocus } from "@/lib/imageFocus";
 import { cardGradient } from "@/lib/theme";
 import { type AttrMap, type GameAttribute, lookupAttr } from "@/lib/attrs";
 import type { ItemPageBundle } from "@/lib/seo";
@@ -55,7 +56,7 @@ export function HeroBlock({
       <div className="w-full max-w-[220px] mx-auto md:mx-0 md:max-w-none">
         <div className={`rounded-xl overflow-hidden border bg-gray-900 shadow-lg ${rarityBorder}`}>
           {imageUrl ? (
-            <SafeImage src={imageUrl} alt={name} width={400} height={400} priority sizes="(min-width: 768px) 280px, 100vw" className="w-full object-cover" fallback={
+            <SafeImage src={imageUrl} alt={name} width={400} height={400} priority sizes="(min-width: 768px) 280px, 100vw" focus={imageFocus(data, [c.image_field || "image_url", "icon_url"])} className="w-full object-cover" fallback={
               <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
                 {name[0]?.toUpperCase()}
               </div>
