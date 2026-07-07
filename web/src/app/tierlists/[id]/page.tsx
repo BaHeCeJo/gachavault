@@ -6,7 +6,7 @@ import Link from "next/link";
 import { tierlistsApi, itemsApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus } from "@/lib/imageFocus";
+import { imageFocus, imageZoom } from "@/lib/imageFocus";
 
 interface CustomTier { key: string; name: string; color: string }
 interface TierEntry { item_id: string; tier: string }
@@ -288,11 +288,13 @@ export default function TierListEditorPage() {
                         onClick={() => setItemTier(item.id, null)}
                         title={`Remove ${name} from tier`}
                       >
-                        <SafeImage src={img} alt={name} width={48} height={48} focus={imageFocus(item.data, ["image_url"])} className="w-12 h-12 rounded-lg object-cover" fallback={
-                          <div className="w-12 h-12 rounded-lg bg-gray-700 flex items-center justify-center text-lg font-semibold text-gray-400">
-                            {name[0]?.toUpperCase()}
-                          </div>
-                        } />
+                        <div className="w-12 h-12 rounded-lg overflow-hidden">
+                          <SafeImage src={img} alt={name} width={48} height={48} focus={imageFocus(item.data, ["image_url"])} zoom={imageZoom(item.data, ["image_url"])} className="w-12 h-12 object-cover" fallback={
+                            <div className="w-12 h-12 bg-gray-700 flex items-center justify-center text-lg font-semibold text-gray-400">
+                              {name[0]?.toUpperCase()}
+                            </div>
+                          } />
+                        </div>
                         <div className="absolute inset-0 rounded-lg bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-semibold text-white transition">
                           ✕
                         </div>
@@ -331,11 +333,13 @@ export default function TierListEditorPage() {
                   className="cursor-pointer"
                   onClick={() => setOpenPicker((cur) => (cur === item.id ? null : item.id))}
                 >
-                  <SafeImage src={img} alt={name} width={48} height={48} focus={imageFocus(item.data, ["image_url"])} className="w-12 h-12 rounded-lg object-cover" fallback={
-                    <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center text-lg font-semibold text-gray-600">
-                      {name[0]?.toUpperCase()}
-                    </div>
-                  } />
+                  <div className="w-12 h-12 rounded-lg overflow-hidden">
+                    <SafeImage src={img} alt={name} width={48} height={48} focus={imageFocus(item.data, ["image_url"])} zoom={imageZoom(item.data, ["image_url"])} className="w-12 h-12 object-cover" fallback={
+                      <div className="w-12 h-12 bg-gray-800 flex items-center justify-center text-lg font-semibold text-gray-600">
+                        {name[0]?.toUpperCase()}
+                      </div>
+                    } />
+                  </div>
                   <div
                     className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-1 ${openPicker === item.id ? "flex" : "hidden group-hover:flex"} gap-0.5 bg-gray-900 border border-gray-700 rounded-lg p-1 z-10`}
                   >

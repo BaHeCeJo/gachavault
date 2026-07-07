@@ -23,6 +23,10 @@ interface SafeImageProps {
   // CSS object-position for object-cover crops (e.g. "50% 30%"). Anchors the
   // crop on the subject instead of the image center. See lib/imageFocus.
   focus?: string;
+  // Zoom factor (> 1) applied on top of the object-cover crop, scaled around
+  // the focal point. Requires an overflow-hidden ancestor to clip the overflow
+  // (all card surfaces provide one). See lib/imageFocus.
+  zoom?: number;
 }
 
 // The Next image optimizer (powered by sharp in the standalone runtime — see
@@ -43,6 +47,7 @@ export function SafeImage({
   loading,
   quality,
   focus,
+  zoom,
 }: SafeImageProps) {
   const [error, setError] = useState(false);
 
@@ -54,6 +59,15 @@ export function SafeImage({
     ? { fill: true as const }
     : { width: width ?? 400, height: height ?? 300 };
 
+  const anchor = focus ?? "50% 50%";
+  const hasZoom = typeof zoom === "number" && zoom > 1;
+  const style = (focus || hasZoom)
+    ? {
+        objectPosition: anchor,
+        ...(hasZoom ? { transform: `scale(${zoom})`, transformOrigin: anchor } : {}),
+      }
+    : undefined;
+
   return (
     <Image
       src={src}
@@ -64,7 +78,7 @@ export function SafeImage({
       priority={priority}
       loading={priority ? undefined : (loading ?? "lazy")}
       quality={quality}
-      style={focus ? { objectPosition: focus } : undefined}
+      style={style}
       {...sized}
     />
   );

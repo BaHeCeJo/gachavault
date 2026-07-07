@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus } from "@/lib/imageFocus";
+import { imageFocus, imageZoom } from "@/lib/imageFocus";
 import { type AdminItem } from "./types";
 
 // Tabular view of the items list — image thumb + name + slug + updated
@@ -56,19 +56,22 @@ export function ItemTable({
                 >
                   <td className="px-4 py-2">
                     {img ? (
-                      <SafeImage
-                        src={img}
-                        alt={name}
-                        width={40}
-                        height={40}
-                        focus={imageFocus(item.data, ["image_url"])}
-                        className="w-10 h-10 rounded object-cover"
-                        fallback={
-                          <div className="w-10 h-10 rounded bg-gray-800 flex items-center justify-center text-gray-600 font-semibold">
-                            {name[0]?.toUpperCase()}
-                          </div>
-                        }
-                      />
+                      <div className="w-10 h-10 rounded overflow-hidden">
+                        <SafeImage
+                          src={img}
+                          alt={name}
+                          width={40}
+                          height={40}
+                          focus={imageFocus(item.data, ["image_url"])}
+                          zoom={imageZoom(item.data, ["image_url"])}
+                          className="w-10 h-10 object-cover"
+                          fallback={
+                            <div className="w-10 h-10 bg-gray-800 flex items-center justify-center text-gray-600 font-semibold">
+                              {name[0]?.toUpperCase()}
+                            </div>
+                          }
+                        />
+                      </div>
                     ) : (
                       <div className="w-10 h-10 rounded bg-gray-800 flex items-center justify-center text-gray-600 font-semibold">
                         {name[0]?.toUpperCase()}

@@ -49,6 +49,8 @@ export interface ResolvedRef {
   image_url?: string;
   // Focal point paired with image_url (CSS object-position); see lib/imageFocus.
   focus?: string;
+  // Zoom factor paired with image_url; see lib/imageFocus.
+  zoom?: number;
 }
 
 // Secondary data hydrated client-side after the server render: itemref

@@ -9,17 +9,25 @@ interface Props {
   onChange: (url: string) => void;
   placeholder?: string;
   previewHeight?: string;
-  // When provided, the preview becomes an interactive focal-point picker:
-  // click or drag on the image to set where the crop anchors (stored as a CSS
-  // object-position string like "50% 30%"). Omit for a plain preview.
+  // When onFocusChange is provided the preview becomes an interactive cropper:
+  // drag the image to reposition it and use the zoom slider to enlarge/reduce.
+  // Stored as a focal point (CSS object-position, "50% 30%") plus a zoom factor
+  // (>= 1). The viewport mirrors the site's crop path, so it's WYSIWYG.
   focus?: string;
   onFocusChange?: (focus: string) => void;
+  zoom?: number;
+  onZoomChange?: (zoom: number) => void;
 }
+
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 3;
 
 function parseFocus(focus: string | undefined): [number, number] {
   const m = (focus ?? "").match(/(-?\d+(?:\.\d+)?)%\s+(-?\d+(?:\.\d+)?)%/);
   return m ? [Number(m[1]), Number(m[2])] : [50, 50];
 }
+
+const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 export default function ImageUploadField({
   label,
@@ -29,10 +37,12 @@ export default function ImageUploadField({
   previewHeight = "h-16",
   focus,
   onFocusChange,
+  zoom,
+  onZoomChange,
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
-  const draggingRef = useRef(false);
+  const dragRef = useRef<{ x: number; y: number } | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
@@ -53,17 +63,30 @@ export default function ImageUploadField({
     }
   };
 
-  const focusEnabled = !!onFocusChange;
+  const cropEnabled = !!onFocusChange;
   const [fx, fy] = parseFocus(focus);
+  const z = typeof zoom === "number" && zoom > MIN_ZOOM ? Math.min(zoom, MAX_ZOOM) : MIN_ZOOM;
   const focusPos = `${fx}% ${fy}%`;
 
-  const applyFocus = (clientX: number, clientY: number) => {
+  // Drag the image to pan. Moving the image right reveals its left side, so the
+  // object-position percentage moves opposite to the pointer.
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current = { x: e.clientX, y: e.clientY };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const start = dragRef.current;
     const box = boxRef.current;
-    if (!box || !onFocusChange) return;
+    if (!start || !box || !onFocusChange) return;
     const rect = box.getBoundingClientRect();
-    const x = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
-    const y = Math.min(100, Math.max(0, ((clientY - rect.top) / rect.height) * 100));
-    onFocusChange(`${Math.round(x)}% ${Math.round(y)}%`);
+    const nx = clamp(fx - ((e.clientX - start.x) / rect.width) * 100, 0, 100);
+    const ny = clamp(fy - ((e.clientY - start.y) / rect.height) * 100, 0, 100);
+    dragRef.current = { x: e.clientX, y: e.clientY };
+    onFocusChange(`${Math.round(nx)}% ${Math.round(ny)}%`);
+  };
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current = null;
+    e.currentTarget.releasePointerCapture(e.pointerId);
   };
 
   return (
@@ -94,24 +117,17 @@ export default function ImageUploadField({
         />
       </div>
 
-      {value && focusEnabled && (
+      {value && cropEnabled && (
         <div className="mt-2">
-          {/* Interactive crop preview: mirrors the card crop (object-cover with
-              the chosen object-position) so what you see here is what the cards
-              show. Click or drag to move the anchor. */}
+          {/* The viewport is card-shaped and renders the image with the exact
+              same crop the site uses (object-cover + focal point + zoom), so
+              what you frame here is what the cards show. Drag to reposition. */}
           <div
             ref={boxRef}
-            className="relative h-44 w-full rounded overflow-hidden bg-gray-800 cursor-crosshair select-none touch-none"
-            onPointerDown={(e) => {
-              draggingRef.current = true;
-              e.currentTarget.setPointerCapture(e.pointerId);
-              applyFocus(e.clientX, e.clientY);
-            }}
-            onPointerMove={(e) => { if (draggingRef.current) applyFocus(e.clientX, e.clientY); }}
-            onPointerUp={(e) => {
-              draggingRef.current = false;
-              e.currentTarget.releasePointerCapture(e.pointerId);
-            }}
+            className="relative w-full aspect-[16/10] rounded overflow-hidden bg-gray-800 cursor-grab active:cursor-grabbing select-none touch-none"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -120,31 +136,39 @@ export default function ImageUploadField({
               aria-hidden="true"
               draggable={false}
               className="absolute inset-0 h-full w-full object-cover pointer-events-none"
-              style={{ objectPosition: focusPos }}
+              style={{
+                objectPosition: focusPos,
+                transform: z > 1 ? `scale(${z})` : undefined,
+                transformOrigin: focusPos,
+              }}
               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
             />
-            {/* Anchor marker */}
-            <div
-              className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_2px_rgba(0,0,0,0.6)] pointer-events-none"
-              style={{ left: `${fx}%`, top: `${fy}%` }}
-            >
-              <div className="absolute inset-1.5 rounded-full bg-white/80" />
-            </div>
           </div>
-          <div className="mt-1 flex items-center justify-between text-xs text-gray-500">
-            <span>Click or drag to set the focal point ({fx}% {fy}%)</span>
+          <div className="mt-2 flex items-center gap-3">
+            <span className="text-xs text-gray-400 shrink-0">Zoom</span>
+            <input
+              type="range"
+              min={MIN_ZOOM}
+              max={MAX_ZOOM}
+              step={0.05}
+              value={z}
+              onChange={(e) => onZoomChange?.(Number(e.target.value))}
+              className="flex-1 accent-white"
+            />
+            <span className="text-xs text-gray-500 w-10 text-right tabular-nums">{z.toFixed(2)}×</span>
             <button
               type="button"
-              onClick={() => onFocusChange?.("50% 50%")}
-              className="text-gray-400 hover:text-white transition"
+              onClick={() => { onFocusChange?.("50% 50%"); onZoomChange?.(1); }}
+              className="text-xs text-gray-400 hover:text-white transition shrink-0"
             >
-              Reset to center
+              Reset
             </button>
           </div>
+          <p className="mt-1 text-xs text-gray-500">Drag the image to reposition · slide to zoom</p>
         </div>
       )}
 
-      {value && !focusEnabled && (
+      {value && !cropEnabled && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={value}

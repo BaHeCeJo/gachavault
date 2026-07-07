@@ -6,7 +6,7 @@ import Link from "next/link";
 import { searchApi, gamesApi } from "@/lib/api";
 import { Suspense } from "react";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus } from "@/lib/imageFocus";
+import { imageFocus, imageZoom } from "@/lib/imageFocus";
 
 interface SearchHit {
   id: string;
@@ -191,6 +191,7 @@ function SearchContent() {
                       alt={hit.name}
                       fill
                       focus={imageFocus(hit.data, ["image_url"])}
+                      zoom={imageZoom(hit.data, ["image_url"])}
                       className="object-cover"
                       fallback={
                         <div className="h-28 w-full bg-gray-800 flex items-center justify-center text-3xl font-semibold text-gray-600">

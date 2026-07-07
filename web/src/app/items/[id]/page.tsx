@@ -7,7 +7,7 @@ import { adminApi, collectionsApi, gamesApi, itemsApi } from "@/lib/api";
 import { canEdit, isAdmin } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus } from "@/lib/imageFocus";
+import { imageFocus, imageZoom } from "@/lib/imageFocus";
 
 interface Item {
   id: string;
@@ -314,11 +314,13 @@ export default function ItemDetailPage() {
     <main className="max-w-4xl mx-auto px-6 py-10">
       {/* Header */}
       <div className="flex gap-6 mb-8">
-        <SafeImage src={imageUrl} alt={name} width={128} height={128} focus={imageFocus(item.data, ["image_url"])} className="w-32 h-32 rounded-xl object-cover flex-shrink-0" fallback={
-          <div className="w-32 h-32 rounded-xl bg-gray-800 flex items-center justify-center text-4xl font-semibold text-gray-600 flex-shrink-0">
-            {name[0]?.toUpperCase()}
-          </div>
-        } />
+        <div className="w-32 h-32 rounded-xl overflow-hidden flex-shrink-0">
+          <SafeImage src={imageUrl} alt={name} width={128} height={128} focus={imageFocus(item.data, ["image_url"])} zoom={imageZoom(item.data, ["image_url"])} className="w-32 h-32 object-cover" fallback={
+            <div className="w-32 h-32 bg-gray-800 flex items-center justify-center text-4xl font-semibold text-gray-600">
+              {name[0]?.toUpperCase()}
+            </div>
+          } />
+        </div>
         <div className="flex-1">
           <div className="flex items-start justify-between gap-4">
             <h1 className="text-3xl font-semibold">{name}</h1>
@@ -676,7 +678,7 @@ export default function ItemDetailPage() {
                   className="group flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-600 transition"
                 >
                   <div className="relative h-20 w-full">
-                    <SafeImage src={rImage} alt={rName} fill focus={imageFocus(r.data, ["image_url"])} className="object-cover" fallback={
+                    <SafeImage src={rImage} alt={rName} fill focus={imageFocus(r.data, ["image_url"])} zoom={imageZoom(r.data, ["image_url"])} className="object-cover" fallback={
                       <div className="h-20 w-full bg-gray-800 flex items-center justify-center text-2xl font-semibold text-gray-600">
                         {rName[0]?.toUpperCase()}
                       </div>

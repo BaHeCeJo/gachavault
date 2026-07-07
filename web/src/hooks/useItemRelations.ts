@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { gamesApi, itemsApi } from "@/lib/api";
-import { imageFocus } from "@/lib/imageFocus";
+import { imageFocus, imageZoom } from "@/lib/imageFocus";
 import type {
   Item,
   ItemFull,
@@ -55,6 +55,7 @@ export function useItemRelations({
                 section_slug: refItem.section_slug,
                 image_url: (refItem.data?.image_url ?? refItem.data?.icon_url) as string | undefined,
                 focus: imageFocus(refItem.data),
+                zoom: imageZoom(refItem.data),
               });
             }
           });
@@ -107,6 +108,7 @@ export function useItemRelations({
                   section_slug: sourceItem.section_slug,
                   image_url: (sourceItem.data?.image_url ?? sourceItem.data?.icon_url) as string | undefined,
                   focus: imageFocus(sourceItem.data),
+                  zoom: imageZoom(sourceItem.data),
                 });
               }
             }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus } from "@/lib/imageFocus";
+import { imageFocus, imageZoom } from "@/lib/imageFocus";
 import { cardGradient } from "@/lib/theme";
 import type { ItemPageBundle } from "@/lib/seo";
 import { itemHref } from "@/components/detail/FieldValue";
@@ -14,6 +14,7 @@ interface GridCard {
   name: string;
   image_url?: string;
   focus?: string;
+  zoom?: number;
   href: string;
 }
 
@@ -44,6 +45,7 @@ export function ItemGridBlock({
       name: (r.data?.name as string) ?? r.slug,
       image_url: (r.data?.image_url ?? r.data?.icon_url) as string | undefined,
       focus: imageFocus(r.data),
+      zoom: imageZoom(r.data),
       href: itemHref(r),
     }));
   } else {
@@ -51,12 +53,12 @@ export function ItemGridBlock({
     const t = field?.type;
     if (t === "backref") {
       cards = (relations.backRefs.get(source) ?? []).map((r) => ({
-        id: r.id, name: r.name, image_url: r.image_url, focus: r.focus, href: itemHref(r),
+        id: r.id, name: r.name, image_url: r.image_url, focus: r.focus, zoom: r.zoom, href: itemHref(r),
       }));
     } else if (t === "itemref") {
       const v = data[source];
       const ref = typeof v === "string" ? relations.resolvedRefs.get(v) : undefined;
-      cards = ref ? [{ id: ref.id, name: ref.name, image_url: ref.image_url, focus: ref.focus, href: itemHref(ref) }] : [];
+      cards = ref ? [{ id: ref.id, name: ref.name, image_url: ref.image_url, focus: ref.focus, zoom: ref.zoom, href: itemHref(ref) }] : [];
     } else {
       const v = data[source];
       const entries = Array.isArray(v) ? (v as { id?: string; name?: string }[]) : [];
@@ -91,7 +93,7 @@ export function ItemGridBlock({
             className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-amber-500/60 hover:shadow-md hover:shadow-amber-500/10 hover:scale-[1.03] transition-all duration-200 group"
           >
             <div className="relative h-20">
-              <SafeImage src={card.image_url} alt={card.name} fill sizes="(min-width: 768px) 140px, (min-width: 640px) 25vw, 33vw" focus={card.focus} className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
+              <SafeImage src={card.image_url} alt={card.name} fill sizes="(min-width: 768px) 140px, (min-width: 640px) 25vw, 33vw" focus={card.focus} zoom={card.zoom} className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
                 <div className={`h-full bg-gradient-to-br ${cardGradient(card.name)} flex items-center justify-center text-xl font-semibold text-white/50`}>
                   {card.name[0]?.toUpperCase()}
                 </div>
