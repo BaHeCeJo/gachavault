@@ -17,6 +17,9 @@ interface ServerRow {
   name: string;
   timezone: string;
   sort_order: number;
+  // Server-local hour (0–23) the game's daily reset fires. Drives the reset
+  // checklist countdowns; defaults to 4 (04:00, the common gacha reset).
+  reset_hour: number;
 }
 
 const TZ_OPTIONS = [
@@ -33,9 +36,9 @@ const TZ_OPTIONS = [
 
 // The standard 3-region setup most HoYo/Kuro games use.
 const STANDARD_SERVERS: ServerRow[] = [
-  { key: "asia", name: "Asia", timezone: "Asia/Shanghai", sort_order: 0 },
-  { key: "europe", name: "Europe", timezone: "Europe/Paris", sort_order: 1 },
-  { key: "america", name: "America", timezone: "America/New_York", sort_order: 2 },
+  { key: "asia", name: "Asia", timezone: "Asia/Shanghai", sort_order: 0, reset_hour: 4 },
+  { key: "europe", name: "Europe", timezone: "Europe/Paris", sort_order: 1, reset_hour: 4 },
+  { key: "america", name: "America", timezone: "America/New_York", sort_order: 2, reset_hour: 4 },
 ];
 
 export default function AdminServersPage() {
@@ -71,7 +74,10 @@ export default function AdminServersPage() {
     setRows((rs) => rs.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
   const remove = (i: number) => setRows((rs) => rs.filter((_, idx) => idx !== i));
   const addRow = () =>
-    setRows((rs) => [...rs, { key: "", name: "", timezone: "UTC", sort_order: rs.length }]);
+    setRows((rs) => [
+      ...rs,
+      { key: "", name: "", timezone: "UTC", sort_order: rs.length, reset_hour: 4 },
+    ]);
 
   const save = async () => {
     setError("");
@@ -146,8 +152,15 @@ export default function AdminServersPage() {
                 </div>
               )}
 
+              <div className="grid grid-cols-[1fr_1fr_1.4fr_5rem_auto] gap-2 px-1 text-[11px] uppercase tracking-wide text-gray-500">
+                <span>Key</span>
+                <span>Name</span>
+                <span>Timezone</span>
+                <span title="Server-local hour the daily reset fires">Reset h</span>
+                <span />
+              </div>
               {rows.map((r, i) => (
-                <div key={i} className="grid grid-cols-[1fr_1fr_1.4fr_auto] gap-2 items-center">
+                <div key={i} className="grid grid-cols-[1fr_1fr_1.4fr_5rem_auto] gap-2 items-center">
                   <input
                     value={r.key}
                     onChange={(e) => update(i, { key: e.target.value })}
@@ -169,6 +182,19 @@ export default function AdminServersPage() {
                       <option key={tz} value={tz}>{tz}</option>
                     ))}
                   </select>
+                  <input
+                    type="number"
+                    min={0}
+                    max={23}
+                    value={r.reset_hour}
+                    onChange={(e) =>
+                      update(i, {
+                        reset_hour: Math.max(0, Math.min(23, Number(e.target.value) || 0)),
+                      })
+                    }
+                    title="Daily reset hour, server-local (0–23)"
+                    className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                  />
                   <button
                     type="button"
                     onClick={() => remove(i)}
