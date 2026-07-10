@@ -1,8 +1,9 @@
 use axum::{
-    routing::{get, put},
+    routing::{get, post, put},
     Router,
 };
 
+mod checklist;
 mod db;
 mod models;
 mod routes;
@@ -58,6 +59,27 @@ async fn main() {
         .route(
             "/api/v1/events/:id/translations/:locale",
             put(routes::upsert_event_translation).delete(routes::delete_event_translation),
+        )
+        // Reset checklists (auth). Static segments are registered before the
+        // `:game_id` param so axum routes `/toggle` and `/custom` to their
+        // specific handlers rather than treating them as a game id.
+        .route("/api/v1/checklists/toggle", post(routes::toggle_task))
+        .route(
+            "/api/v1/checklists/custom",
+            post(routes::create_custom_task),
+        )
+        .route(
+            "/api/v1/checklists/custom/:task_id",
+            put(routes::update_custom_task).delete(routes::delete_custom_task),
+        )
+        .route("/api/v1/checklists/:game_id", get(routes::get_checklist))
+        .route(
+            "/api/v1/checklists/:game_id/hidden",
+            put(routes::set_hidden),
+        )
+        .route(
+            "/api/v1/checklists/:game_id/templates",
+            get(routes::list_templates_admin).put(routes::set_templates),
         )
         .with_state(pool);
 

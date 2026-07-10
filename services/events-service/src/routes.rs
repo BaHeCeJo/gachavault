@@ -10,6 +10,7 @@ use shared_types::ApiResponse;
 use sqlx::PgPool;
 use uuid::Uuid;
 
+use crate::checklist;
 use crate::db;
 use crate::models::*;
 
@@ -601,4 +602,359 @@ fn ensure_admin(auth: &AuthUser) -> AppResult<()> {
     } else {
         Err(AppError::Forbidden("Admin role required".into()))
     }
+}
+
+// ── Checklists ───────────────────────────────────────────────────────────────
+
+fn validate_cadence(
+    kind: &str,
+    interval_days: Option<i32>,
+    reset_weekday: Option<i16>,
+    reset_day_of_month: Option<i16>,
+) -> AppResult<()> {
+    match kind {
+        "daily" => {}
+        "weekly" => {
+            if !matches!(reset_weekday, Some(0..=6)) {
+                return Err(AppError::BadRequest(
+                    "weekly cadence requires reset_weekday 0–6 (0=Mon)".into(),
+                ));
+            }
+        }
+        "monthly" => {
+            if !matches!(reset_day_of_month, Some(1..=28)) {
+                return Err(AppError::BadRequest(
+                    "monthly cadence requires reset_day_of_month 1–28".into(),
+                ));
+            }
+        }
+        "interval" => {
+            if !matches!(interval_days, Some(n) if n >= 1) {
+                return Err(AppError::BadRequest(
+                    "interval cadence requires interval_days >= 1".into(),
+                ));
+            }
+        }
+        _ => {
+            return Err(AppError::BadRequest(
+                "cadence_kind must be daily, weekly, monthly, or interval".into(),
+            ))
+        }
+    }
+    Ok(())
+}
+
+/// A user's resolved checklist for a game: admin defaults (minus hidden) plus
+/// the user's own tasks, each tagged with `done`/`period_key`/`resets_at` for the
+/// current period in the user's home-server timezone.
+pub async fn get_checklist(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(game_id): Path<Uuid>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    let ctx = checklist::resolve_reset_context(&pool, auth.id(), game_id)
+        .await
+        .map_err(AppError::Database)?;
+    let now = Utc::now();
+
+    let templates = checklist::list_templates(&pool, game_id, false)
+        .await
+        .map_err(AppError::Database)?;
+    let hidden: std::collections::HashSet<Uuid> = checklist::list_hidden(&pool, auth.id(), game_id)
+        .await
+        .map_err(AppError::Database)?
+        .into_iter()
+        .collect();
+    let user_tasks = checklist::list_user_tasks(&pool, auth.id(), game_id)
+        .await
+        .map_err(AppError::Database)?;
+
+    // (rendered task json, source, id, current period key) — the trailing fields
+    // let us batch the completion lookup and stamp `done` afterward.
+    let mut rows: Vec<(serde_json::Value, String, Uuid, String)> = Vec::new();
+
+    for t in templates.iter().filter(|t| !hidden.contains(&t.id)) {
+        let cadence = checklist::Cadence {
+            kind: t.cadence_kind.clone(),
+            interval_days: t.interval_days,
+            reset_weekday: t.reset_weekday,
+            reset_day_of_month: t.reset_day_of_month,
+        };
+        let period = checklist::resolve_period(&cadence, ctx.tz, ctx.reset_hour, now);
+        let key = period.key.clone();
+        rows.push((
+            serde_json::json!({
+                "id": t.id,
+                "source": "template",
+                "editable": false,
+                "title": t.title,
+                "description": t.description,
+                "cadence_kind": t.cadence_kind,
+                "interval_days": t.interval_days,
+                "reset_weekday": t.reset_weekday,
+                "reset_day_of_month": t.reset_day_of_month,
+                "sort_order": t.sort_order,
+                "period_key": period.key,
+                "resets_at": period.resets_at,
+            }),
+            "template".to_string(),
+            t.id,
+            key,
+        ));
+    }
+
+    for t in user_tasks.iter() {
+        let cadence = checklist::Cadence {
+            kind: t.cadence_kind.clone(),
+            interval_days: t.interval_days,
+            reset_weekday: t.reset_weekday,
+            reset_day_of_month: t.reset_day_of_month,
+        };
+        let period = checklist::resolve_period(&cadence, ctx.tz, ctx.reset_hour, now);
+        let key = period.key.clone();
+        rows.push((
+            serde_json::json!({
+                "id": t.id,
+                "source": "custom",
+                "editable": true,
+                "title": t.title,
+                "description": serde_json::Value::Null,
+                "cadence_kind": t.cadence_kind,
+                "interval_days": t.interval_days,
+                "reset_weekday": t.reset_weekday,
+                "reset_day_of_month": t.reset_day_of_month,
+                "sort_order": t.sort_order,
+                "period_key": period.key,
+                "resets_at": period.resets_at,
+            }),
+            "custom".to_string(),
+            t.id,
+            key,
+        ));
+    }
+
+    let triples: Vec<(String, Uuid, String)> = rows
+        .iter()
+        .map(|(_, s, id, k)| (s.clone(), *id, k.clone()))
+        .collect();
+    let completed = checklist::find_completed(&pool, auth.id(), &triples)
+        .await
+        .map_err(AppError::Database)?;
+
+    let tasks: Vec<serde_json::Value> = rows
+        .into_iter()
+        .map(|(mut value, source, id, key)| {
+            let done = completed.contains(&(source, id, key));
+            if let Some(obj) = value.as_object_mut() {
+                obj.insert("done".into(), serde_json::Value::Bool(done));
+            }
+            value
+        })
+        .collect();
+
+    let server = ctx.server_key.as_ref().map(|k| {
+        serde_json::json!({
+            "key": k,
+            "name": ctx.server_name,
+            "timezone": ctx.timezone,
+            "reset_hour": ctx.reset_hour,
+        })
+    });
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "game_id": game_id,
+        "server": server,
+        "tasks": tasks,
+    }))))
+}
+
+/// Mark a task done/undone for the current period. Resolves the task's game +
+/// cadence server-side so the client never supplies the period key.
+pub async fn toggle_task(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Json(body): Json<ToggleTaskRequest>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    let (game_id, cadence) = match body.source.as_str() {
+        "template" => {
+            let t = checklist::find_template(&pool, body.task_id)
+                .await
+                .map_err(AppError::Database)?
+                .ok_or_else(|| AppError::NotFound("Task not found".into()))?;
+            (
+                t.game_id,
+                checklist::Cadence {
+                    kind: t.cadence_kind,
+                    interval_days: t.interval_days,
+                    reset_weekday: t.reset_weekday,
+                    reset_day_of_month: t.reset_day_of_month,
+                },
+            )
+        }
+        "custom" => {
+            let t = checklist::find_user_task(&pool, body.task_id)
+                .await
+                .map_err(AppError::Database)?
+                .ok_or_else(|| AppError::NotFound("Task not found".into()))?;
+            if t.user_id != auth.id() {
+                return Err(AppError::Forbidden("Not your task".into()));
+            }
+            (
+                t.game_id,
+                checklist::Cadence {
+                    kind: t.cadence_kind,
+                    interval_days: t.interval_days,
+                    reset_weekday: t.reset_weekday,
+                    reset_day_of_month: t.reset_day_of_month,
+                },
+            )
+        }
+        _ => {
+            return Err(AppError::BadRequest(
+                "source must be 'template' or 'custom'".into(),
+            ))
+        }
+    };
+
+    let ctx = checklist::resolve_reset_context(&pool, auth.id(), game_id)
+        .await
+        .map_err(AppError::Database)?;
+    let period = checklist::resolve_period(&cadence, ctx.tz, ctx.reset_hour, Utc::now());
+
+    checklist::set_completion(
+        &pool,
+        auth.id(),
+        &body.source,
+        body.task_id,
+        &period.key,
+        body.done,
+    )
+    .await
+    .map_err(AppError::Database)?;
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "id": body.task_id,
+        "source": body.source,
+        "done": body.done,
+        "period_key": period.key,
+        "resets_at": period.resets_at,
+    }))))
+}
+
+pub async fn create_custom_task(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Json(body): Json<CreateUserTaskRequest>,
+) -> AppResult<Json<ApiResponse<DbUserTask>>> {
+    if body.title.trim().is_empty() {
+        return Err(AppError::BadRequest("title is required".into()));
+    }
+    validate_cadence(
+        &body.cadence_kind,
+        body.interval_days,
+        body.reset_weekday,
+        body.reset_day_of_month,
+    )?;
+
+    let task = checklist::create_user_task(&pool, auth.id(), &body)
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(task)))
+}
+
+pub async fn update_custom_task(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(id): Path<Uuid>,
+    Json(body): Json<UpdateUserTaskRequest>,
+) -> AppResult<Json<ApiResponse<DbUserTask>>> {
+    // When cadence is being changed, validate the resulting combination.
+    if let Some(kind) = body.cadence_kind.as_deref() {
+        validate_cadence(
+            kind,
+            body.interval_days,
+            body.reset_weekday,
+            body.reset_day_of_month,
+        )?;
+    }
+    if let Some(title) = body.title.as_deref() {
+        if title.trim().is_empty() {
+            return Err(AppError::BadRequest("title cannot be empty".into()));
+        }
+    }
+
+    let task = checklist::update_user_task(&pool, auth.id(), id, &body)
+        .await
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("Task not found".into()))?;
+    Ok(Json(ApiResponse::success(task)))
+}
+
+pub async fn delete_custom_task(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(id): Path<Uuid>,
+) -> AppResult<Json<ApiResponse<()>>> {
+    let removed = checklist::delete_user_task(&pool, auth.id(), id)
+        .await
+        .map_err(AppError::Database)?;
+    if !removed {
+        return Err(AppError::NotFound("Task not found".into()));
+    }
+    Ok(Json(ApiResponse::success(())))
+}
+
+pub async fn set_hidden(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(game_id): Path<Uuid>,
+    Json(body): Json<SetHiddenRequest>,
+) -> AppResult<Json<ApiResponse<()>>> {
+    checklist::set_hidden(&pool, auth.id(), game_id, &body.template_ids)
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(())))
+}
+
+// ── Checklist admin authoring ────────────────────────────────────────────────
+
+pub async fn list_templates_admin(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(game_id): Path<Uuid>,
+) -> AppResult<Json<ApiResponse<Vec<DbChecklistTemplate>>>> {
+    ensure_admin(&auth)?;
+    let templates = checklist::list_templates(&pool, game_id, true)
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(templates)))
+}
+
+pub async fn set_templates(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Path(game_id): Path<Uuid>,
+    Json(body): Json<SetTemplatesRequest>,
+) -> AppResult<Json<ApiResponse<Vec<DbChecklistTemplate>>>> {
+    ensure_admin(&auth)?;
+    for t in &body.templates {
+        if t.title.trim().is_empty() {
+            return Err(AppError::BadRequest("every template needs a title".into()));
+        }
+        validate_cadence(
+            &t.cadence_kind,
+            t.interval_days,
+            t.reset_weekday,
+            t.reset_day_of_month,
+        )?;
+    }
+
+    checklist::replace_templates(&pool, game_id, auth.id(), &body.templates)
+        .await
+        .map_err(AppError::Database)?;
+
+    let templates = checklist::list_templates(&pool, game_id, true)
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(templates)))
 }

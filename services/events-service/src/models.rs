@@ -39,6 +39,9 @@ pub struct DbGameServer {
     pub name: String,
     pub timezone: String,
     pub sort_order: i32,
+    /// Server-local hour (0–23) the game's daily reset fires. Drives the
+    /// checklist reset math; defaults to 4 (04:00, the common gacha reset).
+    pub reset_hour: i16,
 }
 
 /// One regional server in a game's server list (admin authoring input).
@@ -48,6 +51,7 @@ pub struct GameServerInput {
     pub name: String,
     pub timezone: Option<String>,
     pub sort_order: Option<i32>,
+    pub reset_hour: Option<i16>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -122,6 +126,101 @@ pub struct UpsertFollowRequest {
     pub event_types: Option<Vec<String>>,
     /// The follower's home server key for this game; NULL = use primary time.
     pub server: Option<String>,
+}
+
+// ── Checklists ───────────────────────────────────────────────────────────────
+//
+// A game exposes admin-authored default tasks (templates); a user sees those
+// (minus any they've hidden) plus their own custom tasks. Every task carries a
+// cadence describing how often it resets. See project_reset_checklist.
+
+#[derive(Debug, Serialize, sqlx::FromRow)]
+pub struct DbChecklistTemplate {
+    pub id: Uuid,
+    pub game_id: Uuid,
+    pub title: String,
+    pub description: Option<String>,
+    pub cadence_kind: String,
+    pub interval_days: Option<i32>,
+    pub reset_weekday: Option<i16>,
+    pub reset_day_of_month: Option<i16>,
+    pub sort_order: i32,
+    pub is_published: bool,
+    pub created_by: Option<Uuid>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Serialize, sqlx::FromRow)]
+pub struct DbUserTask {
+    pub id: Uuid,
+    pub user_id: Uuid,
+    pub game_id: Uuid,
+    pub title: String,
+    pub cadence_kind: String,
+    pub interval_days: Option<i32>,
+    pub reset_weekday: Option<i16>,
+    pub reset_day_of_month: Option<i16>,
+    pub sort_order: i32,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+/// One admin template in a game's default list (admin authoring input). `id` is
+/// present for an existing template being edited, absent for a new one — the
+/// replace-set keeps stable ids so a user's completions survive an edit.
+#[derive(Debug, Deserialize)]
+pub struct ChecklistTemplateInput {
+    pub id: Option<Uuid>,
+    pub title: String,
+    pub description: Option<String>,
+    pub cadence_kind: String,
+    pub interval_days: Option<i32>,
+    pub reset_weekday: Option<i16>,
+    pub reset_day_of_month: Option<i16>,
+    pub sort_order: Option<i32>,
+    pub is_published: Option<bool>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SetTemplatesRequest {
+    pub templates: Vec<ChecklistTemplateInput>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateUserTaskRequest {
+    pub game_id: Uuid,
+    pub title: String,
+    pub cadence_kind: String,
+    pub interval_days: Option<i32>,
+    pub reset_weekday: Option<i16>,
+    pub reset_day_of_month: Option<i16>,
+    pub sort_order: Option<i32>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateUserTaskRequest {
+    pub title: Option<String>,
+    pub cadence_kind: Option<String>,
+    pub interval_days: Option<i32>,
+    pub reset_weekday: Option<i16>,
+    pub reset_day_of_month: Option<i16>,
+    pub sort_order: Option<i32>,
+}
+
+/// Toggle a task done/undone for the current period. The service looks up the
+/// task by (source, task_id) to get its game + cadence, then stamps/removes a
+/// completion for the current period_key.
+#[derive(Debug, Deserialize)]
+pub struct ToggleTaskRequest {
+    pub source: String,
+    pub task_id: Uuid,
+    pub done: bool,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SetHiddenRequest {
+    pub template_ids: Vec<Uuid>,
 }
 
 /// Shared time/type/game filters applied to both the global calendar list and

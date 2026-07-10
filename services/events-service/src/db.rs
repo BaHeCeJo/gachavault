@@ -359,14 +359,15 @@ pub async fn replace_game_servers(
         .await?;
     for (idx, s) in servers.iter().enumerate() {
         sqlx::query(
-            "INSERT INTO events.game_servers (game_id, key, name, timezone, sort_order) \
-             VALUES ($1, $2, $3, $4, $5)",
+            "INSERT INTO events.game_servers (game_id, key, name, timezone, sort_order, reset_hour) \
+             VALUES ($1, $2, $3, $4, $5, $6)",
         )
         .bind(game_id)
         .bind(&s.key)
         .bind(&s.name)
         .bind(s.timezone.as_deref().unwrap_or("UTC"))
         .bind(s.sort_order.unwrap_or(idx as i32))
+        .bind(s.reset_hour.unwrap_or(4).clamp(0, 23))
         .execute(&mut *tx)
         .await?;
     }

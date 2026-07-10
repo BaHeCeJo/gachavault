@@ -118,6 +118,9 @@ async fn main() {
         .route("/api/v1/media", any(proxy_media))
         .route("/api/v1/search", any(proxy_search))
         .route("/api/v1/events", any(proxy_events))
+        // Checklists live in events-service (they reuse its game_servers /
+        // home-server data), so they proxy to the same upstream.
+        .route("/api/v1/checklists", any(proxy_events))
         .route("/api/v1/users", any(proxy_users))
         // Wildcard routes (with path segments)
         .route("/api/v1/auth/*path", any(proxy_auth))
@@ -128,6 +131,7 @@ async fn main() {
         .route("/api/v1/media/*path", any(proxy_media))
         .route("/api/v1/search/*path", any(proxy_search))
         .route("/api/v1/events/*path", any(proxy_events))
+        .route("/api/v1/checklists/*path", any(proxy_events))
         .route("/api/v1/users/*path", any(proxy_users))
         .merge(admin_router)
         .layer(middleware::from_fn_with_state(
