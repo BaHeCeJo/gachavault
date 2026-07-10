@@ -142,6 +142,44 @@
       "maintenance": "Maintenance"
     }
   },
+  "checklist": {
+    "title": "Check-list",
+    "subtitle": "Cochez vos tâches quotidiennes, hebdomadaires et récurrentes — elles se réinitialisent automatiquement selon l'horaire de votre serveur.",
+    "signInToUse": "Connectez-vous pour suivre vos tâches quotidiennes et hebdomadaires.",
+    "toCalendar": "Calendrier",
+    "selectGame": "Choisir un jeu",
+    "progress": "{done} / {total} faites",
+    "resetContext": "Réinitialisation à l'heure de {server}, à {hour} h 00 (heure du serveur).",
+    "noServerHint": "Heure de réinitialisation par défaut utilisée.",
+    "pickServer": "Définir votre serveur",
+    "resetsRel": "Réinitialisation {rel}",
+    "empty": "Aucune tâche pour l'instant. Ajoutez la vôtre ci-dessous.",
+    "groups": {
+      "daily": "Quotidien",
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel",
+      "interval": "Récurrent"
+    },
+    "cadence": {
+      "daily": "Quotidien",
+      "weeklyOn": "Hebdomadaire · {day}",
+      "monthlyOn": "Mensuel · {day}",
+      "everyNDays": "Tous les {n} jours"
+    },
+    "deleteTask": "Supprimer la tâche",
+    "hideTask": "Masquer ce modèle",
+    "addTask": "+ Ajouter votre tâche",
+    "taskTitlePlaceholder": "ex. Dépenser toute la résine",
+    "selectCadence": "Fréquence de réinitialisation",
+    "selectWeekday": "Jour de réinitialisation",
+    "selectDayOfMonth": "Jour du mois",
+    "everyLabel": "Tous les",
+    "daysLabel": "jours",
+    "add": "Ajouter",
+    "cancel": "Annuler",
+    "hiddenCount": "Modèles masqués ({n})",
+    "restore": "Restaurer"
+  },
   "items": {
     "addToCollection": "+ Ajouter à la collection",
     "inCollection": "✓ Dans la collection",

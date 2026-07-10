@@ -761,10 +761,25 @@ pub async fn get_checklist(
         })
     });
 
+    // Hidden defaults the user opted out of — returned so the UI can offer to
+    // restore them without needing the admin-only template list.
+    let hidden_templates: Vec<serde_json::Value> = templates
+        .iter()
+        .filter(|t| hidden.contains(&t.id))
+        .map(|t| {
+            serde_json::json!({
+                "id": t.id,
+                "title": t.title,
+                "cadence_kind": t.cadence_kind,
+            })
+        })
+        .collect();
+
     Ok(Json(ApiResponse::success(serde_json::json!({
         "game_id": game_id,
         "server": server,
         "tasks": tasks,
+        "hidden_templates": hidden_templates,
     }))))
 }
 

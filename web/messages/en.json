@@ -142,6 +142,44 @@
       "maintenance": "Maintenance"
     }
   },
+  "checklist": {
+    "title": "Checklist",
+    "subtitle": "Tick off your daily, weekly and recurring tasks — they reset automatically on your server's schedule.",
+    "signInToUse": "Sign in to track your daily and weekly tasks.",
+    "toCalendar": "Calendar",
+    "selectGame": "Select game",
+    "progress": "{done} / {total} done",
+    "resetContext": "Resets on {server} time, at {hour}:00 server-local.",
+    "noServerHint": "Using the default reset time.",
+    "pickServer": "Set your server",
+    "resetsRel": "Resets {rel}",
+    "empty": "No tasks yet. Add your own below.",
+    "groups": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "interval": "Recurring"
+    },
+    "cadence": {
+      "daily": "Daily",
+      "weeklyOn": "Weekly · {day}",
+      "monthlyOn": "Monthly · {day}",
+      "everyNDays": "Every {n} days"
+    },
+    "deleteTask": "Delete task",
+    "hideTask": "Hide this default",
+    "addTask": "+ Add your own task",
+    "taskTitlePlaceholder": "e.g. Spend all resin",
+    "selectCadence": "Reset frequency",
+    "selectWeekday": "Reset day",
+    "selectDayOfMonth": "Reset day of month",
+    "everyLabel": "Every",
+    "daysLabel": "days",
+    "add": "Add",
+    "cancel": "Cancel",
+    "hiddenCount": "Hidden defaults ({n})",
+    "restore": "Restore"
+  },
   "items": {
     "addToCollection": "+ Add to Collection",
     "inCollection": "✓ In Collection",
