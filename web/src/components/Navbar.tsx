@@ -49,6 +49,7 @@ export function Navbar() {
           <LanguageSwitcher />
           <NavLink href="/games">Games</NavLink>
           <NavLink href="/calendar">Calendar</NavLink>
+          <NavLink href="/checklist">Checklist</NavLink>
           <NavLink href="/collections">Collection</NavLink>
           <NavLink href="/tierlists">Tier Lists</NavLink>
           <NavLink href="/search">Search</NavLink>
@@ -125,6 +126,9 @@ export function Navbar() {
             </NavLink>
             <NavLink href="/calendar" onClick={closeMenu}>
               <span className="block px-2 py-3">Calendar</span>
+            </NavLink>
+            <NavLink href="/checklist" onClick={closeMenu}>
+              <span className="block px-2 py-3">Checklist</span>
             </NavLink>
             <NavLink href="/collections" onClick={closeMenu}>
               <span className="block px-2 py-3">Collection</span>

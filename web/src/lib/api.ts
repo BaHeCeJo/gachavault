@@ -212,6 +212,24 @@ export const eventsApi = {
     api.delete(`/events/${id}/translations/${locale}`),
 };
 
+export const checklistApi = {
+  // A user's resolved checklist for a game (defaults minus hidden + custom tasks,
+  // each with done/period_key/resets_at for the current period).
+  get: (gameId: string) => api.get(`/checklists/${gameId}`),
+  toggle: (data: { source: string; task_id: string; done: boolean }) =>
+    api.post("/checklists/toggle", data),
+  createCustom: (data: object) => api.post("/checklists/custom", data),
+  updateCustom: (id: string, data: object) => api.put(`/checklists/custom/${id}`, data),
+  deleteCustom: (id: string) => api.delete(`/checklists/custom/${id}`),
+  // Replace the user's hidden-defaults set for one game.
+  setHidden: (gameId: string, templateIds: string[]) =>
+    api.put(`/checklists/${gameId}/hidden`, { template_ids: templateIds }),
+  // Admin authoring of a game's default tasks.
+  listTemplates: (gameId: string) => api.get(`/checklists/${gameId}/templates`),
+  setTemplates: (gameId: string, templates: object[]) =>
+    api.put(`/checklists/${gameId}/templates`, { templates }),
+};
+
 export const mediaApi = {
   list: () => api.get("/media"),
   get: (id: string) => api.get(`/media/${id}`),

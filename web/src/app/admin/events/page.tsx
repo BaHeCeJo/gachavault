@@ -507,6 +507,12 @@ export default function AdminEventsPage() {
           >
             Servers
           </Link>
+          <Link
+            href="/admin/events/checklists"
+            className="px-4 py-2 rounded-lg border border-gray-700 text-sm hover:border-amber-500/60 hover:text-amber-300 transition"
+          >
+            Checklists
+          </Link>
           <select
             value={gameFilter}
             onChange={(e) => setGameFilter(e.target.value)}

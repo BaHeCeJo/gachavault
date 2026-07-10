@@ -10,6 +10,7 @@ import {
   adminApi,
   authApi,
   eventsApi,
+  checklistApi,
   type EventsQueryParams,
 } from "@/lib/api";
 
@@ -243,6 +244,81 @@ export const useDeleteFollow = () => {
       qc.invalidateQueries({ queryKey: ["event-follows"] });
       qc.invalidateQueries({ queryKey: ["my-calendar"] });
     },
+  });
+};
+
+// ── Checklists ───────────────────────────────────────────────────────────────
+
+export const useChecklist = (gameId: string, enabled = true) =>
+  useQuery({
+    queryKey: ["checklist", gameId],
+    queryFn: () => checklistApi.get(gameId).then((r) => r.data.data),
+    enabled: enabled && !!gameId,
+  });
+
+interface ToggleArgs {
+  source: string;
+  task_id: string;
+  done: boolean;
+}
+
+// Optimistic toggle so the checkbox flips instantly; the settled invalidation
+// reconciles with the server-computed period.
+export const useToggleChecklistTask = (gameId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: ToggleArgs) => checklistApi.toggle(data),
+    onMutate: async (data: ToggleArgs) => {
+      await qc.cancelQueries({ queryKey: ["checklist", gameId] });
+      const prev = qc.getQueryData(["checklist", gameId]);
+      qc.setQueryData(["checklist", gameId], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          tasks: old.tasks.map((t: any) =>
+            t.id === data.task_id && t.source === data.source ? { ...t, done: data.done } : t,
+          ),
+        };
+      });
+      return { prev };
+    },
+    onError: (_e, _d, ctx: any) => {
+      if (ctx?.prev) qc.setQueryData(["checklist", gameId], ctx.prev);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ["checklist", gameId] }),
+  });
+};
+
+export const useCreateCustomTask = (gameId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: object) => checklistApi.createCustom(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["checklist", gameId] }),
+  });
+};
+
+export const useUpdateCustomTask = (gameId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: object }) =>
+      checklistApi.updateCustom(id, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["checklist", gameId] }),
+  });
+};
+
+export const useDeleteCustomTask = (gameId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => checklistApi.deleteCustom(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["checklist", gameId] }),
+  });
+};
+
+export const useSetHiddenTemplates = (gameId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (templateIds: string[]) => checklistApi.setHidden(gameId, templateIds),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["checklist", gameId] }),
   });
 };
 
