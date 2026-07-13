@@ -80,6 +80,7 @@ pub async fn list_events(
 
 pub async fn get_event(
     State(pool): State<PgPool>,
+    auth: OptionalAuthUser,
     Path(id): Path<Uuid>,
     Query(q): Query<EventsQuery>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
@@ -87,6 +88,13 @@ pub async fn get_event(
         .await
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound("Event not found".into()))?;
+
+    // Draft (unpublished) events are visible only to admins; everyone else
+    // gets the same 404 as a nonexistent id, so drafts aren't disclosed.
+    let is_admin = matches!(&auth.0, Some(c) if c.role == shared_auth::ROLE_ADMIN || c.role == shared_auth::ROLE_SUPERADMIN);
+    if !event.is_published && !is_admin {
+        return Err(AppError::NotFound("Event not found".into()));
+    }
 
     let locale = q.locale.as_deref().unwrap_or("en");
     let mut rendered = render_events(&pool, vec![event], locale).await?;
