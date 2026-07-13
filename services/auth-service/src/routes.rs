@@ -540,6 +540,24 @@ pub async fn set_user_role(
             "Only superadmins may grant the superadmin role".into(),
         ));
     }
+    // Only superadmins may change a superadmin's role. Without this, a plain
+    // admin could demote (delete the role row of) a superadmin — the grant
+    // guard above only blocks *granting* superadmin, not stripping it.
+    let target_role: Option<String> = sqlx::query_scalar(
+        "SELECT role FROM auth.user_roles \
+         WHERE user_id = $1 AND game_id IS NULL AND section_id IS NULL LIMIT 1",
+    )
+    .bind(user_id)
+    .fetch_optional(&pool)
+    .await
+    .map_err(AppError::Database)?;
+    if target_role.as_deref() == Some(shared_auth::ROLE_SUPERADMIN)
+        && auth.role() != shared_auth::ROLE_SUPERADMIN
+    {
+        return Err(AppError::Forbidden(
+            "Only superadmins may change a superadmin's role".into(),
+        ));
+    }
 
     // Remove any existing global role
     sqlx::query(
