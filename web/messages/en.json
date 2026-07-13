@@ -142,6 +142,25 @@
       "maintenance": "Maintenance"
     }
   },
+  "banners": {
+    "title": "Banners",
+    "subtitle": "Current and upcoming character & weapon banners across every game.",
+    "current": "Current",
+    "upcoming": "Upcoming",
+    "ended": "Ended",
+    "ongoing": "Ongoing",
+    "startsRel": "Starts {rel}",
+    "endsRel": "Ends {rel}",
+    "empty": "No banners to show.",
+    "failedToLoad": "Failed to load banners.",
+    "allGames": "All games",
+    "filterGame": "Filter by game",
+    "allServers": "All servers",
+    "scope": {
+      "current": "Current & upcoming",
+      "past": "Past"
+    }
+  },
   "checklist": {
     "title": "Checklist",
     "subtitle": "Tick off your daily, weekly and recurring tasks — they reset automatically on your server's schedule.",

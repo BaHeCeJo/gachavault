@@ -48,6 +48,7 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-6 text-sm">
           <LanguageSwitcher />
           <NavLink href="/games">Games</NavLink>
+          <NavLink href="/banners">Banners</NavLink>
           <NavLink href="/calendar">Calendar</NavLink>
           <NavLink href="/checklist">Checklist</NavLink>
           <NavLink href="/collections">Collection</NavLink>
@@ -123,6 +124,9 @@ export function Navbar() {
             <div className="h-px bg-gray-800 my-1" />
             <NavLink href="/games" onClick={closeMenu}>
               <span className="block px-2 py-3">Games</span>
+            </NavLink>
+            <NavLink href="/banners" onClick={closeMenu}>
+              <span className="block px-2 py-3">Banners</span>
             </NavLink>
             <NavLink href="/calendar" onClick={closeMenu}>
               <span className="block px-2 py-3">Calendar</span>

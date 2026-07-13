@@ -142,6 +142,25 @@
       "maintenance": "Maintenance"
     }
   },
+  "banners": {
+    "title": "Bannières",
+    "subtitle": "Bannières de personnages et d'armes en cours et à venir sur tous les jeux.",
+    "current": "En cours",
+    "upcoming": "À venir",
+    "ended": "Terminé",
+    "ongoing": "En cours",
+    "startsRel": "Commence {rel}",
+    "endsRel": "Se termine {rel}",
+    "empty": "Aucune bannière à afficher.",
+    "failedToLoad": "Échec du chargement des bannières.",
+    "allGames": "Tous les jeux",
+    "filterGame": "Filtrer par jeu",
+    "allServers": "Tous les serveurs",
+    "scope": {
+      "current": "En cours et à venir",
+      "past": "Passées"
+    }
+  },
   "checklist": {
     "title": "Check-list",
     "subtitle": "Cochez vos tâches quotidiennes, hebdomadaires et récurrentes — elles se réinitialisent automatiquement selon l'horaire de votre serveur.",
