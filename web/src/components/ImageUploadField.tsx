@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { mediaApi } from "@/lib/api";
+import SquareIconCropper from "@/components/SquareIconCropper";
 
 interface Props {
   label: string;
@@ -9,6 +10,10 @@ interface Props {
   onChange: (url: string) => void;
   placeholder?: string;
   previewHeight?: string;
+  // When set, shows a "Make square icon" button that opens a cropper on this
+  // source URL (e.g. the card art) and writes the cropped square PNG back via
+  // onChange. Used to generate a character icon from the splash art.
+  squareCropSource?: string;
   // When onFocusChange is provided the preview becomes an interactive cropper:
   // drag the image to reposition it and use the zoom slider to enlarge/reduce.
   // Stored as a focal point (CSS object-position, "50% 30%") plus a zoom factor
@@ -39,12 +44,14 @@ export default function ImageUploadField({
   onFocusChange,
   zoom,
   onZoomChange,
+  squareCropSource,
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ x: number; y: number } | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [cropping, setCropping] = useState(false);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -108,6 +115,16 @@ export default function ImageUploadField({
         >
           {uploading ? "Uploading…" : "Upload file"}
         </button>
+        {squareCropSource && (
+          <button
+            type="button"
+            onClick={() => setCropping(true)}
+            className="px-3 py-2 rounded-lg border border-gray-700 hover:border-amber-500/60 hover:text-amber-300 text-sm transition whitespace-nowrap"
+            title="Crop a square icon from the card art"
+          >
+            ✂ Make icon
+          </button>
+        )}
         <input
           ref={fileRef}
           type="file"
@@ -116,6 +133,17 @@ export default function ImageUploadField({
           onChange={handleUpload}
         />
       </div>
+
+      {cropping && squareCropSource && (
+        <SquareIconCropper
+          sourceUrl={squareCropSource}
+          onCancel={() => setCropping(false)}
+          onSaved={(url) => {
+            onChange(url);
+            setCropping(false);
+          }}
+        />
+      )}
 
       {value && cropEnabled && (
         <div className="mt-2">

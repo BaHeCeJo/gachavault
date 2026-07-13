@@ -745,6 +745,9 @@ export default function AdminItemsPage() {
                           onZoomChange={(z) => setFieldValue(zoomKeyFor(field.key), z)}
                           placeholder="https://… or upload →"
                           previewHeight="h-20"
+                          // Generate this (icon) image from its own art if set,
+                          // else from the item's card art (image_url).
+                          squareCropSource={currentVal || getFieldValue("image_url")}
                         />
                       );
                     }
