@@ -64,6 +64,7 @@ interface Schema {
   fields: SchemaFieldLite[];
   filter_attrs: string[] | null;
   card_layout: CardLayout | null;
+  is_collectable?: boolean;
 }
 
 // Picks the schema that governs how an item card renders. Prefer the item's
@@ -318,6 +319,7 @@ export default function GamePageClient({ initial }: ClientProps) {
                     layout={sch?.card_layout ?? null}
                     schemaFields={sch?.fields}
                     fallbackGameSlug={game.slug}
+                    portrait={sch?.is_collectable}
                   />
                 );
               })}
@@ -417,6 +419,7 @@ function OverviewTab({
                   layout={sch?.card_layout ?? null}
                   schemaFields={sch?.fields}
                   fallbackGameSlug={gameSlug}
+                  portrait={sch?.is_collectable}
                 />
               );
             })}

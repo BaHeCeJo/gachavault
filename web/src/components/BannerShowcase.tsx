@@ -128,6 +128,11 @@ function BannerCard({
   const countdown = countdownLabel(status, start, end, locale, t);
   const featured = event.featured_items;
   const hasServers = event.server_times.length > 0;
+  // Card background: the event's own art, else the featured character's splash.
+  const featuredSplash = featured
+    .map((f) => f.data?.image_url)
+    .find((v): v is string => typeof v === "string" && v.trim().length > 0);
+  const heroBg = event.image_url || featuredSplash;
 
   return (
     <article
@@ -138,7 +143,7 @@ function BannerCard({
       {/* Hero splash */}
       <div className="relative h-32 w-full overflow-hidden">
         <SafeImage
-          src={event.image_url}
+          src={heroBg}
           alt={event.title}
           fill
           sizes="(max-width: 640px) 100vw, 400px"

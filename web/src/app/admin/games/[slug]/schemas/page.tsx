@@ -25,6 +25,7 @@ interface Schema {
   // [] = no filters, ["path","rarity"] = only those.
   filter_attrs: string[] | null;
   card_layout: CardLayout | null;
+  is_collectable?: boolean;
   // Raw detail-page template JSON; round-tripped here, edited via the
   // dedicated block editor (later stage). Parsed at the edge.
   page_layout?: unknown;
@@ -184,6 +185,7 @@ function schemaSnapshot(v: {
   filterAttrs: string[] | null;
   cardLayout: CardLayout | null;
   pageLayout: PageLayout | null;
+  isCollectable: boolean;
 }): string {
   return JSON.stringify({
     name: v.name,
@@ -192,6 +194,7 @@ function schemaSnapshot(v: {
     filterAttrs: v.filterAttrs,
     cardLayout: v.cardLayout,
     pageLayout: v.pageLayout,
+    isCollectable: v.isCollectable,
   });
 }
 
@@ -219,6 +222,9 @@ export default function AdminGameSchemasPage() {
   // Detail-page template. Round-tripped now (preserved across saves); the
   // visual block editor lands in a later stage. null = legacy fixed page.
   const [pageLayout, setPageLayout] = useState<PageLayout | null>(null);
+  // Marks this type as collectable (characters/weapons/agents/…): gives items
+  // the four standard image slots + portrait browse cards.
+  const [isCollectable, setIsCollectable] = useState(false);
   const [viewMode, setViewMode] = useState<"visual" | "json">("visual");
   const [jsonDraft, setJsonDraft] = useState("");
   const [jsonError, setJsonError] = useState("");
@@ -261,6 +267,7 @@ export default function AdminGameSchemasPage() {
     setFilterAttrs(null);
     setCardLayout(null);
     setPageLayout(null);
+    setIsCollectable(false);
     setJsonDraft(JSON.stringify(DEFAULT_FIELDS, null, 2));
     setViewMode("visual");
     setJsonError("");
@@ -277,6 +284,7 @@ export default function AdminGameSchemasPage() {
         filterAttrs: null,
         cardLayout: null,
         pageLayout: null,
+        isCollectable: false,
       }),
     );
     setModal({ mode: "create" });
@@ -292,6 +300,7 @@ export default function AdminGameSchemasPage() {
     setFilterAttrs(loadedFilterAttrs);
     setCardLayout(schema.card_layout ?? null);
     setPageLayout(loadedPageLayout);
+    setIsCollectable(schema.is_collectable ?? false);
     setJsonDraft(JSON.stringify(schema.fields, null, 2));
     setViewMode("visual");
     setJsonError("");
@@ -304,6 +313,7 @@ export default function AdminGameSchemasPage() {
         filterAttrs: loadedFilterAttrs,
         cardLayout: schema.card_layout ?? null,
         pageLayout: loadedPageLayout,
+        isCollectable: schema.is_collectable ?? false,
       }),
     );
     setModal({ mode: "edit", schema });
@@ -393,6 +403,7 @@ export default function AdminGameSchemasPage() {
           filter_attrs: filterAttrs,
           card_layout: cardLayout,
           page_layout: pageLayout,
+          is_collectable: isCollectable,
         });
         setSchemas((prev) => [...prev, res.data.data]);
       } else if (modal?.mode === "edit") {
@@ -402,6 +413,7 @@ export default function AdminGameSchemasPage() {
           filter_attrs: filterAttrs,
           card_layout: cardLayout,
           page_layout: pageLayout,
+          is_collectable: isCollectable,
         });
         setSchemas((prev) => prev.map((s) => (s.id === modal.schema.id ? res.data.data : s)));
       }
@@ -443,7 +455,7 @@ export default function AdminGameSchemasPage() {
       : fields;
   const dirty =
     !!modal &&
-    schemaSnapshot({ name, sectionId, fields: currentFields, filterAttrs, cardLayout, pageLayout }) !==
+    schemaSnapshot({ name, sectionId, fields: currentFields, filterAttrs, cardLayout, pageLayout, isCollectable }) !==
       initialSnapshot;
   const guard = useModalCloseGuard({ open: !!modal, dirty, onClose: closeModal });
 
@@ -687,6 +699,23 @@ export default function AdminGameSchemasPage() {
                 </>
               )}
             </div>
+
+            <label className="flex items-start gap-2 rounded-lg border border-gray-800 bg-gray-900/40 p-3 text-sm">
+              <input
+                type="checkbox"
+                checked={isCollectable}
+                onChange={(e) => setIsCollectable(e.target.checked)}
+                className="mt-0.5"
+              />
+              <span>
+                <span className="font-medium text-gray-200">Collectable type</span>
+                <span className="block text-xs text-gray-500">
+                  Characters, weapons, agents, Nikkes… Gives items the four standard image slots
+                  (icon, portrait, splash art, full art) with icon &amp; portrait croppable from
+                  the art, and portrait (3:4) browse cards. Leave off for relics, materials, etc.
+                </span>
+              </span>
+            </label>
 
             <FilterAttrsEditor
               fields={fields}

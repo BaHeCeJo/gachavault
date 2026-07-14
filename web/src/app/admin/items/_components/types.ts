@@ -31,4 +31,5 @@ export interface AdminSchema {
   section_id: string | null;
   fields: AdminSchemaField[];
   card_layout?: CardLayout | null;
+  is_collectable?: boolean;
 }

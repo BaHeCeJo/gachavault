@@ -31,6 +31,7 @@ export function ItemCardGrid({
             attrMap={attrMap}
             layout={schema?.card_layout ?? null}
             schemaFields={schema?.fields}
+            portrait={schema?.is_collectable}
             linkMode="image"
             footer={
               <div className="flex gap-1 mt-1.5">

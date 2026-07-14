@@ -34,6 +34,7 @@ pub struct DbSchema {
     pub filter_attrs: Option<serde_json::Value>,
     pub card_layout: Option<serde_json::Value>,
     pub page_layout: Option<serde_json::Value>,
+    pub is_collectable: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -71,6 +72,7 @@ pub struct CreateSchemaRequest {
     pub filter_attrs: Option<serde_json::Value>,
     pub card_layout: Option<serde_json::Value>,
     pub page_layout: Option<serde_json::Value>,
+    pub is_collectable: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -92,6 +94,8 @@ pub struct UpdateSchemaRequest {
     pub card_layout: Option<Option<serde_json::Value>>,
     #[serde(default, deserialize_with = "deserialize_some")]
     pub page_layout: Option<Option<serde_json::Value>>,
+    // Plain Option: non-null boolean updated via COALESCE (like games.is_active).
+    pub is_collectable: Option<bool>,
 }
 
 fn deserialize_some<'de, T, D>(deserializer: D) -> Result<Option<T>, D::Error>
