@@ -17,13 +17,17 @@ interface Props {
   onCancel: () => void;
   /** Called with the uploaded square-icon URL once cropping succeeds. */
   onSaved: (url: string) => void;
-  /** Output side length in px (square). */
-  outputSize?: number;
+  /** Upper bound on the output side in px; the icon is never upscaled past the
+   *  crop's own resolution, so a small face crop stays sharp instead of being
+   *  inflated into a blurry square. */
+  maxOutput?: number;
 }
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 8;
 const VIEWPORT = 320; // on-screen size of the square framing viewport, in px
+// Below this native crop size the face has too few real pixels for a crisp icon.
+const LOWRES_PX = 220;
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
@@ -31,7 +35,7 @@ export default function SquareIconCropper({
   sourceUrl,
   onCancel,
   onSaved,
-  outputSize = 512,
+  maxOutput = 512,
 }: Props) {
   const imgRef = useRef<HTMLImageElement>(null);
   const dragRef = useRef<{ x: number; y: number } | null>(null);
@@ -89,15 +93,18 @@ export default function SquareIconCropper({
     setSaving(true);
     try {
       const s = side;
+      // Never upscale: cap the output at the crop's own pixel size so a small
+      // face crop is stored at native resolution (sharp) rather than inflated.
+      const out = Math.min(maxOutput, Math.round(s));
       const canvas = document.createElement("canvas");
-      canvas.width = outputSize;
-      canvas.height = outputSize;
+      canvas.width = out;
+      canvas.height = out;
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("no canvas context");
       ctx.imageSmoothingQuality = "high";
       // Sample the framed source square and scale it into the output square.
       // Left transparent where the source is transparent (no background fill).
-      ctx.drawImage(imgRef.current, cc.x - s / 2, cc.y - s / 2, s, s, 0, 0, outputSize, outputSize);
+      ctx.drawImage(imgRef.current, cc.x - s / 2, cc.y - s / 2, s, s, 0, 0, out, out);
       const blob: Blob = await new Promise((resolve, reject) =>
         canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob failed"))), "image/png"),
       );
@@ -120,6 +127,8 @@ export default function SquareIconCropper({
   const scale = side ? VIEWPORT / side : 1;
   const tx = cc ? -(cc.x - side / 2) * scale : 0;
   const ty = cc ? -(cc.y - side / 2) * scale : 0;
+  // Native output size for the current framing (never upscaled past the crop).
+  const outPx = Math.min(maxOutput, Math.round(side));
 
   return (
     <div
@@ -186,6 +195,18 @@ export default function SquareIconCropper({
             {zoom.toFixed(1)}×
           </span>
         </div>
+
+        {dims && (
+          <p className="mt-2 text-xs text-gray-500">
+            Output: <span className="tabular-nums">{outPx}×{outPx}px</span>
+          </p>
+        )}
+        {dims && outPx < LOWRES_PX && (
+          <p className="mt-1 text-xs text-amber-500/90">
+            Low resolution — the face fills only {outPx}px here. Zoom out or use a source where the
+            face is larger for a crisp icon.
+          </p>
+        )}
 
         {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
 
