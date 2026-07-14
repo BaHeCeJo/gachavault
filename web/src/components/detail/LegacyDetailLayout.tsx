@@ -34,6 +34,7 @@ export function LegacyDetailLayout({
   const name = (item.data?.name as string) ?? item.slug;
   const imageUrl = item.data?.image_url as string | undefined;
   const iconUrl = item.data?.icon_url as string | undefined;
+  const fullart = item.data?.fullart_url as string | undefined;
 
   const orderedFields: { key: string; label: string; type?: string; attribute_type?: string; source_section?: string; source_field?: string }[] = fields.length > 0
     ? fields.filter(f => !HIDDEN_IN_DETAILS.has(f.key)).map(f => ({ key: f.key, label: f.label, type: f.type, attribute_type: f.attribute_type, source_section: f.source_section, source_field: f.source_field }))
@@ -64,7 +65,20 @@ export function LegacyDetailLayout({
         {/* Left: image — capped width and centered on mobile so the stats block stays above the fold */}
         <div className="flex flex-col gap-4 w-full max-w-[220px] mx-auto md:mx-0 md:max-w-none">
           <div className={`rounded-xl overflow-hidden border bg-gray-900 shadow-lg ${rarityBorder} ${rarityGlow}`}>
-            {imageUrl ? (
+            {fullart ? (
+              // Transparent full art centered over a blurred splash backdrop.
+              <div className="relative aspect-[3/4]">
+                {imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={imageUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover scale-125 blur-2xl opacity-40" />
+                )}
+                <SafeImage src={fullart} alt={name} fill priority sizes="(min-width: 768px) 280px, 100vw" className="relative object-contain p-2" fallback={
+                  <div className={`h-full bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
+                    {name[0]?.toUpperCase()}
+                  </div>
+                } />
+              </div>
+            ) : imageUrl ? (
               <SafeImage src={imageUrl} alt={name} width={400} height={400} priority sizes="(min-width: 768px) 280px, 100vw" focus={imageFocus(item.data, ["image_url"])} zoom={imageZoom(item.data, ["image_url"])} className="w-full object-cover" fallback={
                 <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
                   {name[0]?.toUpperCase()}

@@ -15,24 +15,43 @@ function baseKey(urlKey: string): string {
   return urlKey.endsWith("_url") ? urlKey.slice(0, -4) : urlKey;
 }
 
-// URL-key order for COMPACT/thumbnail displays: the purpose-made square icon
-// first, then the card art. The detail-page splash uses the reverse (card art
-// first). Pass this to imageFocus/imageZoom so the focal point matches whichever
-// image is shown (a pre-cropped icon usually has no focus → centered, which is
-// correct since it's already square).
-export const THUMB_KEYS = ["icon_url", "image_url"];
+// Image roles for collectable items (characters, weapons, …):
+//   icon_url      square icon (small/square surfaces)
+//   portrait_url  3:4 portrait (browse/list cards)
+//   image_url     splash art WITH background (backdrop, gallery, banner bg)
+//   fullart_url   full art, transparent (detail-page hero)
+// Legacy items have only image_url; the fallback chains keep them rendering.
 
-// Preferred image for a compact/thumbnail display: the square icon when set,
-// else the card art. Returns undefined when neither is present.
-export function thumbUrl(
+// Small/square surfaces: icon → portrait → splash.
+export const THUMB_KEYS = ["icon_url", "portrait_url", "image_url"];
+// Browse/list cards (3:4): portrait → icon → splash.
+export const PORTRAIT_KEYS = ["portrait_url", "icon_url", "image_url"];
+
+function firstUrl(
   data: Record<string, unknown> | null | undefined,
+  keys: string[],
 ): string | undefined {
   if (!data) return undefined;
-  for (const k of THUMB_KEYS) {
+  for (const k of keys) {
     const url = data[k];
     if (typeof url === "string" && url.trim()) return url;
   }
   return undefined;
+}
+
+// Preferred image for a compact/thumbnail display (icon first).
+export function thumbUrl(data: Record<string, unknown> | null | undefined): string | undefined {
+  return firstUrl(data, THUMB_KEYS);
+}
+
+// Preferred image for a portrait browse card (portrait first).
+export function portraitUrl(data: Record<string, unknown> | null | undefined): string | undefined {
+  return firstUrl(data, PORTRAIT_KEYS);
+}
+
+// The big detail-page hero render: transparent full art, else the splash art.
+export function heroArtUrl(data: Record<string, unknown> | null | undefined): string | undefined {
+  return firstUrl(data, ["fullart_url", "image_url"]);
 }
 
 export function focusKeyFor(urlKey: string): string {
