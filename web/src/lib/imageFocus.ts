@@ -15,6 +15,26 @@ function baseKey(urlKey: string): string {
   return urlKey.endsWith("_url") ? urlKey.slice(0, -4) : urlKey;
 }
 
+// URL-key order for COMPACT/thumbnail displays: the purpose-made square icon
+// first, then the card art. The detail-page splash uses the reverse (card art
+// first). Pass this to imageFocus/imageZoom so the focal point matches whichever
+// image is shown (a pre-cropped icon usually has no focus → centered, which is
+// correct since it's already square).
+export const THUMB_KEYS = ["icon_url", "image_url"];
+
+// Preferred image for a compact/thumbnail display: the square icon when set,
+// else the card art. Returns undefined when neither is present.
+export function thumbUrl(
+  data: Record<string, unknown> | null | undefined,
+): string | undefined {
+  if (!data) return undefined;
+  for (const k of THUMB_KEYS) {
+    const url = data[k];
+    if (typeof url === "string" && url.trim()) return url;
+  }
+  return undefined;
+}
+
 export function focusKeyFor(urlKey: string): string {
   return `${baseKey(urlKey)}_focus`;
 }

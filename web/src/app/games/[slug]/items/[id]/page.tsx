@@ -493,7 +493,7 @@ export default function ItemDetailPage() {
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {relatedItems.slice(0, 12).map((rel) => {
               const relName = (rel.data?.name as string) ?? rel.slug;
-              const relImg = (rel.data?.image_url ?? rel.data?.icon_url) as string | undefined;
+              const relImg = (rel.data?.icon_url ?? rel.data?.image_url) as string | undefined;
               const relRarity = rel.data?.rarity;
               const relFirstEl = Array.isArray(rel.data?.element) ? rel.data.element[0] : rel.data?.element;
               const relElem = lookupAttr(attrMap, "element", relFirstEl)

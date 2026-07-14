@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus, imageZoom } from "@/lib/imageFocus";
+import { imageFocus, imageZoom, thumbUrl, THUMB_KEYS } from "@/lib/imageFocus";
 import { cardGradient } from "@/lib/theme";
 import type { ItemPageBundle } from "@/lib/seo";
 import { itemHref } from "@/components/detail/FieldValue";
@@ -43,9 +43,9 @@ export function ItemGridBlock({
     cards = relations.relatedItems.map((r) => ({
       id: r.id,
       name: (r.data?.name as string) ?? r.slug,
-      image_url: (r.data?.image_url ?? r.data?.icon_url) as string | undefined,
-      focus: imageFocus(r.data),
-      zoom: imageZoom(r.data),
+      image_url: thumbUrl(r.data),
+      focus: imageFocus(r.data, THUMB_KEYS),
+      zoom: imageZoom(r.data, THUMB_KEYS),
       href: itemHref(r),
     }));
   } else {

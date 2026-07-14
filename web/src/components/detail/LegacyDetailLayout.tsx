@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus, imageZoom } from "@/lib/imageFocus";
+import { imageFocus, imageZoom, thumbUrl, THUMB_KEYS } from "@/lib/imageFocus";
 import { cardGradient } from "@/lib/theme";
 import { type AttrMap, lookupAttr } from "@/lib/attrs";
 import type { ItemPageBundle } from "@/lib/seo";
@@ -155,7 +155,7 @@ export function LegacyDetailLayout({
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {relatedItems.slice(0, 12).map((rel) => {
               const relName = (rel.data?.name as string) ?? rel.slug;
-              const relImg = (rel.data?.image_url ?? rel.data?.icon_url) as string | undefined;
+              const relImg = thumbUrl(rel.data);
               const relRarity = rel.data?.rarity;
               const relFirstEl = Array.isArray(rel.data?.element) ? rel.data.element[0] : rel.data?.element;
               const relElem = lookupAttr(attrMap, "element", relFirstEl)
@@ -170,7 +170,7 @@ export function LegacyDetailLayout({
                   className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-amber-500/60 hover:shadow-md hover:shadow-amber-500/10 hover:scale-[1.03] transition-all duration-200 group"
                 >
                   <div className="relative h-20">
-                    <SafeImage src={relImg} alt={relName} fill sizes="(min-width: 768px) 140px, (min-width: 640px) 25vw, 33vw" focus={imageFocus(rel.data)} zoom={imageZoom(rel.data)} className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
+                    <SafeImage src={relImg} alt={relName} fill sizes="(min-width: 768px) 140px, (min-width: 640px) 25vw, 33vw" focus={imageFocus(rel.data, THUMB_KEYS)} zoom={imageZoom(rel.data, THUMB_KEYS)} className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
                       <div className={`h-full bg-gradient-to-br ${cardGradient(relName)} flex items-center justify-center text-xl font-semibold text-white/50`}>
                         {relName[0]?.toUpperCase()}
                       </div>

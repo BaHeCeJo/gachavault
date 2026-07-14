@@ -7,7 +7,7 @@ import { adminApi, collectionsApi, gamesApi, itemsApi } from "@/lib/api";
 import { canEdit, isAdmin } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus, imageZoom } from "@/lib/imageFocus";
+import { imageFocus, imageZoom, thumbUrl, THUMB_KEYS } from "@/lib/imageFocus";
 
 interface Item {
   id: string;
@@ -670,7 +670,7 @@ export default function ItemDetailPage() {
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {relatedItems.map((r) => {
               const rName = (r.data?.name as string) ?? r.slug;
-              const rImage = r.data?.image_url as string | undefined;
+              const rImage = thumbUrl(r.data);
               return (
                 <Link
                   key={r.id}
@@ -678,7 +678,7 @@ export default function ItemDetailPage() {
                   className="group flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-600 transition"
                 >
                   <div className="relative h-20 w-full">
-                    <SafeImage src={rImage} alt={rName} fill focus={imageFocus(r.data, ["image_url"])} zoom={imageZoom(r.data, ["image_url"])} className="object-cover" fallback={
+                    <SafeImage src={rImage} alt={rName} fill focus={imageFocus(r.data, THUMB_KEYS)} zoom={imageZoom(r.data, THUMB_KEYS)} className="object-cover" fallback={
                       <div className="h-20 w-full bg-gray-800 flex items-center justify-center text-2xl font-semibold text-gray-600">
                         {rName[0]?.toUpperCase()}
                       </div>

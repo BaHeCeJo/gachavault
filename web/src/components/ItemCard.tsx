@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus, imageZoom } from "@/lib/imageFocus";
+import { imageFocus, imageZoom, thumbUrl, THUMB_KEYS } from "@/lib/imageFocus";
 import { cardGradient, RARITY_CLASSES } from "@/lib/theme";
 import {
   type AttrMap,
@@ -131,7 +131,8 @@ export default function ItemCard({
   footer,
 }: Props) {
   const name = (item.data?.name as string) ?? item.slug;
-  const imageUrl = (item.data?.image_url ?? item.data?.icon_url) as string | undefined;
+  // Compact card: prefer the purpose-made icon, fall back to the card art.
+  const imageUrl = thumbUrl(item.data);
   const rarity = item.data?.rarity;
   const rarityStr = typeof rarity === "number" ? undefined : String(rarity ?? "");
 
@@ -225,8 +226,8 @@ export default function ItemCard({
         src={imageUrl}
         alt={name}
         fill
-        focus={imageFocus(item.data)}
-        zoom={imageZoom(item.data)}
+        focus={imageFocus(item.data, THUMB_KEYS)}
+        zoom={imageZoom(item.data, THUMB_KEYS)}
         sizes="(min-width: 1024px) 200px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
         className="object-cover group-hover:scale-105 transition-transform duration-200"
         fallback={

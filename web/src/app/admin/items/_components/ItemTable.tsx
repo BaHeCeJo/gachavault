@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus, imageZoom } from "@/lib/imageFocus";
+import { imageFocus, imageZoom, thumbUrl, THUMB_KEYS } from "@/lib/imageFocus";
 import { type AdminItem } from "./types";
 
 // Tabular view of the items list — image thumb + name + slug + updated
@@ -48,7 +48,7 @@ export function ItemTable({
           ) : (
             visibleItems.map((item) => {
               const name = (item.data?.name as string) ?? item.slug;
-              const img = item.data?.image_url as string | undefined;
+              const img = thumbUrl(item.data);
               return (
                 <tr
                   key={item.id}
@@ -62,8 +62,8 @@ export function ItemTable({
                           alt={name}
                           width={40}
                           height={40}
-                          focus={imageFocus(item.data, ["image_url"])}
-                          zoom={imageZoom(item.data, ["image_url"])}
+                          focus={imageFocus(item.data, THUMB_KEYS)}
+                          zoom={imageZoom(item.data, THUMB_KEYS)}
                           className="w-10 h-10 object-cover"
                           fallback={
                             <div className="w-10 h-10 bg-gray-800 flex items-center justify-center text-gray-600 font-semibold">
