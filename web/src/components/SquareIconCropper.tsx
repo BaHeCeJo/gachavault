@@ -10,8 +10,9 @@ import { useRef, useState } from "react";
 import { mediaApi } from "@/lib/api";
 
 interface Props {
-  /** Image to crop from (full art / splash, or an existing crop to redo). */
-  sourceUrl: string;
+  /** Images the crop can be taken from (full art / portrait / splash …). The
+   *  user picks one when there's more than one; the first is the default. */
+  sources: { label: string; url: string }[];
   onCancel: () => void;
   /** Called with the uploaded crop's URL once cropping succeeds. */
   onSaved: (url: string) => void;
@@ -33,7 +34,7 @@ const LOWRES_PX = 220;
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 export default function SquareIconCropper({
-  sourceUrl,
+  sources,
   onCancel,
   onSaved,
   aspect = 1,
@@ -42,12 +43,24 @@ export default function SquareIconCropper({
 }: Props) {
   const imgRef = useRef<HTMLImageElement>(null);
   const dragRef = useRef<{ x: number; y: number } | null>(null);
+  const [srcIdx, setSrcIdx] = useState(0);
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const [zoom, setZoom] = useState(1);
   // Center of the crop rectangle, in SOURCE pixels. Null until the image loads.
   const [center, setCenter] = useState<{ x: number; y: number } | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const sourceUrl = sources[srcIdx]?.url ?? "";
+  // Switch source image: reset the frame so onLoad re-centers on the new art.
+  const selectSource = (i: number) => {
+    if (i === srcIdx) return;
+    setSrcIdx(i);
+    setDims(null);
+    setCenter(null);
+    setZoom(1);
+    setError("");
+  };
 
   // Crop rectangle size (source px) for the current zoom: the largest rect of
   // ratio `aspect` that fits the image at z=1, shrinking as you zoom in.
@@ -170,6 +183,26 @@ export default function SquareIconCropper({
           Drag to position · zoom to frame. A {aspect === 1 ? "square" : "cropped"} PNG is created
           (transparency kept).
         </p>
+
+        {sources.length > 1 && (
+          <div className="mb-3 flex flex-wrap gap-1">
+            <span className="mr-1 self-center text-xs text-gray-500">Source</span>
+            {sources.map((s, i) => (
+              <button
+                key={s.label}
+                type="button"
+                onClick={() => selectSource(i)}
+                className={`rounded-md px-2 py-1 text-xs transition ${
+                  i === srcIdx
+                    ? "bg-amber-500 text-black"
+                    : "border border-gray-700 text-gray-300 hover:text-white"
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Checkerboard backing makes transparent areas obvious while framing. */}
         <div

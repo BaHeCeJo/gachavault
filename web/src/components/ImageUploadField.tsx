@@ -10,10 +10,10 @@ interface Props {
   onChange: (url: string) => void;
   placeholder?: string;
   previewHeight?: string;
-  // When set, shows a "Make icon" button that opens a cropper on this source
-  // URL (e.g. the card art) to cut a square PNG. Used to generate a character
-  // icon from the splash art.
-  squareCropSource?: string;
+  // When any have a URL, shows a "Make …" button that opens a cropper. The user
+  // picks which source to crop from (full art / portrait / splash …); empty
+  // entries are dropped. Used to generate an icon/portrait from the art.
+  cropSources?: { label: string; url: string }[];
   // Where the cropped icon is written. Defaults to this field's own onChange;
   // set it to route the icon to a different field (e.g. the main Image field
   // crops the card but saves the result as icon_url, not over image_url).
@@ -53,7 +53,7 @@ export default function ImageUploadField({
   onFocusChange,
   zoom,
   onZoomChange,
-  squareCropSource,
+  cropSources,
   onCropSaved,
   cropAspect = 1,
   cropLabel = "Make icon",
@@ -64,6 +64,9 @@ export default function ImageUploadField({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [cropping, setCropping] = useState(false);
+
+  // Non-empty crop sources; the "Make …" button shows only when at least one.
+  const cropSrcs = (cropSources ?? []).filter((s) => s.url && s.url.trim());
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -127,7 +130,7 @@ export default function ImageUploadField({
         >
           {uploading ? "Uploading…" : "Upload file"}
         </button>
-        {squareCropSource && (
+        {cropSrcs.length > 0 && (
           <button
             type="button"
             onClick={() => setCropping(true)}
@@ -146,9 +149,9 @@ export default function ImageUploadField({
         />
       </div>
 
-      {cropping && squareCropSource && (
+      {cropping && cropSrcs.length > 0 && (
         <SquareIconCropper
-          sourceUrl={squareCropSource}
+          sources={cropSrcs}
           aspect={cropAspect}
           title={cropLabel}
           onCancel={() => setCropping(false)}
