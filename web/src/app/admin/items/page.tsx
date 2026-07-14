@@ -605,10 +605,18 @@ export default function AdminItemsPage() {
                       Image field + auto-icon. */}
                   {schema?.is_collectable ? (
                     (() => {
-                      // Icon & portrait crops come from the full art (transparent,
-                      // cleanest) if present, else the splash art.
-                      const cropSource =
-                        getFieldValue("fullart_url") || getFieldValue("image_url");
+                      // Crop sources, in preferred order. The cropper drops the
+                      // empty ones and lets the admin pick among what's left.
+                      // Portrait: from the full art, else the splash. Icon: also
+                      // from the portrait (face is already framed → crisper).
+                      const portraitSources = [
+                        { label: "Full art", url: getFieldValue("fullart_url") },
+                        { label: "Splash", url: getFieldValue("image_url") },
+                      ];
+                      const iconSources = [
+                        { label: "Portrait", url: getFieldValue("portrait_url") },
+                        ...portraitSources,
+                      ];
                       return (
                         <div className="space-y-3 rounded-xl border border-gray-800 bg-gray-900/40 p-3">
                           <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -642,7 +650,7 @@ export default function AdminItemsPage() {
                             onChange={(url) => setFieldValue("portrait_url", url)}
                             placeholder="https://… or upload →"
                             previewHeight="h-24"
-                            squareCropSource={cropSource}
+                            cropSources={portraitSources}
                             cropAspect={3 / 4}
                             cropLabel="Make portrait"
                           />
@@ -652,7 +660,7 @@ export default function AdminItemsPage() {
                             onChange={(url) => setFieldValue("icon_url", url)}
                             placeholder="https://… or upload →"
                             previewHeight="h-16"
-                            squareCropSource={cropSource}
+                            cropSources={iconSources}
                             cropAspect={1}
                             cropLabel="Make icon"
                           />
@@ -675,7 +683,7 @@ export default function AdminItemsPage() {
                         // Let admins cut a square icon straight from the card art —
                         // saved as icon_url, so no dedicated icon schema field is
                         // required for the character to have an icon.
-                        squareCropSource={getFieldValue("image_url")}
+                        cropSources={[{ label: "Image", url: getFieldValue("image_url") }]}
                         onCropSaved={(url) => setFieldValue("icon_url", url)}
                       />
 
@@ -845,7 +853,7 @@ export default function AdminItemsPage() {
                           previewHeight="h-20"
                           // Generate this (icon) image from its own art if set,
                           // else from the item's card art (image_url).
-                          squareCropSource={currentVal || getFieldValue("image_url")}
+                          cropSources={[{ label: "Image", url: currentVal || getFieldValue("image_url") }]}
                         />
                       );
                     }
