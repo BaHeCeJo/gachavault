@@ -18,6 +18,11 @@ interface Props {
   // set it to route the icon to a different field (e.g. the main Image field
   // crops the card but saves the result as icon_url, not over image_url).
   onCropSaved?: (url: string) => void;
+  // Crop aspect ratio (width/height) for the "Make …" button. 1 = square icon,
+  // 0.75 = 3:4 portrait. Defaults to square.
+  cropAspect?: number;
+  // Button + modal label, e.g. "Make icon" / "Make portrait".
+  cropLabel?: string;
   // When onFocusChange is provided the preview becomes an interactive cropper:
   // drag the image to reposition it and use the zoom slider to enlarge/reduce.
   // Stored as a focal point (CSS object-position, "50% 30%") plus a zoom factor
@@ -50,6 +55,8 @@ export default function ImageUploadField({
   onZoomChange,
   squareCropSource,
   onCropSaved,
+  cropAspect = 1,
+  cropLabel = "Make icon",
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -125,9 +132,9 @@ export default function ImageUploadField({
             type="button"
             onClick={() => setCropping(true)}
             className="px-3 py-2 rounded-lg border border-gray-700 hover:border-amber-500/60 hover:text-amber-300 text-sm transition whitespace-nowrap"
-            title="Crop a square icon from the card art"
+            title="Crop from the source art"
           >
-            ✂ Make icon
+            ✂ {cropLabel}
           </button>
         )}
         <input
@@ -142,6 +149,8 @@ export default function ImageUploadField({
       {cropping && squareCropSource && (
         <SquareIconCropper
           sourceUrl={squareCropSource}
+          aspect={cropAspect}
+          title={cropLabel}
           onCancel={() => setCropping(false)}
           onSaved={(url) => {
             (onCropSaved ?? onChange)(url);
