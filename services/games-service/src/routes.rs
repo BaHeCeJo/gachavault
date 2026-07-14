@@ -571,6 +571,7 @@ pub async fn create_schema(
         body.filter_attrs.as_ref(),
         body.card_layout.as_ref(),
         body.page_layout.as_ref(),
+        body.is_collectable.unwrap_or(false),
     )
     .await
     .map_err(|e| {
@@ -629,6 +630,7 @@ pub async fn update_schema(
             filter_attrs = CASE WHEN $6 THEN $5 ELSE filter_attrs END,
             card_layout = CASE WHEN $8 THEN $7 ELSE card_layout END,
             page_layout = CASE WHEN $10 THEN $9 ELSE page_layout END,
+            is_collectable = COALESCE($11, is_collectable),
             updated_at = NOW()
          WHERE id = $1 AND game_id = $2
          RETURNING *",
@@ -643,6 +645,7 @@ pub async fn update_schema(
     .bind(card_layout_present)
     .bind(page_layout_value)
     .bind(page_layout_present)
+    .bind(body.is_collectable)
     .fetch_optional(&pool)
     .await
     .map_err(AppError::Database)?

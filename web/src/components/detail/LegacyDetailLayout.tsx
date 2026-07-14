@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus, imageZoom } from "@/lib/imageFocus";
+import { imageFocus, imageZoom, thumbUrl, THUMB_KEYS } from "@/lib/imageFocus";
 import { cardGradient } from "@/lib/theme";
 import { type AttrMap, lookupAttr } from "@/lib/attrs";
 import type { ItemPageBundle } from "@/lib/seo";
@@ -34,6 +34,7 @@ export function LegacyDetailLayout({
   const name = (item.data?.name as string) ?? item.slug;
   const imageUrl = item.data?.image_url as string | undefined;
   const iconUrl = item.data?.icon_url as string | undefined;
+  const fullart = item.data?.fullart_url as string | undefined;
 
   const orderedFields: { key: string; label: string; type?: string; attribute_type?: string; source_section?: string; source_field?: string }[] = fields.length > 0
     ? fields.filter(f => !HIDDEN_IN_DETAILS.has(f.key)).map(f => ({ key: f.key, label: f.label, type: f.type, attribute_type: f.attribute_type, source_section: f.source_section, source_field: f.source_field }))
@@ -64,7 +65,20 @@ export function LegacyDetailLayout({
         {/* Left: image — capped width and centered on mobile so the stats block stays above the fold */}
         <div className="flex flex-col gap-4 w-full max-w-[220px] mx-auto md:mx-0 md:max-w-none">
           <div className={`rounded-xl overflow-hidden border bg-gray-900 shadow-lg ${rarityBorder} ${rarityGlow}`}>
-            {imageUrl ? (
+            {fullart ? (
+              // Transparent full art centered over a blurred splash backdrop.
+              <div className="relative aspect-[3/4]">
+                {imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={imageUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover scale-125 blur-2xl opacity-40" />
+                )}
+                <SafeImage src={fullart} alt={name} fill priority sizes="(min-width: 768px) 280px, 100vw" className="relative object-contain p-2" fallback={
+                  <div className={`h-full bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
+                    {name[0]?.toUpperCase()}
+                  </div>
+                } />
+              </div>
+            ) : imageUrl ? (
               <SafeImage src={imageUrl} alt={name} width={400} height={400} priority sizes="(min-width: 768px) 280px, 100vw" focus={imageFocus(item.data, ["image_url"])} zoom={imageZoom(item.data, ["image_url"])} className="w-full object-cover" fallback={
                 <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
                   {name[0]?.toUpperCase()}
@@ -155,7 +169,7 @@ export function LegacyDetailLayout({
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {relatedItems.slice(0, 12).map((rel) => {
               const relName = (rel.data?.name as string) ?? rel.slug;
-              const relImg = (rel.data?.image_url ?? rel.data?.icon_url) as string | undefined;
+              const relImg = thumbUrl(rel.data);
               const relRarity = rel.data?.rarity;
               const relFirstEl = Array.isArray(rel.data?.element) ? rel.data.element[0] : rel.data?.element;
               const relElem = lookupAttr(attrMap, "element", relFirstEl)
@@ -170,7 +184,7 @@ export function LegacyDetailLayout({
                   className="flex flex-col rounded-lg border border-gray-800 bg-gray-900 overflow-hidden hover:border-amber-500/60 hover:shadow-md hover:shadow-amber-500/10 hover:scale-[1.03] transition-all duration-200 group"
                 >
                   <div className="relative h-20">
-                    <SafeImage src={relImg} alt={relName} fill sizes="(min-width: 768px) 140px, (min-width: 640px) 25vw, 33vw" focus={imageFocus(rel.data)} zoom={imageZoom(rel.data)} className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
+                    <SafeImage src={relImg} alt={relName} fill sizes="(min-width: 768px) 140px, (min-width: 640px) 25vw, 33vw" focus={imageFocus(rel.data, THUMB_KEYS)} zoom={imageZoom(rel.data, THUMB_KEYS)} className="object-cover group-hover:scale-105 transition-transform duration-200" fallback={
                       <div className={`h-full bg-gradient-to-br ${cardGradient(relName)} flex items-center justify-center text-xl font-semibold text-white/50`}>
                         {relName[0]?.toUpperCase()}
                       </div>

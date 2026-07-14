@@ -167,7 +167,7 @@ export default function SharedTierListClient({ initial }: ClientProps) {
                 <div className="flex flex-wrap gap-2">
                   {tieredItems.map((item) => {
                     const name = (item.data?.name as string) ?? item.slug;
-                    const img = item.data?.image_url as string | undefined;
+                    const img = (item.data?.icon_url ?? item.data?.image_url) as string | undefined;
                     return (
                       <Link key={item.id} href={item.game_slug && item.section_slug ? `/games/${item.game_slug}/${item.section_slug}/${item.slug}` : `/items/${item.id}`} title={name} className="group relative">
                         <SafeImage src={img} alt={name} width={56} height={56} className="w-14 h-14 rounded-lg object-cover" fallback={
