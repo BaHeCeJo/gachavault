@@ -155,6 +155,7 @@ export interface SeoSchema {
   fields: SeoSchemaField[];
   filter_attrs: string[] | null;
   card_layout: SeoSchemaCardLayout | null;
+  is_collectable?: boolean;
   // Raw per-section detail-page template (arbitrary JSON); parsed at the edge
   // by parsePageLayout. Absent/null/malformed → legacy fixed layout.
   page_layout?: unknown;
