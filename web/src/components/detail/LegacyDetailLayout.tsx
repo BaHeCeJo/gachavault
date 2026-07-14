@@ -96,9 +96,6 @@ export function LegacyDetailLayout({
               </div>
             )}
           </div>
-          {iconUrl && imageUrl && (
-            <SafeImage src={iconUrl} alt={`${name} icon`} width={64} height={64} className="w-16 h-16 rounded-lg border border-gray-700 object-contain self-start" />
-          )}
         </div>
 
         {/* Right: details */}
