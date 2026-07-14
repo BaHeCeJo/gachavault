@@ -96,15 +96,31 @@ export default function SquareIconCropper({
       // Never upscale: cap the output at the crop's own pixel size so a small
       // face crop is stored at native resolution (sharp) rather than inflated.
       const out = Math.min(maxOutput, Math.round(s));
+      const sx = Math.round(cc.x - s / 2);
+      const sy = Math.round(cc.y - s / 2);
+      const ss = Math.round(s);
       const canvas = document.createElement("canvas");
       canvas.width = out;
       canvas.height = out;
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("no canvas context");
-      ctx.imageSmoothingQuality = "high";
-      // Sample the framed source square and scale it into the output square.
-      // Left transparent where the source is transparent (no background fill).
-      ctx.drawImage(imgRef.current, cc.x - s / 2, cc.y - s / 2, s, s, 0, 0, out, out);
+      try {
+        // Crop + downscale from the FULL-resolution source with the browser's
+        // best resampling (Lanczos-class), independent of the small on-screen
+        // preview size. Transparency is preserved (no background fill).
+        const bmp = await createImageBitmap(imgRef.current, sx, sy, ss, ss, {
+          resizeWidth: out,
+          resizeHeight: out,
+          resizeQuality: "high",
+        });
+        ctx.drawImage(bmp, 0, 0);
+        bmp.close();
+      } catch {
+        // Fallback for browsers without createImageBitmap resize options.
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(imgRef.current, sx, sy, ss, ss, 0, 0, out, out);
+      }
       const blob: Blob = await new Promise((resolve, reject) =>
         canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob failed"))), "image/png"),
       );
