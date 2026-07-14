@@ -10,10 +10,14 @@ interface Props {
   onChange: (url: string) => void;
   placeholder?: string;
   previewHeight?: string;
-  // When set, shows a "Make square icon" button that opens a cropper on this
-  // source URL (e.g. the card art) and writes the cropped square PNG back via
-  // onChange. Used to generate a character icon from the splash art.
+  // When set, shows a "Make icon" button that opens a cropper on this source
+  // URL (e.g. the card art) to cut a square PNG. Used to generate a character
+  // icon from the splash art.
   squareCropSource?: string;
+  // Where the cropped icon is written. Defaults to this field's own onChange;
+  // set it to route the icon to a different field (e.g. the main Image field
+  // crops the card but saves the result as icon_url, not over image_url).
+  onCropSaved?: (url: string) => void;
   // When onFocusChange is provided the preview becomes an interactive cropper:
   // drag the image to reposition it and use the zoom slider to enlarge/reduce.
   // Stored as a focal point (CSS object-position, "50% 30%") plus a zoom factor
@@ -45,6 +49,7 @@ export default function ImageUploadField({
   zoom,
   onZoomChange,
   squareCropSource,
+  onCropSaved,
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -139,7 +144,7 @@ export default function ImageUploadField({
           sourceUrl={squareCropSource}
           onCancel={() => setCropping(false)}
           onSaved={(url) => {
-            onChange(url);
+            (onCropSaved ?? onChange)(url);
             setCropping(false);
           }}
         />
