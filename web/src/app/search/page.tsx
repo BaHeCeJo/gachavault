@@ -6,7 +6,7 @@ import Link from "next/link";
 import { searchApi, gamesApi } from "@/lib/api";
 import { Suspense } from "react";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus, imageZoom, thumbUrl, THUMB_KEYS } from "@/lib/imageFocus";
+import { imageFocus, imageZoom } from "@/lib/imageFocus";
 
 interface SearchHit {
   id: string;
@@ -178,7 +178,7 @@ function SearchContent() {
           <p className="text-sm text-gray-400 mb-4">{results.length} result{results.length !== 1 ? "s" : ""}</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {results.map((hit) => {
-              const imageUrl = thumbUrl(hit.data);
+              const imageUrl = hit.data?.image_url as string | undefined;
               return (
                 <Link
                   key={hit.id}
@@ -190,8 +190,8 @@ function SearchContent() {
                       src={imageUrl}
                       alt={hit.name}
                       fill
-                      focus={imageFocus(hit.data, THUMB_KEYS)}
-                      zoom={imageZoom(hit.data, THUMB_KEYS)}
+                      focus={imageFocus(hit.data, ["image_url"])}
+                      zoom={imageZoom(hit.data, ["image_url"])}
                       className="object-cover"
                       fallback={
                         <div className="h-28 w-full bg-gray-800 flex items-center justify-center text-3xl font-semibold text-gray-600">

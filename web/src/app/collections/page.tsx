@@ -33,7 +33,6 @@ interface Schema {
   section_id: string | null;
   fields: SchemaFieldLite[];
   card_layout: CardLayout | null;
-  is_collectable?: boolean;
 }
 
 export default function CollectionsPage() {
@@ -227,7 +226,6 @@ export default function CollectionsPage() {
                     attrMap={attrMap}
                     layout={schema?.card_layout ?? null}
                     schemaFields={schema?.fields}
-                    portrait={schema?.is_collectable}
                     linkMode="image"
                     footer={
                       <>

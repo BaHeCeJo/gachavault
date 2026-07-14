@@ -22,15 +22,7 @@ export function HeroBlock({
   const c = (config ?? {}) as HeroConfig;
   const data = bundle.item.data as Record<string, unknown>;
   const name = (data[c.name_field || "name"] as string) || bundle.item.slug;
-  const asStr = (v: unknown) => (typeof v === "string" && v.trim() ? (v as string) : undefined);
-  const splash = asStr(data.image_url);
-  const fullart = asStr(data.fullart_url);
-  const configured = c.image_field ? asStr(data[c.image_field]) : undefined;
-  // Hero prefers transparent full art (rendered over a blurred splash backdrop),
-  // else the configured/splash art. Legacy items (only image_url) keep the plain
-  // object-cover look.
-  const imageUrl = configured ?? fullart ?? splash ?? asStr(data.icon_url);
-  const isFullart = !!fullart && imageUrl === fullart;
+  const imageUrl = (data[c.image_field || "image_url"] ?? data.icon_url) as string | undefined;
   const rarity = data[c.rarity_field || "rarity"];
   const sectionName = bundle.sectionName;
 
@@ -63,29 +55,16 @@ export function HeroBlock({
     <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6 md:gap-8 mb-8">
       <div className="w-full max-w-[220px] mx-auto md:mx-0 md:max-w-none">
         <div className={`rounded-xl overflow-hidden border bg-gray-900 shadow-lg ${rarityBorder}`}>
-          {!imageUrl ? (
-            <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
-              {name[0]?.toUpperCase()}
-            </div>
-          ) : isFullart ? (
-            // Transparent full art, centered over a blurred splash backdrop.
-            <div className="relative aspect-[3/4]">
-              {splash && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={splash} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover scale-125 blur-2xl opacity-40" />
-              )}
-              <SafeImage src={imageUrl} alt={name} fill priority sizes="(min-width: 768px) 280px, 100vw" className="relative object-contain p-2" fallback={
-                <div className={`h-full bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
-                  {name[0]?.toUpperCase()}
-                </div>
-              } />
-            </div>
-          ) : (
-            <SafeImage src={imageUrl} alt={name} width={400} height={400} priority sizes="(min-width: 768px) 280px, 100vw" focus={imageFocus(data, ["image_url", "icon_url"])} zoom={imageZoom(data, ["image_url", "icon_url"])} className="w-full object-cover" fallback={
+          {imageUrl ? (
+            <SafeImage src={imageUrl} alt={name} width={400} height={400} priority sizes="(min-width: 768px) 280px, 100vw" focus={imageFocus(data, [c.image_field || "image_url", "icon_url"])} zoom={imageZoom(data, [c.image_field || "image_url", "icon_url"])} className="w-full object-cover" fallback={
               <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
                 {name[0]?.toUpperCase()}
               </div>
             } />
+          ) : (
+            <div className={`h-64 bg-gradient-to-br ${cardGradient(name)} flex items-center justify-center text-6xl font-semibold text-white/40`}>
+              {name[0]?.toUpperCase()}
+            </div>
           )}
         </div>
       </div>

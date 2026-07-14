@@ -40,7 +40,6 @@ interface Schema {
   section_id: string | null;
   fields: SchemaField[];
   card_layout?: CardLayout | null;
-  is_collectable?: boolean;
 }
 
 // Find the schema for a given section. Prefer a schema explicitly bound to
@@ -589,119 +588,49 @@ export default function AdminItemsPage() {
             {(() => {
               const schema = schemas.find((s) => s.id === form.type_schema_id);
               const fields: SchemaField[] = Array.isArray(schema?.fields) ? (schema.fields as SchemaField[]) : [];
-              // image_url is always handled specially; for collectable types the
-              // four standard image keys are all rendered by the slot block, so
-              // keep them out of the generic field loop to avoid duplicates.
-              const standardImageKeys = schema?.is_collectable
-                ? new Set(["image_url", "icon_url", "portrait_url", "fullart_url"])
-                : new Set(["image_url"]);
-              const nonImageFields = fields.filter((f) => !standardImageKeys.has(f.key));
+              const nonImageFields = fields.filter((f) => f.key !== "image_url");
 
               return (
                 <>
-                  {/* Collectable types get the four standard image slots
-                      (full art / splash / portrait / icon), with icon & portrait
-                      cropped from the art. Non-collectable types keep the single
-                      Image field + auto-icon. */}
-                  {schema?.is_collectable ? (
-                    (() => {
-                      // Icon & portrait crops come from the full art (transparent,
-                      // cleanest) if present, else the splash art.
-                      const cropSource =
-                        getFieldValue("fullart_url") || getFieldValue("image_url");
-                      return (
-                        <div className="space-y-3 rounded-xl border border-gray-800 bg-gray-900/40 p-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                            Collectable images
-                          </p>
-                          <ImageUploadField
-                            label="Full art (transparent, no background)"
-                            value={getFieldValue("fullart_url")}
-                            onChange={(url) => setFieldValue("fullart_url", url)}
-                            focus={getFieldValue(focusKeyFor("fullart_url"))}
-                            onFocusChange={(f) => setFieldValue(focusKeyFor("fullart_url"), f)}
-                            zoom={Number(getFieldValue(zoomKeyFor("fullart_url"))) || undefined}
-                            onZoomChange={(z) => setFieldValue(zoomKeyFor("fullart_url"), z)}
-                            placeholder="https://… or upload →"
-                            previewHeight="h-24"
-                          />
-                          <ImageUploadField
-                            label="Splash art (with background)"
-                            value={getFieldValue("image_url")}
-                            onChange={(url) => setFieldValue("image_url", url)}
-                            focus={getFieldValue(focusKeyFor("image_url"))}
-                            onFocusChange={(f) => setFieldValue(focusKeyFor("image_url"), f)}
-                            zoom={Number(getFieldValue(zoomKeyFor("image_url"))) || undefined}
-                            onZoomChange={(z) => setFieldValue(zoomKeyFor("image_url"), z)}
-                            placeholder="https://… or upload →"
-                            previewHeight="h-24"
-                          />
-                          <ImageUploadField
-                            label="Portrait (3:4)"
-                            value={getFieldValue("portrait_url")}
-                            onChange={(url) => setFieldValue("portrait_url", url)}
-                            placeholder="https://… or upload →"
-                            previewHeight="h-24"
-                            squareCropSource={cropSource}
-                            cropAspect={3 / 4}
-                            cropLabel="Make portrait"
-                          />
-                          <ImageUploadField
-                            label="Icon (square)"
-                            value={getFieldValue("icon_url")}
-                            onChange={(url) => setFieldValue("icon_url", url)}
-                            placeholder="https://… or upload →"
-                            previewHeight="h-16"
-                            squareCropSource={cropSource}
-                            cropAspect={1}
-                            cropLabel="Make icon"
-                          />
-                        </div>
-                      );
-                    })()
-                  ) : (
-                    <>
-                      {/* Image always shown as upload field */}
-                      <ImageUploadField
-                        label="Image"
-                        value={getFieldValue("image_url")}
-                        onChange={(url) => setFieldValue("image_url", url)}
-                        focus={getFieldValue(focusKeyFor("image_url"))}
-                        onFocusChange={(f) => setFieldValue(focusKeyFor("image_url"), f)}
-                        zoom={Number(getFieldValue(zoomKeyFor("image_url"))) || undefined}
-                        onZoomChange={(z) => setFieldValue(zoomKeyFor("image_url"), z)}
-                        placeholder="https://… or upload →"
-                        previewHeight="h-20"
-                        // Let admins cut a square icon straight from the card art —
-                        // saved as icon_url, so no dedicated icon schema field is
-                        // required for the character to have an icon.
-                        squareCropSource={getFieldValue("image_url")}
-                        onCropSaved={(url) => setFieldValue("icon_url", url)}
-                      />
+                  {/* Image always shown as upload field */}
+                  <ImageUploadField
+                    label="Image"
+                    value={getFieldValue("image_url")}
+                    onChange={(url) => setFieldValue("image_url", url)}
+                    focus={getFieldValue(focusKeyFor("image_url"))}
+                    onFocusChange={(f) => setFieldValue(focusKeyFor("image_url"), f)}
+                    zoom={Number(getFieldValue(zoomKeyFor("image_url"))) || undefined}
+                    onZoomChange={(z) => setFieldValue(zoomKeyFor("image_url"), z)}
+                    placeholder="https://… or upload →"
+                    previewHeight="h-20"
+                    // Let admins cut a square icon straight from the card art —
+                    // saved as icon_url, so no dedicated icon schema field is
+                    // required for the character to have an icon.
+                    squareCropSource={getFieldValue("image_url")}
+                    onCropSaved={(url) => setFieldValue("icon_url", url)}
+                  />
 
-                      {/* Generated-icon preview — only when the schema has no
-                          dedicated icon_url field (which renders its own preview). */}
-                      {!fields.some((f) => f.type === "image" && f.key === "icon_url") &&
-                        getFieldValue("icon_url") && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">Icon</span>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={getFieldValue("icon_url")}
-                              alt="icon"
-                              className="h-10 w-10 rounded-lg border border-gray-700 bg-gray-800 object-cover"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setFieldValue("icon_url", "")}
-                              className="text-xs text-gray-500 hover:text-red-400 transition"
-                            >
-                              Clear
-                            </button>
-                          </div>
-                        )}
-                    </>
-                  )}
+                  {/* Generated-icon preview — only when the schema has no
+                      dedicated icon_url field (which renders its own preview). */}
+                  {!fields.some((f) => f.type === "image" && f.key === "icon_url") &&
+                    getFieldValue("icon_url") && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">Icon</span>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={getFieldValue("icon_url")}
+                          alt="icon"
+                          className="h-10 w-10 rounded-lg border border-gray-700 bg-gray-800 object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setFieldValue("icon_url", "")}
+                          className="text-xs text-gray-500 hover:text-red-400 transition"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    )}
 
                   {/* Schema fields (excluding image_url) */}
                   {nonImageFields.map((field) => {

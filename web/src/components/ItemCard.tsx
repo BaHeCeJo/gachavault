@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus, imageZoom, thumbUrl, portraitUrl, THUMB_KEYS, PORTRAIT_KEYS } from "@/lib/imageFocus";
+import { imageFocus, imageZoom } from "@/lib/imageFocus";
 import { cardGradient, RARITY_CLASSES } from "@/lib/theme";
 import {
   type AttrMap,
@@ -60,9 +60,6 @@ interface Props {
   // Extra content rendered below the name — used by the collection page
   // to host level/constellation info + edit/remove buttons.
   footer?: React.ReactNode;
-  // Collectable types: show the 3:4 portrait image in a taller portrait card
-  // (falls back to icon → splash). Off = the compact landscape card.
-  portrait?: boolean;
 }
 
 // Resolve a slot's attribute pill. `slot` is normally a schema field key —
@@ -132,12 +129,9 @@ export default function ItemCard({
   noLink,
   linkMode = "all",
   footer,
-  portrait = false,
 }: Props) {
   const name = (item.data?.name as string) ?? item.slug;
-  // Portrait cards prefer the 3:4 portrait; compact cards prefer the square icon.
-  const imgKeys = portrait ? PORTRAIT_KEYS : THUMB_KEYS;
-  const imageUrl = portrait ? portraitUrl(item.data) : thumbUrl(item.data);
+  const imageUrl = (item.data?.image_url ?? item.data?.icon_url) as string | undefined;
   const rarity = item.data?.rarity;
   const rarityStr = typeof rarity === "number" ? undefined : String(rarity ?? "");
 
@@ -214,7 +208,7 @@ export default function ItemCard({
       : `/games/${fallbackGameSlug ?? item.game_slug ?? ""}/items/${item.id}`);
 
   const imageArea = (
-    <div className={`relative w-full overflow-hidden ${portrait ? "aspect-[3/4]" : "h-28"}`}>
+    <div className="relative h-28 w-full overflow-hidden">
       {/* Watermark sits below the portrait — a large faded attribute icon
           (e.g. the path silhouette behind the character). */}
       {watermarkAttr?.icon_url && (
@@ -231,8 +225,8 @@ export default function ItemCard({
         src={imageUrl}
         alt={name}
         fill
-        focus={imageFocus(item.data, imgKeys)}
-        zoom={imageZoom(item.data, imgKeys)}
+        focus={imageFocus(item.data)}
+        zoom={imageZoom(item.data)}
         sizes="(min-width: 1024px) 200px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
         className="object-cover group-hover:scale-105 transition-transform duration-200"
         fallback={

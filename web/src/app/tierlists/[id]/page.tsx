@@ -6,7 +6,7 @@ import Link from "next/link";
 import { tierlistsApi, itemsApi, gamesApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { SafeImage } from "@/components/SafeImage";
-import { imageFocus, imageZoom, thumbUrl, THUMB_KEYS } from "@/lib/imageFocus";
+import { imageFocus, imageZoom } from "@/lib/imageFocus";
 
 interface CustomTier { key: string; name: string; color: string }
 interface TierEntry { item_id: string; tier: string }
@@ -280,7 +280,7 @@ export default function TierListEditorPage() {
                 <div className="flex flex-wrap gap-2 flex-1 min-h-[56px]">
                   {tieredItems.map((item) => {
                     const name = (item.data?.name as string) ?? item.slug;
-                    const img = thumbUrl(item.data);
+                    const img = item.data?.image_url as string | undefined;
                     return (
                       <div
                         key={item.id}
@@ -289,7 +289,7 @@ export default function TierListEditorPage() {
                         title={`Remove ${name} from tier`}
                       >
                         <div className="w-12 h-12 rounded-lg overflow-hidden">
-                          <SafeImage src={img} alt={name} width={48} height={48} focus={imageFocus(item.data, THUMB_KEYS)} zoom={imageZoom(item.data, THUMB_KEYS)} className="w-12 h-12 object-cover" fallback={
+                          <SafeImage src={img} alt={name} width={48} height={48} focus={imageFocus(item.data, ["image_url"])} zoom={imageZoom(item.data, ["image_url"])} className="w-12 h-12 object-cover" fallback={
                             <div className="w-12 h-12 bg-gray-700 flex items-center justify-center text-lg font-semibold text-gray-400">
                               {name[0]?.toUpperCase()}
                             </div>
@@ -334,7 +334,7 @@ export default function TierListEditorPage() {
                   onClick={() => setOpenPicker((cur) => (cur === item.id ? null : item.id))}
                 >
                   <div className="w-12 h-12 rounded-lg overflow-hidden">
-                    <SafeImage src={img} alt={name} width={48} height={48} focus={imageFocus(item.data, THUMB_KEYS)} zoom={imageZoom(item.data, THUMB_KEYS)} className="w-12 h-12 object-cover" fallback={
+                    <SafeImage src={img} alt={name} width={48} height={48} focus={imageFocus(item.data, ["image_url"])} zoom={imageZoom(item.data, ["image_url"])} className="w-12 h-12 object-cover" fallback={
                       <div className="w-12 h-12 bg-gray-800 flex items-center justify-center text-lg font-semibold text-gray-600">
                         {name[0]?.toUpperCase()}
                       </div>

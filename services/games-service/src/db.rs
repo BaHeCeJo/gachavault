@@ -141,11 +141,10 @@ pub async fn create_schema(
     filter_attrs: Option<&serde_json::Value>,
     card_layout: Option<&serde_json::Value>,
     page_layout: Option<&serde_json::Value>,
-    is_collectable: bool,
 ) -> Result<DbSchema, sqlx::Error> {
     sqlx::query_as::<_, DbSchema>(
-        r#"INSERT INTO games.item_type_schemas (game_id, section_id, name, fields, filter_attrs, card_layout, page_layout, is_collectable)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        r#"INSERT INTO games.item_type_schemas (game_id, section_id, name, fields, filter_attrs, card_layout, page_layout)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
            RETURNING *"#,
     )
     .bind(game_id)
@@ -155,7 +154,6 @@ pub async fn create_schema(
     .bind(filter_attrs)
     .bind(card_layout)
     .bind(page_layout)
-    .bind(is_collectable)
     .fetch_one(pool)
     .await
 }

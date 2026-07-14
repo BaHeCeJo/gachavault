@@ -1,33 +1,32 @@
 "use client";
 
-// Modal that cuts a real cropped PNG out of a source image (typically a
-// character's full art / splash), at a fixed ASPECT RATIO — square (1) for an
-// icon, portrait (3/4) for a portrait, etc. Drag to position, zoom to frame;
-// the framed rectangle is drawn to a canvas at high quality and uploaded.
-// Transparency in the source PNG is preserved (no background fill).
+// Modal that cuts a genuine square PNG icon out of a source image (typically a
+// character's card/splash art). Unlike the focal-point cropper in
+// ImageUploadField (which only stores a CSS object-position + zoom), this
+// produces a real cropped file: drag to position, zoom to the face, and it
+// draws the framed square to a canvas and uploads it. Transparency in the
+// source PNG is preserved (no background fill), so background-removed splash
+// art yields a clean transparent icon.
 
 import { useRef, useState } from "react";
 import { mediaApi } from "@/lib/api";
 
 interface Props {
-  /** Image to crop from (full art / splash, or an existing crop to redo). */
+  /** Image to crop from (card art, or an existing icon to re-crop). */
   sourceUrl: string;
   onCancel: () => void;
-  /** Called with the uploaded crop's URL once cropping succeeds. */
+  /** Called with the uploaded square-icon URL once cropping succeeds. */
   onSaved: (url: string) => void;
-  /** Crop aspect ratio (width / height). 1 = square, 0.75 = 3:4 portrait. */
-  aspect?: number;
-  /** Modal heading, e.g. "Make icon" / "Make portrait". */
-  title?: string;
-  /** Upper bound on the output's LONGER side in px; never upscales past the
-   *  crop's native resolution, so a small crop stays sharp. */
+  /** Upper bound on the output side in px; the icon is never upscaled past the
+   *  crop's own resolution, so a small face crop stays sharp instead of being
+   *  inflated into a blurry square. */
   maxOutput?: number;
 }
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 8;
-const VIEW = 320; // longer side of the on-screen framing viewport, in px
-// Below this native crop size (shorter side) the crop has too few real pixels.
+const VIEWPORT = 320; // on-screen size of the square framing viewport, in px
+// Below this native crop size the face has too few real pixels for a crisp icon.
 const LOWRES_PX = 220;
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
@@ -36,36 +35,27 @@ export default function SquareIconCropper({
   sourceUrl,
   onCancel,
   onSaved,
-  aspect = 1,
-  title = "Make icon",
   maxOutput = 512,
 }: Props) {
   const imgRef = useRef<HTMLImageElement>(null);
   const dragRef = useRef<{ x: number; y: number } | null>(null);
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const [zoom, setZoom] = useState(1);
-  // Center of the crop rectangle, in SOURCE pixels. Null until the image loads.
+  // Center of the crop square, in SOURCE pixels. Null until the image loads.
   const [center, setCenter] = useState<{ x: number; y: number } | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // Crop rectangle size (source px) for the current zoom: the largest rect of
-  // ratio `aspect` that fits the image at z=1, shrinking as you zoom in.
-  let cropW = 0;
-  let cropH = 0;
-  if (dims) {
-    const baseW = Math.min(dims.w, dims.h * aspect);
-    cropW = baseW / zoom;
-    cropH = cropW / aspect;
-  }
+  // Crop square side in source px: min-dimension at z=1, shrinking as you zoom.
+  const side = dims ? Math.min(dims.w, dims.h) / zoom : 0;
 
-  // Center clamped so the rectangle never leaves the image (derived, not stored,
-  // so a zoom change can't strand it out of bounds).
+  // Center clamped so the square never leaves the image (kept in derived state
+  // rather than stored, so a zoom change can't strand it out of bounds).
   const cc =
     dims && center
       ? {
-          x: clamp(center.x, cropW / 2, dims.w - cropW / 2),
-          y: clamp(center.y, cropH / 2, dims.h - cropH / 2),
+          x: clamp(center.x, side / 2, dims.w - side / 2),
+          y: clamp(center.y, side / 2, dims.h - side / 2),
         }
       : center;
 
@@ -75,11 +65,6 @@ export default function SquareIconCropper({
     setCenter({ x: el.naturalWidth / 2, y: el.naturalHeight / 2 });
   };
 
-  // Display viewport: longer side is VIEW; scale = display px per source px.
-  const viewW = aspect >= 1 ? VIEW : VIEW * aspect;
-  const viewH = aspect >= 1 ? VIEW / aspect : VIEW;
-  const scale = cropW ? viewW / cropW : 1;
-
   const onPointerDown = (e: React.PointerEvent) => {
     dragRef.current = { x: e.clientX, y: e.clientY };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -87,13 +72,14 @@ export default function SquareIconCropper({
   const onPointerMove = (e: React.PointerEvent) => {
     const start = dragRef.current;
     if (!start || !dims || !cc) return;
+    const scale = VIEWPORT / side; // display px per source px
     const dx = (e.clientX - start.x) / scale;
     const dy = (e.clientY - start.y) / scale;
     dragRef.current = { x: e.clientX, y: e.clientY };
-    // Dragging the image right reveals its left side, so center moves opposite.
+    // Dragging the image right reveals its left side, so the center moves opposite.
     setCenter({
-      x: clamp(cc.x - dx, cropW / 2, dims.w - cropW / 2),
-      y: clamp(cc.y - dy, cropH / 2, dims.h - cropH / 2),
+      x: clamp(cc.x - dx, side / 2, dims.w - side / 2),
+      y: clamp(cc.y - dy, side / 2, dims.h - side / 2),
     });
   };
   const onPointerUp = (e: React.PointerEvent) => {
@@ -101,60 +87,64 @@ export default function SquareIconCropper({
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
   };
 
-  // Native output size for the current framing (never upscaled past the crop).
-  const outW = Math.min(maxOutput, Math.round(cropW));
-  const outH = Math.round(outW / aspect);
-
   const save = async () => {
     if (!dims || !cc || !imgRef.current) return;
     setError("");
     setSaving(true);
     try {
-      const sx = Math.round(cc.x - cropW / 2);
-      const sy = Math.round(cc.y - cropH / 2);
-      const sw = Math.round(cropW);
-      const sh = Math.round(cropH);
+      const s = side;
+      // Never upscale: cap the output at the crop's own pixel size so a small
+      // face crop is stored at native resolution (sharp) rather than inflated.
+      const out = Math.min(maxOutput, Math.round(s));
+      const sx = Math.round(cc.x - s / 2);
+      const sy = Math.round(cc.y - s / 2);
+      const ss = Math.round(s);
       const canvas = document.createElement("canvas");
-      canvas.width = outW;
-      canvas.height = outH;
+      canvas.width = out;
+      canvas.height = out;
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("no canvas context");
       try {
         // Crop + downscale from the FULL-resolution source with the browser's
-        // best resampling, independent of the small preview. Transparency kept.
-        const bmp = await createImageBitmap(imgRef.current, sx, sy, sw, sh, {
-          resizeWidth: outW,
-          resizeHeight: outH,
+        // best resampling (Lanczos-class), independent of the small on-screen
+        // preview size. Transparency is preserved (no background fill).
+        const bmp = await createImageBitmap(imgRef.current, sx, sy, ss, ss, {
+          resizeWidth: out,
+          resizeHeight: out,
           resizeQuality: "high",
         });
         ctx.drawImage(bmp, 0, 0);
         bmp.close();
       } catch {
+        // Fallback for browsers without createImageBitmap resize options.
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
-        ctx.drawImage(imgRef.current, sx, sy, sw, sh, 0, 0, outW, outH);
+        ctx.drawImage(imgRef.current, sx, sy, ss, ss, 0, 0, out, out);
       }
       const blob: Blob = await new Promise((resolve, reject) =>
         canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob failed"))), "image/png"),
       );
-      const file = new File([blob], "crop.png", { type: "image/png" });
+      const file = new File([blob], "icon.png", { type: "image/png" });
       const res = await mediaApi.upload(file);
       const url = res.data.data?.public_url ?? "";
       if (!url) throw new Error("upload returned no url");
       onSaved(url);
     } catch (err) {
+      // A cross-origin source taints the canvas; toBlob then throws SecurityError.
       if ((err as { name?: string })?.name === "SecurityError") {
         setError("Can't crop an external image. Upload the source file first, then crop.");
       } else {
-        setError("Couldn't create the image — please try again.");
+        setError("Couldn't create the icon — please try again.");
       }
       setSaving(false);
     }
   };
 
-  const tx = cc ? -(cc.x - cropW / 2) * scale : 0;
-  const ty = cc ? -(cc.y - cropH / 2) * scale : 0;
-  const lowRes = dims && Math.min(outW, outH) < LOWRES_PX;
+  const scale = side ? VIEWPORT / side : 1;
+  const tx = cc ? -(cc.x - side / 2) * scale : 0;
+  const ty = cc ? -(cc.y - side / 2) * scale : 0;
+  // Native output size for the current framing (never upscaled past the crop).
+  const outPx = Math.min(maxOutput, Math.round(side));
 
   return (
     <div
@@ -165,18 +155,17 @@ export default function SquareIconCropper({
         className="w-full max-w-sm rounded-2xl border border-gray-700 bg-gray-900 p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="mb-1 text-sm font-semibold text-gray-100">{title}</h3>
+        <h3 className="mb-1 text-sm font-semibold text-gray-100">Make square icon</h3>
         <p className="mb-3 text-xs text-gray-500">
-          Drag to position · zoom to frame. A {aspect === 1 ? "square" : "cropped"} PNG is created
-          (transparency kept).
+          Drag to position · zoom to the face. A square PNG is created (transparency kept).
         </p>
 
         {/* Checkerboard backing makes transparent areas obvious while framing. */}
         <div
           className="relative mx-auto cursor-grab select-none overflow-hidden rounded-xl active:cursor-grabbing touch-none"
           style={{
-            width: viewW,
-            height: viewH,
+            width: VIEWPORT,
+            height: VIEWPORT,
             backgroundImage:
               "linear-gradient(45deg,#374151 25%,transparent 25%),linear-gradient(-45deg,#374151 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#374151 75%),linear-gradient(-45deg,transparent 75%,#374151 75%)",
             backgroundSize: "16px 16px",
@@ -225,13 +214,13 @@ export default function SquareIconCropper({
 
         {dims && (
           <p className="mt-2 text-xs text-gray-500">
-            Output: <span className="tabular-nums">{outW}×{outH}px</span>
+            Output: <span className="tabular-nums">{outPx}×{outPx}px</span>
           </p>
         )}
-        {lowRes && (
+        {dims && outPx < LOWRES_PX && (
           <p className="mt-1 text-xs text-amber-500/90">
-            Low resolution — only {Math.min(outW, outH)}px here. Zoom out or use a larger source for
-            a crisp result.
+            Low resolution — the face fills only {outPx}px here. Zoom out or use a source where the
+            face is larger for a crisp icon.
           </p>
         )}
 
@@ -251,7 +240,7 @@ export default function SquareIconCropper({
             disabled={saving || !dims}
             className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-black transition hover:bg-amber-400 disabled:opacity-50"
           >
-            {saving ? "Saving…" : "Save"}
+            {saving ? "Saving…" : "Save icon"}
           </button>
         </div>
       </div>
