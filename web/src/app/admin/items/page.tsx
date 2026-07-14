@@ -603,7 +603,34 @@ export default function AdminItemsPage() {
                     onZoomChange={(z) => setFieldValue(zoomKeyFor("image_url"), z)}
                     placeholder="https://… or upload →"
                     previewHeight="h-20"
+                    // Let admins cut a square icon straight from the card art —
+                    // saved as icon_url, so no dedicated icon schema field is
+                    // required for the character to have an icon.
+                    squareCropSource={getFieldValue("image_url")}
+                    onCropSaved={(url) => setFieldValue("icon_url", url)}
                   />
+
+                  {/* Generated-icon preview — only when the schema has no
+                      dedicated icon_url field (which renders its own preview). */}
+                  {!fields.some((f) => f.type === "image" && f.key === "icon_url") &&
+                    getFieldValue("icon_url") && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">Icon</span>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={getFieldValue("icon_url")}
+                          alt="icon"
+                          className="h-10 w-10 rounded-lg border border-gray-700 bg-gray-800 object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setFieldValue("icon_url", "")}
+                          className="text-xs text-gray-500 hover:text-red-400 transition"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    )}
 
                   {/* Schema fields (excluding image_url) */}
                   {nonImageFields.map((field) => {
