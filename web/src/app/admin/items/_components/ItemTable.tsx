@@ -11,14 +11,24 @@ import { type AdminItem } from "./types";
 export function ItemTable({
   items,
   visibleItems,
+  sections,
+  showSection = false,
   onEdit,
   onDelete,
 }: {
   items: AdminItem[];
   visibleItems: AdminItem[];
+  // Only consulted when showSection is set — resolves section_id to a name.
+  sections?: { id: string; name: string }[];
+  // Set when the list spans sections, so each row states which one it's in.
+  // Redundant (and omitted) once the list is scoped to a single section.
+  showSection?: boolean;
   onEdit: (item: AdminItem) => void;
   onDelete: (id: string) => void;
 }) {
+  const sectionName = (id: string) =>
+    sections?.find((s) => s.id === id)?.name ?? "—";
+  const colCount = showSection ? 6 : 5;
   return (
     <div className="overflow-hidden rounded-xl border border-gray-800">
       <div className="overflow-x-auto">
@@ -27,6 +37,7 @@ export function ItemTable({
           <tr className="border-b border-gray-800 bg-gray-900">
             <th className="text-left px-4 py-3 text-gray-400 w-14" />
             <th className="text-left px-4 py-3 text-gray-400">Name</th>
+            {showSection && <th className="text-left px-4 py-3 text-gray-400">Section</th>}
             <th className="text-left px-4 py-3 text-gray-400">Slug</th>
             <th className="text-left px-4 py-3 text-gray-400">Updated</th>
             <th className="px-4 py-3" />
@@ -35,13 +46,13 @@ export function ItemTable({
         <tbody>
           {items.length === 0 ? (
             <tr>
-              <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+              <td colSpan={colCount} className="px-4 py-8 text-center text-gray-500">
                 No items yet. Click &quot;+ Add Item&quot; to create the first one.
               </td>
             </tr>
           ) : visibleItems.length === 0 ? (
             <tr>
-              <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+              <td colSpan={colCount} className="px-4 py-8 text-center text-gray-500">
                 No items match the current filters.
               </td>
             </tr>
@@ -79,6 +90,13 @@ export function ItemTable({
                     )}
                   </td>
                   <td className="px-4 py-3">{name}</td>
+                  {showSection && (
+                    <td className="px-4 py-3">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-gray-800 text-gray-300 text-xs whitespace-nowrap">
+                        {sectionName(item.section_id)}
+                      </span>
+                    </td>
+                  )}
                   <td className="px-4 py-3 text-gray-400 font-mono text-xs">{item.slug}</td>
                   <td className="px-4 py-3 text-gray-500 text-xs">
                     {new Date(item.updated_at).toLocaleDateString()}

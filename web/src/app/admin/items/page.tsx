@@ -39,6 +39,7 @@ interface Schema {
   name: string;
   section_id: string | null;
   fields: SchemaField[];
+  filter_attrs?: string[] | null;
   card_layout?: CardLayout | null;
   is_collectable?: boolean;
 }
@@ -80,6 +81,10 @@ export default function AdminItemsPage() {
   const [games, setGames] = useState<Game[]>([]);
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [sections, setSections] = useState<Section[]>([]);
+  // "" = all sections. Attribute filters are only meaningful within one
+  // section (they're keyed off that section's schema fields), so the "all"
+  // view trades them for a Section column on the table.
+  const [selectedSectionId, setSelectedSectionId] = useState("");
   const [schemas, setSchemas] = useState<Schema[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [loadingItems, setLoadingItems] = useState(false);
@@ -128,6 +133,7 @@ export default function AdminItemsPage() {
       setSections(sectRes.data.data ?? []);
       setSchemas(schemaRes.data.data ?? []);
       setItems(allItems);
+      setSelectedSectionId("");
       setActiveFilters({});
       setSearch("");
       const attrs: GameAttribute[] = attrRes.data.data ?? [];
@@ -155,11 +161,13 @@ export default function AdminItemsPage() {
   }
 
   const openCreate = () => {
-    const firstSectionId = sections[0]?.id ?? "";
-    const matchedSchema = firstSectionId ? schemaForSection(schemas, firstSectionId) : null;
+    // Default to the section being browsed, so "+ Add Item" while filtered to
+    // Weapons starts on Weapons rather than the first section in the list.
+    const defaultSectionId = selectedSectionId || sections[0]?.id || "";
+    const matchedSchema = defaultSectionId ? schemaForSection(schemas, defaultSectionId) : null;
     const fresh = {
       slug: "",
-      section_id: firstSectionId,
+      section_id: defaultSectionId,
       type_schema_id: matchedSchema?.id ?? "",
       dataJson: JSON.stringify({ name: "", image_url: "" }, null, 2),
     };
@@ -319,9 +327,43 @@ export default function AdminItemsPage() {
     }
   };
 
+  // Items narrowed to the active section (all of them when none is picked).
+  // The unscoped `items` list stays in use for itemref/itemlist pickers,
+  // which deliberately reach across sections.
+  const sectionItems = useMemo(
+    () => (selectedSectionId ? items.filter((i) => i.section_id === selectedSectionId) : items),
+    [items, selectedSectionId],
+  );
+
+  // The schema whose fields drive the filter chips. Only resolvable once a
+  // single section is active — across sections there is no one schema to
+  // key `item.data` lookups against.
+  const sectionSchema = useMemo(
+    () => (selectedSectionId ? schemaForSection(schemas, selectedSectionId) : null),
+    [schemas, selectedSectionId],
+  );
+
+  // Section chips, "All sections" first, each with its item count.
+  const sectionTabs = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const i of items) counts.set(i.section_id, (counts.get(i.section_id) ?? 0) + 1);
+    return [
+      { id: "", name: "All sections", count: items.length },
+      ...sections.map((s) => ({ id: s.id, name: s.name, count: counts.get(s.id) ?? 0 })),
+    ];
+  }, [items, sections]);
+
+  // Filter selections are keyed by schema field key, so they carry no meaning
+  // into a different section — drop them on switch rather than silently
+  // filtering the new list by a key it doesn't have.
+  const selectSection = (sectionId: string) => {
+    setSelectedSectionId(sectionId);
+    setActiveFilters({});
+  };
+
   const visibleItems = useMemo(
-    () => filterItems(items, activeFilters, search),
-    [items, activeFilters, search],
+    () => filterItems(sectionItems, activeFilters, search),
+    [sectionItems, activeFilters, search],
   );
 
   function exportItems() {
@@ -421,6 +463,37 @@ export default function AdminItemsPage() {
 
       {!selectedGame && <p className="text-gray-500 text-sm">Select a game to manage its items.</p>}
 
+      {/* Section selector. Mirrors the section tabs on the public game page:
+          card layout, detail template and filter chips are all per-section,
+          so this is the axis that makes a multi-section list coherent. */}
+      {selectedGame && !loadingItems && sections.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-5">
+          {sectionTabs.map((s) => {
+            const active = selectedSectionId === s.id;
+            return (
+              <button
+                key={s.id || "__all"}
+                onClick={() => selectSection(s.id)}
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs transition ${
+                  active
+                    ? "bg-amber-500 text-black font-semibold"
+                    : "border border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200"
+                }`}
+              >
+                {s.name}
+                <span className={active ? "text-black/60" : "text-gray-600"}>{s.count}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {selectedGame && !loadingItems && selectedSectionId && !sectionSchema && (
+        <p className="text-xs text-yellow-500 mb-4">
+          This section has no schema — add one to get filters and a card layout for it.
+        </p>
+      )}
+
       {loadingItems && (
         <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -432,9 +505,17 @@ export default function AdminItemsPage() {
       {selectedGame && !loadingItems && items.length > 0 && (
         <ItemFilterBar
           attributes={attrList}
-          items={items}
+          items={sectionItems}
           activeFilters={activeFilters}
           search={search}
+          // Passing the section's schema keys the chip groups off field.key
+          // (matching the public game page). Without it the bar falls back to
+          // treating attr_type as the JSON key, so any field whose key differs
+          // from its attribute_type silently never appears.
+          schemaFields={sectionSchema?.fields}
+          // Across sections there's no single schema to key lookups against,
+          // so suppress the chip groups entirely and keep only name search.
+          allowedKeys={selectedSectionId ? (sectionSchema?.filter_attrs ?? null) : []}
           onFilterToggle={toggleFilter}
           onClearAll={() => { setActiveFilters({}); setSearch(""); }}
           onSearchChange={setSearch}
@@ -478,8 +559,10 @@ export default function AdminItemsPage() {
 
       {selectedGame && !loadingItems && viewMode === "table" && (
         <ItemTable
-          items={items}
+          items={sectionItems}
           visibleItems={visibleItems}
+          sections={sections}
+          showSection={!selectedSectionId && sections.length > 1}
           onEdit={openEdit}
           onDelete={setDeleteTarget}
         />
