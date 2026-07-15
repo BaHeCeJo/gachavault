@@ -5,6 +5,31 @@ const PROTECTED_ROUTES = ["/admin", "/profile", "/collections", "/tierlists", "/
 const PUBLIC_OVERRIDES = ["/tierlists/share"];
 const ADMIN_ROLES = new Set(["admin", "superadmin"]);
 
+// /games/{gameSlug}/{sectionSlug}/{...rest}. Also matches /games/{slug}/items/{id},
+// whose "items" segment is already lowercase and so never redirects.
+const GAME_SECTION_PATH = /^\/games\/([^/]+)\/([^/]+)(\/.*)?$/;
+
+// Section slugs are lowercase — normalized by games-service migration
+// 20260715000001 and enforced in create_section. But genshin-impact published
+// capitalized ones (/games/genshin-impact/Characters/venti) before that, and
+// they reached the sitemap and got indexed. The item route resolves the section
+// slug case-sensitively, so once the DB row is lowercased those published URLs
+// 404. Send a 301 so search engines move to the canonical casing rather than
+// recording a dead link.
+//
+// This also covers search hits whose stored section_slug is still capitalized:
+// the meilisearch document keeps the old value until its item is re-saved, so
+// its result link points at the old casing and would otherwise 404.
+function lowercaseSectionRedirect(request: NextRequest): URL | null {
+  const match = GAME_SECTION_PATH.exec(request.nextUrl.pathname);
+  if (!match) return null;
+  const [, gameSlug, sectionSlug, rest] = match;
+  if (sectionSlug === sectionSlug.toLowerCase()) return null;
+  const url = request.nextUrl.clone();
+  url.pathname = `/games/${gameSlug}/${sectionSlug.toLowerCase()}${rest ?? ""}`;
+  return url;
+}
+
 // Decode the payload of a JWT without verifying its signature. This is a
 // UX-only fast path that lets us skip the /admin round-trip for users whose
 // token claims aren't an admin role at all (common case). The real admin
@@ -52,6 +77,13 @@ export function middleware(request: NextRequest) {
   ]
     .filter(Boolean)
     .join("; ");
+
+  const sectionRedirect = lowercaseSectionRedirect(request);
+  if (sectionRedirect) {
+    const redirectResponse = NextResponse.redirect(sectionRedirect, 301);
+    redirectResponse.headers.set("Content-Security-Policy", csp);
+    return redirectResponse;
+  }
 
   const isPublicOverride = PUBLIC_OVERRIDES.some((route) =>
     pathname.startsWith(route)
