@@ -263,10 +263,16 @@ export default function AdminGameSectionsPage() {
                     <span className="text-xs text-gray-600">auto-generated</span>
                   )}
                 </div>
+                {/* Lowercase as you type. The slug is a URL path segment matched
+                    case-sensitively, and schema fields naming a section by slug
+                    (item_section / source_section) match it exactly, so a stray
+                    capital silently unscopes their item pickers. Case-fold only —
+                    running the full toSlug() here would eat a trailing dash
+                    mid-word. games-service rejects the rest. */}
                 <input
                   type="text"
                   value={form.slug}
-                  onChange={(e) => { setSlugLocked(true); setForm((f) => ({ ...f, slug: e.target.value })); }}
+                  onChange={(e) => { setSlugLocked(true); setForm((f) => ({ ...f, slug: e.target.value.toLowerCase() })); }}
                   placeholder="e.g. characters"
                   className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white font-mono"
                 />

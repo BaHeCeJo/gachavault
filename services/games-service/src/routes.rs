@@ -223,8 +223,30 @@ pub async fn create_section(
 ) -> AppResult<Json<ApiResponse<DbSection>>> {
     ensure_admin(&auth)?;
 
-    if body.slug.is_empty() || body.name.is_empty() {
+    // A section slug is a URL path segment (/games/{game}/{section}/{item}) and
+    // the route matches it case-sensitively, so a capitalized slug yields a URL
+    // that resolves in exactly one casing. It's also matched exactly by schema
+    // fields that name a section by slug (item_section / source_section), where
+    // a casing mismatch silently unscopes the item picker rather than erroring.
+    // Lowercase rather than reject — "Characters" unambiguously means
+    // "characters", and this is the only writable path for a slug (update_section
+    // deliberately doesn't touch it).
+    let section_slug = body.slug.trim().to_lowercase();
+
+    if section_slug.is_empty() || body.name.trim().is_empty() {
         return Err(AppError::BadRequest("slug and name are required".into()));
+    }
+
+    // Anything outside [a-z0-9-] can't round-trip through a URL path segment
+    // unescaped, so reject it instead of silently mangling it into something
+    // the admin didn't ask for.
+    if !section_slug
+        .chars()
+        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+    {
+        return Err(AppError::BadRequest(
+            "slug may only contain letters, digits and dashes".into(),
+        ));
     }
 
     let game = db::find_game_by_slug(&pool, &slug)
@@ -235,13 +257,13 @@ pub async fn create_section(
     let section = db::create_section(
         &pool,
         game.id,
-        &body.slug,
+        &section_slug,
         &body.name,
         body.order.unwrap_or(0),
     )
     .await
     .map_err(|e| {
-        let msg = format!("Section '{}' already exists in this game", body.slug);
+        let msg = format!("Section '{}' already exists in this game", section_slug);
         shared_errors::map_unique_violation(e, &[("sections_game_id_slug_key", &msg)])
     })?;
 
