@@ -78,10 +78,32 @@ async fn init_meilisearch_index(state: &AppState) {
         );
     }
 
+    // `data` is a free-form per-section JSONB blob whose keys are defined by
+    // each section's item_type_schema, so an allowlist of key names can never
+    // keep up: a weapons section's `passive_effect` or an artifact set's
+    // `set_bonus` would be indexed but unmatchable. Naming the *parent* makes
+    // every nested key searchable, whatever it's called.
+    //
+    // Three non-obvious things, all verified against meilisearch v1.11.3 —
+    // don't "simplify" this without re-checking:
+    //  - Order is the attribute ranking rule: name beats slug beats data, so
+    //    the item *named* Claymore outranks one that merely has claymore in
+    //    data.weapon_type.
+    //  - NOT ["*"]: the wildcard makes game_id/section_id/section_slug
+    //    searchable too, so a query of "characters" returns every character
+    //    via its section_slug. It also ranks by field order *in the document*,
+    //    which puts game_slug/section_slug above name and demotes real name
+    //    matches. Mixing (["name","slug","*"]) doesn't help — meilisearch
+    //    silently normalizes it to ["*"] and drops the ordering.
+    //  - NOT "data.*": accepted without error, stored verbatim, matches
+    //    nothing at all. Dot-notation only takes concrete paths.
+    //
+    // Changing this setting reindexes already-stored documents on its own;
+    // it does not require re-pushing them.
     let settings = json!({
         "filterableAttributes": ["game_slug", "section_slug", "game_id", "section_id"],
         "sortableAttributes": ["name"],
-        "searchableAttributes": ["name", "slug", "data.description", "data.role", "data.element"]
+        "searchableAttributes": ["name", "slug", "data"]
     });
 
     match state
