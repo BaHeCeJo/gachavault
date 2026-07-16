@@ -32,4 +32,5 @@ export interface AdminSchema {
   fields: AdminSchemaField[];
   card_layout?: CardLayout | null;
   is_collectable?: boolean;
+  image_slots?: unknown;
 }
