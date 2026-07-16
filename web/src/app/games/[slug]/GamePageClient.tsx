@@ -9,6 +9,7 @@ import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/Ite
 import { SafeImage } from "@/components/SafeImage";
 import { cardGradient } from "@/lib/theme";
 import ItemCard, { type CardLayout } from "@/components/ItemCard";
+import { cardIsPortrait } from "@/lib/imageSlots";
 import { CalendarView } from "@/components/CalendarView";
 import { type AttrMap, type GameAttribute, type SchemaFieldLite, buildAttrMap } from "@/lib/attrs";
 import type { CalendarEvent } from "@/lib/events";
@@ -65,6 +66,7 @@ interface Schema {
   filter_attrs: string[] | null;
   card_layout: CardLayout | null;
   is_collectable?: boolean;
+  image_slots?: unknown;
 }
 
 // Picks the schema that governs how an item card renders. Prefer the item's
@@ -319,7 +321,7 @@ export default function GamePageClient({ initial }: ClientProps) {
                     layout={sch?.card_layout ?? null}
                     schemaFields={sch?.fields}
                     fallbackGameSlug={game.slug}
-                    portrait={sch?.is_collectable}
+                    portrait={cardIsPortrait(sch)}
                   />
                 );
               })}
@@ -419,7 +421,7 @@ function OverviewTab({
                   layout={sch?.card_layout ?? null}
                   schemaFields={sch?.fields}
                   fallbackGameSlug={gameSlug}
-                  portrait={sch?.is_collectable}
+                  portrait={cardIsPortrait(sch)}
                 />
               );
             })}

@@ -27,7 +27,10 @@ export const THUMB_KEYS = ["icon_url", "portrait_url", "image_url"];
 // Browse/list cards (3:4): portrait → icon → splash.
 export const PORTRAIT_KEYS = ["portrait_url", "icon_url", "image_url"];
 
-function firstUrl(
+// First present (non-empty) image URL among `keys`, in order. Exported so
+// slot-role-aware callers can resolve a URL from a key chain they build via
+// imageSlots.slotKeysForRole().
+export function firstUrl(
   data: Record<string, unknown> | null | undefined,
   keys: string[],
 ): string | undefined {

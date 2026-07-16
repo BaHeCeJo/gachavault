@@ -2,6 +2,7 @@
 
 import ItemCard from "@/components/ItemCard";
 import { type AttrMap } from "@/lib/attrs";
+import { cardIsPortrait } from "@/lib/imageSlots";
 import { type AdminItem, type AdminSchema } from "./types";
 
 // Card view of the items list — image-forward grid with per-item edit/
@@ -31,7 +32,7 @@ export function ItemCardGrid({
             attrMap={attrMap}
             layout={schema?.card_layout ?? null}
             schemaFields={schema?.fields}
-            portrait={schema?.is_collectable}
+            portrait={cardIsPortrait(schema)}
             linkMode="image"
             footer={
               <div className="flex gap-1 mt-1.5">

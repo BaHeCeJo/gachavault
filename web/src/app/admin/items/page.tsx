@@ -8,6 +8,7 @@ import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
 import { focusKeyFor, zoomKeyFor } from "@/lib/imageFocus";
+import { resolveImageSlots, SINGLE_IMAGE_PRESET } from "@/lib/imageSlots";
 import ItemFilterBar, { filterItems, type ActiveFilters } from "@/components/ItemFilterBar";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { type CardLayout } from "@/components/ItemCard";
@@ -41,6 +42,12 @@ interface Schema {
   fields: SchemaField[];
   card_layout?: CardLayout | null;
   is_collectable?: boolean;
+  image_slots?: unknown;
+}
+
+// "Portrait (3:4)" -> "Portrait" for compact crop button / source labels.
+function shortSlotLabel(label: string): string {
+  return label.replace(/\s*\(.*\)\s*$/, "").trim() || label;
 }
 
 // Find the schema for a given section. Prefer a schema explicitly bound to
@@ -589,84 +596,58 @@ export default function AdminItemsPage() {
             {(() => {
               const schema = schemas.find((s) => s.id === form.type_schema_id);
               const fields: SchemaField[] = Array.isArray(schema?.fields) ? (schema.fields as SchemaField[]) : [];
-              // image_url is always handled specially; for collectable types the
-              // four standard image keys are all rendered by the slot block, so
-              // keep them out of the generic field loop to avoid duplicates.
-              const standardImageKeys = schema?.is_collectable
-                ? new Set(["image_url", "icon_url", "portrait_url", "fullart_url"])
-                : new Set(["image_url"]);
-              const nonImageFields = fields.filter((f) => !standardImageKeys.has(f.key));
+              // Effective image slots for this schema (explicit config, else the
+              // preset implied by is_collectable). The slot keys are rendered by
+              // the image block, so keep them out of the generic field loop to
+              // avoid duplicate inputs. (icon_url stays eligible for the loop in
+              // the single-image case: it's the auto-crop target, and an explicit
+              // icon_url image field should still get its own input.)
+              const slots = resolveImageSlots(schema);
+              const isSingleImage = slots === SINGLE_IMAGE_PRESET;
+              const slotKeys = new Set<string>(slots.map((s) => s.key));
+              const nonImageFields = fields.filter((f) => !slotKeys.has(f.key));
 
               return (
                 <>
-                  {/* Collectable types get the four standard image slots
-                      (full art / splash / portrait / icon), with icon & portrait
-                      cropped from the art. Non-collectable types keep the single
+                  {/* Multi-slot types render one upload field per configured image
+                      role (icon / portrait / full art / …), with cropped slots
+                      sourced from the art. The single-image default keeps the lone
                       Image field + auto-icon. */}
-                  {schema?.is_collectable ? (
-                    (() => {
-                      // Crop sources, in preferred order. The cropper drops the
-                      // empty ones and lets the admin pick among what's left.
-                      // Portrait: from the full art, else the splash. Icon: also
-                      // from the portrait (face is already framed → crisper).
-                      const portraitSources = [
-                        { label: "Full art", url: getFieldValue("fullart_url") },
-                        { label: "Splash", url: getFieldValue("image_url") },
-                      ];
-                      const iconSources = [
-                        { label: "Portrait", url: getFieldValue("portrait_url") },
-                        ...portraitSources,
-                      ];
-                      return (
-                        <div className="space-y-3 rounded-xl border border-gray-800 bg-gray-900/40 p-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                            Collectable images
-                          </p>
+                  {!isSingleImage ? (
+                    <div className="space-y-3 rounded-xl border border-gray-800 bg-gray-900/40 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Images
+                      </p>
+                      {slots.map((slot) => {
+                        // Crop sources: the slot's cropFrom keys, labelled from
+                        // their own slots. The cropper drops the empty ones and
+                        // lets the admin pick among what's left.
+                        const cropSources = slot.cropFrom.map((k) => ({
+                          label: shortSlotLabel(slots.find((s) => s.key === k)?.label ?? k),
+                          url: getFieldValue(k),
+                        }));
+                        // Uncropped art slots (no aspect) get the WYSIWYG focus/zoom
+                        // pan; cropped slots (icon/portrait) are already tightly framed.
+                        const cropped = slot.aspect != null;
+                        return (
                           <ImageUploadField
-                            label="Full art (transparent, no background)"
-                            value={getFieldValue("fullart_url")}
-                            onChange={(url) => setFieldValue("fullart_url", url)}
-                            focus={getFieldValue(focusKeyFor("fullart_url"))}
-                            onFocusChange={(f) => setFieldValue(focusKeyFor("fullart_url"), f)}
-                            zoom={Number(getFieldValue(zoomKeyFor("fullart_url"))) || undefined}
-                            onZoomChange={(z) => setFieldValue(zoomKeyFor("fullart_url"), z)}
+                            key={slot.key}
+                            label={slot.label}
+                            value={getFieldValue(slot.key)}
+                            onChange={(url) => setFieldValue(slot.key, url)}
+                            focus={cropped ? undefined : getFieldValue(focusKeyFor(slot.key))}
+                            onFocusChange={cropped ? undefined : (f) => setFieldValue(focusKeyFor(slot.key), f)}
+                            zoom={cropped ? undefined : Number(getFieldValue(zoomKeyFor(slot.key))) || undefined}
+                            onZoomChange={cropped ? undefined : (z) => setFieldValue(zoomKeyFor(slot.key), z)}
                             placeholder="https://… or upload →"
-                            previewHeight="h-24"
+                            previewHeight={slot.aspect === 1 ? "h-16" : "h-24"}
+                            cropSources={cropSources.length ? cropSources : undefined}
+                            cropAspect={slot.aspect ?? undefined}
+                            cropLabel={cropped ? `Make ${shortSlotLabel(slot.label).toLowerCase()}` : undefined}
                           />
-                          <ImageUploadField
-                            label="Splash art (with background)"
-                            value={getFieldValue("image_url")}
-                            onChange={(url) => setFieldValue("image_url", url)}
-                            focus={getFieldValue(focusKeyFor("image_url"))}
-                            onFocusChange={(f) => setFieldValue(focusKeyFor("image_url"), f)}
-                            zoom={Number(getFieldValue(zoomKeyFor("image_url"))) || undefined}
-                            onZoomChange={(z) => setFieldValue(zoomKeyFor("image_url"), z)}
-                            placeholder="https://… or upload →"
-                            previewHeight="h-24"
-                          />
-                          <ImageUploadField
-                            label="Portrait (3:4)"
-                            value={getFieldValue("portrait_url")}
-                            onChange={(url) => setFieldValue("portrait_url", url)}
-                            placeholder="https://… or upload →"
-                            previewHeight="h-24"
-                            cropSources={portraitSources}
-                            cropAspect={3 / 4}
-                            cropLabel="Make portrait"
-                          />
-                          <ImageUploadField
-                            label="Icon (square)"
-                            value={getFieldValue("icon_url")}
-                            onChange={(url) => setFieldValue("icon_url", url)}
-                            placeholder="https://… or upload →"
-                            previewHeight="h-16"
-                            cropSources={iconSources}
-                            cropAspect={1}
-                            cropLabel="Make icon"
-                          />
-                        </div>
-                      );
-                    })()
+                        );
+                      })}
+                    </div>
                   ) : (
                     <>
                       {/* Image always shown as upload field */}

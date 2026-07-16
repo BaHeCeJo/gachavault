@@ -1,0 +1,23 @@
+-- Per-schema image slot configuration. Replaces the fixed four-image layout
+-- that `is_collectable` implied (icon / portrait / splash / full art) with a
+-- configurable list, so different collectable types can carry different image
+-- roles (e.g. a lightcone = icon / full art / basic art, with no portrait or
+-- splash).
+--
+-- Shape (JSON array; NULL = "use the legacy default derived from is_collectable"):
+--   [
+--     { "key": "icon_url", "label": "Icon", "aspect": 1,
+--       "cropFrom": ["fullart_url"], "roles": ["thumb"] },
+--     ...
+--   ]
+--   key      — the `<base>_url` data key (keeps the _focus/_zoom sibling convention)
+--   label    — admin form label
+--   aspect   — crop aspect ratio (number) or null for a free upload with no cropper
+--   cropFrom — ordered list of other slot keys to offer as crop sources
+--   roles    — subset of thumb | card | hero | gallery; drives which image each
+--              site surface renders
+--
+-- Nullable with no default so every existing schema keeps rendering exactly as
+-- before (legacy behavior is reconstructed from is_collectable in the frontend).
+ALTER TABLE games.item_type_schemas
+    ADD COLUMN IF NOT EXISTS image_slots JSONB;

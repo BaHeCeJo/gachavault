@@ -12,7 +12,9 @@ import ItemCard, { type CardLayout } from "@/components/ItemCard";
 import { buildAttrMap, type GameAttribute as GameAttributeFull } from "@/lib/attrs";
 import { revalidateGame } from "@/lib/revalidate";
 import { type PageLayout, parsePageLayout } from "@/lib/pageLayout";
+import { type ImageSlot, parseImageSlots } from "@/lib/imageSlots";
 import { PageLayoutEditor } from "./_components/PageLayoutEditor";
+import { ImageSlotsEditor } from "./_components/ImageSlotsEditor";
 
 interface Section { id: string; slug: string; name: string }
 interface GameAttribute { attr_type: string }
@@ -26,6 +28,9 @@ interface Schema {
   filter_attrs: string[] | null;
   card_layout: CardLayout | null;
   is_collectable?: boolean;
+  // Per-type image slot config. null = default layout from is_collectable.
+  // Parsed at the edge via parseImageSlots.
+  image_slots?: unknown;
   // Raw detail-page template JSON; round-tripped here, edited via the
   // dedicated block editor (later stage). Parsed at the edge.
   page_layout?: unknown;
@@ -186,6 +191,7 @@ function schemaSnapshot(v: {
   cardLayout: CardLayout | null;
   pageLayout: PageLayout | null;
   isCollectable: boolean;
+  imageSlots: ImageSlot[] | null;
 }): string {
   return JSON.stringify({
     name: v.name,
@@ -195,6 +201,7 @@ function schemaSnapshot(v: {
     cardLayout: v.cardLayout,
     pageLayout: v.pageLayout,
     isCollectable: v.isCollectable,
+    imageSlots: v.imageSlots,
   });
 }
 
@@ -225,6 +232,8 @@ export default function AdminGameSchemasPage() {
   // Marks this type as collectable (characters/weapons/agents/…): gives items
   // the four standard image slots + portrait browse cards.
   const [isCollectable, setIsCollectable] = useState(false);
+  // null = use the default layout implied by isCollectable; array = custom slots.
+  const [imageSlots, setImageSlots] = useState<ImageSlot[] | null>(null);
   const [viewMode, setViewMode] = useState<"visual" | "json">("visual");
   const [jsonDraft, setJsonDraft] = useState("");
   const [jsonError, setJsonError] = useState("");
@@ -268,6 +277,7 @@ export default function AdminGameSchemasPage() {
     setCardLayout(null);
     setPageLayout(null);
     setIsCollectable(false);
+    setImageSlots(null);
     setJsonDraft(JSON.stringify(DEFAULT_FIELDS, null, 2));
     setViewMode("visual");
     setJsonError("");
@@ -285,6 +295,7 @@ export default function AdminGameSchemasPage() {
         cardLayout: null,
         pageLayout: null,
         isCollectable: false,
+        imageSlots: null,
       }),
     );
     setModal({ mode: "create" });
@@ -301,6 +312,8 @@ export default function AdminGameSchemasPage() {
     setCardLayout(schema.card_layout ?? null);
     setPageLayout(loadedPageLayout);
     setIsCollectable(schema.is_collectable ?? false);
+    const loadedImageSlots = parseImageSlots(schema.image_slots);
+    setImageSlots(loadedImageSlots);
     setJsonDraft(JSON.stringify(schema.fields, null, 2));
     setViewMode("visual");
     setJsonError("");
@@ -314,6 +327,7 @@ export default function AdminGameSchemasPage() {
         cardLayout: schema.card_layout ?? null,
         pageLayout: loadedPageLayout,
         isCollectable: schema.is_collectable ?? false,
+        imageSlots: loadedImageSlots,
       }),
     );
     setModal({ mode: "edit", schema });
@@ -404,6 +418,7 @@ export default function AdminGameSchemasPage() {
           card_layout: cardLayout,
           page_layout: pageLayout,
           is_collectable: isCollectable,
+          image_slots: imageSlots,
         });
         setSchemas((prev) => [...prev, res.data.data]);
       } else if (modal?.mode === "edit") {
@@ -414,6 +429,7 @@ export default function AdminGameSchemasPage() {
           card_layout: cardLayout,
           page_layout: pageLayout,
           is_collectable: isCollectable,
+          image_slots: imageSlots,
         });
         setSchemas((prev) => prev.map((s) => (s.id === modal.schema.id ? res.data.data : s)));
       }
@@ -455,7 +471,7 @@ export default function AdminGameSchemasPage() {
       : fields;
   const dirty =
     !!modal &&
-    schemaSnapshot({ name, sectionId, fields: currentFields, filterAttrs, cardLayout, pageLayout, isCollectable }) !==
+    schemaSnapshot({ name, sectionId, fields: currentFields, filterAttrs, cardLayout, pageLayout, isCollectable, imageSlots }) !==
       initialSnapshot;
   const guard = useModalCloseGuard({ open: !!modal, dirty, onClose: closeModal });
 
@@ -710,12 +726,18 @@ export default function AdminGameSchemasPage() {
               <span>
                 <span className="font-medium text-gray-200">Collectable type</span>
                 <span className="block text-xs text-gray-500">
-                  Characters, weapons, agents, Nikkes… Gives items the four standard image slots
-                  (icon, portrait, splash art, full art) with icon &amp; portrait croppable from
-                  the art, and portrait (3:4) browse cards. Leave off for relics, materials, etc.
+                  Characters, weapons, agents, Nikkes… Sets the default image layout (icon,
+                  portrait, splash art, full art) and portrait (3:4) browse cards. Leave off for
+                  relics, materials, etc. Override the images per type below.
                 </span>
               </span>
             </label>
+
+            <ImageSlotsEditor
+              value={imageSlots}
+              onChange={setImageSlots}
+              isCollectable={isCollectable}
+            />
 
             <FilterAttrsEditor
               fields={fields}

@@ -594,6 +594,7 @@ pub async fn create_schema(
         body.card_layout.as_ref(),
         body.page_layout.as_ref(),
         body.is_collectable.unwrap_or(false),
+        body.image_slots.as_ref(),
     )
     .await
     .map_err(|e| {
@@ -644,6 +645,12 @@ pub async fn update_schema(
             Some(None) => (true, None),
             Some(Some(v)) => (true, Some(v)),
         };
+    let (image_slots_present, image_slots_value): (bool, Option<serde_json::Value>) =
+        match body.image_slots {
+            None => (false, None),
+            Some(None) => (true, None),
+            Some(Some(v)) => (true, Some(v)),
+        };
 
     let row = sqlx::query_as::<_, DbSchema>(
         "UPDATE games.item_type_schemas SET
@@ -653,6 +660,7 @@ pub async fn update_schema(
             card_layout = CASE WHEN $8 THEN $7 ELSE card_layout END,
             page_layout = CASE WHEN $10 THEN $9 ELSE page_layout END,
             is_collectable = COALESCE($11, is_collectable),
+            image_slots = CASE WHEN $13 THEN $12 ELSE image_slots END,
             updated_at = NOW()
          WHERE id = $1 AND game_id = $2
          RETURNING *",
@@ -668,6 +676,8 @@ pub async fn update_schema(
     .bind(page_layout_value)
     .bind(page_layout_present)
     .bind(body.is_collectable)
+    .bind(image_slots_value)
+    .bind(image_slots_present)
     .fetch_optional(&pool)
     .await
     .map_err(AppError::Database)?

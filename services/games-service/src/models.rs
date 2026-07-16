@@ -35,6 +35,7 @@ pub struct DbSchema {
     pub card_layout: Option<serde_json::Value>,
     pub page_layout: Option<serde_json::Value>,
     pub is_collectable: bool,
+    pub image_slots: Option<serde_json::Value>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -73,6 +74,7 @@ pub struct CreateSchemaRequest {
     pub card_layout: Option<serde_json::Value>,
     pub page_layout: Option<serde_json::Value>,
     pub is_collectable: Option<bool>,
+    pub image_slots: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -94,6 +96,10 @@ pub struct UpdateSchemaRequest {
     pub card_layout: Option<Option<serde_json::Value>>,
     #[serde(default, deserialize_with = "deserialize_some")]
     pub page_layout: Option<Option<serde_json::Value>>,
+    // Same tri-state as page_layout: absent = don't touch, null = reset to the
+    // legacy default, value = new slot list.
+    #[serde(default, deserialize_with = "deserialize_some")]
+    pub image_slots: Option<Option<serde_json::Value>>,
     // Plain Option: non-null boolean updated via COALESCE (like games.is_active).
     pub is_collectable: Option<bool>,
 }
