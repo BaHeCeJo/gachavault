@@ -110,6 +110,15 @@ export function FieldValue({
     return <span className="text-gray-400 text-sm">{list.length} {list.length === 1 ? "ability" : "abilities"}</span>;
   }
 
+  // A table field is rendered full-width by the Table block / legacy section,
+  // not as a stats-table cell. If one lands here, show a count rather than
+  // dumping raw row objects.
+  if (fieldType === "table") {
+    const rows = Array.isArray(value) ? value : [];
+    if (rows.length === 0) return <span className="text-gray-600">—</span>;
+    return <span className="text-gray-400 text-sm">{rows.length} {rows.length === 1 ? "row" : "rows"}</span>;
+  }
+
   if (fieldType === "itemlist") {
     type ItemEntry = { id: string; name: string; qty?: number; qty_min?: number; qty_max?: number };
     const entries: ItemEntry[] = Array.isArray(value) ? (value as ItemEntry[]) : [];

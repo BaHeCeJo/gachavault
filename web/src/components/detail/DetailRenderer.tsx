@@ -13,8 +13,9 @@ import type {
   RichTextConfig,
   SkillsConfig,
   StatsTableConfig,
+  TableConfig,
 } from "@/lib/pageLayout";
-import type { ItemRelations } from "@/components/detail/types";
+import type { ItemRelations, SchemaField } from "@/components/detail/types";
 import { LegacyDetailLayout } from "@/components/detail/LegacyDetailLayout";
 import { HeroBlock } from "@/components/detail/blocks/HeroBlock";
 import { StatsTableBlock, statsTableHasContent } from "@/components/detail/blocks/StatsTableBlock";
@@ -23,7 +24,9 @@ import { ItemGridBlock } from "@/components/detail/blocks/ItemGridBlock";
 import { GalleryBlock } from "@/components/detail/blocks/GalleryBlock";
 import { RatingsBlock } from "@/components/detail/blocks/RatingsBlock";
 import { SkillsBlock } from "@/components/detail/blocks/SkillsBlock";
+import { TableBlock } from "@/components/detail/blocks/TableBlock";
 import { TabsBlock } from "@/components/detail/blocks/TabsBlock";
+import { tableHasContent } from "@/components/detail/LevelingTable";
 
 interface BlockProps {
   block: PageBlock;
@@ -117,6 +120,8 @@ function BlockRenderer({ block, bundle, preview, relations, attrMap }: BlockProp
       return <RatingsBlock config={block.config} bundle={bundle} />;
     case "skills":
       return <SkillsBlock config={block.config} bundle={bundle} />;
+    case "table":
+      return <TableBlock config={block.config} bundle={bundle} />;
     case "divider":
       return <DividerBlock config={block.config} />;
     case "columns":
@@ -151,6 +156,12 @@ function blockHasContent(block: PageBlock, bundle: ItemPageBundle, relations: It
       const c = (block.config ?? {}) as SkillsConfig;
       const raw = c.list_field ? data[c.list_field] : undefined;
       return Array.isArray(raw) && raw.length > 0;
+    }
+    case "table": {
+      const c = (block.config ?? {}) as TableConfig;
+      const fields = (bundle.fields ?? []) as SchemaField[];
+      const key = c.list_field || fields.find((f) => f.type === "table")?.key;
+      return key ? tableHasContent(data[key]) : false;
     }
     case "gallery": {
       const c = (block.config ?? {}) as GalleryConfig;

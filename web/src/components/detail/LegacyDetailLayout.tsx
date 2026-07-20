@@ -7,6 +7,7 @@ import { cardGradient } from "@/lib/theme";
 import { type AttrMap, lookupAttr } from "@/lib/attrs";
 import type { ItemPageBundle } from "@/lib/seo";
 import { FieldValue, RarityStars, itemHref, HIDDEN_IN_DETAILS } from "@/components/detail/FieldValue";
+import { LevelingTable, parseTableRows } from "@/components/detail/LevelingTable";
 import type { Item, ItemRelations, SchemaField } from "@/components/detail/types";
 
 // The original fixed detail layout, moved here verbatim MINUS its outer
@@ -110,7 +111,7 @@ export function LegacyDetailLayout({
 
           {/* Stats table — above the fold so the "should I pull / build this?" answer lands first */}
           <div className="rounded-xl border border-gray-800 overflow-hidden mb-6">
-            {orderedFields.filter(f => f.key !== "description" && f.key !== "lore").map(({ key, label, type, attribute_type }, i) => {
+            {orderedFields.filter(f => f.key !== "description" && f.key !== "lore" && f.type !== "table").map(({ key, label, type, attribute_type }, i) => {
               const value = item.data[key];
               const isBackref = type === "backref";
               if (!isBackref && (value === undefined || value === null || value === "")) return null;
@@ -158,6 +159,17 @@ export function LegacyDetailLayout({
           )}
         </div>
       </div>
+
+      {/* Table fields (leveling / ascension) — full width below the main grid. */}
+      {fields.filter((f) => f.type === "table").map((f) => {
+        const rows = parseTableRows(item.data[f.key]);
+        if (rows.length === 0) return null;
+        return (
+          <section key={f.key} className="mb-12">
+            <LevelingTable columns={f.columns ?? []} rowLabel={f.row_label} rows={rows} title={f.label} />
+          </section>
+        );
+      })}
 
       {/* Related items */}
       {!preview && relatedItems.length > 0 && (

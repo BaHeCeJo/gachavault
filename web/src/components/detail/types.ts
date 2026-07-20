@@ -35,6 +35,9 @@ export interface SchemaField {
   source_section?: string;
   source_field?: string;
   sources?: { source_section: string; source_field: string }[];
+  // `table` field: named value columns + the first (label) column header.
+  columns?: string[];
+  row_label?: string;
 }
 
 // A resolved cross-item reference (itemref / backref target) ready to link.

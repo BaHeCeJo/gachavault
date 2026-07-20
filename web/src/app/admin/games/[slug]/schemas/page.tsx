@@ -50,6 +50,7 @@ type FieldType =
   | "itemlist"
   | "resistances"
   | "skilllist"
+  | "table"
   | "backref";
 
 interface BackrefSource {
@@ -71,6 +72,9 @@ interface SchemaField {
   source_field?: string;
   sources?: BackrefSource[];
   options?: string[];
+  // type=table: value column headers + the first (label) column's header.
+  columns?: string[];
+  row_label?: string;
 }
 
 const FIELD_TYPES: { value: FieldType; label: string; help: string }[] = [
@@ -86,6 +90,7 @@ const FIELD_TYPES: { value: FieldType; label: string; help: string }[] = [
   { value: "itemlist", label: "Item list", help: "List of items with optional quantities" },
   { value: "resistances", label: "Resistances", help: "Per-attribute resistance grid" },
   { value: "skilllist", label: "Skill list", help: "Editable list of abilities (type, name, description, icon) — rendered by a Skills block" },
+  { value: "table", label: "Table", help: "A leveling/ascension table: named columns + labeled rows (e.g. Base HP/ATK/DEF per level) — rendered by a Table block" },
   { value: "backref", label: "Back-reference", help: "Auto-resolved list of items that reference this one" },
 ];
 

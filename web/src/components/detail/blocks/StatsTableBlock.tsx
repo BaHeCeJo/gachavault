@@ -13,14 +13,16 @@ import type { StatsTableConfig } from "@/lib/pageLayout";
 function statsTableKeys(c: StatsTableConfig, bundle: ItemPageBundle): string[] {
   const data = bundle.item.data as Record<string, unknown>;
   const schemaFields = bundle.fields as SchemaField[];
-  // Skill-list fields are arrays of ability objects meant for a Skills block,
-  // not label/value rows — drop them from auto mode so they don't render as
-  // raw object soup. An explicit `c.fields` list still wins (caller's choice).
-  const skillListKeys = new Set(schemaFields.filter((f) => f.type === "skilllist").map((f) => f.key));
+  // Skill-list and table fields are array data meant for their own dedicated
+  // blocks, not label/value rows — drop them from auto mode so they don't render
+  // as raw object soup. An explicit `c.fields` list still wins (caller's choice).
+  const complexKeys = new Set(
+    schemaFields.filter((f) => f.type === "skilllist" || f.type === "table").map((f) => f.key),
+  );
   const autoKeys = (schemaFields.length > 0
     ? schemaFields.map((f) => f.key)
     : Object.keys(data)
-  ).filter((k) => !HIDDEN_IN_DETAILS.has(k) && k !== "description" && k !== "lore" && !skillListKeys.has(k));
+  ).filter((k) => !HIDDEN_IN_DETAILS.has(k) && k !== "description" && k !== "lore" && !complexKeys.has(k));
   return c.fields && c.fields.length > 0 ? c.fields : autoKeys;
 }
 

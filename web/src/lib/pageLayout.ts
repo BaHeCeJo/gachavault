@@ -20,6 +20,7 @@ export type BlockType =
   | "gallery"
   | "ratings"
   | "skills"
+  | "table"
   | "divider";
 
 export interface PageBlock {
@@ -97,6 +98,14 @@ export interface SkillsConfig {
   scalings_key?: string; // default "scalings" — array of { label, values[] } per-level multipliers, shown via a level slider
 }
 
+export interface TableConfig {
+  title?: string;
+  // A `table` field key whose value is an array of { label, values[] } rows.
+  // Empty = the schema's first table field. Columns/row-label come from the
+  // field definition, not here.
+  list_field?: string;
+}
+
 export interface ColumnsConfig {
   ratio?: "1-1" | "1-2" | "2-1"; // default "1-1"
   columns?: PageBlock[][]; // child blocks per column (2 columns)
@@ -131,6 +140,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: "item_grid", label: "Item grid", help: "Card grid: related items, or an item-reference field", defaultConfig: () => ({ source: "related", columns: 6, limit: 12 }) },
   { type: "ratings", label: "Ratings", help: "Labeled badges or bars from fields", defaultConfig: () => ({ style: "badge", entries: [] }) },
   { type: "skills", label: "Skills", help: "A list of skills/abilities from a list field", defaultConfig: () => ({}) },
+  { type: "table", label: "Table", help: "A leveling/ascension table from a table field", defaultConfig: () => ({}) },
   { type: "gallery", label: "Gallery", help: "A grid of images from image fields", defaultConfig: () => ({ columns: 3 }) },
   { type: "divider", label: "Divider", help: "A separator line with an optional label", defaultConfig: () => ({}) },
   { type: "columns", label: "Columns", help: "Two side-by-side columns of blocks", container: true, defaultConfig: () => ({ ratio: "1-1", columns: [[], []] }) },
