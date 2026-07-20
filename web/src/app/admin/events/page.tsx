@@ -7,6 +7,7 @@ import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
+import ImageSlotThumb from "@/components/ImageSlotThumb";
 import DateTimeField from "@/components/DateTimeField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { isoToZonedInput, zonedInputToIso } from "@/lib/zonedTime";
@@ -546,6 +547,7 @@ export default function AdminEventsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-800 bg-gray-900">
+                  <th className="text-left px-4 py-3 text-gray-400 w-20" />
                   <th className="text-left px-4 py-3 text-gray-400">Title</th>
                   <th className="text-left px-4 py-3 text-gray-400">Game</th>
                   <th className="text-left px-4 py-3 text-gray-400">Type</th>
@@ -557,6 +559,9 @@ export default function AdminEventsPage() {
               <tbody>
                 {events.map((ev) => (
                   <tr key={ev.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-900/50">
+                    <td className="px-4 py-2">
+                      <ImageSlotThumb src={ev.image_url} alt={`${ev.title} banner`} label="Banner image" width={64} height={36} />
+                    </td>
                     <td className="px-4 py-3">
                       {ev.title}
                       {ev.featured_items.length > 0 && (
