@@ -4,9 +4,11 @@ import AdminGamesPage from "./page";
 
 const listGames = vi.fn();
 
-vi.mock("@/hooks/useAdminGuard", () => ({
-  useAdminGuard: () => ({ user: { id: "u1", role: "admin" }, isLoading: false }),
-}));
+// The real useAuth returns a referentially stable user; a fresh object per
+// render would change the identity of every [user] effect dep and spin the
+// page into an endless refetch loop.
+const ADMIN = { user: { id: "u1", role: "admin" }, isLoading: false };
+vi.mock("@/hooks/useAdminGuard", () => ({ useAdminGuard: () => ADMIN }));
 
 vi.mock("@/lib/api", () => ({
   adminApi: {
