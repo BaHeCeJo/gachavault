@@ -226,8 +226,13 @@ export default function AdminMonitoringPage() {
 
   // Keep the latest filters in a ref so the polling interval always reads
   // current values without being torn down/recreated on every keystroke.
+  // The sync has to happen in an effect, not during render (react-hooks/refs).
+  // It is declared above the effect that calls refresh() so that on a filter
+  // change React runs this one first and the refetch sees the new values.
   const filters = useRef({ service, level, search });
-  filters.current = { service, level, search };
+  useEffect(() => {
+    filters.current = { service, level, search };
+  }, [service, level, search]);
 
   const refresh = useCallback(async () => {
     try {
