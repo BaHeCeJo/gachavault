@@ -7,6 +7,7 @@ import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
 import ImageUploadField from "@/components/ImageUploadField";
+import ImageSlotThumb from "@/components/ImageSlotThumb";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { revalidateGame, revalidatePaths } from "@/lib/revalidate";
 
@@ -174,6 +175,7 @@ export default function AdminGamesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900">
+                <th className="text-left px-4 py-3 text-gray-400 w-32" />
                 <th className="text-left px-4 py-3 text-gray-400">Name</th>
                 <th className="text-left px-4 py-3 text-gray-400">Slug</th>
                 <th className="text-left px-4 py-3 text-gray-400">Status</th>
@@ -183,6 +185,12 @@ export default function AdminGamesPage() {
             <tbody>
               {games.map((g) => (
                 <tr key={g.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-900/50">
+                  <td className="px-4 py-2">
+                    <div className="flex items-center gap-2">
+                      <ImageSlotThumb src={g.banner_url} alt={`${g.name} banner`} label="Banner" width={64} height={36} />
+                      <ImageSlotThumb src={g.logo_url} alt={`${g.name} logo`} label="Logo" width={28} height={28} />
+                    </div>
+                  </td>
                   <td className="px-4 py-3">{g.name}</td>
                   <td className="px-4 py-3 text-gray-400 font-mono">{g.slug}</td>
                   <td className="px-4 py-3">
