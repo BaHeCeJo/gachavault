@@ -2,16 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Space-separated RGB channels, not hex: Tailwind needs this form to build
+ * `rgb(... / <alpha-value>)`, which is what makes opacity modifiers like
+ * `bg-background/95` work. With a plain `var(--background)` hex, Tailwind
+ * can't parse the color and silently drops the utility, leaving elements
+ * with no background at all. */
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #ffffff;
-    --foreground: #171717;
-  }
+  --background: 10 10 10;
+  --foreground: 237 237 237;
 }
 
 /* Keyboard focus ring — :focus-visible only triggers on actual keyboard
