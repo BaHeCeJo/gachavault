@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -25,7 +25,51 @@ function NavLink({ href, children, onClick }: { href: string; children: React.Re
 export function Navbar() {
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const headerRef = useRef<HTMLElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Close on navigation. The per-link onClick handlers don't cover browser
+  // back/forward, which would otherwise leave the drawer stuck open over the
+  // page you just navigated to.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  // Dismissal and scroll behaviour, wired up only while the drawer is open.
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
+    // Anything outside the header (which contains both the toggle and the
+    // drawer) is "outside" — tapping the page behind dismisses the menu.
+    function onPointerDown(e: PointerEvent) {
+      if (!headerRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    }
+    // The drawer is md:hidden, so widening past the breakpoint hides it while
+    // `menuOpen` stays true — which would leave the body scroll-locked with no
+    // visible menu to close.
+    const desktop = window.matchMedia("(min-width: 768px)");
+    function onBreakpointChange() {
+      if (desktop.matches) setMenuOpen(false);
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    desktop.addEventListener("change", onBreakpointChange);
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+      desktop.removeEventListener("change", onBreakpointChange);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [menuOpen]);
 
   async function handleLogout() {
     await logout();
@@ -38,7 +82,10 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-800 bg-background/80 backdrop-blur-md px-4 sm:px-6 py-3">
+    <header
+      ref={headerRef}
+      className="sticky top-0 z-50 border-b border-gray-800 bg-background/80 backdrop-blur-md px-4 sm:px-6 py-3"
+    >
       <nav className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" onClick={closeMenu} className="text-xl font-semibold tracking-tight">
           <span className="text-amber-400">H</span>otarumi
@@ -113,9 +160,12 @@ export function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer. The 4.5rem offset clears the header (h-11 toggle +
+          py-3 + border); `dvh` tracks mobile browser chrome as it collapses,
+          and the drawer scrolls itself so the auth buttons at the bottom stay
+          reachable on short/landscape viewports. */}
       {menuOpen && (
-        <div className="md:hidden absolute left-0 right-0 top-full border-b border-gray-800 bg-background/95 backdrop-blur-md">
+        <div className="md:hidden absolute left-0 right-0 top-full max-h-[calc(100dvh-4.5rem)] overflow-y-auto overscroll-contain border-b border-gray-800 bg-background/95 backdrop-blur-md">
           <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1 text-base">
             <div className="flex items-center justify-between px-2 py-2">
               <span className="text-xs uppercase tracking-wider text-gray-500">Language</span>
