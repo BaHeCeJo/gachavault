@@ -65,6 +65,49 @@ pub struct DbChangelog {
     pub created_at: DateTime<Utc>,
 }
 
+/// One item↔item relation, enriched with enough of the other item to render a
+/// card without a second round-trip. Used for both directions: `list_item_links`
+/// returns the items this one points at, `list_item_backlinks` the ones pointing
+/// back at it.
+#[derive(Debug, Serialize, sqlx::FromRow)]
+pub struct DbItemLinkFull {
+    pub id: Uuid,
+    pub item_id: Uuid,
+    pub linked_item_id: Uuid,
+    pub relation: String,
+    pub order: i32,
+    /// Slug/data/schema of the *other* item in the relation.
+    pub slug: String,
+    pub data: serde_json::Value,
+    pub type_schema_id: Uuid,
+    pub game_slug: String,
+    pub section_slug: String,
+}
+
+/// One link in a replace-set request. `order` drives display order; the frontend
+/// groups by the linked item's schema (characters vs weapons) rather than
+/// storing a kind on the link. The relation is set once for the whole request
+/// (see `SetItemLinksRequest`), not per link.
+#[derive(Debug, Deserialize)]
+pub struct ItemLinkInput {
+    pub linked_item_id: Uuid,
+    pub order: Option<i32>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SetItemLinksRequest {
+    pub links: Vec<ItemLinkInput>,
+    /// Only links of this relation are replaced; others on the item are left
+    /// alone, so editing a banner's rate-up roster can't clobber unrelated
+    /// relations added later.
+    pub relation: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct LinkQuery {
+    pub relation: Option<String>,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct ListItemsQuery {
     pub game_id: Option<Uuid>,

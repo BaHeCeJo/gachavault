@@ -536,6 +536,102 @@ async fn resolve_schema_id(
     Ok(id)
 }
 
+// ── Item links ───────────────────────────────────────────────────────────────
+
+/// Links pointing *out* of this item — for a banner, its rate-up roster.
+pub async fn list_links(
+    State(state): State<AppState>,
+    Path(id): Path<Uuid>,
+    Query(query): Query<LinkQuery>,
+) -> AppResult<Json<ApiResponse<Vec<DbItemLinkFull>>>> {
+    let links = db::list_item_links(&state.pool, id, query.relation.as_deref())
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(links)))
+}
+
+/// Links pointing *at* this item — for a character, every banner featuring it.
+/// This is what the banner-history section on a collectable's page reads.
+pub async fn list_backlinks(
+    State(state): State<AppState>,
+    Path(id): Path<Uuid>,
+    Query(query): Query<LinkQuery>,
+) -> AppResult<Json<ApiResponse<Vec<DbItemLinkFull>>>> {
+    let links = db::list_item_backlinks(&state.pool, id, query.relation.as_deref())
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(links)))
+}
+
+pub async fn set_links(
+    State(state): State<AppState>,
+    auth: AuthUser,
+    Path(id): Path<Uuid>,
+    Json(body): Json<SetItemLinksRequest>,
+) -> AppResult<Json<ApiResponse<Vec<DbItemLinkFull>>>> {
+    let item = db::find_item_by_id(&state.pool, id)
+        .await
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("Item not found".into()))?;
+
+    if !auth.can_edit()
+        && !can_edit_game(&state.pool, auth.id(), item.game_id, Some(item.section_id)).await?
+    {
+        return Err(AppError::Forbidden(
+            "Editor, game_editor, or section_editor role required".into(),
+        ));
+    }
+
+    let relation = body.relation.as_deref().unwrap_or("rate_up").to_string();
+    if relation.is_empty() || relation.len() > 50 {
+        return Err(AppError::BadRequest(
+            "relation must be 1–50 characters".into(),
+        ));
+    }
+
+    let mut seen = std::collections::HashSet::new();
+    let mut pairs: Vec<(Uuid, i32)> = Vec::with_capacity(body.links.len());
+    for (idx, link) in body.links.iter().enumerate() {
+        if link.linked_item_id == id {
+            return Err(AppError::BadRequest("An item cannot link to itself".into()));
+        }
+        if !seen.insert(link.linked_item_id) {
+            return Err(AppError::BadRequest(
+                "Duplicate linked_item_id in request".into(),
+            ));
+        }
+        pairs.push((link.linked_item_id, link.order.unwrap_or(idx as i32)));
+    }
+
+    db::replace_item_links(&state.pool, id, &relation, &pairs)
+        .await
+        .map_err(map_link_error)?;
+
+    let links = db::list_item_links(&state.pool, id, Some(&relation))
+        .await
+        .map_err(AppError::Database)?;
+    Ok(Json(ApiResponse::success(links)))
+}
+
+/// The same-game trigger and the FK to items.items both signal caller error,
+/// not server error — surface them as 400 instead of a 500.
+fn map_link_error(e: sqlx::Error) -> AppError {
+    if let sqlx::Error::Database(ref db_err) = e {
+        match db_err.code().as_deref() {
+            // check_violation — the same-game trigger or the no-self-link check.
+            Some("23514") => {
+                return AppError::BadRequest(
+                    "Linked items must belong to the same game as this item".into(),
+                )
+            }
+            // foreign_key_violation — a linked_item_id that doesn't exist.
+            Some("23503") => return AppError::BadRequest("Unknown linked_item_id".into()),
+            _ => {}
+        }
+    }
+    AppError::Database(e)
+}
+
 pub async fn list_skills(
     State(state): State<AppState>,
     Path(id): Path<Uuid>,

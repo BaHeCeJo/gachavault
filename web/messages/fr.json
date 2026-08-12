@@ -142,6 +142,12 @@
       "maintenance": "Maintenance"
     }
   },
+  "bannerHistory": {
+    "title": "Historique des bannières",
+    "count": "{count, plural, one {# passage} other {# passages}}",
+    "lastAvailable": "dernière disponibilité {when}",
+    "availableNow": "disponible actuellement"
+  },
   "banners": {
     "title": "Bannières",
     "subtitle": "Bannières de personnages et d'armes en cours et à venir sur tous les jeux.",

@@ -36,6 +36,14 @@ async fn main() {
             "/api/v1/events/servers/:game_id",
             get(routes::list_game_servers).put(routes::set_game_servers),
         )
+        .route(
+            "/api/v1/events/banners/:banner_id/runs",
+            get(routes::list_banner_runs),
+        )
+        .route(
+            "/api/v1/events/by-item/:item_id/banner-history",
+            get(routes::list_item_banner_history),
+        )
         .route("/api/v1/events/follows", get(routes::list_follows))
         .route(
             "/api/v1/events/follows/:game_id",

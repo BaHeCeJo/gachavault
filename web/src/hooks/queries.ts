@@ -182,6 +182,28 @@ export const useEvents = (params?: Omit<EventsQueryParams, "locale">, locale?: s
     queryFn: () => eventsApi.list({ ...params, ...(locale ? { locale } : {}) }).then((r) => r.data.data),
   });
 
+// Every run of one banner, newest first. Used on a banner's own page.
+export const useBannerRuns = (bannerItemId: string, locale?: string) =>
+  useQuery({
+    queryKey: ["bannerRuns", bannerItemId, locale],
+    queryFn: () =>
+      eventsApi
+        .bannerRuns(bannerItemId, locale ? { locale } : undefined)
+        .then((r) => r.data.data),
+    enabled: !!bannerItemId,
+  });
+
+// Every run of every banner featuring this item — a character's pull history.
+export const useItemBannerHistory = (itemId: string, locale?: string) =>
+  useQuery({
+    queryKey: ["itemBannerHistory", itemId, locale],
+    queryFn: () =>
+      eventsApi
+        .itemBannerHistory(itemId, locale ? { locale } : undefined)
+        .then((r) => r.data.data),
+    enabled: !!itemId,
+  });
+
 export const useEvent = (id: string, locale?: string) =>
   useQuery({
     queryKey: ["event", id, locale],

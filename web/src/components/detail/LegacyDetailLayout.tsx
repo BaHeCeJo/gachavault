@@ -8,6 +8,7 @@ import { type AttrMap, lookupAttr } from "@/lib/attrs";
 import type { ItemPageBundle } from "@/lib/seo";
 import { FieldValue, RarityStars, itemHref, HIDDEN_IN_DETAILS } from "@/components/detail/FieldValue";
 import type { Item, ItemRelations, SchemaField } from "@/components/detail/types";
+import { BannerHistoryBlock } from "@/components/detail/blocks/BannerHistoryBlock";
 
 // The original fixed detail layout, moved here verbatim MINUS its outer
 // <main> wrapper (the orchestrator / block renderer owns that). This is both
@@ -211,6 +212,11 @@ export function LegacyDetailLayout({
           </div>
         </section>
       )}
+
+      {/* Pull history. Renders nothing for items that have never been on a
+          banner, so the layout is unchanged for everything else. Skipped in
+          the admin preview, which avoids secondary fetches. */}
+      {!preview && <BannerHistoryBlock bundle={bundle} />}
     </>
   );
 }

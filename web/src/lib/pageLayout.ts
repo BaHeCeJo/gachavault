@@ -20,6 +20,7 @@ export type BlockType =
   | "gallery"
   | "ratings"
   | "skills"
+  | "banner_history"
   | "divider";
 
 export interface PageBlock {
@@ -132,6 +133,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: "ratings", label: "Ratings", help: "Labeled badges or bars from fields", defaultConfig: () => ({ style: "badge", entries: [] }) },
   { type: "skills", label: "Skills", help: "A list of skills/abilities from a list field", defaultConfig: () => ({}) },
   { type: "gallery", label: "Gallery", help: "A grid of images from image fields", defaultConfig: () => ({ columns: 3 }) },
+  { type: "banner_history", label: "Banner history", help: "Every banner run this item appeared on — or, on a banner, all its reruns", defaultConfig: () => ({}) },
   { type: "divider", label: "Divider", help: "A separator line with an optional label", defaultConfig: () => ({}) },
   { type: "columns", label: "Columns", help: "Two side-by-side columns of blocks", container: true, defaultConfig: () => ({ ratio: "1-1", columns: [[], []] }) },
   { type: "tabs", label: "Tabs", help: "Tabbed sections (e.g. Kit / Build / Lore)", container: true, defaultConfig: () => ({ tabs: [{ id: makeBlockId(), label: "Tab 1", blocks: [] }] }) },

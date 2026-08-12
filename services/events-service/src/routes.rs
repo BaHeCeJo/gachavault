@@ -91,14 +91,57 @@ pub async fn get_event(
 
     // Draft (unpublished) events are visible only to admins; everyone else
     // gets the same 404 as a nonexistent id, so drafts aren't disclosed.
-    let is_admin = matches!(&auth.0, Some(c) if c.role == shared_auth::ROLE_ADMIN || c.role == shared_auth::ROLE_SUPERADMIN);
-    if !event.is_published && !is_admin {
+    if !event.is_published && !is_admin(&auth) {
         return Err(AppError::NotFound("Event not found".into()));
     }
 
     let locale = q.locale.as_deref().unwrap_or("en");
     let mut rendered = render_events(&pool, vec![event], locale).await?;
     Ok(Json(ApiResponse::success(rendered.remove(0))))
+}
+
+// ── Banner runs ──────────────────────────────────────────────────────────────
+
+/// Every run of one banner, newest first. Backs the banner's detail page:
+/// each entry carries that run's own lineup, so you can see which 4★s rode
+/// along on each rerun.
+pub async fn list_banner_runs(
+    State(pool): State<PgPool>,
+    auth: OptionalAuthUser,
+    Path(banner_id): Path<Uuid>,
+    Query(q): Query<EventsQuery>,
+) -> AppResult<Json<ApiResponse<Vec<serde_json::Value>>>> {
+    let include_unpublished = q.include_unpublished.unwrap_or(false) && is_admin(&auth);
+    let events = db::list_banner_runs(&pool, banner_id, include_unpublished)
+        .await
+        .map_err(AppError::Database)?;
+    let locale = q.locale.as_deref().unwrap_or("en");
+    Ok(Json(ApiResponse::success(
+        render_events(&pool, events, locale).await?,
+    )))
+}
+
+/// Banner history for a collectable: every run of every banner whose preset
+/// roster features this item, newest first. `[0].end_at` is "last time this
+/// character was available to pull".
+pub async fn list_item_banner_history(
+    State(pool): State<PgPool>,
+    auth: OptionalAuthUser,
+    Path(item_id): Path<Uuid>,
+    Query(q): Query<EventsQuery>,
+) -> AppResult<Json<ApiResponse<Vec<serde_json::Value>>>> {
+    let include_unpublished = q.include_unpublished.unwrap_or(false) && is_admin(&auth);
+    let events = db::list_runs_featuring_item(&pool, item_id, include_unpublished)
+        .await
+        .map_err(AppError::Database)?;
+    let locale = q.locale.as_deref().unwrap_or("en");
+    Ok(Json(ApiResponse::success(
+        render_events(&pool, events, locale).await?,
+    )))
+}
+
+fn is_admin(auth: &OptionalAuthUser) -> bool {
+    matches!(&auth.0, Some(c) if c.role == shared_auth::ROLE_ADMIN || c.role == shared_auth::ROLE_SUPERADMIN)
 }
 
 // ── Personalized calendar (auth) ─────────────────────────────────────────────
@@ -225,10 +268,25 @@ pub async fn delete_follow(
 
 // ── Admin authoring ──────────────────────────────────────────────────────────
 
+/// A banner and the event it runs on must belong to the same game — no
+/// attaching a Star Rail banner to an Endfield event.
+async fn ensure_banner_in_game(pool: &PgPool, banner_id: Uuid, game_id: Uuid) -> AppResult<()> {
+    let banner_game = db::banner_item_game(pool, banner_id)
+        .await
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::BadRequest("Unknown banner_item_id".into()))?;
+    if banner_game != game_id {
+        return Err(AppError::BadRequest(
+            "The banner must belong to the same game as the event".into(),
+        ));
+    }
+    Ok(())
+}
+
 pub async fn create_event(
     State(pool): State<PgPool>,
     auth: AuthUser,
-    Json(body): Json<CreateEventRequest>,
+    Json(mut body): Json<CreateEventRequest>,
 ) -> AppResult<Json<ApiResponse<DbEvent>>> {
     ensure_admin(&auth)?;
     validate_event_fields(&body.slug, &body.title, body.start_at, body.end_at)?;
@@ -238,6 +296,31 @@ pub async fn create_event(
         .map_err(AppError::Database)?
     {
         return Err(AppError::NotFound("Game not found".into()));
+    }
+
+    if let Some(banner_id) = body.banner_item_id {
+        ensure_banner_in_game(&pool, banner_id, body.game_id).await?;
+
+        // Seed this run's featured items from the banner's preset roster. The
+        // preset is copied, not joined through, so event_items stays the single
+        // source of truth for what was pullable in this specific run — and a
+        // later edit to the preset can't rewrite history.
+        if body.featured_items.is_none() && body.seed_from_banner.unwrap_or(true) {
+            let preset = db::banner_preset_items(&pool, banner_id)
+                .await
+                .map_err(AppError::Database)?;
+            body.featured_items = Some(
+                preset
+                    .into_iter()
+                    .enumerate()
+                    .map(|(idx, item_id)| FeaturedItemInput {
+                        item_id,
+                        role: Some("featured".into()),
+                        order: Some(idx as i32),
+                    })
+                    .collect(),
+            );
+        }
     }
 
     let event = db::create_event(&pool, auth.id(), &body)
@@ -264,6 +347,16 @@ pub async fn update_event(
     if let (Some(start), Some(end)) = (body.start_at, body.end_at) {
         if end < start {
             return Err(AppError::BadRequest("end_at must be after start_at".into()));
+        }
+    }
+
+    if let Some(banner_id) = body.banner_item_id {
+        if !body.clear_banner.unwrap_or(false) {
+            let existing = db::find_event(&pool, id)
+                .await
+                .map_err(AppError::Database)?
+                .ok_or_else(|| AppError::NotFound("Event not found".into()))?;
+            ensure_banner_in_game(&pool, banner_id, existing.game_id).await?;
         }
     }
 
@@ -535,6 +628,10 @@ async fn render_events(
     let mut server_times = db::load_event_server_times(pool, &event_ids)
         .await
         .map_err(AppError::Database)?;
+    let banner_ids: Vec<Uuid> = events.iter().filter_map(|e| e.banner_item_id).collect();
+    let banners = db::load_banner_info(pool, &banner_ids)
+        .await
+        .map_err(AppError::Database)?;
     let translations = if locale != "en" {
         db::load_event_translations(pool, &event_ids, locale)
             .await
@@ -552,6 +649,10 @@ async fn render_events(
                 .unwrap_or_else(|| (String::new(), String::new()));
             let items = featured.remove(&event.id).unwrap_or_default();
             let servers = server_times.remove(&event.id).unwrap_or_default();
+            let banner = event
+                .banner_item_id
+                .and_then(|bid| banners.get(&bid).cloned())
+                .unwrap_or(serde_json::Value::Null);
             let (title, description) = match translations.get(&event.id) {
                 Some((t_title, t_desc)) => (t_title.clone(), t_desc.clone().or(event.description)),
                 None => (event.title, event.description),
@@ -574,6 +675,8 @@ async fn render_events(
                 "featured_items": items,
                 "server_times": servers,
                 "your_server": serde_json::Value::Null,
+                "banner_item_id": event.banner_item_id,
+                "banner": banner,
                 "created_at": event.created_at,
                 "updated_at": event.updated_at,
             })
