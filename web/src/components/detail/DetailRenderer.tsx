@@ -176,6 +176,27 @@ function blockHasContent(block: PageBlock, bundle: ItemPageBundle, relations: It
   }
 }
 
+// Does this layout already place a block of `type` anywhere, including inside
+// a columns/tabs container? Used to avoid appending a block the template
+// author has already positioned deliberately.
+function layoutHasBlock(blocks: PageBlock[], type: string): boolean {
+  for (const b of blocks) {
+    if (b.type === type) return true;
+    const cfg = (b.config ?? {}) as Record<string, unknown>;
+    if (b.type === "columns" && Array.isArray(cfg.columns)) {
+      for (const col of cfg.columns as PageBlock[][]) {
+        if (Array.isArray(col) && layoutHasBlock(col, type)) return true;
+      }
+    }
+    if (b.type === "tabs" && Array.isArray(cfg.tabs)) {
+      for (const tab of cfg.tabs as { blocks?: PageBlock[] }[]) {
+        if (Array.isArray(tab?.blocks) && layoutHasBlock(tab.blocks, type)) return true;
+      }
+    }
+  }
+  return false;
+}
+
 // Renders a templated detail page from an ordered block list. Owns the same
 // page container the legacy layout used, so a single `legacy` block produces
 // output identical to the no-template page.
@@ -213,6 +234,14 @@ export function DetailRenderer({
     ? blocks
     : blocks.filter((b, i) => (b.type === "divider" ? keepDivider(i) : true));
 
+  // Banner history is appended to every templated page that doesn't already
+  // place it, matching the legacy layout — otherwise a section with a template
+  // would silently lose the feature, and every existing template would need
+  // hand-editing to get it back. A template that positions the block itself
+  // wins, and the block renders nothing when the item has no banner history,
+  // so pages that aren't pullable units are unaffected.
+  const appendBannerHistory = !preview && !layoutHasBlock(blocks, "banner_history");
+
   return (
     <main className="max-w-5xl mx-auto px-6 py-10">
       {visibleBlocks.map((block) => (
@@ -225,6 +254,7 @@ export function DetailRenderer({
           attrMap={attrMap}
         />
       ))}
+      {appendBannerHistory && <BannerHistoryBlock bundle={bundle} />}
     </main>
   );
 }
