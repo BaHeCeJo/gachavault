@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useBannerRuns, useItemBannerHistory } from "@/hooks/queries";
 import {
+  BANNER_SECTION_SLUG,
   bannerHref,
   bannerName,
   featuredIcon,
@@ -14,10 +15,6 @@ import {
   type FeaturedItem,
 } from "@/lib/events";
 import type { ItemPageBundle } from "@/lib/seo";
-
-// The section slug banner items live in. Matches the admin event form and the
-// backfill migration.
-const BANNER_SECTION_SLUG = "banners";
 
 /**
  * Pull history, from either end of the banner↔item link:

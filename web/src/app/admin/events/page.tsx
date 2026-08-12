@@ -11,6 +11,7 @@ import ImageSlotThumb from "@/components/ImageSlotThumb";
 import DateTimeField from "@/components/DateTimeField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { isoToZonedInput, zonedInputToIso } from "@/lib/zonedTime";
+import { BANNER_SECTION_SLUG } from "@/lib/events";
 
 const EVENT_TYPES = ["banner", "version", "limited_event", "maintenance"] as const;
 
@@ -79,10 +80,6 @@ interface ItemOpt {
   type_schema_id: string;
 }
 
-// The per-game section that holds banner items. Banners are items like anything
-// else, so they arrive in the same listing as characters and have to be split
-// out by section.
-const BANNER_SECTION_SLUG = "banners";
 
 interface ServerDef {
   key: string;

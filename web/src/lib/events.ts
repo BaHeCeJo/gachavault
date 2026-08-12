@@ -18,6 +18,10 @@ export interface ServerTime {
   end_at: string | null;
 }
 
+/** The per-game section banner items live in. Created on demand by the admin
+ *  event form and by the backfill migration; keep the three in step. */
+export const BANNER_SECTION_SLUG = "banners";
+
 /** The reusable banner an event is a run of, resolved by the API. */
 export interface EventBanner {
   id: string;
