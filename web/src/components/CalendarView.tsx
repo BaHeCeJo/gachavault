@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { SafeImage } from "@/components/SafeImage";
+import { EventTimeline } from "@/components/EventTimeline";
 import { cardGradient } from "@/lib/theme";
 import {
   type CalendarEvent,
   type EventStatus,
   type ServerTime,
   groupEvents,
+  eventStatus,
   typeBadgeClass,
   featuredIcon,
   relativeTime,
@@ -24,16 +26,33 @@ import {
 // (admin-authored) type string, so new categories work without a code change.
 const KNOWN_TYPES = new Set(["banner", "version", "limited_event", "maintenance"]);
 
+type ViewMode = "timeline" | "list";
+
 interface CalendarViewProps {
   events: CalendarEvent[];
   /** Show the game name on each card (off when already on a game page). */
   showGame?: boolean;
   isLoading?: boolean;
   isError?: boolean;
+  /** Which view to open on. Narrow hosts (the home widget) prefer the list. */
+  defaultView?: ViewMode;
 }
 
-export function CalendarView({ events, showGame = true, isLoading, isError }: CalendarViewProps) {
+export function CalendarView({
+  events,
+  showGame = true,
+  isLoading,
+  isError,
+  defaultView = "timeline",
+}: CalendarViewProps) {
   const t = useTranslations("calendar");
+  const [view, setView] = useState<ViewMode>(defaultView);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // A filter change can drop the event the detail panel is pinned to.
+  useEffect(() => {
+    setSelectedId((id) => (id && events.some((e) => e.id === id) ? id : null));
+  }, [events]);
 
   if (isLoading) {
     return (
@@ -60,8 +79,54 @@ export function CalendarView({ events, showGame = true, isLoading, isError }: Ca
     { status: "ended", label: t("ended"), items: ended },
   ];
 
+  const selected = selectedId ? events.find((e) => e.id === selectedId) ?? null : null;
+
+  const toggle = (
+    <div className="flex justify-end">
+      <div className="inline-flex rounded-lg border border-gray-700 overflow-hidden">
+        {(["timeline", "list"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setView(m)}
+            className={`px-3 py-1.5 text-xs transition ${
+              view === m ? "bg-amber-500 text-black font-semibold" : "text-gray-300 hover:text-white"
+            }`}
+          >
+            {t(`view.${m}`)}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  if (view === "timeline") {
+    return (
+      <div className="space-y-3">
+        {toggle}
+        <EventTimeline
+          events={events}
+          showGame={showGame}
+          selectedId={selectedId}
+          onSelect={(e) => setSelectedId((id) => (id === e.id ? null : e.id))}
+        />
+        <p className="text-xs text-gray-500">{t("timelineHint")}</p>
+        {selected && (
+          <EventCard
+            key={selected.id}
+            event={selected}
+            status={eventStatus(selected)}
+            showGame={showGame}
+            defaultOpenServers
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
+      {toggle}
       {groups
         .filter((g) => g.items.length > 0)
         .map((g) => (
@@ -100,14 +165,18 @@ function EventCard({
   event,
   status,
   showGame,
+  defaultOpenServers = false,
 }: {
   event: CalendarEvent;
   status: EventStatus;
   showGame: boolean;
+  /** The timeline's detail panel opens the per-server breakdown up front —
+   *  that's usually why you clicked the bar. */
+  defaultOpenServers?: boolean;
 }) {
   const t = useTranslations("calendar");
   const locale = useLocale();
-  const [showServers, setShowServers] = useState(false);
+  const [showServers, setShowServers] = useState(defaultOpenServers);
 
   const typeLabel = KNOWN_TYPES.has(event.event_type)
     ? t(`types.${event.event_type}`)

@@ -47,7 +47,7 @@ export default function HomeCalendarWidget() {
           </Link>
         </div>
       ) : (
-        <CalendarView events={events} isLoading={eventsLoading} />
+        <CalendarView events={events} isLoading={eventsLoading} defaultView="list" />
       )}
     </section>
   );

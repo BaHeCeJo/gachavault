@@ -140,7 +140,17 @@
       "version": "Version",
       "limited_event": "Event",
       "maintenance": "Maintenance"
-    }
+    },
+    "view": {
+      "timeline": "Timeline",
+      "list": "List"
+    },
+    "timelineHint": "Click a bar for details. Overlapping events are stacked on separate rows.",
+    "jumpToNow": "Now",
+    "nowMarker": "Now",
+    "fit": "Fit",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
   },
   "bannerHistory": {
     "title": "Banner history",
