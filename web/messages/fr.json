@@ -140,7 +140,17 @@
       "version": "Version",
       "limited_event": "Événement",
       "maintenance": "Maintenance"
-    }
+    },
+    "view": {
+      "timeline": "Chronologie",
+      "list": "Liste"
+    },
+    "timelineHint": "Cliquez sur une barre pour les détails. Les événements qui se chevauchent sont empilés sur des lignes distinctes.",
+    "jumpToNow": "Maintenant",
+    "nowMarker": "Maintenant",
+    "fit": "Ajuster",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière"
   },
   "bannerHistory": {
     "title": "Historique des bannières",
