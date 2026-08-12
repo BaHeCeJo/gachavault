@@ -93,7 +93,17 @@ export default function GamePageClient({ initial }: ClientProps) {
   const locale = useLocale();
   const { user } = useAuth();
   const game = initial.game as Game;
-  const sections = initial.sections as Section[];
+  // Sections with nothing in them are hidden rather than shown as an empty
+  // tab/card: every game now ships a Banners section whether or not it has
+  // banners yet, and a "Banners · 0 items" card is noise until it does. The
+  // admin UI still lists every section, empty or not.
+  const sections = useMemo(
+    () =>
+      (initial.sections as Section[]).filter(
+        (s) => (initial.itemCountsBySection[s.id] ?? 0) > 0,
+      ),
+    [initial.sections, initial.itemCountsBySection],
+  );
   const attrList = initial.attributes as GameAttribute[];
   const schemas = (initial.schemas ?? []) as Schema[];
   const attrMap = useMemo(() => buildAttrMap(attrList), [attrList]);
