@@ -24,6 +24,7 @@ import { GalleryBlock } from "@/components/detail/blocks/GalleryBlock";
 import { RatingsBlock } from "@/components/detail/blocks/RatingsBlock";
 import { SkillsBlock } from "@/components/detail/blocks/SkillsBlock";
 import { TabsBlock } from "@/components/detail/blocks/TabsBlock";
+import { BannerHistoryBlock } from "@/components/detail/blocks/BannerHistoryBlock";
 
 interface BlockProps {
   block: PageBlock;
@@ -117,6 +118,8 @@ function BlockRenderer({ block, bundle, preview, relations, attrMap }: BlockProp
       return <RatingsBlock config={block.config} bundle={bundle} />;
     case "skills":
       return <SkillsBlock config={block.config} bundle={bundle} />;
+    case "banner_history":
+      return <BannerHistoryBlock bundle={bundle} />;
     case "divider":
       return <DividerBlock config={block.config} />;
     case "columns":

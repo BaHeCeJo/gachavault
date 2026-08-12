@@ -58,6 +58,11 @@ async fn main() {
                 .delete(routes::delete_item),
         )
         .route(
+            "/api/v1/items/:id/links",
+            get(routes::list_links).put(routes::set_links),
+        )
+        .route("/api/v1/items/:id/backlinks", get(routes::list_backlinks))
+        .route(
             "/api/v1/items/:id/skills",
             get(routes::list_skills).post(routes::create_skill),
         )

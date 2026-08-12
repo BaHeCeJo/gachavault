@@ -18,6 +18,19 @@ export interface ServerTime {
   end_at: string | null;
 }
 
+/** The per-game section banner items live in. Created on demand by the admin
+ *  event form and by the backfill migration; keep the three in step. */
+export const BANNER_SECTION_SLUG = "banners";
+
+/** The reusable banner an event is a run of, resolved by the API. */
+export interface EventBanner {
+  id: string;
+  slug: string;
+  data: Record<string, unknown>;
+  game_slug: string;
+  section_slug: string;
+}
+
 export interface CalendarEvent {
   id: string;
   game_id: string;
@@ -39,6 +52,21 @@ export interface CalendarEvent {
   // On the personalized calendar, the viewer's chosen home server for this
   // event's game; drives which window is shown as primary.
   your_server?: string | null;
+  // Set on banner events attached to a reusable banner preset. `banner` is the
+  // resolved item, null when unattached or for non-banner events.
+  banner_item_id?: string | null;
+  banner?: EventBanner | null;
+}
+
+/** Display name of a banner item, falling back to its slug. */
+export function bannerName(b: EventBanner): string {
+  const n = b.data?.name;
+  return typeof n === "string" && n.length > 0 ? n : b.slug;
+}
+
+/** URL of a banner's own detail page. */
+export function bannerHref(b: EventBanner): string {
+  return `/games/${b.game_slug}/${b.section_slug}/${b.slug}`;
 }
 
 export type EventStatus = "active" | "upcoming" | "ended";

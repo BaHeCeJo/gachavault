@@ -2,7 +2,7 @@ use chrono::NaiveDate;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::models::{DbBuild, DbChangelog, DbItem, DbItemFull, DbSkill};
+use crate::models::{DbBuild, DbChangelog, DbItem, DbItemFull, DbItemLinkFull, DbSkill};
 
 #[allow(dead_code)]
 pub async fn list_items(
@@ -151,6 +151,97 @@ pub async fn delete_item(pool: &PgPool, id: Uuid) -> Result<bool, sqlx::Error> {
         .execute(pool)
         .await?;
     Ok(result.rows_affected() > 0)
+}
+
+// ── Item links ───────────────────────────────────────────────────────────────
+//
+// Runtime-checked queries (not `query_as!`) on purpose: the macro form bakes
+// results into `.sqlx/`, which has to be regenerated against a live DB or the
+// sealed Docker build breaks.
+
+/// Rows joined against the item on the far side of the edge. `$3` selects which
+/// column that is, so both directions share one query shape.
+const ITEM_LINK_SELECT: &str = r#"
+    SELECT l.id, l.item_id, l.linked_item_id, l.relation, l."order",
+           o.slug, o.data, o.type_schema_id,
+           g.slug AS game_slug, s.slug AS section_slug
+    FROM items.item_links l
+    JOIN items.items o ON o.id = "#;
+
+const ITEM_LINK_TAIL: &str = r#"
+    JOIN games.games g ON g.id = o.game_id
+    JOIN games.sections s ON s.id = o.section_id
+    WHERE l."#;
+
+/// Items this one points at — e.g. the rate-up roster of a banner.
+pub async fn list_item_links(
+    pool: &PgPool,
+    item_id: Uuid,
+    relation: Option<&str>,
+) -> Result<Vec<DbItemLinkFull>, sqlx::Error> {
+    let sql = format!(
+        "{}l.linked_item_id {}item_id = $1 AND ($2::varchar IS NULL OR l.relation = $2) \
+         ORDER BY l.\"order\" ASC, o.slug ASC",
+        ITEM_LINK_SELECT, ITEM_LINK_TAIL
+    );
+    sqlx::query_as::<_, DbItemLinkFull>(&sql)
+        .bind(item_id)
+        .bind(relation)
+        .fetch_all(pool)
+        .await
+}
+
+/// Items pointing at this one — e.g. every banner that featured this character.
+pub async fn list_item_backlinks(
+    pool: &PgPool,
+    item_id: Uuid,
+    relation: Option<&str>,
+) -> Result<Vec<DbItemLinkFull>, sqlx::Error> {
+    let sql = format!(
+        "{}l.item_id {}linked_item_id = $1 AND ($2::varchar IS NULL OR l.relation = $2) \
+         ORDER BY l.\"order\" ASC, o.slug ASC",
+        ITEM_LINK_SELECT, ITEM_LINK_TAIL
+    );
+    sqlx::query_as::<_, DbItemLinkFull>(&sql)
+        .bind(item_id)
+        .bind(relation)
+        .fetch_all(pool)
+        .await
+}
+
+/// Replace every link of `relation` on `item_id` in one transaction. Links of
+/// other relations are untouched. The same-game rule is enforced by a trigger,
+/// so a cross-game id surfaces as a check violation the caller maps to 400.
+pub async fn replace_item_links(
+    pool: &PgPool,
+    item_id: Uuid,
+    relation: &str,
+    links: &[(Uuid, i32)],
+) -> Result<(), sqlx::Error> {
+    let mut tx = pool.begin().await?;
+
+    sqlx::query("DELETE FROM items.item_links WHERE item_id = $1 AND relation = $2")
+        .bind(item_id)
+        .bind(relation)
+        .execute(&mut *tx)
+        .await?;
+
+    for (linked_item_id, order) in links {
+        sqlx::query(
+            r#"INSERT INTO items.item_links (item_id, linked_item_id, relation, "order")
+               VALUES ($1, $2, $3, $4)
+               ON CONFLICT (item_id, linked_item_id, relation) DO UPDATE
+                 SET "order" = EXCLUDED."order""#,
+        )
+        .bind(item_id)
+        .bind(linked_item_id)
+        .bind(relation)
+        .bind(order)
+        .execute(&mut *tx)
+        .await?;
+    }
+
+    tx.commit().await
 }
 
 pub async fn list_skills(pool: &PgPool, item_id: Uuid) -> Result<Vec<DbSkill>, sqlx::Error> {

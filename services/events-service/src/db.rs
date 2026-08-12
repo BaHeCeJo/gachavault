@@ -133,8 +133,9 @@ pub async fn create_event(
     let event = sqlx::query_as::<_, DbEvent>(
         r#"INSERT INTO events.events
              (game_id, event_type, slug, title, description, image_url,
-              start_at, end_at, timezone, data, is_published, created_by)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+              start_at, end_at, timezone, data, is_published, created_by,
+              banner_item_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
            RETURNING *"#,
     )
     .bind(body.game_id)
@@ -149,6 +150,7 @@ pub async fn create_event(
     .bind(body.data.clone().unwrap_or_else(|| serde_json::json!({})))
     .bind(body.is_published.unwrap_or(true))
     .bind(created_by)
+    .bind(body.banner_item_id)
     .fetch_one(&mut *tx)
     .await?;
 
@@ -179,6 +181,10 @@ pub async fn update_event(
              timezone     = COALESCE($8, timezone),
              data         = COALESCE($9, data),
              is_published = COALESCE($10, is_published),
+             -- COALESCE can't express "set back to NULL", so detaching a banner
+             -- needs its own explicit flag rather than an absent field.
+             banner_item_id = CASE WHEN $11 THEN NULL
+                                   ELSE COALESCE($12, banner_item_id) END,
              updated_at   = NOW()
            WHERE id = $1
            RETURNING *"#,
@@ -193,7 +199,31 @@ pub async fn update_event(
     .bind(body.timezone.as_deref())
     .bind(body.data.as_ref())
     .bind(body.is_published)
+    .bind(body.clear_banner.unwrap_or(false))
+    .bind(body.banner_item_id)
     .fetch_optional(pool)
+    .await
+}
+
+/// The game a banner item belongs to, for the same-game check on attach.
+/// Cross-schema read against the shared DB, like items-service reads games.*.
+pub async fn banner_item_game(pool: &PgPool, item_id: Uuid) -> Result<Option<Uuid>, sqlx::Error> {
+    sqlx::query_scalar::<_, Uuid>("SELECT game_id FROM items.items WHERE id = $1")
+        .bind(item_id)
+        .fetch_optional(pool)
+        .await
+}
+
+/// The preset rate-up roster of a banner item, used to seed a new run's
+/// featured items. Returns item ids in display order.
+pub async fn banner_preset_items(pool: &PgPool, banner_id: Uuid) -> Result<Vec<Uuid>, sqlx::Error> {
+    sqlx::query_scalar::<_, Uuid>(
+        r#"SELECT linked_item_id FROM items.item_links
+           WHERE item_id = $1 AND relation = 'rate_up'
+           ORDER BY "order" ASC"#,
+    )
+    .bind(banner_id)
+    .fetch_all(pool)
     .await
 }
 
@@ -424,6 +454,83 @@ pub async fn load_featured_items(
         }));
     }
     Ok(map)
+}
+
+/// Banner items keyed by id, for rendering the "run of <banner>" link on an
+/// event. section_slug comes along so the frontend can build the item URL.
+pub async fn load_banner_info(
+    pool: &PgPool,
+    banner_ids: &[Uuid],
+) -> Result<HashMap<Uuid, serde_json::Value>, sqlx::Error> {
+    if banner_ids.is_empty() {
+        return Ok(HashMap::new());
+    }
+    let rows: Vec<(Uuid, String, serde_json::Value, String, String)> = sqlx::query_as(
+        r#"SELECT i.id, i.slug, i.data, g.slug AS game_slug, s.slug AS section_slug
+           FROM items.items i
+           JOIN games.games g ON g.id = i.game_id
+           JOIN games.sections s ON s.id = i.section_id
+           WHERE i.id = ANY($1)"#,
+    )
+    .bind(banner_ids)
+    .fetch_all(pool)
+    .await?;
+
+    Ok(rows
+        .into_iter()
+        .map(|(id, slug, data, game_slug, section_slug)| {
+            (
+                id,
+                serde_json::json!({
+                    "id": id,
+                    "slug": slug,
+                    "data": data,
+                    "game_slug": game_slug,
+                    "section_slug": section_slug,
+                }),
+            )
+        })
+        .collect())
+}
+
+/// Every run of a banner, newest first — the banner page's timeline and the
+/// source of "last time this character was available".
+pub async fn list_banner_runs(
+    pool: &PgPool,
+    banner_id: Uuid,
+    include_unpublished: bool,
+) -> Result<Vec<DbEvent>, sqlx::Error> {
+    sqlx::query_as::<_, DbEvent>(
+        "SELECT * FROM events.events \
+         WHERE banner_item_id = $1 AND ($2 OR is_published = TRUE) \
+         ORDER BY start_at DESC",
+    )
+    .bind(banner_id)
+    .bind(include_unpublished)
+    .fetch_all(pool)
+    .await
+}
+
+/// Every run of every banner featuring `item_id` in its preset roster, newest
+/// first. This is the banner history on a collectable's page: it goes through
+/// items.item_links so a rerun found via the preset counts, and each run still
+/// carries its own full lineup from events.event_items.
+pub async fn list_runs_featuring_item(
+    pool: &PgPool,
+    item_id: Uuid,
+    include_unpublished: bool,
+) -> Result<Vec<DbEvent>, sqlx::Error> {
+    sqlx::query_as::<_, DbEvent>(
+        "SELECT DISTINCT e.* FROM events.events e \
+         JOIN items.item_links l ON l.item_id = e.banner_item_id \
+         WHERE l.linked_item_id = $1 AND l.relation = 'rate_up' \
+           AND ($2 OR e.is_published = TRUE) \
+         ORDER BY e.start_at DESC",
+    )
+    .bind(item_id)
+    .bind(include_unpublished)
+    .fetch_all(pool)
+    .await
 }
 
 /// (title, description) override per event for a locale.

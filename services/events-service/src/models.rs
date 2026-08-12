@@ -19,6 +19,10 @@ pub struct DbEvent {
     pub created_by: Option<Uuid>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    /// The reusable banner this event is a run of (an item in the game's
+    /// "Banners" section). NULL for non-banner events and for banner events
+    /// not attached to a preset.
+    pub banner_item_id: Option<Uuid>,
 }
 
 #[derive(Debug, Serialize, sqlx::FromRow)]
@@ -99,6 +103,12 @@ pub struct CreateEventRequest {
     pub featured_items: Option<Vec<FeaturedItemInput>>,
     /// Optional per-server start/end overrides attached in the same request.
     pub server_times: Option<Vec<ServerTimeInput>>,
+    /// Attach this run to a reusable banner. Must belong to the same game.
+    pub banner_item_id: Option<Uuid>,
+    /// When true and `featured_items` is absent, seed this run's featured items
+    /// from the banner's preset roster. The run's extra rate-ups (the 4★s that
+    /// vary between reruns) are then added by editing the event.
+    pub seed_from_banner: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -112,6 +122,10 @@ pub struct UpdateEventRequest {
     pub timezone: Option<String>,
     pub data: Option<serde_json::Value>,
     pub is_published: Option<bool>,
+    pub banner_item_id: Option<Uuid>,
+    /// Detach this event from its banner. Takes precedence over
+    /// `banner_item_id`, since an absent field can't mean "set to NULL".
+    pub clear_banner: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]

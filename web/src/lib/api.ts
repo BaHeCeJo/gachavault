@@ -131,6 +131,18 @@ export const itemsApi = {
   getSkills: (id: string) => api.get(`/items/${id}/skills`),
   getBuilds: (id: string) => api.get(`/items/${id}/builds`),
   getChangelog: (id: string) => api.get(`/items/${id}/changelog`),
+  // Item↔item relations. `links` are the items this one points at (a banner's
+  // rate-up roster); `backlinks` are the ones pointing at it (every banner that
+  // features this character).
+  getLinks: (id: string, relation?: string) =>
+    api.get(`/items/${id}/links`, { params: relation ? { relation } : {} }),
+  getBacklinks: (id: string, relation?: string) =>
+    api.get(`/items/${id}/backlinks`, { params: relation ? { relation } : {} }),
+  setLinks: (
+    id: string,
+    links: { linked_item_id: string; relation?: string; order?: number }[],
+    relation?: string,
+  ) => api.put(`/items/${id}/links`, { links, ...(relation ? { relation } : {}) }),
   listTranslations: (id: string) => api.get(`/items/${id}/translations`),
   upsertTranslation: (id: string, locale: string, fields: Record<string, string>) =>
     api.put(`/items/${id}/translations/${locale}`, { fields }),
@@ -205,6 +217,12 @@ export const eventsApi = {
   setItems: (id: string, items: object[]) => api.put(`/events/${id}/items`, { items }),
   setServerTimes: (id: string, times: object[]) =>
     api.put(`/events/${id}/server-times`, { times }),
+  // Every run of one banner, newest first.
+  bannerRuns: (bannerItemId: string, params?: EventsQueryParams) =>
+    api.get(`/events/banners/${bannerItemId}/runs`, { params }),
+  // Every run of every banner featuring this item — a character's banner history.
+  itemBannerHistory: (itemId: string, params?: EventsQueryParams) =>
+    api.get(`/events/by-item/${itemId}/banner-history`, { params }),
   listTranslations: (id: string) => api.get(`/events/${id}/translations`),
   upsertTranslation: (id: string, locale: string, data: { title: string; description?: string }) =>
     api.put(`/events/${id}/translations/${locale}`, data),

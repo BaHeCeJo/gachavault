@@ -14,6 +14,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { type CardLayout } from "@/components/ItemCard";
 import { buildAttrMap } from "@/lib/attrs";
 import { revalidateGame } from "@/lib/revalidate";
+import { BANNER_SECTION_SLUG } from "@/lib/events";
 import { InlineAttrCreatorForm } from "./_components/InlineAttrCreatorForm";
 import { ItemTable } from "./_components/ItemTable";
 import { ItemCardGrid } from "./_components/ItemCardGrid";
@@ -113,6 +114,13 @@ export default function AdminItemsPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
   const [showRawJson, setShowRawJson] = useState(false);
+  // Rate-up roster, edited only when the open item is a banner. This is the
+  // banner's *preset* — the signature units that define it across every rerun.
+  // A specific run's extra rate-ups live on the event, not here.
+  const [rosterIds, setRosterIds] = useState<string[]>([]);
+  const [initialRosterIds, setInitialRosterIds] = useState<string[]>([]);
+  const [rosterLoading, setRosterLoading] = useState(false);
+  const [rosterSearch, setRosterSearch] = useState("");
   // Live detail-page preview alongside the editor (md+ screens only).
   const [showPreview, setShowPreview] = useState(true);
 
@@ -156,6 +164,13 @@ export default function AdminItemsPage() {
     }
   };
 
+  // undefined for games that have no banners yet.
+  const bannerSectionId = sections.find((s) => s.slug === BANNER_SECTION_SLUG)?.id;
+  // Whether the item currently open in the modal is a banner.
+  const editingBanner = !!bannerSectionId && form.section_id === bannerSectionId;
+  // Candidates for a roster: anything pullable, i.e. not another banner.
+  const rosterCandidates = items.filter((i) => i.section_id !== bannerSectionId);
+
   function toSlug(name: string): string {
     return name
       .toLowerCase()
@@ -183,6 +198,9 @@ export default function AdminItemsPage() {
     setSlugLocked(false);
     setFormError("");
     setShowRawJson(false);
+    setRosterIds([]);
+    setInitialRosterIds([]);
+    setRosterSearch("");
     setModal({ mode: "create" });
   };
 
@@ -198,8 +216,35 @@ export default function AdminItemsPage() {
     setSlugLocked(true);
     setFormError("");
     setShowRawJson(false);
+    setRosterSearch("");
+    setRosterIds([]);
+    setInitialRosterIds([]);
     setModal({ mode: "edit", item });
+
+    // Only banners have a preset roster; everything else skips the fetch.
+    if (bannerSectionId && item.section_id === bannerSectionId) {
+      setRosterLoading(true);
+      itemsApi
+        .getLinks(item.id, "rate_up")
+        .then((r) => {
+          const ids = (r.data.data ?? []).map(
+            (l: { linked_item_id: string }) => l.linked_item_id,
+          );
+          setRosterIds(ids);
+          setInitialRosterIds(ids);
+        })
+        .catch(() => {
+          setRosterIds([]);
+          setInitialRosterIds([]);
+        })
+        .finally(() => setRosterLoading(false));
+    }
   };
+
+  const toggleRoster = (itemId: string) =>
+    setRosterIds((prev) =>
+      prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId],
+    );
 
   const setFieldValue = (key: string, value: unknown) => {
     setForm((f) => {
@@ -298,6 +343,7 @@ export default function AdminItemsPage() {
     }
     setSaving(true);
     try {
+      let savedId: string | null = null;
       if (modal?.mode === "create") {
         if (!selectedGame) return;
         const res = await adminApi.items.create({
@@ -308,9 +354,22 @@ export default function AdminItemsPage() {
           data,
         });
         setItems((prev) => [res.data.data, ...prev]);
+        savedId = res.data.data.id;
       } else if (modal?.item) {
         const res = await adminApi.items.update(modal.item.id, { slug: form.slug, data });
         setItems((prev) => prev.map((i) => (i.id === modal.item!.id ? res.data.data : i)));
+        savedId = modal.item.id;
+      }
+
+      // Replace the banner's preset roster. Runs of this banner keep their own
+      // recorded lineups, so this changes what future runs are seeded with —
+      // never what past ones actually featured.
+      if (editingBanner && savedId) {
+        await itemsApi.setLinks(
+          savedId,
+          rosterIds.map((linked_item_id, i) => ({ linked_item_id, order: i })),
+          "rate_up",
+        );
       }
       if (selectedGame) revalidateGame(selectedGame.slug);
       setModal(null);
@@ -410,7 +469,10 @@ export default function AdminItemsPage() {
   }
 
   const closeModal = useCallback(() => setModal(null), []);
-  const dirty = !!modal && JSON.stringify(form) !== JSON.stringify(initialForm);
+  const dirty =
+    !!modal &&
+    (JSON.stringify(form) !== JSON.stringify(initialForm) ||
+      JSON.stringify(rosterIds) !== JSON.stringify(initialRosterIds));
   const guard = useModalCloseGuard({ open: !!modal, dirty, onClose: closeModal });
 
   if (isLoading || !user) {
@@ -1179,6 +1241,67 @@ export default function AdminItemsPage() {
                 </>
               );
             })()}
+
+            {/* Rate-up roster — banners only. This is the preset that defines
+                the banner across every rerun, so it stays deliberately small:
+                the 4★s that vary run to run belong on the event, not here. */}
+            {editingBanner && (
+              <div className="rounded-lg border border-amber-900/40 bg-amber-950/10 p-3">
+                <label className="text-xs text-gray-400 block mb-1">
+                  Rate-up roster {rosterIds.length > 0 && `(${rosterIds.length})`}
+                </label>
+                {rosterLoading ? (
+                  <p className="text-xs text-gray-500">Loading roster…</p>
+                ) : rosterCandidates.length === 0 ? (
+                  <p className="text-xs text-gray-500">This game has no pullable items yet.</p>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      value={rosterSearch}
+                      onChange={(e) => setRosterSearch(e.target.value)}
+                      placeholder="Search characters, weapons…"
+                      className="w-full px-3 py-2 mb-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                    />
+                    <div className="max-h-44 overflow-y-auto rounded-lg border border-gray-800 divide-y divide-gray-800">
+                      {rosterCandidates
+                        .filter((it) => {
+                          if (!rosterSearch) return true;
+                          const q = rosterSearch.toLowerCase();
+                          const name = typeof it.data.name === "string" ? it.data.name : "";
+                          return (
+                            it.slug.toLowerCase().includes(q) || name.toLowerCase().includes(q)
+                          );
+                        })
+                        .map((it) => (
+                          <label
+                            key={it.id}
+                            className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-gray-800/60"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={rosterIds.includes(it.id)}
+                              onChange={() => toggleRoster(it.id)}
+                            />
+                            <span className="truncate">
+                              {typeof it.data.name === "string" && it.data.name
+                                ? it.data.name
+                                : it.slug}
+                            </span>
+                            <span className="text-gray-500 font-mono text-xs">{it.slug}</span>
+                          </label>
+                        ))}
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-2">
+                      Who this banner is <i>for</i> — carried to every rerun and used to seed new
+                      runs. Past runs keep the lineup they actually had, so changing this never
+                      rewrites history.
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
+
             {formError && <p className="text-red-400 text-sm">{formError}</p>}
             <div className="flex gap-3 pt-1">
               <button

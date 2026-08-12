@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { adminApi, eventsApi, itemsApi } from "@/lib/api";
+import { adminApi, eventsApi, gamesApi, itemsApi } from "@/lib/api";
 import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { useModalCloseGuard } from "@/hooks/useModalCloseGuard";
 import { extractApiError } from "@/lib/errors";
@@ -11,6 +11,7 @@ import ImageSlotThumb from "@/components/ImageSlotThumb";
 import DateTimeField from "@/components/DateTimeField";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { isoToZonedInput, zonedInputToIso } from "@/lib/zonedTime";
+import { BANNER_SECTION_SLUG } from "@/lib/events";
 
 const EVENT_TYPES = ["banner", "version", "limited_event", "maintenance"] as const;
 
@@ -61,6 +62,7 @@ interface EventRow {
   is_published: boolean;
   featured_items: FeaturedItem[];
   server_times: ServerTimeRow[];
+  banner_item_id: string | null;
 }
 
 interface GameOpt {
@@ -73,7 +75,11 @@ interface ItemOpt {
   id: string;
   slug: string;
   data: Record<string, unknown>;
+  section_id: string;
+  section_slug: string;
+  type_schema_id: string;
 }
+
 
 interface ServerDef {
   key: string;
@@ -93,7 +99,14 @@ interface EventForm {
   end_at: string;
   timezone: string;
   is_published: boolean;
+  // The signature rate-ups: saved to the event AND to the banner's preset
+  // roster, so they define the banner across every rerun.
   featuredIds: string[];
+  // Also available this run — the 4★s and secondary rate-ups that change
+  // between reruns. Saved to the event only, never to the preset.
+  runOnlyIds: string[];
+  // The reusable banner this event is a run of ("" = not attached).
+  bannerItemId: string;
   // Per-server datetime-local inputs, keyed by server key. Used only when the
   // selected game has servers defined.
   serverTimes: Record<string, { start: string; end: string }>;
@@ -112,6 +125,16 @@ function itemName(data: Record<string, unknown>, slug: string): string {
     if (typeof v === "string" && v.length > 0) return v;
   }
   return slug;
+}
+
+// Banner art, probing the slot key the Banners schema ships with first.
+function bannerArt(banner: ItemOpt | undefined): string {
+  if (!banner) return "";
+  for (const k of ["art_url", "image_url", "icon_url"]) {
+    const v = banner.data[k];
+    if (typeof v === "string" && v.length > 0) return v;
+  }
+  return "";
 }
 
 function toSlug(name: string): string {
@@ -150,6 +173,8 @@ const emptyForm = (): EventForm => ({
   timezone: "UTC",
   is_published: true,
   featuredIds: [],
+  runOnlyIds: [],
+  bannerItemId: "",
   serverTimes: {},
 });
 
@@ -168,6 +193,9 @@ export default function AdminEventsPage() {
   const [gameServers, setGameServers] = useState<ServerDef[]>([]);
   const [itemsLoading, setItemsLoading] = useState(false);
   const [itemSearch, setItemSearch] = useState("");
+  const [creatingNewBanner, setCreatingNewBanner] = useState(false);
+  const [newBannerName, setNewBannerName] = useState("");
+  const [creatingBanner, setCreatingBanner] = useState(false);
   const [slugLocked, setSlugLocked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -267,16 +295,24 @@ export default function AdminEventsPage() {
   }, [user, gameFilter]);
 
   // Load the selected game's items for the featured-item picker.
-  const loadGameItems = (gameId: string) => {
+  // Returns the loaded items so callers that just created a banner can pick it
+  // out of the refreshed list.
+  const loadGameItems = (gameId: string): Promise<ItemOpt[]> => {
     if (!gameId) {
       setGameItems([]);
-      return;
+      return Promise.resolve([]);
     }
     setItemsLoading(true);
-    itemsApi
+    return itemsApi
       .listAll<ItemOpt>({ game_id: gameId })
-      .then((all) => setGameItems(all))
-      .catch(() => setGameItems([]))
+      .then((all) => {
+        setGameItems(all);
+        return all;
+      })
+      .catch(() => {
+        setGameItems([]);
+        return [] as ItemOpt[];
+      })
       .finally(() => setItemsLoading(false));
   };
 
@@ -300,6 +336,8 @@ export default function AdminEventsPage() {
     setGameItems([]);
     setGameServers([]);
     setItemSearch("");
+    setCreatingNewBanner(false);
+    setNewBannerName("");
     setSlugLocked(false);
     setError("");
     setModal({ mode: "create" });
@@ -324,12 +362,18 @@ export default function AdminEventsPage() {
       end_at: utcToInput(ev.end_at, ev.timezone),
       timezone: ev.timezone,
       is_published: ev.is_published,
-      featuredIds: ev.featured_items.map((f) => f.item_id),
+      // role is what separates the banner-defining rate-ups from the extras
+      // that only rode along on this particular run.
+      featuredIds: ev.featured_items.filter((f) => f.role === "featured").map((f) => f.item_id),
+      runOnlyIds: ev.featured_items.filter((f) => f.role !== "featured").map((f) => f.item_id),
+      bannerItemId: ev.banner_item_id ?? "",
       serverTimes,
     };
     setForm(loaded);
     setInitialForm(loaded);
     setItemSearch("");
+    setCreatingNewBanner(false);
+    setNewBannerName("");
     setSlugLocked(true); // slug is immutable once created
     setError("");
     setModal({ mode: "edit", event: ev });
@@ -345,6 +389,8 @@ export default function AdminEventsPage() {
       ...f,
       game_id: gameId,
       featuredIds: [],
+      runOnlyIds: [],
+      bannerItemId: "",
       serverTimes: {},
       slug: slugLocked ? f.slug : uniqueSlug(toSlug(f.title), gameId, events),
     }));
@@ -361,13 +407,123 @@ export default function AdminEventsPage() {
       };
     });
 
+  // An item is either a banner-defining rate-up or a run-only extra, never
+  // both — selecting it in one list removes it from the other.
   const toggleFeatured = (itemId: string) => {
     setForm((f) => ({
       ...f,
       featuredIds: f.featuredIds.includes(itemId)
         ? f.featuredIds.filter((id) => id !== itemId)
         : [...f.featuredIds, itemId],
+      runOnlyIds: f.runOnlyIds.filter((id) => id !== itemId),
     }));
+  };
+
+  const toggleRunOnly = (itemId: string) => {
+    setForm((f) => ({
+      ...f,
+      runOnlyIds: f.runOnlyIds.includes(itemId)
+        ? f.runOnlyIds.filter((id) => id !== itemId)
+        : [...f.runOnlyIds, itemId],
+      featuredIds: f.featuredIds.filter((id) => id !== itemId),
+    }));
+  };
+
+  // Attaching a banner pulls its preset roster into the rate-up list and, on a
+  // blank form, borrows its name and art — the "rerun in 30 seconds" path.
+  const selectBanner = async (bannerId: string) => {
+    if (!bannerId) {
+      setForm((f) => ({ ...f, bannerItemId: "" }));
+      return;
+    }
+    const banner = gameItems.find((i) => i.id === bannerId);
+    let presetIds: string[] = [];
+    try {
+      const res = await itemsApi.getLinks(bannerId, "rate_up");
+      presetIds = (res.data.data ?? []).map((l: { linked_item_id: string }) => l.linked_item_id);
+    } catch {
+      // A banner with no roster yet is normal — fall through with an empty list.
+    }
+    setForm((f) => {
+      const title = f.title || (banner ? itemName(banner.data, banner.slug) : f.title);
+      return {
+        ...f,
+        bannerItemId: bannerId,
+        title,
+        slug: slugLocked ? f.slug : uniqueSlug(toSlug(title), f.game_id, events),
+        image_url: f.image_url || bannerArt(banner),
+        // Don't clobber a roster the admin already picked by hand.
+        featuredIds: f.featuredIds.length > 0 ? f.featuredIds : presetIds,
+        runOnlyIds: f.runOnlyIds.filter((id) => !presetIds.includes(id)),
+      };
+    });
+  };
+
+  // Create a banner item inline, provisioning the game's Banners section and
+  // schema on first use so the admin never has to leave the event form.
+  const createBanner = async (name: string) => {
+    const game = games.find((g) => g.id === form.game_id);
+    if (!game || !name.trim()) return;
+    setCreatingBanner(true);
+    setError("");
+    try {
+      const [sectionsRes, schemasRes] = await Promise.all([
+        gamesApi.getSections(game.slug),
+        adminApi.games.listSchemas(game.slug),
+      ]);
+      const sections: { id: string; slug: string }[] = sectionsRes.data.data ?? [];
+      const schemas: { id: string; section_id: string | null }[] = schemasRes.data.data ?? [];
+
+      let sectionId = sections.find((s) => s.slug === BANNER_SECTION_SLUG)?.id;
+      if (!sectionId) {
+        const created = await adminApi.games.createSection(game.slug, {
+          slug: BANNER_SECTION_SLUG,
+          name: "Banners",
+        });
+        sectionId = created.data.data.id as string;
+      }
+
+      // One schema per section (20240116000001), so the section's schema is
+      // unambiguous once it exists.
+      let schemaId = schemas.find((s) => s.section_id === sectionId)?.id;
+      if (!schemaId) {
+        // is_collectable stays false: you pull *from* a banner, not one. Its
+        // kind (character / weapon / chronicled) is read off the schemas of the
+        // items it links to, so there's no kind field here.
+        const schemaRes = await adminApi.games.createSchema(game.slug, {
+          section_id: sectionId,
+          name: "Banner",
+          fields: [
+            { key: "description", label: "Description", type: "textarea" },
+            { key: "version", label: "Game version", type: "text" },
+          ],
+          is_collectable: false,
+          image_slots: [
+            { key: "art_url", label: "Banner art", aspect: 1.7777, cropFrom: [], roles: ["card", "hero"] },
+            { key: "icon_url", label: "Icon", aspect: 1, cropFrom: ["art_url"], roles: ["thumb"] },
+          ],
+        });
+        schemaId = schemaRes.data.data.id as string;
+      }
+
+      const created = await adminApi.items.create({
+        game_id: form.game_id,
+        section_id: sectionId,
+        type_schema_id: schemaId,
+        slug: "",
+        data: { name: name.trim(), ...(form.image_url ? { art_url: form.image_url } : {}) },
+      });
+      const newId: string = created.data.data.id;
+
+      await loadGameItems(form.game_id);
+      setForm((f) => ({ ...f, bannerItemId: newId, title: f.title || name.trim() }));
+      setNewBannerName("");
+      setCreatingNewBanner(false);
+    } catch (e: unknown) {
+      setError(extractApiError(e, "Failed to create banner"));
+    } finally {
+      setCreatingBanner(false);
+    }
   };
 
   const save = async () => {
@@ -416,11 +572,17 @@ export default function AdminEventsPage() {
 
     setSaving(true);
     try {
-      const featured = form.featuredIds.map((item_id, i) => ({
-        item_id,
-        role: "featured",
-        order: i,
-      }));
+      // The event stores the run's full lineup: the banner-defining rate-ups
+      // as 'featured', the extras that only appeared this run as 'rate_up'.
+      const featured = [
+        ...form.featuredIds.map((item_id, i) => ({ item_id, role: "featured", order: i })),
+        ...form.runOnlyIds.map((item_id, i) => ({
+          item_id,
+          role: "rate_up",
+          order: form.featuredIds.length + i,
+        })),
+      ];
+      const bannerId = isBannerEvent ? form.bannerItemId : "";
       const payload = {
         game_id: form.game_id,
         event_type: form.event_type,
@@ -432,6 +594,7 @@ export default function AdminEventsPage() {
         end_at: endIso,
         timezone,
         is_published: form.is_published,
+        banner_item_id: bannerId || null,
       };
 
       if (modal?.mode === "create") {
@@ -441,10 +604,25 @@ export default function AdminEventsPage() {
           ...(serverTimes ? { server_times: serverTimes } : {}),
         });
       } else if (modal?.event) {
-        await eventsApi.update(modal.event.id, payload);
+        await eventsApi.update(modal.event.id, {
+          ...payload,
+          // An absent field can't mean "detach", so say so explicitly.
+          ...(bannerId ? {} : { clear_banner: true }),
+        });
         await eventsApi.setItems(modal.event.id, featured);
         // Replace (or clear) per-server times to match the form.
         await eventsApi.setServerTimes(modal.event.id, serverTimes ?? []);
+      }
+
+      // Push the signature rate-ups back onto the banner's preset roster — the
+      // "they both link in both things" half. Run-only extras are deliberately
+      // excluded: they differ between reruns and must not define the banner.
+      if (bannerId) {
+        await itemsApi.setLinks(
+          bannerId,
+          form.featuredIds.map((linked_item_id, i) => ({ linked_item_id, order: i })),
+          "rate_up",
+        );
       }
       setModal(null);
       loadEvents(gameFilter);
@@ -479,7 +657,14 @@ export default function AdminEventsPage() {
     );
   }
 
-  const filteredItems = gameItems.filter((it) => {
+  // Banners are items too, so they arrive in the same listing — split them out
+  // so the rate-up picker offers only things you can actually pull.
+  const bannerItems = gameItems.filter((it) => it.section_slug === BANNER_SECTION_SLUG);
+  const pullableItems = gameItems.filter((it) => it.section_slug !== BANNER_SECTION_SLUG);
+  const selectedBanner = bannerItems.find((b) => b.id === form.bannerItemId);
+  const isBannerEvent = form.event_type === "banner";
+
+  const filteredItems = pullableItems.filter((it) => {
     if (!itemSearch) return true;
     const q = itemSearch.toLowerCase();
     return it.slug.toLowerCase().includes(q) || itemName(it.data, it.slug).toLowerCase().includes(q);
@@ -625,6 +810,81 @@ export default function AdminEventsPage() {
                 </select>
               </div>
             </div>
+
+            {/* Banner picker — attaches this run to a reusable banner so
+                reruns share one identity and a character's banner history
+                stays connected. */}
+            {isBannerEvent && (
+              <div className="rounded-lg border border-amber-900/40 bg-amber-950/10 p-3">
+                <label className="text-xs text-gray-400 block mb-1">Banner</label>
+                {!form.game_id ? (
+                  <p className="text-xs text-gray-500">Select a game first.</p>
+                ) : creatingNewBanner ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      autoFocus
+                      value={newBannerName}
+                      onChange={(e) => setNewBannerName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          createBanner(newBannerName);
+                        }
+                      }}
+                      placeholder="e.g. Words of Yore"
+                      className="flex-1 px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => createBanner(newBannerName)}
+                      disabled={creatingBanner || !newBannerName.trim()}
+                      className="px-3 py-2 rounded-lg bg-white text-black text-sm font-medium disabled:opacity-50"
+                    >
+                      {creatingBanner ? "Creating…" : "Create"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCreatingNewBanner(false);
+                        setNewBannerName("");
+                      }}
+                      className="px-3 py-2 rounded-lg border border-gray-700 text-sm text-gray-300 hover:bg-gray-800"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <select
+                      value={form.bannerItemId}
+                      onChange={(e) => selectBanner(e.target.value)}
+                      className="flex-1 px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
+                    >
+                      <option value="">Not attached to a banner</option>
+                      {bannerItems.map((b) => (
+                        <option key={b.id} value={b.id}>{itemName(b.data, b.slug)}</option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNewBannerName(form.title);
+                        setCreatingNewBanner(true);
+                      }}
+                      className="px-3 py-2 rounded-lg border border-gray-700 text-sm text-gray-300 hover:bg-gray-800 whitespace-nowrap"
+                    >
+                      + New banner
+                    </button>
+                  </div>
+                )}
+                <p className="text-[11px] text-gray-500 mt-2">
+                  {selectedBanner
+                    ? "Rate-ups below are saved to this banner and reused on every rerun. Extras stay on this run only."
+                    : "Attach a rerun to its existing banner, or create one — that's what links the character to its pull history."}
+                </p>
+              </div>
+            )}
 
             <div>
               <label className="text-xs text-gray-400 block mb-1">Title</label>
@@ -818,16 +1078,21 @@ export default function AdminEventsPage() {
               previewHeight="h-24"
             />
 
-            {/* Featured items picker */}
+            {/* Featured items picker. Two columns, because a banner's identity
+                and a single run's contents are different things: the left
+                column defines the banner forever, the right column describes
+                only this run. */}
             <div>
               <label className="text-xs text-gray-400 block mb-1">
-                Featured items {form.featuredIds.length > 0 && `(${form.featuredIds.length})`}
+                {isBannerEvent ? "Who's on this banner" : "Featured items"}
+                {form.featuredIds.length + form.runOnlyIds.length > 0 &&
+                  ` (${form.featuredIds.length + form.runOnlyIds.length})`}
               </label>
               {!form.game_id ? (
                 <p className="text-xs text-gray-500">Select a game to pick featured items.</p>
               ) : itemsLoading ? (
                 <p className="text-xs text-gray-500">Loading items…</p>
-              ) : gameItems.length === 0 ? (
+              ) : pullableItems.length === 0 ? (
                 <p className="text-xs text-gray-500">This game has no items yet.</p>
               ) : (
                 <>
@@ -838,19 +1103,54 @@ export default function AdminEventsPage() {
                     placeholder="Search items…"
                     className="w-full px-3 py-2 mb-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:border-white"
                   />
-                  <div className="max-h-40 overflow-y-auto rounded-lg border border-gray-800 divide-y divide-gray-800">
+                  <div className="max-h-56 overflow-y-auto rounded-lg border border-gray-800 divide-y divide-gray-800">
+                    {isBannerEvent && (
+                      <div className="sticky top-0 grid grid-cols-[1fr_auto_auto] gap-2 bg-gray-900 px-3 py-1.5 text-[11px] text-gray-500">
+                        <span />
+                        <span className="w-14 text-center" title="Defines the banner — saved to the preset and reused on every rerun">
+                          Rate-up
+                        </span>
+                        <span className="w-14 text-center" title="Available on this run only — never saved to the banner preset">
+                          This run
+                        </span>
+                      </div>
+                    )}
                     {filteredItems.map((it) => (
-                      <label key={it.id} className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-gray-800/60">
-                        <input
-                          type="checkbox"
-                          checked={form.featuredIds.includes(it.id)}
-                          onChange={() => toggleFeatured(it.id)}
-                        />
-                        <span>{itemName(it.data, it.slug)}</span>
-                        <span className="text-gray-500 font-mono text-xs">{it.slug}</span>
-                      </label>
+                      <div
+                        key={it.id}
+                        className="grid grid-cols-[1fr_auto_auto] items-center gap-2 px-3 py-2 text-sm hover:bg-gray-800/60"
+                      >
+                        <span className="truncate">
+                          {itemName(it.data, it.slug)}{" "}
+                          <span className="text-gray-500 font-mono text-xs">{it.slug}</span>
+                        </span>
+                        <label className="w-14 flex justify-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            aria-label={`Rate-up: ${itemName(it.data, it.slug)}`}
+                            checked={form.featuredIds.includes(it.id)}
+                            onChange={() => toggleFeatured(it.id)}
+                          />
+                        </label>
+                        {isBannerEvent && (
+                          <label className="w-14 flex justify-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              aria-label={`This run only: ${itemName(it.data, it.slug)}`}
+                              checked={form.runOnlyIds.includes(it.id)}
+                              onChange={() => toggleRunOnly(it.id)}
+                            />
+                          </label>
+                        )}
+                      </div>
                     ))}
                   </div>
+                  {isBannerEvent && (
+                    <p className="text-[11px] text-gray-500 mt-1">
+                      <b>Rate-up</b> defines the banner (Acheron on Words of Yore) and carries to every
+                      rerun. <b>This run</b> records who else was pullable — the 4★s that change each time.
+                    </p>
+                  )}
                 </>
               )}
             </div>
