@@ -21,13 +21,17 @@ import {
 } from "@/lib/events";
 
 const DAY = 86_400_000;
-/** Pixels per day, coarse → fine. */
+/** Presets the zoom buttons step through, coarse → fine. Auto-zoom is
+ *  continuous and isn't restricted to these. */
 const ZOOMS = [1, 2, 4, 8, 16, 32, 64];
-/** Auto-zoom aims to draw a typical event at least this wide, so its art and
- *  name are legible without clicking. Capped so a handful of very short events
- *  can't blow the axis up to an absurd width. */
-const READABLE_BAR = 150;
-const MAX_AUTO_ZOOM = 16;
+const MAX_ZOOM = ZOOMS[ZOOMS.length - 1];
+const MIN_ZOOM = ZOOMS[0];
+/** Auto-zoom shows roughly this many version cycles at once, so the window is
+ *  always about a patch's worth of time no matter how many years of history
+ *  are loaded. Scroll for the rest. */
+const WINDOW_CYCLES = 1.5;
+/** Used when nothing in view says how long a version lasts. */
+const FALLBACK_CYCLE_DAYS = 42;
 const GUTTER = 132; // px, sticky left column holding group names
 const LANE_H = 60; // px, one packed lane — tall enough for cover art + label
 const MIN_BAR = 10; // px, so a two-hour maintenance window is still clickable
@@ -164,22 +168,32 @@ export function EventTimeline({
 
   const spanDays = Math.max(1, (rangeEnd - rangeStart) / DAY);
   const track = Math.max(240, width - GUTTER);
+  // How long a patch cycle runs, in days: the median version event in view,
+  // falling back to the median of everything else (a banner is usually about a
+  // half-cycle, so double it) and finally to a stock six weeks.
+  const cycleDays = useMemo(() => {
+    const median = (arr: number[]) =>
+      arr.length ? [...arr].sort((a, b) => a - b)[Math.floor(arr.length / 2)] : null;
+    const days = (p: Placed) => (p.endMs - p.startMs) / DAY;
+    const versions = placed
+      .filter((p) => p.event.event_type === "version")
+      .map(days)
+      .filter((d) => d > 0);
+    const versionMedian = median(versions);
+    if (versionMedian) return versionMedian;
+    const restMedian = median(placed.map(days).filter((d) => d > 0));
+    return restMedian ? restMedian * 2 : FALLBACK_CYCLE_DAYS;
+  }, [placed]);
+
   const autoZoom = useMemo(() => {
-    // Largest preset that still fits the whole span...
+    // Scale so the viewport spans about one patch cycle. This keeps the pixel
+    // scale steady whether the calendar holds two months or five years of
+    // history — years of banners no longer squeeze every bar into a sliver.
+    const cycleZoom = track / (cycleDays * WINDOW_CYCLES);
+    // If the whole span fits at a higher zoom than that, spend the space.
     const fit = track / spanDays;
-    const fitZoom = [...ZOOMS].reverse().find((v) => v <= fit) ?? ZOOMS[0];
-    // ...but two events fourteen months apart would squeeze both to slivers.
-    // So also ask for enough zoom to draw a median-length event legibly, and
-    // take whichever is greater — horizontal scrolling beats unreadable bars.
-    const durations = placed
-      .map((p) => (p.endMs - p.startMs) / DAY)
-      .filter((d) => d > 0)
-      .sort((a, b) => a - b);
-    if (durations.length === 0) return fitZoom;
-    const median = durations[Math.floor(durations.length / 2)];
-    const wanted = ZOOMS.find((v) => v >= READABLE_BAR / median) ?? MAX_AUTO_ZOOM;
-    return Math.max(fitZoom, Math.min(wanted, MAX_AUTO_ZOOM));
-  }, [track, spanDays, placed]);
+    return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, cycleZoom, fit));
+  }, [track, spanDays, cycleDays]);
   const pxPerDay = zoom ?? autoZoom;
   const contentW = Math.max(track, spanDays * pxPerDay);
 
@@ -230,7 +244,10 @@ export function EventTimeline({
     return out;
   }, [rangeStart, rangeEnd, pxPerDay, locale, xOf]);
 
-  const zoomIdx = ZOOMS.indexOf(pxPerDay);
+  // Auto-zoom is continuous, so the buttons step to the next preset either
+  // side of wherever it landed rather than indexing into ZOOMS.
+  const zoomInTo = ZOOMS.find((z) => z > pxPerDay * 1.01) ?? null;
+  const zoomOutTo = [...ZOOMS].reverse().find((z) => z < pxPerDay * 0.99) ?? null;
   const scrollToNow = () => {
     const el = scrollRef.current;
     if (el) el.scrollTo({ left: Math.max(0, nowX - el.clientWidth / 2), behavior: "smooth" });
@@ -262,8 +279,8 @@ export function EventTimeline({
           <button
             type="button"
             aria-label={t("zoomOut")}
-            disabled={zoomIdx <= 0}
-            onClick={() => setZoom(ZOOMS[Math.max(0, zoomIdx - 1)])}
+            disabled={zoomOutTo === null}
+            onClick={() => zoomOutTo !== null && setZoom(zoomOutTo)}
             className="px-2.5 py-1 text-xs text-gray-300 hover:text-amber-300 disabled:opacity-30 transition"
           >
             −
@@ -278,8 +295,8 @@ export function EventTimeline({
           <button
             type="button"
             aria-label={t("zoomIn")}
-            disabled={zoomIdx >= ZOOMS.length - 1}
-            onClick={() => setZoom(ZOOMS[Math.min(ZOOMS.length - 1, zoomIdx + 1)])}
+            disabled={zoomInTo === null}
+            onClick={() => zoomInTo !== null && setZoom(zoomInTo)}
             className="px-2.5 py-1 text-xs text-gray-300 hover:text-amber-300 disabled:opacity-30 transition"
           >
             +
