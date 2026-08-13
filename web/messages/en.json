@@ -20,7 +20,6 @@
     "createAccountHint": "Free account · sync across devices · no install.",
     "gamesSection": "Tracked games",
     "viewAll": "View all",
-    "charactersCount": "{count, plural, =0 {No characters yet} one {# character} other {# characters}}",
     "featuresTitle": "Built for gacha players",
     "featureRosterTitle": "Track your roster",
     "featureRosterDesc": "Mark what you own, set levels and constellations, see completion at a glance — across every game.",

@@ -316,28 +316,39 @@ export interface PublicProfileBundle {
 
 export interface HomeGameStat {
   game: SeoGame;
-  characterCount: number;
+  /** Catalogue entries: every item except banner presets. Not "characters" —
+   *  sections differ per game (operators, agents, resonators, light cones,
+   *  materials), so the total only means "how much is catalogued here". */
+  entryCount: number;
 }
 
 export interface HomePageBundle {
   stats: HomeGameStat[];
-  totalCharacters: number;
+  totalEntries: number;
 }
+
+/** Banner presets describe availability rather than catalogue content, and the
+ *  section exists for every game, so they're excluded from the entry counts
+ *  that decide which games are worth featuring. */
+const NON_CATALOGUE_SECTIONS = new Set(["banners"]);
 
 export async function getHomePageBundle(): Promise<HomePageBundle> {
   const [games, items] = await Promise.all([listGames(), listAllItems()]);
   const gameList = games ?? [];
+  const catalogue = items.filter(
+    (item) => !item.section_slug || !NON_CATALOGUE_SECTIONS.has(item.section_slug),
+  );
   const countsByGame = new Map<string, number>();
-  for (const item of items) {
+  for (const item of catalogue) {
     countsByGame.set(item.game_id, (countsByGame.get(item.game_id) ?? 0) + 1);
   }
   const stats = gameList.map((g) => ({
     game: g,
-    characterCount: countsByGame.get(g.id) ?? 0,
+    entryCount: countsByGame.get(g.id) ?? 0,
   }));
-  // Sort by character count desc so the homepage features the heaviest games first.
-  stats.sort((a, b) => b.characterCount - a.characterCount);
-  return { stats, totalCharacters: items.length };
+  // Heaviest catalogues first, so the featured grid leads with real content.
+  stats.sort((a, b) => b.entryCount - a.entryCount);
+  return { stats, totalEntries: catalogue.length };
 }
 
 export async function getPublicProfileBundle(username: string): Promise<PublicProfileBundle | null> {

@@ -20,7 +20,6 @@
     "createAccountHint": "Compte gratuit · synchronisé sur tous vos appareils · sans installation.",
     "gamesSection": "Jeux suivis",
     "viewAll": "Voir tout",
-    "charactersCount": "{count, plural, =0 {Aucun personnage} one {# personnage} other {# personnages}}",
     "featuresTitle": "Pensé pour les joueurs de gacha",
     "featureRosterTitle": "Suivez votre roster",
     "featureRosterDesc": "Marquez ce que vous possédez, indiquez niveaux et constellations, visualisez votre progression — sur tous les jeux.",
