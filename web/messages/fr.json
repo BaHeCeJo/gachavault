@@ -148,7 +148,7 @@
     "timelineHint": "Cliquez sur une barre pour les détails. Les événements qui se chevauchent sont empilés sur des lignes distinctes.",
     "jumpToNow": "Maintenant",
     "nowMarker": "Maintenant",
-    "fit": "Ajuster",
+    "fit": "Auto",
     "zoomIn": "Zoom avant",
     "zoomOut": "Zoom arrière"
   },
