@@ -495,7 +495,9 @@ export default function AdminEventsPage() {
           name: "Banner",
           fields: [
             { key: "description", label: "Description", type: "textarea" },
-            { key: "version", label: "Game version", type: "text" },
+            // A preset reruns across versions, so the only meaningful single
+            // value is the debut; each run carries its own version in its data.
+            { key: "version", label: "Debut version", type: "text" },
           ],
           is_collectable: false,
           image_slots: [
