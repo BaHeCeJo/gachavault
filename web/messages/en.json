@@ -148,7 +148,7 @@
     "timelineHint": "Click a bar for details. Overlapping events are stacked on separate rows.",
     "jumpToNow": "Now",
     "nowMarker": "Now",
-    "fit": "Fit",
+    "fit": "Auto",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out"
   },

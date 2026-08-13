@@ -144,17 +144,38 @@ export function typeBarClass(type: string): string {
   return TYPE_BAR[type] ?? TYPE_BAR_FALLBACK;
 }
 
+/** Wide artwork for a banner or item, as opposed to the small square avatar
+ *  featuredIcon returns. Ordered widest-first: a splash or key-art crops well
+ *  into a short wide bar, an avatar does not. */
+export function featuredArt(data: Record<string, unknown>): string | null {
+  const keys = [
+    "art_url",
+    "splash_url",
+    "banner_url",
+    "cover_url",
+    "image_url",
+    "portrait_url",
+    "image",
+    "icon_url",
+  ];
+  for (const k of keys) {
+    const v = data[k];
+    if (typeof v === "string" && v.length > 0) return v;
+  }
+  return null;
+}
+
 /** Cover art for an event, in the order that gives the most recognizable
- *  picture: the event's own image, then the banner preset it runs, then the
- *  first featured item's icon. Null falls back to a plain colored bar. */
+ *  picture: the event's own image, then the art of the banner preset it runs,
+ *  then the first featured item. Null falls back to a plain colored bar. */
 export function eventArt(e: CalendarEvent): string | null {
   if (e.image_url) return e.image_url;
   if (e.banner) {
-    const art = featuredIcon(e.banner.data);
+    const art = featuredArt(e.banner.data);
     if (art) return art;
   }
   for (const f of e.featured_items) {
-    const art = featuredIcon(f.data);
+    const art = featuredArt(f.data);
     if (art) return art;
   }
   return null;

@@ -23,8 +23,13 @@ import {
 const DAY = 86_400_000;
 /** Pixels per day, coarse → fine. */
 const ZOOMS = [1, 2, 4, 8, 16, 32, 64];
+/** Auto-zoom aims to draw a typical event at least this wide, so its art and
+ *  name are legible without clicking. Capped so a handful of very short events
+ *  can't blow the axis up to an absurd width. */
+const READABLE_BAR = 150;
+const MAX_AUTO_ZOOM = 16;
 const GUTTER = 132; // px, sticky left column holding group names
-const LANE_H = 46; // px, one packed lane — tall enough for cover art + label
+const LANE_H = 60; // px, one packed lane — tall enough for cover art + label
 const MIN_BAR = 10; // px, so a two-hour maintenance window is still clickable
 const BAR_GAP = 4; // px of breathing room required between bars in a lane
 
@@ -32,8 +37,8 @@ const BAR_GAP = 4; // px of breathing room required between bars in a lane
  *  lane packing (a bar too narrow to hold its name reserves room to the right
  *  for an outside label) and the inside/outside choice when drawing. */
 function labelPx(e: CalendarEvent): number {
-  // ~6.2px per character at text-[11px], plus the art thumbnail and padding.
-  return Math.min(190, Math.round(e.title.length * 6.2) + 34);
+  // ~6.6px per character at text-xs, plus the icon and padding.
+  return Math.min(200, Math.round(e.title.length * 6.6) + 40);
 }
 
 interface Placed {
@@ -129,8 +134,12 @@ export function EventTimeline({
   }, []);
 
   const { rangeStart, rangeEnd, placed } = useMemo(() => {
-    let min = now;
-    let max = now + 7 * DAY;
+    // Span the events themselves, not events-plus-today: a calendar of events
+    // that all ended in 2024 would otherwise stretch across every empty month
+    // since, squeezing each bar down to a few pixels. When now falls outside
+    // the span the marker simply isn't drawn.
+    let min = events.length ? Infinity : now;
+    let max = events.length ? -Infinity : now + 7 * DAY;
     for (const e of events) {
       const { start, end } = effectiveTimes(e);
       const s = new Date(start).getTime();
@@ -156,10 +165,21 @@ export function EventTimeline({
   const spanDays = Math.max(1, (rangeEnd - rangeStart) / DAY);
   const track = Math.max(240, width - GUTTER);
   const autoZoom = useMemo(() => {
+    // Largest preset that still fits the whole span...
     const fit = track / spanDays;
-    // Largest preset that still fits the whole span, floor at the coarsest.
-    return [...ZOOMS].reverse().find((z) => z <= fit) ?? ZOOMS[0];
-  }, [track, spanDays]);
+    const fitZoom = [...ZOOMS].reverse().find((v) => v <= fit) ?? ZOOMS[0];
+    // ...but two events fourteen months apart would squeeze both to slivers.
+    // So also ask for enough zoom to draw a median-length event legibly, and
+    // take whichever is greater — horizontal scrolling beats unreadable bars.
+    const durations = placed
+      .map((p) => (p.endMs - p.startMs) / DAY)
+      .filter((d) => d > 0)
+      .sort((a, b) => a - b);
+    if (durations.length === 0) return fitZoom;
+    const median = durations[Math.floor(durations.length / 2)];
+    const wanted = ZOOMS.find((v) => v >= READABLE_BAR / median) ?? MAX_AUTO_ZOOM;
+    return Math.max(fitZoom, Math.min(wanted, MAX_AUTO_ZOOM));
+  }, [track, spanDays, placed]);
   const pxPerDay = zoom ?? autoZoom;
   const contentW = Math.max(track, spanDays * pxPerDay);
 
@@ -215,6 +235,18 @@ export function EventTimeline({
     const el = scrollRef.current;
     if (el) el.scrollTo({ left: Math.max(0, nowX - el.clientWidth / 2), behavior: "smooth" });
   };
+
+  // The axis is usually wider than the viewport now, and its left edge is the
+  // oldest event — open on today instead, or on the most recent events when
+  // today is off the end of the range.
+  const homed = useRef(false);
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || homed.current || contentW <= el.clientWidth) return;
+    homed.current = true;
+    const target = nowX > contentW ? contentW : nowX;
+    el.scrollLeft = Math.max(0, target - el.clientWidth / 2);
+  }, [contentW, nowX]);
 
   return (
     <div>
@@ -370,7 +402,7 @@ function Bar({
   onSelect: (e: CalendarEvent) => void;
 }) {
   const { event, status, openEnded } = placed;
-  const height = LANE_H - 10;
+  const height = LANE_H - 12;
   const art = eventArt(event);
   // Wide enough to hold the name? Otherwise the label sits beside the bar —
   // packLanes already reserved that space, so it won't land on a neighbour.
@@ -380,7 +412,10 @@ function Bar({
     .filter((u): u is string => !!u)
     .slice(0, 3);
   // Only show the roster once the name is comfortably placed.
-  const showIcons = inside && width >= labelPx(event) + 26;
+  const showIcons = inside && width >= labelPx(event) + 34;
+  // The outside label's thumbnail is a small square, so prefer a square avatar
+  // over the wide key art that fills the bar itself.
+  const thumb = icons[0] ?? art;
 
   return (
     <>
@@ -400,25 +435,28 @@ function Bar({
             src={art}
             alt=""
             fill
-            sizes="240px"
-            className="object-cover opacity-70"
+            sizes="(max-width: 768px) 60vw, 480px"
+            // Key art is usually centered on a character's upper body; bias the
+            // crop upward so a short wide bar keeps the face.
+            focus="50% 30%"
+            className="object-cover opacity-80"
             fallback={null}
           />
         )}
         {/* Keeps the label readable over whatever art landed behind it. */}
-        {art && <span className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/15" />}
-        <span className="relative flex h-full items-center gap-1 px-1.5">
+        {art && <span className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-black/10" />}
+        <span className="relative flex h-full items-center gap-1.5 px-1.5">
           {showIcons &&
             icons.map((src, i) => (
               <span
                 key={i}
-                className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/40 bg-gray-800"
+                className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full border border-white/50 bg-gray-800"
               >
-                <SafeImage src={src} alt="" fill sizes="20px" className="object-cover" fallback={null} />
+                <SafeImage src={src} alt="" fill sizes="28px" className="object-cover" fallback={null} />
               </span>
             ))}
           {inside && (
-            <span className="truncate text-[11px] font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+            <span className="truncate text-xs font-semibold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)]">
               {event.title}
             </span>
           )}
@@ -427,17 +465,17 @@ function Bar({
 
       {!inside && (
         <span
-          className={`pointer-events-none absolute flex items-center gap-1 whitespace-nowrap text-[11px] ${
+          className={`pointer-events-none absolute flex items-center gap-1.5 whitespace-nowrap text-xs ${
             status === "ended" ? "text-gray-500" : "text-gray-300"
           }`}
           style={{ top, left: left + width + 5, height }}
         >
-          <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded-sm border border-gray-700 bg-gray-800">
+          <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-md border border-gray-700 bg-gray-800">
             <SafeImage
-              src={art}
+              src={thumb}
               alt=""
               fill
-              sizes="20px"
+              sizes="28px"
               className="object-cover"
               fallback={
                 <span
