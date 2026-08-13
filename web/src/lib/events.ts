@@ -129,18 +129,35 @@ export function typeBadgeClass(type: string): string {
   return TYPE_BADGE[type] ?? TYPE_BADGE_FALLBACK;
 }
 
-// Solid fills for the timeline bars. Same hue family as the badges above so a
-// bar and its card read as the same thing.
+// Fills for the timeline bars. Same hue family as the badges above so a bar and
+// its card read as the same thing. Bars carry cover art behind the label, so
+// these stay semi-transparent and the text is always white.
 const TYPE_BAR: Record<string, string> = {
-  banner: "bg-amber-500/80 border-amber-300/60 text-black",
-  version: "bg-blue-500/80 border-blue-300/60 text-black",
-  limited_event: "bg-purple-500/80 border-purple-300/60 text-black",
-  maintenance: "bg-gray-500/80 border-gray-300/50 text-black",
+  banner: "bg-amber-600/70 border-amber-300/70",
+  version: "bg-blue-600/70 border-blue-300/70",
+  limited_event: "bg-purple-600/70 border-purple-300/70",
+  maintenance: "bg-gray-600/70 border-gray-300/60",
 };
-const TYPE_BAR_FALLBACK = "bg-gray-600/80 border-gray-400/50 text-black";
+const TYPE_BAR_FALLBACK = "bg-gray-600/70 border-gray-400/60";
 
 export function typeBarClass(type: string): string {
   return TYPE_BAR[type] ?? TYPE_BAR_FALLBACK;
+}
+
+/** Cover art for an event, in the order that gives the most recognizable
+ *  picture: the event's own image, then the banner preset it runs, then the
+ *  first featured item's icon. Null falls back to a plain colored bar. */
+export function eventArt(e: CalendarEvent): string | null {
+  if (e.image_url) return e.image_url;
+  if (e.banner) {
+    const art = featuredIcon(e.banner.data);
+    if (art) return art;
+  }
+  for (const f of e.featured_items) {
+    const art = featuredIcon(f.data);
+    if (art) return art;
+  }
+  return null;
 }
 
 /** Best-effort icon URL for a featured item, probing the data keys games tend

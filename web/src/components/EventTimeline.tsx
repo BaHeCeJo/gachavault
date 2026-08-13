@@ -8,11 +8,15 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { SafeImage } from "@/components/SafeImage";
+import { cardGradient } from "@/lib/theme";
 import {
   type CalendarEvent,
   type EventStatus,
   effectiveTimes,
+  eventArt,
   eventStatus,
+  featuredIcon,
   typeBarClass,
 } from "@/lib/events";
 
@@ -20,9 +24,17 @@ const DAY = 86_400_000;
 /** Pixels per day, coarse → fine. */
 const ZOOMS = [1, 2, 4, 8, 16, 32, 64];
 const GUTTER = 132; // px, sticky left column holding group names
-const LANE_H = 30; // px, one packed lane
-const MIN_BAR = 6; // px, so a one-hour maintenance window is still clickable
+const LANE_H = 46; // px, one packed lane — tall enough for cover art + label
+const MIN_BAR = 10; // px, so a two-hour maintenance window is still clickable
 const BAR_GAP = 4; // px of breathing room required between bars in a lane
+
+/** Roughly how wide the label needs to be to sit inside its bar. Drives both
+ *  lane packing (a bar too narrow to hold its name reserves room to the right
+ *  for an outside label) and the inside/outside choice when drawing. */
+function labelPx(e: CalendarEvent): number {
+  // ~6.2px per character at text-[11px], plus the art thumbnail and padding.
+  return Math.min(190, Math.round(e.title.length * 6.2) + 34);
+}
 
 interface Placed {
   event: CalendarEvent;
@@ -60,13 +72,17 @@ function addMonth(ms: number): number {
 /** Greedy lane packing: place each bar in the first lane where it clears the
  *  previous bar (plus a pixel gap), otherwise open a new lane. */
 function packLanes(items: Placed[], pxPerDay: number): Placed[][] {
-  // Compare in ms, but reserve the pixels a bar actually occupies: a very short
-  // event is still drawn MIN_BAR wide, and bars need BAR_GAP between them.
-  const gapMs = ((BAR_GAP + 2) / pxPerDay) * DAY;
-  const minMs = (MIN_BAR / pxPerDay) * DAY;
+  // Compare in ms, but reserve the pixels each bar actually occupies on screen:
+  // a very short event is still drawn MIN_BAR wide, a bar too narrow for its
+  // name needs room for the label spilling out to its right, and every bar
+  // needs BAR_GAP after it.
+  const gapPx = BAR_GAP + 2;
   const lanes: { items: Placed[]; until: number }[] = [];
   for (const it of [...items].sort((a, b) => a.startMs - b.startMs)) {
-    const until = Math.max(it.endMs, it.startMs + minMs) + gapMs;
+    const barPx = Math.max(MIN_BAR, ((it.endMs - it.startMs) / DAY) * pxPerDay);
+    const want = labelPx(it.event);
+    const needPx = (barPx >= want ? barPx : barPx + want + 6) + gapPx;
+    const until = it.startMs + (needPx / pxPerDay) * DAY;
     const lane = lanes.find((l) => it.startMs >= l.until);
     if (lane) {
       lane.items.push(it);
@@ -354,19 +370,89 @@ function Bar({
   onSelect: (e: CalendarEvent) => void;
 }) {
   const { event, status, openEnded } = placed;
+  const height = LANE_H - 10;
+  const art = eventArt(event);
+  // Wide enough to hold the name? Otherwise the label sits beside the bar —
+  // packLanes already reserved that space, so it won't land on a neighbour.
+  const inside = width >= labelPx(event);
+  const icons = event.featured_items
+    .map((f) => featuredIcon(f.data))
+    .filter((u): u is string => !!u)
+    .slice(0, 3);
+  // Only show the roster once the name is comfortably placed.
+  const showIcons = inside && width >= labelPx(event) + 26;
+
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(event)}
-      title={event.title}
-      style={{ top, left, width, height: LANE_H - 8 }}
-      className={`absolute flex items-center overflow-hidden rounded-md border px-1.5 text-[11px] font-medium transition ${typeBarClass(
-        event.event_type,
-      )} ${openEnded ? "rounded-r-none" : ""} ${status === "ended" ? "opacity-40 hover:opacity-70" : "hover:brightness-110"} ${
-        selected ? "ring-2 ring-white/80 z-10 opacity-100" : ""
-      }`}
-    >
-      <span className="truncate">{event.title}</span>
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={() => onSelect(event)}
+        title={event.title}
+        style={{ top, left, width, height }}
+        className={`absolute overflow-hidden rounded-md border text-left transition ${typeBarClass(
+          event.event_type,
+        )} ${openEnded ? "rounded-r-none" : ""} ${
+          status === "ended" ? "opacity-50 hover:opacity-80" : "hover:brightness-125"
+        } ${selected ? "z-10 opacity-100 ring-2 ring-white/80" : ""}`}
+      >
+        {art && (
+          <SafeImage
+            src={art}
+            alt=""
+            fill
+            sizes="240px"
+            className="object-cover opacity-70"
+            fallback={null}
+          />
+        )}
+        {/* Keeps the label readable over whatever art landed behind it. */}
+        {art && <span className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/15" />}
+        <span className="relative flex h-full items-center gap-1 px-1.5">
+          {showIcons &&
+            icons.map((src, i) => (
+              <span
+                key={i}
+                className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/40 bg-gray-800"
+              >
+                <SafeImage src={src} alt="" fill sizes="20px" className="object-cover" fallback={null} />
+              </span>
+            ))}
+          {inside && (
+            <span className="truncate text-[11px] font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              {event.title}
+            </span>
+          )}
+        </span>
+      </button>
+
+      {!inside && (
+        <span
+          className={`pointer-events-none absolute flex items-center gap-1 whitespace-nowrap text-[11px] ${
+            status === "ended" ? "text-gray-500" : "text-gray-300"
+          }`}
+          style={{ top, left: left + width + 5, height }}
+        >
+          <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded-sm border border-gray-700 bg-gray-800">
+            <SafeImage
+              src={art}
+              alt=""
+              fill
+              sizes="20px"
+              className="object-cover"
+              fallback={
+                <span
+                  className={`flex h-full w-full items-center justify-center bg-gradient-to-br text-[9px] text-white/60 ${cardGradient(
+                    event.title,
+                  )}`}
+                >
+                  {event.title[0]}
+                </span>
+              }
+            />
+          </span>
+          {event.title}
+        </span>
+      )}
+    </>
   );
 }
