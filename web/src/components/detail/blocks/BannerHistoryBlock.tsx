@@ -11,6 +11,8 @@ import {
   featuredIcon,
   formatDateRange,
   relativeTime,
+  availabilityOf,
+  effectiveTimes,
   type CalendarEvent,
   type FeaturedItem,
 } from "@/lib/events";
@@ -46,22 +48,15 @@ export function BannerHistoryBlock({ bundle }: { bundle: ItemPageBundle }) {
 
   if (query.isLoading || runs.length === 0) return null;
 
-  const last = runs[0];
-  const lastEnd = last.end_at ?? last.start_at;
-  const ended = new Date(lastEnd).getTime() < now;
-
   return (
     <section className="mb-8">
       <div className="flex items-baseline justify-between gap-3 mb-3">
         <h2 className="text-xl font-semibold">{t("title")}</h2>
-        <span className="text-xs text-gray-400">
-          {t("count", { count: runs.length })}
-          {" · "}
-          {ended
-            ? t("lastAvailable", { when: relativeTime(lastEnd, locale, now) })
-            : t("availableNow")}
-        </span>
+        <span className="text-xs text-gray-400">{t("count", { count: runs.length })}</span>
       </div>
+
+      <AvailabilityPill runs={runs} now={now} />
+
 
       <ol className="space-y-2">
         {runs.map((run) => (
@@ -136,5 +131,62 @@ function ItemChip({ item, highlight = false }: { item: FeaturedItem; highlight?:
       )}
       {name}
     </span>
+  );
+}
+
+/** Day-precision date for the availability line — a rate-up window is a
+ *  multi-week thing, so the hour is noise, but the year matters when the last
+ *  run was two years ago. */
+function formatDay(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(new Date(iso));
+}
+
+/**
+ * "Can I pull this right now, and if not, when could I last?" — the question a
+ * collectable page has to answer at a glance, without reading the run list.
+ *
+ * Three states, because checking only whether the newest run has ended reads a
+ * scheduled future banner as live.
+ */
+function AvailabilityPill({ runs, now }: { runs: CalendarEvent[]; now: number }) {
+  const t = useTranslations("bannerHistory");
+  const locale = useLocale();
+
+  const current = availabilityOf(runs, now);
+  if (!current) return null;
+  const { start, end } = effectiveTimes(current.run);
+
+  let tone = "border-gray-700 bg-gray-800/60 text-gray-300";
+  let label: string;
+  if (current.state === "active") {
+    tone = "border-amber-500/60 bg-amber-500/10 text-amber-200";
+    label = end
+      ? t("availableUntil", { date: formatDay(end, locale), rel: relativeTime(end, locale, now) })
+      : t("availableOngoing");
+  } else if (current.state === "upcoming") {
+    tone = "border-blue-500/50 bg-blue-500/10 text-blue-200";
+    label = t("availableFrom", {
+      date: formatDay(start, locale),
+      rel: relativeTime(start, locale, now),
+    });
+  } else {
+    const when = end ?? start;
+    label = t("lastAvailableOn", {
+      date: formatDay(when, locale),
+      rel: relativeTime(when, locale, now),
+    });
+  }
+
+  return (
+    <p className={`mb-3 inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${tone}`}>
+      {current.state === "active" && (
+        <span className="inline-block h-2 w-2 rounded-full bg-amber-400 animate-pulse" aria-hidden />
+      )}
+      {label}
+    </p>
   );
 }

@@ -530,10 +530,14 @@ pub async fn list_banner_runs(
     .await
 }
 
-/// Every run of every banner featuring `item_id` in its preset roster, newest
-/// first. This is the banner history on a collectable's page: it goes through
-/// items.item_links so a rerun found via the preset counts, and each run still
-/// carries its own full lineup from events.event_items.
+/// Every run this item was pullable in, newest first. Backs the banner history
+/// on a collectable's page, and the "available until / last available" summary.
+///
+/// A run counts on either of two grounds, because neither alone is complete:
+///   * the run itself lists the item in events.event_items — the per-run truth,
+///     and the only way a co-featured unit on a multi-character banner is found;
+///   * the run's banner preset lists it as a rate_up — which catches runs whose
+///     own lineup was never filled in.
 pub async fn list_runs_featuring_item(
     pool: &PgPool,
     item_id: Uuid,
@@ -541,9 +545,14 @@ pub async fn list_runs_featuring_item(
 ) -> Result<Vec<DbEvent>, sqlx::Error> {
     sqlx::query_as::<_, DbEvent>(
         "SELECT DISTINCT e.* FROM events.events e \
-         JOIN items.item_links l ON l.item_id = e.banner_item_id \
-         WHERE l.linked_item_id = $1 AND l.relation = 'rate_up' \
-           AND ($2 OR e.is_published = TRUE) \
+         WHERE ($2 OR e.is_published = TRUE) \
+           AND ( \
+                EXISTS (SELECT 1 FROM events.event_items ei \
+                         WHERE ei.event_id = e.id AND ei.item_id = $1) \
+             OR EXISTS (SELECT 1 FROM items.item_links l \
+                         WHERE l.item_id = e.banner_item_id \
+                           AND l.linked_item_id = $1 AND l.relation = 'rate_up') \
+           ) \
          ORDER BY e.start_at DESC",
     )
     .bind(item_id)

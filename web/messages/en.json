@@ -154,8 +154,10 @@
   "bannerHistory": {
     "title": "Banner history",
     "count": "{count, plural, one {# run} other {# runs}}",
-    "lastAvailable": "last available {when}",
-    "availableNow": "available now"
+    "availableUntil": "Available until {date} · ends {rel}",
+    "availableFrom": "Next run starts {date} · {rel}",
+    "availableOngoing": "Available now",
+    "lastAvailableOn": "Last available {date} · {rel}"
   },
   "banners": {
     "title": "Banners",
