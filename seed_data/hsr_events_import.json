@@ -1,0 +1,2174 @@
+[
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "butterfly-on-swordtip-2023-04-26",
+  "title": "Seele",
+  "banner": "butterfly-on-swordtip",
+  "version": "1.0",
+  "phase": 1,
+  "start_at": "2023-04-25T02:00:00Z",
+  "end_at": "2023-05-17T09:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "seele"
+  ],
+  "featured_4": [
+   "natasha",
+   "hook",
+   "pela"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "swirl-of-heavenly-spear-2023-05-17",
+  "title": "Jing Yuan",
+  "banner": "swirl-of-heavenly-spear",
+  "version": "1.0",
+  "phase": 2,
+  "start_at": "2023-05-17T10:00:00Z",
+  "end_at": "2023-06-06T06:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "jing-yuan"
+  ],
+  "featured_4": [
+   "sushang",
+   "march-7th",
+   "tingyun"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "contract-zero-2023-06-07",
+  "title": "Silver Wolf",
+  "banner": "contract-zero",
+  "version": "1.1",
+  "phase": 1,
+  "start_at": "2023-06-07T03:00:00Z",
+  "end_at": "2023-06-28T04:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "silver-wolf"
+  ],
+  "featured_4": [
+   "dan-heng",
+   "asta",
+   "serval"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "laic-pursuit-2023-06-28",
+  "title": "Luocha",
+  "banner": "laic-pursuit",
+  "version": "1.1",
+  "phase": 2,
+  "start_at": "2023-06-28T04:00:00Z",
+  "end_at": "2023-07-18T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "luocha"
+  ],
+  "featured_4": [
+   "pela",
+   "qingque",
+   "yukong"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "a-lost-soul-2023-07-19",
+  "title": "Blade",
+  "banner": "a-lost-soul",
+  "version": "1.2",
+  "phase": 1,
+  "start_at": "2023-07-19T03:00:00Z",
+  "end_at": "2023-08-09T03:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "blade"
+  ],
+  "featured_4": [
+   "arlan",
+   "sushang",
+   "natasha"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "nessun-dorma-2023-08-09",
+  "title": "Kafka",
+  "banner": "nessun-dorma",
+  "version": "1.2",
+  "phase": 2,
+  "start_at": "2023-08-09T04:00:00Z",
+  "end_at": "2023-08-29T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "kafka"
+  ],
+  "featured_4": [
+   "luka",
+   "sampo",
+   "serval"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "epochal-spectrum-2023-08-30",
+  "title": "Dan Heng • Imbibitor Lunae",
+  "banner": "epochal-spectrum",
+  "version": "1.3",
+  "phase": 1,
+  "start_at": "2023-08-30T03:00:00Z",
+  "end_at": "2023-09-20T03:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "dan-heng-imbibitor-lunae"
+  ],
+  "featured_4": [
+   "yukong",
+   "asta",
+   "march-7th"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "foreseen-foreknown-foretold-2023-09-20",
+  "title": "Fu Xuan",
+  "banner": "foreseen-foreknown-foretold",
+  "version": "1.3",
+  "phase": 2,
+  "start_at": "2023-09-20T04:00:00Z",
+  "end_at": "2023-10-10T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "fu-xuan"
+  ],
+  "featured_4": [
+   "lynx",
+   "hook",
+   "pela"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "gentle-eclipse-of-the-moon-2023-10-11",
+  "title": "Jingliu",
+  "banner": "gentle-eclipse-of-the-moon",
+  "version": "1.4",
+  "phase": 1,
+  "start_at": "2023-10-11T03:00:00Z",
+  "end_at": "2023-10-27T03:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "jingliu"
+  ],
+  "featured_4": [
+   "tingyun",
+   "qingque",
+   "sampo"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "sunset-clause-2023-10-27",
+  "title": "Topaz & Numby",
+  "banner": "sunset-clause",
+  "version": "1.4",
+  "phase": 2,
+  "start_at": "2023-10-27T04:00:00Z",
+  "end_at": "2023-11-14T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "topaz-numby"
+  ],
+  "featured_4": [
+   "guinaifen",
+   "luka",
+   "sushang"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "butterfly-on-swordtip-2023-10-27",
+  "title": "Seele",
+  "banner": "butterfly-on-swordtip",
+  "version": "1.4",
+  "phase": 2,
+  "start_at": "2023-10-27T04:00:00Z",
+  "end_at": "2023-11-14T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "seele"
+  ],
+  "featured_4": [
+   "guinaifen",
+   "luka",
+   "sushang"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "bloom-in-gloom-2023-11-15",
+  "title": "Huohuo",
+  "banner": "bloom-in-gloom",
+  "version": "1.5",
+  "phase": 1,
+  "start_at": "2023-11-15T03:00:00Z",
+  "end_at": "2023-12-06T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "huohuo"
+  ],
+  "featured_4": [
+   "dan-heng",
+   "arlan",
+   "serval"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "thorns-of-scented-crown-2023-12-06",
+  "title": "Argenti",
+  "banner": "thorns-of-scented-crown",
+  "version": "1.5",
+  "phase": 2,
+  "start_at": "2023-12-06T04:00:00Z",
+  "end_at": "2023-12-26T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "argenti"
+  ],
+  "featured_4": [
+   "hanya",
+   "lynx",
+   "asta"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "contract-zero-2023-12-06",
+  "title": "Silver Wolf",
+  "banner": "contract-zero",
+  "version": "1.5",
+  "phase": 2,
+  "start_at": "2023-12-06T04:00:00Z",
+  "end_at": "2023-12-26T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "silver-wolf"
+  ],
+  "featured_4": [
+   "hanya",
+   "lynx",
+   "asta"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "floral-triptych-2023-12-27",
+  "title": "Ruan Mei",
+  "banner": "floral-triptych",
+  "version": "1.6",
+  "phase": 1,
+  "start_at": "2023-12-27T03:00:00Z",
+  "end_at": "2024-01-17T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "ruan-mei"
+  ],
+  "featured_4": [
+   "xueyi",
+   "march-7th",
+   "tingyun"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "a-lost-soul-2023-12-27",
+  "title": "Blade",
+  "banner": "a-lost-soul",
+  "version": "1.6",
+  "phase": 1,
+  "start_at": "2023-12-27T03:00:00Z",
+  "end_at": "2024-01-17T03:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "blade"
+  ],
+  "featured_4": [
+   "xueyi",
+   "march-7th",
+   "tingyun"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "panta-rhei-2024-01-17",
+  "title": "Dr. Ratio",
+  "banner": "panta-rhei",
+  "version": "1.6",
+  "phase": 2,
+  "start_at": "2024-01-17T04:00:00Z",
+  "end_at": "2024-02-05T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "dr-ratio"
+  ],
+  "featured_4": [
+   "sushang",
+   "natasha",
+   "hook"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "nessun-dorma-2024-01-17",
+  "title": "Kafka",
+  "banner": "nessun-dorma",
+  "version": "1.6",
+  "phase": 2,
+  "start_at": "2024-01-17T04:00:00Z",
+  "end_at": "2024-02-05T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "kafka"
+  ],
+  "featured_4": [
+   "sushang",
+   "natasha",
+   "hook"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "ripples-in-reflection-2024-02-06",
+  "title": "Black Swan",
+  "banner": "ripples-in-reflection",
+  "version": "2.0",
+  "phase": 1,
+  "start_at": "2024-02-06T03:00:00Z",
+  "end_at": "2024-02-29T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "black-swan"
+  ],
+  "featured_4": [
+   "misha",
+   "tingyun",
+   "guinaifen"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "epochal-spectrum-2024-02-06",
+  "title": "Dan Heng • Imbibitor Lunae",
+  "banner": "epochal-spectrum",
+  "version": "2.0",
+  "phase": 1,
+  "start_at": "2024-02-06T03:00:00Z",
+  "end_at": "2024-02-29T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "dan-heng-imbibitor-lunae"
+  ],
+  "featured_4": [
+   "misha",
+   "tingyun",
+   "guinaifen"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "sparkling-splendor-2024-02-29",
+  "title": "Sparkle",
+  "banner": "sparkling-splendor",
+  "version": "2.0",
+  "phase": 2,
+  "start_at": "2024-02-29T04:00:00Z",
+  "end_at": "2024-03-26T06:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "sparkle"
+  ],
+  "featured_4": [
+   "sampo",
+   "qingque",
+   "hanya"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "swirl-of-heavenly-spear-2024-02-29",
+  "title": "Jing Yuan",
+  "banner": "swirl-of-heavenly-spear",
+  "version": "2.0",
+  "phase": 2,
+  "start_at": "2024-02-29T04:00:00Z",
+  "end_at": "2024-03-26T06:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "jing-yuan"
+  ],
+  "featured_4": [
+   "sampo",
+   "qingque",
+   "hanya"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "words-of-yore-2024-03-27",
+  "title": "Acheron",
+  "banner": "words-of-yore",
+  "version": "2.1",
+  "phase": 1,
+  "start_at": "2024-03-27T03:00:00Z",
+  "end_at": "2024-04-17T03:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "acheron"
+  ],
+  "featured_4": [
+   "gallagher",
+   "pela",
+   "dan-heng"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "laic-pursuit-2024-03-27",
+  "title": "Luocha",
+  "banner": "laic-pursuit",
+  "version": "2.1",
+  "phase": 1,
+  "start_at": "2024-03-27T03:00:00Z",
+  "end_at": "2024-04-17T03:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "luocha"
+  ],
+  "featured_4": [
+   "gallagher",
+   "pela",
+   "dan-heng"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "gilded-imprisonment-2024-04-17",
+  "title": "Aventurine",
+  "banner": "gilded-imprisonment",
+  "version": "2.1",
+  "phase": 2,
+  "start_at": "2024-04-17T04:00:00Z",
+  "end_at": "2024-05-07T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "aventurine"
+  ],
+  "featured_4": [
+   "lynx",
+   "luka",
+   "serval"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "gentle-eclipse-of-the-moon-2024-04-17",
+  "title": "Jingliu",
+  "banner": "gentle-eclipse-of-the-moon",
+  "version": "2.1",
+  "phase": 2,
+  "start_at": "2024-04-17T04:00:00Z",
+  "end_at": "2024-05-07T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "jingliu"
+  ],
+  "featured_4": [
+   "lynx",
+   "luka",
+   "serval"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "just-intonation-2024-05-08",
+  "title": "Robin",
+  "banner": "just-intonation",
+  "version": "2.2",
+  "phase": 1,
+  "start_at": "2024-05-08T03:00:00Z",
+  "end_at": "2024-05-29T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "robin"
+  ],
+  "featured_4": [
+   "march-7th",
+   "hanya",
+   "xueyi"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "sunset-clause-2024-05-08",
+  "title": "Topaz & Numby",
+  "banner": "sunset-clause",
+  "version": "2.2",
+  "phase": 1,
+  "start_at": "2024-05-08T03:00:00Z",
+  "end_at": "2024-05-29T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "topaz-numby"
+  ],
+  "featured_4": [
+   "march-7th",
+   "hanya",
+   "xueyi"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "dusty-trail-s-lone-star-2024-05-29",
+  "title": "Boothill",
+  "banner": "dusty-trail-s-lone-star",
+  "version": "2.2",
+  "phase": 2,
+  "start_at": "2024-05-29T04:00:00Z",
+  "end_at": "2024-06-18T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "boothill"
+  ],
+  "featured_4": [
+   "pela",
+   "luka",
+   "hook"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "foreseen-foreknown-foretold-2024-05-29",
+  "title": "Fu Xuan",
+  "banner": "foreseen-foreknown-foretold",
+  "version": "2.2",
+  "phase": 2,
+  "start_at": "2024-05-29T04:00:00Z",
+  "end_at": "2024-06-18T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "fu-xuan"
+  ],
+  "featured_4": [
+   "pela",
+   "luka",
+   "hook"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "firefull-flyshine-2024-06-19",
+  "title": "Firefly",
+  "banner": "firefull-flyshine",
+  "version": "2.3",
+  "phase": 1,
+  "start_at": "2024-06-19T03:00:00Z",
+  "end_at": "2024-07-10T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "firefly"
+  ],
+  "featured_4": [
+   "gallagher",
+   "misha",
+   "xueyi"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "floral-triptych-2024-06-19",
+  "title": "Ruan Mei",
+  "banner": "floral-triptych",
+  "version": "2.3",
+  "phase": 1,
+  "start_at": "2024-06-19T03:00:00Z",
+  "end_at": "2024-07-10T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "ruan-mei"
+  ],
+  "featured_4": [
+   "gallagher",
+   "misha",
+   "xueyi"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "lien-on-life-lease-on-fate-2024-07-10",
+  "title": "Jade",
+  "banner": "lien-on-life-lease-on-fate",
+  "version": "2.3",
+  "phase": 2,
+  "start_at": "2024-07-10T04:00:00Z",
+  "end_at": "2024-07-30T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "jade"
+  ],
+  "featured_4": [
+   "serval",
+   "natasha",
+   "asta"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "thorns-of-scented-crown-2024-07-10",
+  "title": "Argenti",
+  "banner": "thorns-of-scented-crown",
+  "version": "2.3",
+  "phase": 2,
+  "start_at": "2024-07-10T04:00:00Z",
+  "end_at": "2024-07-30T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "argenti"
+  ],
+  "featured_4": [
+   "serval",
+   "natasha",
+   "asta"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "earth-hurled-ether-curled-2024-07-31",
+  "title": "Yunli",
+  "banner": "earth-hurled-ether-curled",
+  "version": "2.4",
+  "phase": 1,
+  "start_at": "2024-07-31T03:00:00Z",
+  "end_at": "2024-08-21T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "yunli"
+  ],
+  "featured_4": [
+   "hanya",
+   "yukong",
+   "lynx"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "bloom-in-gloom-2024-07-31",
+  "title": "Huohuo",
+  "banner": "bloom-in-gloom",
+  "version": "2.4",
+  "phase": 1,
+  "start_at": "2024-07-31T03:00:00Z",
+  "end_at": "2024-08-21T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "huohuo"
+  ],
+  "featured_4": [
+   "hanya",
+   "yukong",
+   "lynx"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "cauldron-contrivance-2024-08-21",
+  "title": "Jiaoqiu",
+  "banner": "cauldron-contrivance",
+  "version": "2.4",
+  "phase": 2,
+  "start_at": "2024-08-21T04:00:00Z",
+  "end_at": "2024-09-09T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "jiaoqiu"
+  ],
+  "featured_4": [
+   "hook",
+   "guinaifen",
+   "arlan"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "sparkling-splendor-2024-08-21",
+  "title": "Sparkle",
+  "banner": "sparkling-splendor",
+  "version": "2.4",
+  "phase": 2,
+  "start_at": "2024-08-21T04:00:00Z",
+  "end_at": "2024-09-09T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "sparkle"
+  ],
+  "featured_4": [
+   "hook",
+   "guinaifen",
+   "arlan"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "stormrider-s-bolt-2024-09-10",
+  "title": "Feixiao",
+  "banner": "stormrider-s-bolt",
+  "version": "2.5",
+  "phase": 1,
+  "start_at": "2024-09-10T03:00:00Z",
+  "end_at": "2024-10-02T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "feixiao"
+  ],
+  "featured_4": [
+   "moze",
+   "asta",
+   "luka"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2024-09-10",
+  "title": "Kafka, Black Swan, Robin",
+  "banner": "indelible-coterie",
+  "version": "2.5",
+  "phase": 1,
+  "start_at": "2024-09-10T03:00:00Z",
+  "end_at": "2024-10-02T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "kafka",
+   "black-swan",
+   "robin"
+  ],
+  "featured_4": [
+   "moze",
+   "asta",
+   "luka"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "let-scent-sink-in-2024-10-02",
+  "title": "Lingsha",
+  "banner": "let-scent-sink-in",
+  "version": "2.5",
+  "phase": 2,
+  "start_at": "2024-10-02T04:00:00Z",
+  "end_at": "2024-10-22T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "lingsha"
+  ],
+  "featured_4": [
+   "misha",
+   "natasha",
+   "guinaifen"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "sunset-clause-2024-10-02",
+  "title": "Topaz & Numby",
+  "banner": "sunset-clause",
+  "version": "2.5",
+  "phase": 2,
+  "start_at": "2024-10-02T04:00:00Z",
+  "end_at": "2024-10-22T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "topaz-numby"
+  ],
+  "featured_4": [
+   "misha",
+   "natasha",
+   "guinaifen"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "eyes-of-a-ninja-2024-10-23",
+  "title": "Rappa",
+  "banner": "eyes-of-a-ninja",
+  "version": "2.6",
+  "phase": 1,
+  "start_at": "2024-10-23T03:00:00Z",
+  "end_at": "2024-11-13T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "rappa"
+  ],
+  "featured_4": [
+   "lynx",
+   "xueyi",
+   "yukong"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "epochal-spectrum-2024-10-23",
+  "title": "Dan Heng • Imbibitor Lunae",
+  "banner": "epochal-spectrum",
+  "version": "2.6",
+  "phase": 1,
+  "start_at": "2024-10-23T03:00:00Z",
+  "end_at": "2024-11-13T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "dan-heng-imbibitor-lunae"
+  ],
+  "featured_4": [
+   "lynx",
+   "xueyi",
+   "yukong"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "words-of-yore-2024-11-13",
+  "title": "Acheron",
+  "banner": "words-of-yore",
+  "version": "2.6",
+  "phase": 2,
+  "start_at": "2024-11-13T04:00:00Z",
+  "end_at": "2024-12-03T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "acheron"
+  ],
+  "featured_4": [
+   "march-7th",
+   "pela",
+   "sampo"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "gilded-imprisonment-2024-11-13",
+  "title": "Aventurine",
+  "banner": "gilded-imprisonment",
+  "version": "2.6",
+  "phase": 2,
+  "start_at": "2024-11-13T04:00:00Z",
+  "end_at": "2024-12-03T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "aventurine"
+  ],
+  "featured_4": [
+   "march-7th",
+   "pela",
+   "sampo"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "eyes-to-the-stars-2024-12-04",
+  "title": "Sunday",
+  "banner": "eyes-to-the-stars",
+  "version": "2.7",
+  "phase": 1,
+  "start_at": "2024-12-04T03:00:00Z",
+  "end_at": "2024-12-25T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "sunday"
+  ],
+  "featured_4": [
+   "qingque",
+   "arlan",
+   "tingyun"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "swirl-of-heavenly-spear-2024-12-04",
+  "title": "Jing Yuan",
+  "banner": "swirl-of-heavenly-spear",
+  "version": "2.7",
+  "phase": 1,
+  "start_at": "2024-12-04T03:00:00Z",
+  "end_at": "2024-12-25T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "jing-yuan"
+  ],
+  "featured_4": [
+   "qingque",
+   "arlan",
+   "tingyun"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "the-long-voyage-home-2024-12-25",
+  "title": "Fugue",
+  "banner": "the-long-voyage-home",
+  "version": "2.7",
+  "phase": 2,
+  "start_at": "2024-12-25T04:00:00Z",
+  "end_at": "2025-01-14T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "fugue"
+  ],
+  "featured_4": [
+   "gallagher",
+   "yukong",
+   "misha"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "firefull-flyshine-2024-12-25",
+  "title": "Firefly",
+  "banner": "firefull-flyshine",
+  "version": "2.7",
+  "phase": 2,
+  "start_at": "2024-12-25T04:00:00Z",
+  "end_at": "2025-01-14T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "firefly"
+  ],
+  "featured_4": [
+   "gallagher",
+   "yukong",
+   "misha"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "message-from-beyond-2025-01-15",
+  "title": "The Herta",
+  "banner": "message-from-beyond",
+  "version": "3.0",
+  "phase": 1,
+  "start_at": "2025-01-15T03:00:00Z",
+  "end_at": "2025-02-05T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "the-herta"
+  ],
+  "featured_4": [
+   "natasha",
+   "asta",
+   "moze"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2025-01-15",
+  "title": "Lingsha, Feixiao, Jade",
+  "banner": "indelible-coterie",
+  "version": "3.0",
+  "phase": 1,
+  "start_at": "2025-01-15T03:00:00Z",
+  "end_at": "2025-02-05T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "lingsha",
+   "feixiao",
+   "jade"
+  ],
+  "featured_4": [
+   "natasha",
+   "asta",
+   "moze"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "tailored-fate-2025-02-05",
+  "title": "Aglaea",
+  "banner": "tailored-fate",
+  "version": "3.0",
+  "phase": 2,
+  "start_at": "2025-02-05T04:00:00Z",
+  "end_at": "2025-02-25T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "aglaea"
+  ],
+  "featured_4": [
+   "tingyun",
+   "hanya",
+   "sushang"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2025-02-05",
+  "title": "Boothill, Robin, Silver Wolf",
+  "banner": "indelible-coterie",
+  "version": "3.0",
+  "phase": 2,
+  "start_at": "2025-02-05T04:00:00Z",
+  "end_at": "2025-02-25T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "boothill",
+   "robin",
+   "silver-wolf"
+  ],
+  "featured_4": [
+   "tingyun",
+   "hanya",
+   "sushang"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "back-to-fons-et-origo-2025-02-26",
+  "title": "Tribbie",
+  "banner": "back-to-fons-et-origo",
+  "version": "3.1",
+  "phase": 1,
+  "start_at": "2025-02-26T03:00:00Z",
+  "end_at": "2025-03-19T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "tribbie"
+  ],
+  "featured_4": [
+   "lynx",
+   "hook",
+   "guinaifen"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "earth-hurled-ether-curled-2025-02-26",
+  "title": "Yunli",
+  "banner": "earth-hurled-ether-curled",
+  "version": "3.1",
+  "phase": 1,
+  "start_at": "2025-02-26T03:00:00Z",
+  "end_at": "2025-03-19T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "yunli"
+  ],
+  "featured_4": [
+   "lynx",
+   "hook",
+   "guinaifen"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "fiery-lionheart-2025-03-19",
+  "title": "Mydei",
+  "banner": "fiery-lionheart",
+  "version": "3.1",
+  "phase": 2,
+  "start_at": "2025-03-19T04:00:00Z",
+  "end_at": "2025-04-08T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "mydei"
+  ],
+  "featured_4": [
+   "arlan",
+   "xueyi",
+   "natasha"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "bloom-in-gloom-2025-03-19",
+  "title": "Huohuo",
+  "banner": "bloom-in-gloom",
+  "version": "3.1",
+  "phase": 2,
+  "start_at": "2025-03-19T04:00:00Z",
+  "end_at": "2025-04-08T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "huohuo"
+  ],
+  "featured_4": [
+   "arlan",
+   "xueyi",
+   "natasha"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "blossom-to-the-beyond-2025-04-09",
+  "title": "Castorice",
+  "banner": "blossom-to-the-beyond",
+  "version": "3.2",
+  "phase": 1,
+  "start_at": "2025-04-09T03:00:00Z",
+  "end_at": "2025-04-30T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "castorice"
+  ],
+  "featured_4": [
+   "pela",
+   "gallagher",
+   "lynx"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2025-04-09",
+  "title": "Fugue, Jiaoqiu, Acheron",
+  "banner": "indelible-coterie",
+  "version": "3.2",
+  "phase": 1,
+  "start_at": "2025-04-09T03:00:00Z",
+  "end_at": "2025-04-30T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "fugue",
+   "jiaoqiu",
+   "acheron"
+  ],
+  "featured_4": [
+   "pela",
+   "gallagher",
+   "lynx"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "the-universe-in-a-seed-2025-04-30",
+  "title": "Anaxa",
+  "banner": "the-universe-in-a-seed",
+  "version": "3.2",
+  "phase": 2,
+  "start_at": "2025-04-30T04:00:00Z",
+  "end_at": "2025-05-20T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "anaxa"
+  ],
+  "featured_4": [
+   "dan-heng",
+   "serval",
+   "moze"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "panta-rhei-2025-04-30",
+  "title": "Dr. Ratio",
+  "banner": "panta-rhei",
+  "version": "3.2",
+  "phase": 2,
+  "start_at": "2025-04-30T04:00:00Z",
+  "end_at": "2025-05-20T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "dr-ratio"
+  ],
+  "featured_4": [
+   "dan-heng",
+   "serval",
+   "moze"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "a-rainbow-onto-twilight-2025-05-21",
+  "title": "Hyacine",
+  "banner": "a-rainbow-onto-twilight",
+  "version": "3.3",
+  "phase": 1,
+  "start_at": "2025-05-21T03:00:00Z",
+  "end_at": "2025-06-11T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "hyacine"
+  ],
+  "featured_4": [
+   "misha",
+   "serval",
+   "natasha"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "message-from-beyond-2025-05-21",
+  "title": "The Herta",
+  "banner": "message-from-beyond",
+  "version": "3.3",
+  "phase": 1,
+  "start_at": "2025-05-21T03:00:00Z",
+  "end_at": "2025-06-11T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "the-herta"
+  ],
+  "featured_4": [
+   "misha",
+   "serval",
+   "natasha"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "tailored-fate-2025-06-11",
+  "title": "Aglaea",
+  "banner": "tailored-fate",
+  "version": "3.3",
+  "phase": 2,
+  "start_at": "2025-06-11T04:00:00Z",
+  "end_at": "2025-07-01T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "aglaea"
+  ],
+  "featured_4": [
+   "qingque",
+   "xueyi",
+   "sushang"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "slick-and-speedy-steals-the-sky-2025-06-11",
+  "title": "Cipher",
+  "banner": "slick-and-speedy-steals-the-sky",
+  "version": "3.3",
+  "phase": 2,
+  "start_at": "2025-06-11T04:00:00Z",
+  "end_at": "2025-07-01T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "cipher"
+  ],
+  "featured_4": [
+   "qingque",
+   "xueyi",
+   "sushang"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2025-07-02",
+  "title": "Tribbie, Sunday, Sparkle",
+  "banner": "indelible-coterie",
+  "version": "3.4",
+  "phase": 1,
+  "start_at": "2025-07-02T03:00:00Z",
+  "end_at": "2025-07-23T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "tribbie",
+   "sunday",
+   "sparkle"
+  ],
+  "featured_4": [
+   "tingyun",
+   "march-7th",
+   "yukong"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "to-evermore-burn-as-the-sun-2025-07-02",
+  "title": "Phainon",
+  "banner": "to-evermore-burn-as-the-sun",
+  "version": "3.4",
+  "phase": 1,
+  "start_at": "2025-07-02T03:00:00Z",
+  "end_at": "2025-07-23T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "phainon"
+  ],
+  "featured_4": [
+   "tingyun",
+   "march-7th",
+   "yukong"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "excalibur-excelsior-2025-07-11",
+  "title": "Saber",
+  "banner": "excalibur-excelsior",
+  "version": "4.4",
+  "phase": 1,
+  "start_at": "2025-07-11T04:00:00Z",
+  "end_at": null,
+  "timezone": "UTC+8",
+  "featured_5": [
+   "saber"
+  ],
+  "featured_4": []
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "i-am-the-bone-of-my-sword-2025-07-11",
+  "title": "Archer",
+  "banner": "i-am-the-bone-of-my-sword",
+  "version": "4.4",
+  "phase": 1,
+  "start_at": "2025-07-11T04:00:00Z",
+  "end_at": null,
+  "timezone": "UTC+8",
+  "featured_5": [
+   "archer"
+  ],
+  "featured_4": []
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2025-07-23",
+  "title": "Firefly, Jingliu, Blade",
+  "banner": "indelible-coterie",
+  "version": "3.4",
+  "phase": 2,
+  "start_at": "2025-07-23T04:00:00Z",
+  "end_at": "2025-08-12T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "firefly",
+   "jingliu",
+   "blade"
+  ],
+  "featured_4": [
+   "hanya",
+   "lynx",
+   "luka"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "winedark-swansong-2025-08-13",
+  "title": "Hysilens",
+  "banner": "winedark-swansong",
+  "version": "3.5",
+  "phase": 1,
+  "start_at": "2025-08-13T03:00:00Z",
+  "end_at": "2025-09-02T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "hysilens"
+  ],
+  "featured_4": [
+   "arlan",
+   "asta",
+   "hook"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "nessun-dorma-2025-08-13",
+  "title": "Kafka",
+  "banner": "nessun-dorma",
+  "version": "3.5",
+  "phase": 1,
+  "start_at": "2025-08-13T03:00:00Z",
+  "end_at": "2025-09-02T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "kafka"
+  ],
+  "featured_4": [
+   "arlan",
+   "asta",
+   "hook"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "the-iron-tamer-of-tides-2025-09-02",
+  "title": "Cerydra",
+  "banner": "the-iron-tamer-of-tides",
+  "version": "3.5",
+  "phase": 2,
+  "start_at": "2025-09-02T04:00:00Z",
+  "end_at": "2025-09-23T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "cerydra"
+  ],
+  "featured_4": [
+   "dan-heng",
+   "qingque",
+   "sampo"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "contract-zero-2025-09-02",
+  "title": "Silver Wolf",
+  "banner": "contract-zero",
+  "version": "3.5",
+  "phase": 2,
+  "start_at": "2025-09-02T04:00:00Z",
+  "end_at": "2025-09-23T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "silver-wolf"
+  ],
+  "featured_4": [
+   "dan-heng",
+   "qingque",
+   "sampo"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "the-remembrance-of-none-2025-09-24",
+  "title": "Evernight",
+  "banner": "the-remembrance-of-none",
+  "version": "3.6",
+  "phase": 1,
+  "start_at": "2025-09-24T03:00:00Z",
+  "end_at": "2025-10-15T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "evernight"
+  ],
+  "featured_4": [
+   "guinaifen",
+   "misha",
+   "xueyi"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "message-from-beyond-2025-09-24",
+  "title": "The Herta",
+  "banner": "message-from-beyond",
+  "version": "3.6",
+  "phase": 1,
+  "start_at": "2025-09-24T03:00:00Z",
+  "end_at": "2025-10-15T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "the-herta"
+  ],
+  "featured_4": [
+   "guinaifen",
+   "misha",
+   "xueyi"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "slay-until-evil-ends-2025-10-15",
+  "title": "Dan Heng • Permansor Terrae",
+  "banner": "slay-until-evil-ends",
+  "version": "3.6",
+  "phase": 2,
+  "start_at": "2025-10-15T04:00:00Z",
+  "end_at": "2025-11-04T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "dan-heng-permansor-terrae"
+  ],
+  "featured_4": [
+   "hanya",
+   "serval",
+   "sushang"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "the-universe-in-a-seed-2025-10-15",
+  "title": "Anaxa",
+  "banner": "the-universe-in-a-seed",
+  "version": "3.6",
+  "phase": 2,
+  "start_at": "2025-10-15T04:00:00Z",
+  "end_at": "2025-11-04T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "anaxa"
+  ],
+  "featured_4": [
+   "hanya",
+   "serval",
+   "sushang"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "ripples-rejoined-2025-11-05",
+  "title": "Cyrene",
+  "banner": "ripples-rejoined",
+  "version": "3.7",
+  "phase": 1,
+  "start_at": "2025-11-05T03:00:00Z",
+  "end_at": "2025-12-16T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "cyrene"
+  ],
+  "featured_4": [
+   "moze",
+   "lynx",
+   "pela"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2025-11-05",
+  "title": "Hyacine, Castorice, Tribbie",
+  "banner": "indelible-coterie",
+  "version": "3.7",
+  "phase": 1,
+  "start_at": "2025-11-05T03:00:00Z",
+  "end_at": "2025-11-26T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "hyacine",
+   "castorice",
+   "tribbie"
+  ],
+  "featured_4": [
+   "moze",
+   "lynx",
+   "pela"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2025-11-26",
+  "title": "Phainon, Cipher, Mydei",
+  "banner": "indelible-coterie",
+  "version": "3.7",
+  "phase": 2,
+  "start_at": "2025-11-26T04:00:00Z",
+  "end_at": "2025-12-16T06:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "phainon",
+   "cipher",
+   "mydei"
+  ],
+  "featured_4": [
+   "moze",
+   "lynx",
+   "pela"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "dance-in-flame-2025-12-17",
+  "title": "The Dahlia",
+  "banner": "dance-in-flame",
+  "version": "3.8",
+  "phase": 1,
+  "start_at": "2025-12-17T03:00:00Z",
+  "end_at": "2026-01-07T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "the-dahlia"
+  ],
+  "featured_4": [
+   "gallagher",
+   "luka",
+   "march-7th"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "firefull-flyshine-2025-12-17",
+  "title": "Firefly",
+  "banner": "firefull-flyshine",
+  "version": "3.8",
+  "phase": 1,
+  "start_at": "2025-12-17T03:00:00Z",
+  "end_at": "2026-01-07T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "firefly"
+  ],
+  "featured_4": [
+   "gallagher",
+   "luka",
+   "march-7th"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "the-long-voyage-home-2026-01-07",
+  "title": "Fugue",
+  "banner": "the-long-voyage-home",
+  "version": "3.8",
+  "phase": 2,
+  "start_at": "2026-01-07T04:00:00Z",
+  "end_at": "2026-01-28T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "fugue"
+  ],
+  "featured_4": [
+   "sampo",
+   "natasha",
+   "arlan"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "let-scent-sink-in-2026-01-07",
+  "title": "Lingsha",
+  "banner": "let-scent-sink-in",
+  "version": "3.8",
+  "phase": 2,
+  "start_at": "2026-01-07T04:00:00Z",
+  "end_at": "2026-01-28T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "lingsha"
+  ],
+  "featured_4": [
+   "sampo",
+   "natasha",
+   "arlan"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "tailored-fate-2026-01-28",
+  "title": "Aglaea",
+  "banner": "tailored-fate",
+  "version": "3.8",
+  "phase": 3,
+  "start_at": "2026-01-28T04:00:00Z",
+  "end_at": "2026-02-12T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "aglaea"
+  ],
+  "featured_4": [
+   "yukong",
+   "tingyun",
+   "dan-heng"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "eyes-to-the-stars-2026-01-28",
+  "title": "Sunday",
+  "banner": "eyes-to-the-stars",
+  "version": "3.8",
+  "phase": 3,
+  "start_at": "2026-01-28T04:00:00Z",
+  "end_at": "2026-02-12T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "sunday"
+  ],
+  "featured_4": [
+   "yukong",
+   "tingyun",
+   "dan-heng"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "gleam-of-a-thousand-plumes-2026-02-13",
+  "title": "Yao Guang",
+  "banner": "gleam-of-a-thousand-plumes",
+  "version": "4.0",
+  "phase": 1,
+  "start_at": "2026-02-13T03:00:00Z",
+  "end_at": "2026-03-24T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "yao-guang"
+  ],
+  "featured_4": [
+   "pela",
+   "hanya",
+   "qingque"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2026-02-13",
+  "title": "Evernight, Hysilens, Black Swan",
+  "banner": "indelible-coterie",
+  "version": "4.0",
+  "phase": 1,
+  "start_at": "2026-02-13T03:00:00Z",
+  "end_at": "2026-03-03T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "evernight",
+   "hysilens",
+   "black-swan"
+  ],
+  "featured_4": [
+   "pela",
+   "hanya",
+   "qingque"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "project-party-time-2026-03-03",
+  "title": "Sparxie",
+  "banner": "project-party-time",
+  "version": "4.0",
+  "phase": 2,
+  "start_at": "2026-03-03T04:00:00Z",
+  "end_at": "2026-03-24T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "sparxie"
+  ],
+  "featured_4": [
+   "pela",
+   "hanya",
+   "qingque"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2026-03-03",
+  "title": "Cerydra, Rappa, Sparkle",
+  "banner": "indelible-coterie",
+  "version": "4.0",
+  "phase": 2,
+  "start_at": "2026-03-03T04:00:00Z",
+  "end_at": "2026-03-24T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "cerydra",
+   "rappa",
+   "sparkle"
+  ],
+  "featured_4": [
+   "pela",
+   "hanya",
+   "qingque"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "a-hunt-through-night-2026-03-25",
+  "title": "Ashveil",
+  "banner": "a-hunt-through-night",
+  "version": "4.1",
+  "phase": 1,
+  "start_at": "2026-03-25T03:00:00Z",
+  "end_at": "2026-04-21T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "ashveil"
+  ],
+  "featured_4": [
+   "asta",
+   "moze",
+   "misha"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "a-rainbow-onto-twilight-2026-03-25",
+  "title": "Hyacine",
+  "banner": "a-rainbow-onto-twilight",
+  "version": "4.1",
+  "phase": 1,
+  "start_at": "2026-03-25T03:00:00Z",
+  "end_at": "2026-04-08T03:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "hyacine"
+  ],
+  "featured_4": [
+   "asta",
+   "moze",
+   "misha"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "dusty-trail-s-lone-star-2026-04-08",
+  "title": "Boothill",
+  "banner": "dusty-trail-s-lone-star",
+  "version": "4.1",
+  "phase": 2,
+  "start_at": "2026-04-08T04:00:00Z",
+  "end_at": "2026-04-21T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "boothill"
+  ],
+  "featured_4": [
+   "asta",
+   "moze",
+   "misha"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "godmode-player-2026-04-22",
+  "title": "Silver Wolf LV.999",
+  "banner": "godmode-player",
+  "version": "4.2",
+  "phase": 1,
+  "start_at": "2026-04-22T03:00:00Z",
+  "end_at": "2026-05-13T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "silver-wolf-lv999"
+  ],
+  "featured_4": [
+   "gallagher",
+   "xueyi",
+   "hook"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2026-04-22",
+  "title": "The Dahlia, Castorice, Firefly",
+  "banner": "indelible-coterie",
+  "version": "4.2",
+  "phase": 1,
+  "start_at": "2026-04-22T03:00:00Z",
+  "end_at": "2026-05-13T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "the-dahlia",
+   "castorice",
+   "firefly"
+  ],
+  "featured_4": [
+   "gallagher",
+   "xueyi",
+   "hook"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "the-demoiselle-in-charge-2026-05-13",
+  "title": "Evanescia",
+  "banner": "the-demoiselle-in-charge",
+  "version": "4.2",
+  "phase": 2,
+  "start_at": "2026-05-13T04:00:00Z",
+  "end_at": "2026-05-31T19:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "evanescia"
+  ],
+  "featured_4": [
+   "guinaifen",
+   "sushang",
+   "lynx"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2026-05-13",
+  "title": "Tribbie, Sunday, Feixiao",
+  "banner": "indelible-coterie",
+  "version": "4.2",
+  "phase": 2,
+  "start_at": "2026-05-13T04:00:00Z",
+  "end_at": "2026-05-31T19:59:59Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "tribbie",
+   "sunday",
+   "feixiao"
+  ],
+  "featured_4": [
+   "guinaifen",
+   "lynx",
+   "sushang"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "now-i-am-become-blade-2026-06-01",
+  "title": "Mortenax Blade",
+  "banner": "now-i-am-become-blade",
+  "version": "4.3",
+  "phase": 1,
+  "start_at": "2026-06-01T03:00:00Z",
+  "end_at": "2026-06-24T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "mortenax-blade"
+  ],
+  "featured_4": [
+   "sampo",
+   "luka",
+   "tingyun"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "gleam-of-a-thousand-plumes-2026-06-01",
+  "title": "Yao Guang",
+  "banner": "gleam-of-a-thousand-plumes",
+  "version": "4.3",
+  "phase": 1,
+  "start_at": "2026-06-01T03:00:00Z",
+  "end_at": "2026-06-24T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "yao-guang"
+  ],
+  "featured_4": [
+   "sampo",
+   "luka",
+   "tingyun"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "ripples-rejoined-2026-06-24",
+  "title": "Cyrene",
+  "banner": "ripples-rejoined",
+  "version": "4.3",
+  "phase": 2,
+  "start_at": "2026-06-24T04:00:00Z",
+  "end_at": "2026-07-14T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "cyrene"
+  ],
+  "featured_4": [
+   "arlan",
+   "march-7th",
+   "yukong"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "to-evermore-burn-as-the-sun-2026-06-24",
+  "title": "Phainon",
+  "banner": "to-evermore-burn-as-the-sun",
+  "version": "4.3",
+  "phase": 2,
+  "start_at": "2026-06-24T04:00:00Z",
+  "end_at": "2026-07-14T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "phainon"
+  ],
+  "featured_4": [
+   "arlan",
+   "march-7th",
+   "yukong"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "ad-astra-nova-2026-07-15",
+  "title": "Himeko • Nova",
+  "banner": "ad-astra-nova",
+  "version": "4.4",
+  "phase": 1,
+  "start_at": "2026-07-15T03:00:00Z",
+  "end_at": "2026-08-25T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "himeko-nova"
+  ],
+  "featured_4": [
+   "moze",
+   "hanya",
+   "serval"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2026-07-15",
+  "title": "Sparxie, Dan Heng • Permansor Terrae, Evernight",
+  "banner": "indelible-coterie",
+  "version": "4.4",
+  "phase": 1,
+  "start_at": "2026-07-15T03:00:00Z",
+  "end_at": "2026-08-05T03:59:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "sparxie",
+   "dan-heng-permansor-terrae",
+   "evernight"
+  ],
+  "featured_4": [
+   "moze",
+   "hanya",
+   "serval"
+  ]
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "the-gem-coursing-in-red-2026-07-24",
+  "title": "Rin Tohsaka",
+  "banner": "the-gem-coursing-in-red",
+  "version": "4.4",
+  "phase": 2,
+  "start_at": "2026-07-24T04:00:00Z",
+  "end_at": null,
+  "timezone": "UTC+8",
+  "featured_5": [
+   "rin-tohsaka"
+  ],
+  "featured_4": []
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "of-the-beginning-enuma-elish-2026-07-24",
+  "title": "Gilgamesh",
+  "banner": "of-the-beginning-enuma-elish",
+  "version": "4.4",
+  "phase": 2,
+  "start_at": "2026-07-24T04:00:00Z",
+  "end_at": null,
+  "timezone": "UTC+8",
+  "featured_5": [
+   "gilgamesh"
+  ],
+  "featured_4": []
+ },
+ {
+  "game": "honkai-star-rail",
+  "event_type": "banner",
+  "slug": "indelible-coterie-2026-08-05",
+  "title": "Cerydra, Anaxa, Aventurine",
+  "banner": "indelible-coterie",
+  "version": "4.4",
+  "phase": 2,
+  "start_at": "2026-08-05T04:00:00Z",
+  "end_at": "2026-08-25T07:00:00Z",
+  "timezone": "UTC+8",
+  "featured_5": [
+   "cerydra",
+   "anaxa",
+   "aventurine"
+  ],
+  "featured_4": [
+   "moze",
+   "hanya",
+   "serval"
+  ]
+ }
+]
