@@ -91,12 +91,20 @@ for r in runs:
             "event_type": "banner",
             "slug": "%s-%s" % (slugify(r["banner"]), r["run_date"]),
             "title": ", ".join(r["five_star"]) or r["banner"],
+            "description": "%s rate-up warp, Version %s Phase %s."
+            % (r["banner"], r["version"], r["phase"]),
             "banner": slugify(r["banner"]),
-            "version": r["version"],
-            "phase": r["phase"],
             "start_at": to_utc(r["time_start"], offset),
             "end_at": to_utc(end_raw, offset) if re.match(r"^\d{4}-\d{2}-\d{2}", end_raw) else None,
             "timezone": "UTC+8",
+            "is_published": True,
+            # Version/phase are game-specific, so they ride in the event's free
+            # -form data rather than as columns the importer has to know about.
+            "data": {
+                "version": r["version"],
+                "phase": r["phase"],
+                "source": "honkai-star-rail.fandom.com",
+            },
             "featured_5": [char_slug(n) for n in r["five_star"]],
             "featured_4": [char_slug(n) for n in r["four_star"]],
         }

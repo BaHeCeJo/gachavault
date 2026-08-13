@@ -4,12 +4,17 @@
   "event_type": "banner",
   "slug": "butterfly-on-swordtip-2023-04-26",
   "title": "Seele",
+  "description": "Butterfly on Swordtip rate-up warp, Version 1.0 Phase 1.",
   "banner": "butterfly-on-swordtip",
-  "version": "1.0",
-  "phase": 1,
   "start_at": "2023-04-25T02:00:00Z",
   "end_at": "2023-05-17T09:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.0",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "seele"
   ],
@@ -24,12 +29,17 @@
   "event_type": "banner",
   "slug": "swirl-of-heavenly-spear-2023-05-17",
   "title": "Jing Yuan",
+  "description": "Swirl of Heavenly Spear rate-up warp, Version 1.0 Phase 2.",
   "banner": "swirl-of-heavenly-spear",
-  "version": "1.0",
-  "phase": 2,
   "start_at": "2023-05-17T10:00:00Z",
   "end_at": "2023-06-06T06:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.0",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "jing-yuan"
   ],
@@ -44,12 +54,17 @@
   "event_type": "banner",
   "slug": "contract-zero-2023-06-07",
   "title": "Silver Wolf",
+  "description": "Contract Zero rate-up warp, Version 1.1 Phase 1.",
   "banner": "contract-zero",
-  "version": "1.1",
-  "phase": 1,
   "start_at": "2023-06-07T03:00:00Z",
   "end_at": "2023-06-28T04:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.1",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "silver-wolf"
   ],
@@ -64,12 +79,17 @@
   "event_type": "banner",
   "slug": "laic-pursuit-2023-06-28",
   "title": "Luocha",
+  "description": "Laic Pursuit rate-up warp, Version 1.1 Phase 2.",
   "banner": "laic-pursuit",
-  "version": "1.1",
-  "phase": 2,
   "start_at": "2023-06-28T04:00:00Z",
   "end_at": "2023-07-18T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.1",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "luocha"
   ],
@@ -84,12 +104,17 @@
   "event_type": "banner",
   "slug": "a-lost-soul-2023-07-19",
   "title": "Blade",
+  "description": "A Lost Soul rate-up warp, Version 1.2 Phase 1.",
   "banner": "a-lost-soul",
-  "version": "1.2",
-  "phase": 1,
   "start_at": "2023-07-19T03:00:00Z",
   "end_at": "2023-08-09T03:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.2",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "blade"
   ],
@@ -104,12 +129,17 @@
   "event_type": "banner",
   "slug": "nessun-dorma-2023-08-09",
   "title": "Kafka",
+  "description": "Nessun Dorma rate-up warp, Version 1.2 Phase 2.",
   "banner": "nessun-dorma",
-  "version": "1.2",
-  "phase": 2,
   "start_at": "2023-08-09T04:00:00Z",
   "end_at": "2023-08-29T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.2",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "kafka"
   ],
@@ -124,12 +154,17 @@
   "event_type": "banner",
   "slug": "epochal-spectrum-2023-08-30",
   "title": "Dan Heng • Imbibitor Lunae",
+  "description": "Epochal Spectrum rate-up warp, Version 1.3 Phase 1.",
   "banner": "epochal-spectrum",
-  "version": "1.3",
-  "phase": 1,
   "start_at": "2023-08-30T03:00:00Z",
   "end_at": "2023-09-20T03:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.3",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "dan-heng-imbibitor-lunae"
   ],
@@ -144,12 +179,17 @@
   "event_type": "banner",
   "slug": "foreseen-foreknown-foretold-2023-09-20",
   "title": "Fu Xuan",
+  "description": "Foreseen, Foreknown, Foretold rate-up warp, Version 1.3 Phase 2.",
   "banner": "foreseen-foreknown-foretold",
-  "version": "1.3",
-  "phase": 2,
   "start_at": "2023-09-20T04:00:00Z",
   "end_at": "2023-10-10T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.3",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "fu-xuan"
   ],
@@ -164,12 +204,17 @@
   "event_type": "banner",
   "slug": "gentle-eclipse-of-the-moon-2023-10-11",
   "title": "Jingliu",
+  "description": "Gentle Eclipse of the Moon rate-up warp, Version 1.4 Phase 1.",
   "banner": "gentle-eclipse-of-the-moon",
-  "version": "1.4",
-  "phase": 1,
   "start_at": "2023-10-11T03:00:00Z",
   "end_at": "2023-10-27T03:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.4",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "jingliu"
   ],
@@ -184,12 +229,17 @@
   "event_type": "banner",
   "slug": "sunset-clause-2023-10-27",
   "title": "Topaz & Numby",
+  "description": "Sunset Clause rate-up warp, Version 1.4 Phase 2.",
   "banner": "sunset-clause",
-  "version": "1.4",
-  "phase": 2,
   "start_at": "2023-10-27T04:00:00Z",
   "end_at": "2023-11-14T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.4",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "topaz-numby"
   ],
@@ -204,12 +254,17 @@
   "event_type": "banner",
   "slug": "butterfly-on-swordtip-2023-10-27",
   "title": "Seele",
+  "description": "Butterfly on Swordtip rate-up warp, Version 1.4 Phase 2.",
   "banner": "butterfly-on-swordtip",
-  "version": "1.4",
-  "phase": 2,
   "start_at": "2023-10-27T04:00:00Z",
   "end_at": "2023-11-14T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.4",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "seele"
   ],
@@ -224,12 +279,17 @@
   "event_type": "banner",
   "slug": "bloom-in-gloom-2023-11-15",
   "title": "Huohuo",
+  "description": "Bloom in Gloom rate-up warp, Version 1.5 Phase 1.",
   "banner": "bloom-in-gloom",
-  "version": "1.5",
-  "phase": 1,
   "start_at": "2023-11-15T03:00:00Z",
   "end_at": "2023-12-06T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.5",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "huohuo"
   ],
@@ -244,12 +304,17 @@
   "event_type": "banner",
   "slug": "thorns-of-scented-crown-2023-12-06",
   "title": "Argenti",
+  "description": "Thorns of Scented Crown rate-up warp, Version 1.5 Phase 2.",
   "banner": "thorns-of-scented-crown",
-  "version": "1.5",
-  "phase": 2,
   "start_at": "2023-12-06T04:00:00Z",
   "end_at": "2023-12-26T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.5",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "argenti"
   ],
@@ -264,12 +329,17 @@
   "event_type": "banner",
   "slug": "contract-zero-2023-12-06",
   "title": "Silver Wolf",
+  "description": "Contract Zero rate-up warp, Version 1.5 Phase 2.",
   "banner": "contract-zero",
-  "version": "1.5",
-  "phase": 2,
   "start_at": "2023-12-06T04:00:00Z",
   "end_at": "2023-12-26T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.5",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "silver-wolf"
   ],
@@ -284,12 +354,17 @@
   "event_type": "banner",
   "slug": "floral-triptych-2023-12-27",
   "title": "Ruan Mei",
+  "description": "Floral Triptych rate-up warp, Version 1.6 Phase 1.",
   "banner": "floral-triptych",
-  "version": "1.6",
-  "phase": 1,
   "start_at": "2023-12-27T03:00:00Z",
   "end_at": "2024-01-17T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.6",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "ruan-mei"
   ],
@@ -304,12 +379,17 @@
   "event_type": "banner",
   "slug": "a-lost-soul-2023-12-27",
   "title": "Blade",
+  "description": "A Lost Soul rate-up warp, Version 1.6 Phase 1.",
   "banner": "a-lost-soul",
-  "version": "1.6",
-  "phase": 1,
   "start_at": "2023-12-27T03:00:00Z",
   "end_at": "2024-01-17T03:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.6",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "blade"
   ],
@@ -324,12 +404,17 @@
   "event_type": "banner",
   "slug": "panta-rhei-2024-01-17",
   "title": "Dr. Ratio",
+  "description": "Panta Rhei rate-up warp, Version 1.6 Phase 2.",
   "banner": "panta-rhei",
-  "version": "1.6",
-  "phase": 2,
   "start_at": "2024-01-17T04:00:00Z",
   "end_at": "2024-02-05T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.6",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "dr-ratio"
   ],
@@ -344,12 +429,17 @@
   "event_type": "banner",
   "slug": "nessun-dorma-2024-01-17",
   "title": "Kafka",
+  "description": "Nessun Dorma rate-up warp, Version 1.6 Phase 2.",
   "banner": "nessun-dorma",
-  "version": "1.6",
-  "phase": 2,
   "start_at": "2024-01-17T04:00:00Z",
   "end_at": "2024-02-05T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "1.6",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "kafka"
   ],
@@ -364,12 +454,17 @@
   "event_type": "banner",
   "slug": "ripples-in-reflection-2024-02-06",
   "title": "Black Swan",
+  "description": "Ripples in Reflection rate-up warp, Version 2.0 Phase 1.",
   "banner": "ripples-in-reflection",
-  "version": "2.0",
-  "phase": 1,
   "start_at": "2024-02-06T03:00:00Z",
   "end_at": "2024-02-29T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.0",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "black-swan"
   ],
@@ -384,12 +479,17 @@
   "event_type": "banner",
   "slug": "epochal-spectrum-2024-02-06",
   "title": "Dan Heng • Imbibitor Lunae",
+  "description": "Epochal Spectrum rate-up warp, Version 2.0 Phase 1.",
   "banner": "epochal-spectrum",
-  "version": "2.0",
-  "phase": 1,
   "start_at": "2024-02-06T03:00:00Z",
   "end_at": "2024-02-29T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.0",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "dan-heng-imbibitor-lunae"
   ],
@@ -404,12 +504,17 @@
   "event_type": "banner",
   "slug": "sparkling-splendor-2024-02-29",
   "title": "Sparkle",
+  "description": "Sparkling Splendor rate-up warp, Version 2.0 Phase 2.",
   "banner": "sparkling-splendor",
-  "version": "2.0",
-  "phase": 2,
   "start_at": "2024-02-29T04:00:00Z",
   "end_at": "2024-03-26T06:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.0",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "sparkle"
   ],
@@ -424,12 +529,17 @@
   "event_type": "banner",
   "slug": "swirl-of-heavenly-spear-2024-02-29",
   "title": "Jing Yuan",
+  "description": "Swirl of Heavenly Spear rate-up warp, Version 2.0 Phase 2.",
   "banner": "swirl-of-heavenly-spear",
-  "version": "2.0",
-  "phase": 2,
   "start_at": "2024-02-29T04:00:00Z",
   "end_at": "2024-03-26T06:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.0",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "jing-yuan"
   ],
@@ -444,12 +554,17 @@
   "event_type": "banner",
   "slug": "words-of-yore-2024-03-27",
   "title": "Acheron",
+  "description": "Words of Yore rate-up warp, Version 2.1 Phase 1.",
   "banner": "words-of-yore",
-  "version": "2.1",
-  "phase": 1,
   "start_at": "2024-03-27T03:00:00Z",
   "end_at": "2024-04-17T03:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.1",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "acheron"
   ],
@@ -464,12 +579,17 @@
   "event_type": "banner",
   "slug": "laic-pursuit-2024-03-27",
   "title": "Luocha",
+  "description": "Laic Pursuit rate-up warp, Version 2.1 Phase 1.",
   "banner": "laic-pursuit",
-  "version": "2.1",
-  "phase": 1,
   "start_at": "2024-03-27T03:00:00Z",
   "end_at": "2024-04-17T03:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.1",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "luocha"
   ],
@@ -484,12 +604,17 @@
   "event_type": "banner",
   "slug": "gilded-imprisonment-2024-04-17",
   "title": "Aventurine",
+  "description": "Gilded Imprisonment rate-up warp, Version 2.1 Phase 2.",
   "banner": "gilded-imprisonment",
-  "version": "2.1",
-  "phase": 2,
   "start_at": "2024-04-17T04:00:00Z",
   "end_at": "2024-05-07T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.1",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "aventurine"
   ],
@@ -504,12 +629,17 @@
   "event_type": "banner",
   "slug": "gentle-eclipse-of-the-moon-2024-04-17",
   "title": "Jingliu",
+  "description": "Gentle Eclipse of the Moon rate-up warp, Version 2.1 Phase 2.",
   "banner": "gentle-eclipse-of-the-moon",
-  "version": "2.1",
-  "phase": 2,
   "start_at": "2024-04-17T04:00:00Z",
   "end_at": "2024-05-07T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.1",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "jingliu"
   ],
@@ -524,12 +654,17 @@
   "event_type": "banner",
   "slug": "just-intonation-2024-05-08",
   "title": "Robin",
+  "description": "Just Intonation rate-up warp, Version 2.2 Phase 1.",
   "banner": "just-intonation",
-  "version": "2.2",
-  "phase": 1,
   "start_at": "2024-05-08T03:00:00Z",
   "end_at": "2024-05-29T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.2",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "robin"
   ],
@@ -544,12 +679,17 @@
   "event_type": "banner",
   "slug": "sunset-clause-2024-05-08",
   "title": "Topaz & Numby",
+  "description": "Sunset Clause rate-up warp, Version 2.2 Phase 1.",
   "banner": "sunset-clause",
-  "version": "2.2",
-  "phase": 1,
   "start_at": "2024-05-08T03:00:00Z",
   "end_at": "2024-05-29T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.2",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "topaz-numby"
   ],
@@ -564,12 +704,17 @@
   "event_type": "banner",
   "slug": "dusty-trail-s-lone-star-2024-05-29",
   "title": "Boothill",
+  "description": "Dusty Trail's Lone Star rate-up warp, Version 2.2 Phase 2.",
   "banner": "dusty-trail-s-lone-star",
-  "version": "2.2",
-  "phase": 2,
   "start_at": "2024-05-29T04:00:00Z",
   "end_at": "2024-06-18T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.2",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "boothill"
   ],
@@ -584,12 +729,17 @@
   "event_type": "banner",
   "slug": "foreseen-foreknown-foretold-2024-05-29",
   "title": "Fu Xuan",
+  "description": "Foreseen, Foreknown, Foretold rate-up warp, Version 2.2 Phase 2.",
   "banner": "foreseen-foreknown-foretold",
-  "version": "2.2",
-  "phase": 2,
   "start_at": "2024-05-29T04:00:00Z",
   "end_at": "2024-06-18T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.2",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "fu-xuan"
   ],
@@ -604,12 +754,17 @@
   "event_type": "banner",
   "slug": "firefull-flyshine-2024-06-19",
   "title": "Firefly",
+  "description": "Firefull Flyshine rate-up warp, Version 2.3 Phase 1.",
   "banner": "firefull-flyshine",
-  "version": "2.3",
-  "phase": 1,
   "start_at": "2024-06-19T03:00:00Z",
   "end_at": "2024-07-10T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.3",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "firefly"
   ],
@@ -624,12 +779,17 @@
   "event_type": "banner",
   "slug": "floral-triptych-2024-06-19",
   "title": "Ruan Mei",
+  "description": "Floral Triptych rate-up warp, Version 2.3 Phase 1.",
   "banner": "floral-triptych",
-  "version": "2.3",
-  "phase": 1,
   "start_at": "2024-06-19T03:00:00Z",
   "end_at": "2024-07-10T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.3",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "ruan-mei"
   ],
@@ -644,12 +804,17 @@
   "event_type": "banner",
   "slug": "lien-on-life-lease-on-fate-2024-07-10",
   "title": "Jade",
+  "description": "Lien on Life, Lease on Fate rate-up warp, Version 2.3 Phase 2.",
   "banner": "lien-on-life-lease-on-fate",
-  "version": "2.3",
-  "phase": 2,
   "start_at": "2024-07-10T04:00:00Z",
   "end_at": "2024-07-30T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.3",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "jade"
   ],
@@ -664,12 +829,17 @@
   "event_type": "banner",
   "slug": "thorns-of-scented-crown-2024-07-10",
   "title": "Argenti",
+  "description": "Thorns of Scented Crown rate-up warp, Version 2.3 Phase 2.",
   "banner": "thorns-of-scented-crown",
-  "version": "2.3",
-  "phase": 2,
   "start_at": "2024-07-10T04:00:00Z",
   "end_at": "2024-07-30T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.3",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "argenti"
   ],
@@ -684,12 +854,17 @@
   "event_type": "banner",
   "slug": "earth-hurled-ether-curled-2024-07-31",
   "title": "Yunli",
+  "description": "Earth Hurled, Ether Curled rate-up warp, Version 2.4 Phase 1.",
   "banner": "earth-hurled-ether-curled",
-  "version": "2.4",
-  "phase": 1,
   "start_at": "2024-07-31T03:00:00Z",
   "end_at": "2024-08-21T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.4",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "yunli"
   ],
@@ -704,12 +879,17 @@
   "event_type": "banner",
   "slug": "bloom-in-gloom-2024-07-31",
   "title": "Huohuo",
+  "description": "Bloom in Gloom rate-up warp, Version 2.4 Phase 1.",
   "banner": "bloom-in-gloom",
-  "version": "2.4",
-  "phase": 1,
   "start_at": "2024-07-31T03:00:00Z",
   "end_at": "2024-08-21T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.4",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "huohuo"
   ],
@@ -724,12 +904,17 @@
   "event_type": "banner",
   "slug": "cauldron-contrivance-2024-08-21",
   "title": "Jiaoqiu",
+  "description": "Cauldron Contrivance rate-up warp, Version 2.4 Phase 2.",
   "banner": "cauldron-contrivance",
-  "version": "2.4",
-  "phase": 2,
   "start_at": "2024-08-21T04:00:00Z",
   "end_at": "2024-09-09T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.4",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "jiaoqiu"
   ],
@@ -744,12 +929,17 @@
   "event_type": "banner",
   "slug": "sparkling-splendor-2024-08-21",
   "title": "Sparkle",
+  "description": "Sparkling Splendor rate-up warp, Version 2.4 Phase 2.",
   "banner": "sparkling-splendor",
-  "version": "2.4",
-  "phase": 2,
   "start_at": "2024-08-21T04:00:00Z",
   "end_at": "2024-09-09T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.4",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "sparkle"
   ],
@@ -764,12 +954,17 @@
   "event_type": "banner",
   "slug": "stormrider-s-bolt-2024-09-10",
   "title": "Feixiao",
+  "description": "Stormrider's Bolt rate-up warp, Version 2.5 Phase 1.",
   "banner": "stormrider-s-bolt",
-  "version": "2.5",
-  "phase": 1,
   "start_at": "2024-09-10T03:00:00Z",
   "end_at": "2024-10-02T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.5",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "feixiao"
   ],
@@ -784,12 +979,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2024-09-10",
   "title": "Kafka, Black Swan, Robin",
+  "description": "Indelible Coterie rate-up warp, Version 2.5 Phase 1.",
   "banner": "indelible-coterie",
-  "version": "2.5",
-  "phase": 1,
   "start_at": "2024-09-10T03:00:00Z",
   "end_at": "2024-10-02T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.5",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "kafka",
    "black-swan",
@@ -806,12 +1006,17 @@
   "event_type": "banner",
   "slug": "let-scent-sink-in-2024-10-02",
   "title": "Lingsha",
+  "description": "Let Scent Sink In rate-up warp, Version 2.5 Phase 2.",
   "banner": "let-scent-sink-in",
-  "version": "2.5",
-  "phase": 2,
   "start_at": "2024-10-02T04:00:00Z",
   "end_at": "2024-10-22T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.5",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "lingsha"
   ],
@@ -826,12 +1031,17 @@
   "event_type": "banner",
   "slug": "sunset-clause-2024-10-02",
   "title": "Topaz & Numby",
+  "description": "Sunset Clause rate-up warp, Version 2.5 Phase 2.",
   "banner": "sunset-clause",
-  "version": "2.5",
-  "phase": 2,
   "start_at": "2024-10-02T04:00:00Z",
   "end_at": "2024-10-22T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.5",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "topaz-numby"
   ],
@@ -846,12 +1056,17 @@
   "event_type": "banner",
   "slug": "eyes-of-a-ninja-2024-10-23",
   "title": "Rappa",
+  "description": "Eyes of a Ninja rate-up warp, Version 2.6 Phase 1.",
   "banner": "eyes-of-a-ninja",
-  "version": "2.6",
-  "phase": 1,
   "start_at": "2024-10-23T03:00:00Z",
   "end_at": "2024-11-13T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.6",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "rappa"
   ],
@@ -866,12 +1081,17 @@
   "event_type": "banner",
   "slug": "epochal-spectrum-2024-10-23",
   "title": "Dan Heng • Imbibitor Lunae",
+  "description": "Epochal Spectrum rate-up warp, Version 2.6 Phase 1.",
   "banner": "epochal-spectrum",
-  "version": "2.6",
-  "phase": 1,
   "start_at": "2024-10-23T03:00:00Z",
   "end_at": "2024-11-13T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.6",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "dan-heng-imbibitor-lunae"
   ],
@@ -886,12 +1106,17 @@
   "event_type": "banner",
   "slug": "words-of-yore-2024-11-13",
   "title": "Acheron",
+  "description": "Words of Yore rate-up warp, Version 2.6 Phase 2.",
   "banner": "words-of-yore",
-  "version": "2.6",
-  "phase": 2,
   "start_at": "2024-11-13T04:00:00Z",
   "end_at": "2024-12-03T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.6",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "acheron"
   ],
@@ -906,12 +1131,17 @@
   "event_type": "banner",
   "slug": "gilded-imprisonment-2024-11-13",
   "title": "Aventurine",
+  "description": "Gilded Imprisonment rate-up warp, Version 2.6 Phase 2.",
   "banner": "gilded-imprisonment",
-  "version": "2.6",
-  "phase": 2,
   "start_at": "2024-11-13T04:00:00Z",
   "end_at": "2024-12-03T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.6",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "aventurine"
   ],
@@ -926,12 +1156,17 @@
   "event_type": "banner",
   "slug": "eyes-to-the-stars-2024-12-04",
   "title": "Sunday",
+  "description": "Eyes to the Stars rate-up warp, Version 2.7 Phase 1.",
   "banner": "eyes-to-the-stars",
-  "version": "2.7",
-  "phase": 1,
   "start_at": "2024-12-04T03:00:00Z",
   "end_at": "2024-12-25T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.7",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "sunday"
   ],
@@ -946,12 +1181,17 @@
   "event_type": "banner",
   "slug": "swirl-of-heavenly-spear-2024-12-04",
   "title": "Jing Yuan",
+  "description": "Swirl of Heavenly Spear rate-up warp, Version 2.7 Phase 1.",
   "banner": "swirl-of-heavenly-spear",
-  "version": "2.7",
-  "phase": 1,
   "start_at": "2024-12-04T03:00:00Z",
   "end_at": "2024-12-25T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.7",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "jing-yuan"
   ],
@@ -966,12 +1206,17 @@
   "event_type": "banner",
   "slug": "the-long-voyage-home-2024-12-25",
   "title": "Fugue",
+  "description": "The Long Voyage Home rate-up warp, Version 2.7 Phase 2.",
   "banner": "the-long-voyage-home",
-  "version": "2.7",
-  "phase": 2,
   "start_at": "2024-12-25T04:00:00Z",
   "end_at": "2025-01-14T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.7",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "fugue"
   ],
@@ -986,12 +1231,17 @@
   "event_type": "banner",
   "slug": "firefull-flyshine-2024-12-25",
   "title": "Firefly",
+  "description": "Firefull Flyshine rate-up warp, Version 2.7 Phase 2.",
   "banner": "firefull-flyshine",
-  "version": "2.7",
-  "phase": 2,
   "start_at": "2024-12-25T04:00:00Z",
   "end_at": "2025-01-14T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "2.7",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "firefly"
   ],
@@ -1006,12 +1256,17 @@
   "event_type": "banner",
   "slug": "message-from-beyond-2025-01-15",
   "title": "The Herta",
+  "description": "Message From Beyond rate-up warp, Version 3.0 Phase 1.",
   "banner": "message-from-beyond",
-  "version": "3.0",
-  "phase": 1,
   "start_at": "2025-01-15T03:00:00Z",
   "end_at": "2025-02-05T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.0",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "the-herta"
   ],
@@ -1026,12 +1281,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2025-01-15",
   "title": "Lingsha, Feixiao, Jade",
+  "description": "Indelible Coterie rate-up warp, Version 3.0 Phase 1.",
   "banner": "indelible-coterie",
-  "version": "3.0",
-  "phase": 1,
   "start_at": "2025-01-15T03:00:00Z",
   "end_at": "2025-02-05T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.0",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "lingsha",
    "feixiao",
@@ -1048,12 +1308,17 @@
   "event_type": "banner",
   "slug": "tailored-fate-2025-02-05",
   "title": "Aglaea",
+  "description": "Tailored Fate rate-up warp, Version 3.0 Phase 2.",
   "banner": "tailored-fate",
-  "version": "3.0",
-  "phase": 2,
   "start_at": "2025-02-05T04:00:00Z",
   "end_at": "2025-02-25T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.0",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "aglaea"
   ],
@@ -1068,12 +1333,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2025-02-05",
   "title": "Boothill, Robin, Silver Wolf",
+  "description": "Indelible Coterie rate-up warp, Version 3.0 Phase 2.",
   "banner": "indelible-coterie",
-  "version": "3.0",
-  "phase": 2,
   "start_at": "2025-02-05T04:00:00Z",
   "end_at": "2025-02-25T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.0",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "boothill",
    "robin",
@@ -1090,12 +1360,17 @@
   "event_type": "banner",
   "slug": "back-to-fons-et-origo-2025-02-26",
   "title": "Tribbie",
+  "description": "Back to Fons et Origo rate-up warp, Version 3.1 Phase 1.",
   "banner": "back-to-fons-et-origo",
-  "version": "3.1",
-  "phase": 1,
   "start_at": "2025-02-26T03:00:00Z",
   "end_at": "2025-03-19T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.1",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "tribbie"
   ],
@@ -1110,12 +1385,17 @@
   "event_type": "banner",
   "slug": "earth-hurled-ether-curled-2025-02-26",
   "title": "Yunli",
+  "description": "Earth Hurled, Ether Curled rate-up warp, Version 3.1 Phase 1.",
   "banner": "earth-hurled-ether-curled",
-  "version": "3.1",
-  "phase": 1,
   "start_at": "2025-02-26T03:00:00Z",
   "end_at": "2025-03-19T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.1",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "yunli"
   ],
@@ -1130,12 +1410,17 @@
   "event_type": "banner",
   "slug": "fiery-lionheart-2025-03-19",
   "title": "Mydei",
+  "description": "Fiery Lionheart rate-up warp, Version 3.1 Phase 2.",
   "banner": "fiery-lionheart",
-  "version": "3.1",
-  "phase": 2,
   "start_at": "2025-03-19T04:00:00Z",
   "end_at": "2025-04-08T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.1",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "mydei"
   ],
@@ -1150,12 +1435,17 @@
   "event_type": "banner",
   "slug": "bloom-in-gloom-2025-03-19",
   "title": "Huohuo",
+  "description": "Bloom in Gloom rate-up warp, Version 3.1 Phase 2.",
   "banner": "bloom-in-gloom",
-  "version": "3.1",
-  "phase": 2,
   "start_at": "2025-03-19T04:00:00Z",
   "end_at": "2025-04-08T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.1",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "huohuo"
   ],
@@ -1170,12 +1460,17 @@
   "event_type": "banner",
   "slug": "blossom-to-the-beyond-2025-04-09",
   "title": "Castorice",
+  "description": "Blossom to the Beyond rate-up warp, Version 3.2 Phase 1.",
   "banner": "blossom-to-the-beyond",
-  "version": "3.2",
-  "phase": 1,
   "start_at": "2025-04-09T03:00:00Z",
   "end_at": "2025-04-30T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.2",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "castorice"
   ],
@@ -1190,12 +1485,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2025-04-09",
   "title": "Fugue, Jiaoqiu, Acheron",
+  "description": "Indelible Coterie rate-up warp, Version 3.2 Phase 1.",
   "banner": "indelible-coterie",
-  "version": "3.2",
-  "phase": 1,
   "start_at": "2025-04-09T03:00:00Z",
   "end_at": "2025-04-30T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.2",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "fugue",
    "jiaoqiu",
@@ -1212,12 +1512,17 @@
   "event_type": "banner",
   "slug": "the-universe-in-a-seed-2025-04-30",
   "title": "Anaxa",
+  "description": "The Universe in a Seed rate-up warp, Version 3.2 Phase 2.",
   "banner": "the-universe-in-a-seed",
-  "version": "3.2",
-  "phase": 2,
   "start_at": "2025-04-30T04:00:00Z",
   "end_at": "2025-05-20T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.2",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "anaxa"
   ],
@@ -1232,12 +1537,17 @@
   "event_type": "banner",
   "slug": "panta-rhei-2025-04-30",
   "title": "Dr. Ratio",
+  "description": "Panta Rhei rate-up warp, Version 3.2 Phase 2.",
   "banner": "panta-rhei",
-  "version": "3.2",
-  "phase": 2,
   "start_at": "2025-04-30T04:00:00Z",
   "end_at": "2025-05-20T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.2",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "dr-ratio"
   ],
@@ -1252,12 +1562,17 @@
   "event_type": "banner",
   "slug": "a-rainbow-onto-twilight-2025-05-21",
   "title": "Hyacine",
+  "description": "A Rainbow onto Twilight rate-up warp, Version 3.3 Phase 1.",
   "banner": "a-rainbow-onto-twilight",
-  "version": "3.3",
-  "phase": 1,
   "start_at": "2025-05-21T03:00:00Z",
   "end_at": "2025-06-11T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.3",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "hyacine"
   ],
@@ -1272,12 +1587,17 @@
   "event_type": "banner",
   "slug": "message-from-beyond-2025-05-21",
   "title": "The Herta",
+  "description": "Message From Beyond rate-up warp, Version 3.3 Phase 1.",
   "banner": "message-from-beyond",
-  "version": "3.3",
-  "phase": 1,
   "start_at": "2025-05-21T03:00:00Z",
   "end_at": "2025-06-11T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.3",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "the-herta"
   ],
@@ -1292,12 +1612,17 @@
   "event_type": "banner",
   "slug": "tailored-fate-2025-06-11",
   "title": "Aglaea",
+  "description": "Tailored Fate rate-up warp, Version 3.3 Phase 2.",
   "banner": "tailored-fate",
-  "version": "3.3",
-  "phase": 2,
   "start_at": "2025-06-11T04:00:00Z",
   "end_at": "2025-07-01T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.3",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "aglaea"
   ],
@@ -1312,12 +1637,17 @@
   "event_type": "banner",
   "slug": "slick-and-speedy-steals-the-sky-2025-06-11",
   "title": "Cipher",
+  "description": "Slick and Speedy Steals the Sky rate-up warp, Version 3.3 Phase 2.",
   "banner": "slick-and-speedy-steals-the-sky",
-  "version": "3.3",
-  "phase": 2,
   "start_at": "2025-06-11T04:00:00Z",
   "end_at": "2025-07-01T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.3",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "cipher"
   ],
@@ -1332,12 +1662,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2025-07-02",
   "title": "Tribbie, Sunday, Sparkle",
+  "description": "Indelible Coterie rate-up warp, Version 3.4 Phase 1.",
   "banner": "indelible-coterie",
-  "version": "3.4",
-  "phase": 1,
   "start_at": "2025-07-02T03:00:00Z",
   "end_at": "2025-07-23T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.4",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "tribbie",
    "sunday",
@@ -1354,12 +1689,17 @@
   "event_type": "banner",
   "slug": "to-evermore-burn-as-the-sun-2025-07-02",
   "title": "Phainon",
+  "description": "To Evermore Burn as the Sun rate-up warp, Version 3.4 Phase 1.",
   "banner": "to-evermore-burn-as-the-sun",
-  "version": "3.4",
-  "phase": 1,
   "start_at": "2025-07-02T03:00:00Z",
   "end_at": "2025-07-23T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.4",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "phainon"
   ],
@@ -1374,12 +1714,17 @@
   "event_type": "banner",
   "slug": "excalibur-excelsior-2025-07-11",
   "title": "Saber",
+  "description": "Excalibur Excelsior rate-up warp, Version 4.4 Phase 1.",
   "banner": "excalibur-excelsior",
-  "version": "4.4",
-  "phase": 1,
   "start_at": "2025-07-11T04:00:00Z",
   "end_at": null,
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.4",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "saber"
   ],
@@ -1390,12 +1735,17 @@
   "event_type": "banner",
   "slug": "i-am-the-bone-of-my-sword-2025-07-11",
   "title": "Archer",
+  "description": "I Am the Bone of My Sword rate-up warp, Version 4.4 Phase 1.",
   "banner": "i-am-the-bone-of-my-sword",
-  "version": "4.4",
-  "phase": 1,
   "start_at": "2025-07-11T04:00:00Z",
   "end_at": null,
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.4",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "archer"
   ],
@@ -1406,12 +1756,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2025-07-23",
   "title": "Firefly, Jingliu, Blade",
+  "description": "Indelible Coterie rate-up warp, Version 3.4 Phase 2.",
   "banner": "indelible-coterie",
-  "version": "3.4",
-  "phase": 2,
   "start_at": "2025-07-23T04:00:00Z",
   "end_at": "2025-08-12T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.4",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "firefly",
    "jingliu",
@@ -1428,12 +1783,17 @@
   "event_type": "banner",
   "slug": "winedark-swansong-2025-08-13",
   "title": "Hysilens",
+  "description": "Winedark Swansong rate-up warp, Version 3.5 Phase 1.",
   "banner": "winedark-swansong",
-  "version": "3.5",
-  "phase": 1,
   "start_at": "2025-08-13T03:00:00Z",
   "end_at": "2025-09-02T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.5",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "hysilens"
   ],
@@ -1448,12 +1808,17 @@
   "event_type": "banner",
   "slug": "nessun-dorma-2025-08-13",
   "title": "Kafka",
+  "description": "Nessun Dorma rate-up warp, Version 3.5 Phase 1.",
   "banner": "nessun-dorma",
-  "version": "3.5",
-  "phase": 1,
   "start_at": "2025-08-13T03:00:00Z",
   "end_at": "2025-09-02T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.5",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "kafka"
   ],
@@ -1468,12 +1833,17 @@
   "event_type": "banner",
   "slug": "the-iron-tamer-of-tides-2025-09-02",
   "title": "Cerydra",
+  "description": "The Iron Tamer of Tides rate-up warp, Version 3.5 Phase 2.",
   "banner": "the-iron-tamer-of-tides",
-  "version": "3.5",
-  "phase": 2,
   "start_at": "2025-09-02T04:00:00Z",
   "end_at": "2025-09-23T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.5",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "cerydra"
   ],
@@ -1488,12 +1858,17 @@
   "event_type": "banner",
   "slug": "contract-zero-2025-09-02",
   "title": "Silver Wolf",
+  "description": "Contract Zero rate-up warp, Version 3.5 Phase 2.",
   "banner": "contract-zero",
-  "version": "3.5",
-  "phase": 2,
   "start_at": "2025-09-02T04:00:00Z",
   "end_at": "2025-09-23T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.5",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "silver-wolf"
   ],
@@ -1508,12 +1883,17 @@
   "event_type": "banner",
   "slug": "the-remembrance-of-none-2025-09-24",
   "title": "Evernight",
+  "description": "The Remembrance of None rate-up warp, Version 3.6 Phase 1.",
   "banner": "the-remembrance-of-none",
-  "version": "3.6",
-  "phase": 1,
   "start_at": "2025-09-24T03:00:00Z",
   "end_at": "2025-10-15T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.6",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "evernight"
   ],
@@ -1528,12 +1908,17 @@
   "event_type": "banner",
   "slug": "message-from-beyond-2025-09-24",
   "title": "The Herta",
+  "description": "Message From Beyond rate-up warp, Version 3.6 Phase 1.",
   "banner": "message-from-beyond",
-  "version": "3.6",
-  "phase": 1,
   "start_at": "2025-09-24T03:00:00Z",
   "end_at": "2025-10-15T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.6",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "the-herta"
   ],
@@ -1548,12 +1933,17 @@
   "event_type": "banner",
   "slug": "slay-until-evil-ends-2025-10-15",
   "title": "Dan Heng • Permansor Terrae",
+  "description": "Slay Until Evil Ends rate-up warp, Version 3.6 Phase 2.",
   "banner": "slay-until-evil-ends",
-  "version": "3.6",
-  "phase": 2,
   "start_at": "2025-10-15T04:00:00Z",
   "end_at": "2025-11-04T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.6",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "dan-heng-permansor-terrae"
   ],
@@ -1568,12 +1958,17 @@
   "event_type": "banner",
   "slug": "the-universe-in-a-seed-2025-10-15",
   "title": "Anaxa",
+  "description": "The Universe in a Seed rate-up warp, Version 3.6 Phase 2.",
   "banner": "the-universe-in-a-seed",
-  "version": "3.6",
-  "phase": 2,
   "start_at": "2025-10-15T04:00:00Z",
   "end_at": "2025-11-04T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.6",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "anaxa"
   ],
@@ -1588,12 +1983,17 @@
   "event_type": "banner",
   "slug": "ripples-rejoined-2025-11-05",
   "title": "Cyrene",
+  "description": "Ripples Rejoined rate-up warp, Version 3.7 Phase 1.",
   "banner": "ripples-rejoined",
-  "version": "3.7",
-  "phase": 1,
   "start_at": "2025-11-05T03:00:00Z",
   "end_at": "2025-12-16T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.7",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "cyrene"
   ],
@@ -1608,12 +2008,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2025-11-05",
   "title": "Hyacine, Castorice, Tribbie",
+  "description": "Indelible Coterie rate-up warp, Version 3.7 Phase 1.",
   "banner": "indelible-coterie",
-  "version": "3.7",
-  "phase": 1,
   "start_at": "2025-11-05T03:00:00Z",
   "end_at": "2025-11-26T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.7",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "hyacine",
    "castorice",
@@ -1630,12 +2035,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2025-11-26",
   "title": "Phainon, Cipher, Mydei",
+  "description": "Indelible Coterie rate-up warp, Version 3.7 Phase 2.",
   "banner": "indelible-coterie",
-  "version": "3.7",
-  "phase": 2,
   "start_at": "2025-11-26T04:00:00Z",
   "end_at": "2025-12-16T06:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.7",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "phainon",
    "cipher",
@@ -1652,12 +2062,17 @@
   "event_type": "banner",
   "slug": "dance-in-flame-2025-12-17",
   "title": "The Dahlia",
+  "description": "Dance in Flame rate-up warp, Version 3.8 Phase 1.",
   "banner": "dance-in-flame",
-  "version": "3.8",
-  "phase": 1,
   "start_at": "2025-12-17T03:00:00Z",
   "end_at": "2026-01-07T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.8",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "the-dahlia"
   ],
@@ -1672,12 +2087,17 @@
   "event_type": "banner",
   "slug": "firefull-flyshine-2025-12-17",
   "title": "Firefly",
+  "description": "Firefull Flyshine rate-up warp, Version 3.8 Phase 1.",
   "banner": "firefull-flyshine",
-  "version": "3.8",
-  "phase": 1,
   "start_at": "2025-12-17T03:00:00Z",
   "end_at": "2026-01-07T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.8",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "firefly"
   ],
@@ -1692,12 +2112,17 @@
   "event_type": "banner",
   "slug": "the-long-voyage-home-2026-01-07",
   "title": "Fugue",
+  "description": "The Long Voyage Home rate-up warp, Version 3.8 Phase 2.",
   "banner": "the-long-voyage-home",
-  "version": "3.8",
-  "phase": 2,
   "start_at": "2026-01-07T04:00:00Z",
   "end_at": "2026-01-28T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.8",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "fugue"
   ],
@@ -1712,12 +2137,17 @@
   "event_type": "banner",
   "slug": "let-scent-sink-in-2026-01-07",
   "title": "Lingsha",
+  "description": "Let Scent Sink In rate-up warp, Version 3.8 Phase 2.",
   "banner": "let-scent-sink-in",
-  "version": "3.8",
-  "phase": 2,
   "start_at": "2026-01-07T04:00:00Z",
   "end_at": "2026-01-28T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.8",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "lingsha"
   ],
@@ -1732,12 +2162,17 @@
   "event_type": "banner",
   "slug": "tailored-fate-2026-01-28",
   "title": "Aglaea",
+  "description": "Tailored Fate rate-up warp, Version 3.8 Phase 3.",
   "banner": "tailored-fate",
-  "version": "3.8",
-  "phase": 3,
   "start_at": "2026-01-28T04:00:00Z",
   "end_at": "2026-02-12T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.8",
+   "phase": 3,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "aglaea"
   ],
@@ -1752,12 +2187,17 @@
   "event_type": "banner",
   "slug": "eyes-to-the-stars-2026-01-28",
   "title": "Sunday",
+  "description": "Eyes to the Stars rate-up warp, Version 3.8 Phase 3.",
   "banner": "eyes-to-the-stars",
-  "version": "3.8",
-  "phase": 3,
   "start_at": "2026-01-28T04:00:00Z",
   "end_at": "2026-02-12T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "3.8",
+   "phase": 3,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "sunday"
   ],
@@ -1772,12 +2212,17 @@
   "event_type": "banner",
   "slug": "gleam-of-a-thousand-plumes-2026-02-13",
   "title": "Yao Guang",
+  "description": "Gleam of a Thousand Plumes rate-up warp, Version 4.0 Phase 1.",
   "banner": "gleam-of-a-thousand-plumes",
-  "version": "4.0",
-  "phase": 1,
   "start_at": "2026-02-13T03:00:00Z",
   "end_at": "2026-03-24T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.0",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "yao-guang"
   ],
@@ -1792,12 +2237,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2026-02-13",
   "title": "Evernight, Hysilens, Black Swan",
+  "description": "Indelible Coterie rate-up warp, Version 4.0 Phase 1.",
   "banner": "indelible-coterie",
-  "version": "4.0",
-  "phase": 1,
   "start_at": "2026-02-13T03:00:00Z",
   "end_at": "2026-03-03T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.0",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "evernight",
    "hysilens",
@@ -1814,12 +2264,17 @@
   "event_type": "banner",
   "slug": "project-party-time-2026-03-03",
   "title": "Sparxie",
+  "description": "Project Party Time rate-up warp, Version 4.0 Phase 2.",
   "banner": "project-party-time",
-  "version": "4.0",
-  "phase": 2,
   "start_at": "2026-03-03T04:00:00Z",
   "end_at": "2026-03-24T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.0",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "sparxie"
   ],
@@ -1834,12 +2289,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2026-03-03",
   "title": "Cerydra, Rappa, Sparkle",
+  "description": "Indelible Coterie rate-up warp, Version 4.0 Phase 2.",
   "banner": "indelible-coterie",
-  "version": "4.0",
-  "phase": 2,
   "start_at": "2026-03-03T04:00:00Z",
   "end_at": "2026-03-24T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.0",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "cerydra",
    "rappa",
@@ -1856,12 +2316,17 @@
   "event_type": "banner",
   "slug": "a-hunt-through-night-2026-03-25",
   "title": "Ashveil",
+  "description": "A Hunt Through Night rate-up warp, Version 4.1 Phase 1.",
   "banner": "a-hunt-through-night",
-  "version": "4.1",
-  "phase": 1,
   "start_at": "2026-03-25T03:00:00Z",
   "end_at": "2026-04-21T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.1",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "ashveil"
   ],
@@ -1876,12 +2341,17 @@
   "event_type": "banner",
   "slug": "a-rainbow-onto-twilight-2026-03-25",
   "title": "Hyacine",
+  "description": "A Rainbow onto Twilight rate-up warp, Version 4.1 Phase 1.",
   "banner": "a-rainbow-onto-twilight",
-  "version": "4.1",
-  "phase": 1,
   "start_at": "2026-03-25T03:00:00Z",
   "end_at": "2026-04-08T03:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.1",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "hyacine"
   ],
@@ -1896,12 +2366,17 @@
   "event_type": "banner",
   "slug": "dusty-trail-s-lone-star-2026-04-08",
   "title": "Boothill",
+  "description": "Dusty Trail's Lone Star rate-up warp, Version 4.1 Phase 2.",
   "banner": "dusty-trail-s-lone-star",
-  "version": "4.1",
-  "phase": 2,
   "start_at": "2026-04-08T04:00:00Z",
   "end_at": "2026-04-21T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.1",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "boothill"
   ],
@@ -1916,12 +2391,17 @@
   "event_type": "banner",
   "slug": "godmode-player-2026-04-22",
   "title": "Silver Wolf LV.999",
+  "description": "Godmode Player rate-up warp, Version 4.2 Phase 1.",
   "banner": "godmode-player",
-  "version": "4.2",
-  "phase": 1,
   "start_at": "2026-04-22T03:00:00Z",
   "end_at": "2026-05-13T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.2",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "silver-wolf-lv999"
   ],
@@ -1936,12 +2416,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2026-04-22",
   "title": "The Dahlia, Castorice, Firefly",
+  "description": "Indelible Coterie rate-up warp, Version 4.2 Phase 1.",
   "banner": "indelible-coterie",
-  "version": "4.2",
-  "phase": 1,
   "start_at": "2026-04-22T03:00:00Z",
   "end_at": "2026-05-13T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.2",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "the-dahlia",
    "castorice",
@@ -1958,12 +2443,17 @@
   "event_type": "banner",
   "slug": "the-demoiselle-in-charge-2026-05-13",
   "title": "Evanescia",
+  "description": "The Demoiselle in Charge rate-up warp, Version 4.2 Phase 2.",
   "banner": "the-demoiselle-in-charge",
-  "version": "4.2",
-  "phase": 2,
   "start_at": "2026-05-13T04:00:00Z",
   "end_at": "2026-05-31T19:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.2",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "evanescia"
   ],
@@ -1978,12 +2468,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2026-05-13",
   "title": "Tribbie, Sunday, Feixiao",
+  "description": "Indelible Coterie rate-up warp, Version 4.2 Phase 2.",
   "banner": "indelible-coterie",
-  "version": "4.2",
-  "phase": 2,
   "start_at": "2026-05-13T04:00:00Z",
   "end_at": "2026-05-31T19:59:59Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.2",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "tribbie",
    "sunday",
@@ -2000,12 +2495,17 @@
   "event_type": "banner",
   "slug": "now-i-am-become-blade-2026-06-01",
   "title": "Mortenax Blade",
+  "description": "Now I Am Become Blade rate-up warp, Version 4.3 Phase 1.",
   "banner": "now-i-am-become-blade",
-  "version": "4.3",
-  "phase": 1,
   "start_at": "2026-06-01T03:00:00Z",
   "end_at": "2026-06-24T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.3",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "mortenax-blade"
   ],
@@ -2020,12 +2520,17 @@
   "event_type": "banner",
   "slug": "gleam-of-a-thousand-plumes-2026-06-01",
   "title": "Yao Guang",
+  "description": "Gleam of a Thousand Plumes rate-up warp, Version 4.3 Phase 1.",
   "banner": "gleam-of-a-thousand-plumes",
-  "version": "4.3",
-  "phase": 1,
   "start_at": "2026-06-01T03:00:00Z",
   "end_at": "2026-06-24T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.3",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "yao-guang"
   ],
@@ -2040,12 +2545,17 @@
   "event_type": "banner",
   "slug": "ripples-rejoined-2026-06-24",
   "title": "Cyrene",
+  "description": "Ripples Rejoined rate-up warp, Version 4.3 Phase 2.",
   "banner": "ripples-rejoined",
-  "version": "4.3",
-  "phase": 2,
   "start_at": "2026-06-24T04:00:00Z",
   "end_at": "2026-07-14T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.3",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "cyrene"
   ],
@@ -2060,12 +2570,17 @@
   "event_type": "banner",
   "slug": "to-evermore-burn-as-the-sun-2026-06-24",
   "title": "Phainon",
+  "description": "To Evermore Burn as the Sun rate-up warp, Version 4.3 Phase 2.",
   "banner": "to-evermore-burn-as-the-sun",
-  "version": "4.3",
-  "phase": 2,
   "start_at": "2026-06-24T04:00:00Z",
   "end_at": "2026-07-14T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.3",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "phainon"
   ],
@@ -2080,12 +2595,17 @@
   "event_type": "banner",
   "slug": "ad-astra-nova-2026-07-15",
   "title": "Himeko • Nova",
+  "description": "Ad Astra Nova rate-up warp, Version 4.4 Phase 1.",
   "banner": "ad-astra-nova",
-  "version": "4.4",
-  "phase": 1,
   "start_at": "2026-07-15T03:00:00Z",
   "end_at": "2026-08-25T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.4",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "himeko-nova"
   ],
@@ -2100,12 +2620,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2026-07-15",
   "title": "Sparxie, Dan Heng • Permansor Terrae, Evernight",
+  "description": "Indelible Coterie rate-up warp, Version 4.4 Phase 1.",
   "banner": "indelible-coterie",
-  "version": "4.4",
-  "phase": 1,
   "start_at": "2026-07-15T03:00:00Z",
   "end_at": "2026-08-05T03:59:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.4",
+   "phase": 1,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "sparxie",
    "dan-heng-permansor-terrae",
@@ -2122,12 +2647,17 @@
   "event_type": "banner",
   "slug": "the-gem-coursing-in-red-2026-07-24",
   "title": "Rin Tohsaka",
+  "description": "The Gem Coursing in Red rate-up warp, Version 4.4 Phase 2.",
   "banner": "the-gem-coursing-in-red",
-  "version": "4.4",
-  "phase": 2,
   "start_at": "2026-07-24T04:00:00Z",
   "end_at": null,
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.4",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "rin-tohsaka"
   ],
@@ -2138,12 +2668,17 @@
   "event_type": "banner",
   "slug": "of-the-beginning-enuma-elish-2026-07-24",
   "title": "Gilgamesh",
+  "description": "Of the Beginning, Enuma Elish rate-up warp, Version 4.4 Phase 2.",
   "banner": "of-the-beginning-enuma-elish",
-  "version": "4.4",
-  "phase": 2,
   "start_at": "2026-07-24T04:00:00Z",
   "end_at": null,
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.4",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "gilgamesh"
   ],
@@ -2154,12 +2689,17 @@
   "event_type": "banner",
   "slug": "indelible-coterie-2026-08-05",
   "title": "Cerydra, Anaxa, Aventurine",
+  "description": "Indelible Coterie rate-up warp, Version 4.4 Phase 2.",
   "banner": "indelible-coterie",
-  "version": "4.4",
-  "phase": 2,
   "start_at": "2026-08-05T04:00:00Z",
   "end_at": "2026-08-25T07:00:00Z",
   "timezone": "UTC+8",
+  "is_published": true,
+  "data": {
+   "version": "4.4",
+   "phase": 2,
+   "source": "honkai-star-rail.fandom.com"
+  },
   "featured_5": [
    "cerydra",
    "anaxa",

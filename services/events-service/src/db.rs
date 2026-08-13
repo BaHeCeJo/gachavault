@@ -207,6 +207,25 @@ pub async fn update_event(
 
 /// The game a banner item belongs to, for the same-game check on attach.
 /// Cross-schema read against the shared DB, like items-service reads games.*.
+/// Resolve a batch of item slugs to ids within one game, for the bulk import.
+/// Slugs with no item simply don't appear in the map; the caller reports them.
+pub async fn resolve_item_ids(
+    pool: &PgPool,
+    game_id: Uuid,
+    slugs: &[String],
+) -> Result<HashMap<String, Uuid>, sqlx::Error> {
+    if slugs.is_empty() {
+        return Ok(HashMap::new());
+    }
+    let rows: Vec<(String, Uuid)> =
+        sqlx::query_as("SELECT slug, id FROM items.items WHERE game_id = $1 AND slug = ANY($2)")
+            .bind(game_id)
+            .bind(slugs)
+            .fetch_all(pool)
+            .await?;
+    Ok(rows.into_iter().collect())
+}
+
 pub async fn banner_item_game(pool: &PgPool, item_id: Uuid) -> Result<Option<Uuid>, sqlx::Error> {
     sqlx::query_scalar::<_, Uuid>("SELECT game_id FROM items.items WHERE id = $1")
         .bind(item_id)

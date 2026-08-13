@@ -111,6 +111,33 @@ pub struct CreateEventRequest {
     pub seed_from_banner: Option<bool>,
 }
 
+/// One row of an events bulk import. Everything is addressed by slug rather
+/// than id, so a file can be authored (or generated from an external source)
+/// without knowing any UUIDs — the same trade the items bulk import makes.
+#[derive(Debug, Deserialize)]
+pub struct BulkEventRow {
+    /// Game slug, e.g. "honkai-star-rail".
+    pub game: String,
+    pub event_type: Option<String>,
+    pub slug: String,
+    pub title: String,
+    pub description: Option<String>,
+    pub image_url: Option<String>,
+    pub start_at: DateTime<Utc>,
+    pub end_at: Option<DateTime<Utc>>,
+    pub timezone: Option<String>,
+    pub data: Option<serde_json::Value>,
+    pub is_published: Option<bool>,
+    /// Slug of the banner preset this run belongs to, if any.
+    pub banner: Option<String>,
+    /// Featured item slugs. Split by role because that's how banner rosters are
+    /// authored; both land in event_items with the role recorded.
+    pub featured_5: Option<Vec<String>>,
+    pub featured_4: Option<Vec<String>>,
+    /// Any other featured items, for events that aren't rate-up banners.
+    pub featured: Option<Vec<String>>,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct UpdateEventRequest {
     pub event_type: Option<String>,
@@ -246,4 +273,53 @@ pub struct EventFilter {
     pub status: Option<String>,
     pub from: Option<DateTime<Utc>>,
     pub to: Option<DateTime<Utc>>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // The bulk-import contract is a file format people author by hand or
+    // generate elsewhere, so pin the exact shape the admin page uploads.
+    #[test]
+    fn bulk_event_row_parses_a_generated_run() {
+        let json = r#"[{
+          "game": "honkai-star-rail",
+          "event_type": "banner",
+          "slug": "butterfly-on-swordtip-2023-04-26",
+          "title": "Seele",
+          "description": "Butterfly on Swordtip rate-up warp, Version 1.0 Phase 1.",
+          "banner": "butterfly-on-swordtip",
+          "start_at": "2023-04-25T02:00:00Z",
+          "end_at": "2023-05-17T09:59:00Z",
+          "timezone": "UTC+8",
+          "is_published": true,
+          "data": {"version": "1.0", "phase": 1},
+          "featured_5": ["seele"],
+          "featured_4": ["natasha", "hook", "pela"]
+        }]"#;
+        let rows: Vec<BulkEventRow> = serde_json::from_str(json).expect("row should deserialize");
+        let row = &rows[0];
+        assert_eq!(row.game, "honkai-star-rail");
+        assert_eq!(row.banner.as_deref(), Some("butterfly-on-swordtip"));
+        assert_eq!(row.featured_4.as_ref().unwrap().len(), 3);
+        assert_eq!(row.start_at.to_rfc3339(), "2023-04-25T02:00:00+00:00");
+    }
+
+    // Collaboration warps run indefinitely: end_at is absent, not null-invalid.
+    #[test]
+    fn bulk_event_row_allows_an_open_ended_run() {
+        let json = r#"[{
+          "game": "honkai-star-rail",
+          "slug": "excalibur-excelsior-2025-07-11",
+          "title": "Saber",
+          "start_at": "2025-07-11T03:00:00Z",
+          "end_at": null,
+          "featured_5": ["saber"]
+        }]"#;
+        let rows: Vec<BulkEventRow> = serde_json::from_str(json).expect("row should deserialize");
+        assert!(rows[0].end_at.is_none());
+        assert!(rows[0].event_type.is_none());
+        assert!(rows[0].featured_4.is_none());
+    }
 }

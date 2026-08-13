@@ -212,6 +212,7 @@ export const eventsApi = {
     api.put(`/events/servers/${gameId}`, { servers }),
   // Admin authoring.
   create: (data: object) => api.post("/events", data),
+  bulkImport: (events: object[]) => api.post("/events/bulk-import", events),
   update: (id: string, data: object) => api.put(`/events/${id}`, data),
   delete: (id: string) => api.delete(`/events/${id}`),
   setItems: (id: string, items: object[]) => api.put(`/events/${id}/items`, { items }),

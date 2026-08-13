@@ -688,6 +688,12 @@ export default function AdminEventsPage() {
         <h1 className="text-3xl font-semibold">Manage Events</h1>
         <div className="flex items-center gap-3">
           <Link
+            href="/admin/events/import"
+            className="px-4 py-2 rounded-lg border border-gray-700 text-sm hover:border-amber-500/60 hover:text-amber-300 transition"
+          >
+            Bulk import
+          </Link>
+          <Link
             href="/admin/events/servers"
             className="px-4 py-2 rounded-lg border border-gray-700 text-sm hover:border-amber-500/60 hover:text-amber-300 transition"
           >

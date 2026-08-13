@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use axum::{
     extract::{Path, Query, State},
     Json,
@@ -334,6 +336,165 @@ pub async fn create_event(
         })?;
 
     Ok(Json(ApiResponse::success(event)))
+}
+
+/// Maximum rows per bulk import call. Matches the items import so both admin
+/// upload pages can promise the same thing.
+const BULK_IMPORT_MAX: usize = 500;
+
+/// Create many events from slug-addressed rows — the events counterpart of the
+/// items bulk import, so a whole banner history can be loaded from one file
+/// instead of authored by hand.
+///
+/// A row whose slug already exists for its game is skipped rather than
+/// overwritten: the caller asked to create, so honouring that is safer than
+/// silently rewriting history. Featured item slugs that don't resolve are
+/// reported as warnings and the event is still created without them — a
+/// missing 4★ shouldn't cost you the run.
+pub async fn bulk_import(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Json(rows): Json<Vec<BulkEventRow>>,
+) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    ensure_admin(&auth)?;
+    if rows.is_empty() {
+        return Err(AppError::BadRequest("No events provided".into()));
+    }
+    if rows.len() > BULK_IMPORT_MAX {
+        return Err(AppError::BadRequest(format!(
+            "Maximum {} events per import",
+            BULK_IMPORT_MAX
+        )));
+    }
+
+    let mut created = 0u32;
+    let mut skipped = 0u32;
+    let mut errors: Vec<serde_json::Value> = Vec::new();
+    let mut warnings: Vec<serde_json::Value> = Vec::new();
+
+    // Slug → id caches. An import is nearly always one game, so this collapses
+    // the lookups to a handful regardless of row count.
+    let mut game_cache: HashMap<String, Uuid> = HashMap::new();
+    let mut item_cache: HashMap<(Uuid, String), Uuid> = HashMap::new();
+
+    for row in &rows {
+        if let Err(e) = validate_event_fields(&row.slug, &row.title, row.start_at, row.end_at) {
+            errors.push(serde_json::json!({"slug": row.slug, "error": e.to_string()}));
+            continue;
+        }
+
+        let game_id = match game_cache.get(&row.game) {
+            Some(id) => *id,
+            None => match db::resolve_game_id(&pool, &row.game)
+                .await
+                .map_err(AppError::Database)?
+            {
+                Some(id) => {
+                    game_cache.insert(row.game.clone(), id);
+                    id
+                }
+                None => {
+                    errors.push(
+                        serde_json::json!({"slug": row.slug, "error": format!("Unknown game '{}'", row.game)}),
+                    );
+                    continue;
+                }
+            },
+        };
+
+        // Resolve every slug this row needs in one round trip.
+        let wanted: Vec<String> = row
+            .banner
+            .iter()
+            .cloned()
+            .chain(row.featured_5.iter().flatten().cloned())
+            .chain(row.featured_4.iter().flatten().cloned())
+            .chain(row.featured.iter().flatten().cloned())
+            .filter(|s| !item_cache.contains_key(&(game_id, s.clone())))
+            .collect();
+        if !wanted.is_empty() {
+            let found = db::resolve_item_ids(&pool, game_id, &wanted)
+                .await
+                .map_err(AppError::Database)?;
+            for (slug, id) in found {
+                item_cache.insert((game_id, slug), id);
+            }
+        }
+        let lookup = |slug: &String| item_cache.get(&(game_id, slug.clone())).copied();
+
+        let banner_item_id = match &row.banner {
+            Some(slug) => match lookup(slug) {
+                Some(id) => Some(id),
+                None => {
+                    errors.push(
+                        serde_json::json!({"slug": row.slug, "error": format!("Unknown banner '{}'", slug)}),
+                    );
+                    continue;
+                }
+            },
+            None => None,
+        };
+
+        let mut featured_items: Vec<FeaturedItemInput> = Vec::new();
+        let mut missing: Vec<String> = Vec::new();
+        for (slugs, role) in [
+            (row.featured_5.as_ref(), "featured_5"),
+            (row.featured_4.as_ref(), "featured_4"),
+            (row.featured.as_ref(), "featured"),
+        ] {
+            for slug in slugs.into_iter().flatten() {
+                match lookup(slug) {
+                    Some(item_id) => featured_items.push(FeaturedItemInput {
+                        item_id,
+                        role: Some(role.to_string()),
+                        order: Some(featured_items.len() as i32),
+                    }),
+                    None => missing.push(slug.clone()),
+                }
+            }
+        }
+        if !missing.is_empty() {
+            warnings.push(serde_json::json!({
+                "slug": row.slug,
+                "warning": format!("unknown items skipped: {}", missing.join(", ")),
+            }));
+        }
+
+        let body = CreateEventRequest {
+            game_id,
+            event_type: row.event_type.clone(),
+            slug: row.slug.clone(),
+            title: row.title.clone(),
+            description: row.description.clone(),
+            image_url: row.image_url.clone(),
+            start_at: row.start_at,
+            end_at: row.end_at,
+            timezone: row.timezone.clone(),
+            data: row.data.clone(),
+            is_published: row.is_published,
+            featured_items: Some(featured_items),
+            server_times: None,
+            banner_item_id,
+            // The roster is explicit in the file; don't also copy the preset's.
+            seed_from_banner: Some(false),
+        };
+
+        match db::create_event(&pool, auth.id(), &body).await {
+            Ok(_) => created += 1,
+            Err(sqlx::Error::Database(e)) if e.constraint() == Some("events_game_id_slug_key") => {
+                skipped += 1
+            }
+            Err(e) => errors.push(serde_json::json!({"slug": row.slug, "error": e.to_string()})),
+        }
+    }
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "total": rows.len(),
+        "created": created,
+        "skipped": skipped,
+        "errors": errors,
+        "warnings": warnings,
+    }))))
 }
 
 pub async fn update_event(
