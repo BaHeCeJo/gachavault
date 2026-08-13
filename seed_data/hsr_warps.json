@@ -1,0 +1,2174 @@
+[
+ {
+  "time_start": "2023-04-25 10:00:00",
+  "time_end": "2023-05-17 17:59:00",
+  "offset": "GMT+8",
+  "image": "Butterfly on Swordtip 2023-04-26.jpg",
+  "five_star": [
+   "Seele"
+  ],
+  "four_star": [
+   "Natasha",
+   "Hook",
+   "Pela"
+  ],
+  "page": "Butterfly on Swordtip/2023-04-26",
+  "banner": "Butterfly on Swordtip",
+  "run_date": "2023-04-26",
+  "version": "1.0",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/e/e4/Butterfly_on_Swordtip_2023-04-26.jpg/revision/latest?cb=20230426175344"
+ },
+ {
+  "time_start": "2023-05-17 18:00:00",
+  "time_end": "2023-06-06 14:59:00",
+  "offset": "GMT+8",
+  "image": "Swirl of Heavenly Spear 2023-05-17.png",
+  "five_star": [
+   "Jing Yuan"
+  ],
+  "four_star": [
+   "Sushang",
+   "March 7th (Preservation)",
+   "Tingyun"
+  ],
+  "page": "Swirl of Heavenly Spear/2023-05-17",
+  "banner": "Swirl of Heavenly Spear",
+  "run_date": "2023-05-17",
+  "version": "1.0",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/2/2f/Swirl_of_Heavenly_Spear_2023-05-17.png/revision/latest?cb=20230516050514"
+ },
+ {
+  "time_start": "2023-06-07 11:00:00",
+  "time_end": "2023-06-28 12:00:00",
+  "offset": "GMT+8",
+  "image": "Contract Zero 2023-06-07.png",
+  "five_star": [
+   "Silver Wolf"
+  ],
+  "four_star": [
+   "Dan Heng",
+   "Asta",
+   "Serval"
+  ],
+  "page": "Contract Zero/2023-06-07",
+  "banner": "Contract Zero",
+  "run_date": "2023-06-07",
+  "version": "1.1",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/c/ce/Contract_Zero_2023-06-07.png/revision/latest?cb=20230606044403"
+ },
+ {
+  "time_start": "2023-06-28 12:00:00",
+  "time_end": "2023-07-18 14:59:59",
+  "offset": "GMT+8",
+  "image": "Laic Pursuit 2023-06-28.png",
+  "five_star": [
+   "Luocha"
+  ],
+  "four_star": [
+   "Pela",
+   "Qingque",
+   "Yukong"
+  ],
+  "page": "Laic Pursuit/2023-06-28",
+  "banner": "Laic Pursuit",
+  "run_date": "2023-06-28",
+  "version": "1.1",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/6/65/Laic_Pursuit_2023-06-28.png/revision/latest?cb=20230718061119"
+ },
+ {
+  "time_start": "2023-07-19 11:00:00",
+  "time_end": "2023-08-09 11:59:59",
+  "offset": "GMT+8",
+  "image": "A Lost Soul 2023-07-19.png",
+  "five_star": [
+   "Blade"
+  ],
+  "four_star": [
+   "Arlan",
+   "Sushang",
+   "Natasha"
+  ],
+  "page": "A Lost Soul/2023-07-19",
+  "banner": "A Lost Soul",
+  "run_date": "2023-07-19",
+  "version": "1.2",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/5/57/A_Lost_Soul_2023-07-19.png/revision/latest?cb=20230718060545"
+ },
+ {
+  "time_start": "2023-08-09 12:00:00",
+  "time_end": "2023-08-29 14:59:59",
+  "offset": "GMT+8",
+  "image": "Nessun Dorma 2023-08-09.png",
+  "five_star": [
+   "Kafka"
+  ],
+  "four_star": [
+   "Luka",
+   "Sampo",
+   "Serval"
+  ],
+  "page": "Nessun Dorma/2023-08-09",
+  "banner": "Nessun Dorma",
+  "run_date": "2023-08-09",
+  "version": "1.2",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/0/0b/Nessun_Dorma_2023-08-09.png/revision/latest?cb=20230808052345"
+ },
+ {
+  "time_start": "2023-08-30 11:00:00",
+  "time_end": "2023-09-20 11:59:59",
+  "offset": "GMT+8",
+  "image": "Epochal Spectrum 2023-08-30.png",
+  "five_star": [
+   "Dan Heng • Imbibitor Lunae"
+  ],
+  "four_star": [
+   "Yukong",
+   "Asta",
+   "March 7th (Preservation)"
+  ],
+  "page": "Epochal Spectrum/2023-08-30",
+  "banner": "Epochal Spectrum",
+  "run_date": "2023-08-30",
+  "version": "1.3",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/e/ee/Epochal_Spectrum_2023-08-30.png/revision/latest?cb=20230829050549"
+ },
+ {
+  "time_start": "2023-09-20 12:00:00",
+  "time_end": "2023-10-10 14:59:59",
+  "offset": "GMT+8",
+  "image": "Foreseen, Foreknown, Foretold 2023-09-20.png",
+  "five_star": [
+   "Fu Xuan"
+  ],
+  "four_star": [
+   "Lynx",
+   "Hook",
+   "Pela"
+  ],
+  "page": "Foreseen, Foreknown, Foretold/2023-09-20",
+  "banner": "Foreseen, Foreknown, Foretold",
+  "run_date": "2023-09-20",
+  "version": "1.3",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/2/21/Foreseen%2C_Foreknown%2C_Foretold_2023-09-20.png/revision/latest?cb=20230929014108"
+ },
+ {
+  "time_start": "2023-10-11 11:00:00",
+  "time_end": "2023-10-27 11:59:59",
+  "offset": "GMT+8",
+  "image": "Gentle Eclipse of the Moon 2023-10-11.png",
+  "five_star": [
+   "Jingliu"
+  ],
+  "four_star": [
+   "Tingyun",
+   "Qingque",
+   "Sampo"
+  ],
+  "page": "Gentle Eclipse of the Moon/2023-10-11",
+  "banner": "Gentle Eclipse of the Moon",
+  "run_date": "2023-10-11",
+  "version": "1.4",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/e/e0/Gentle_Eclipse_of_the_Moon_2023-10-11.png/revision/latest?cb=20231010052415"
+ },
+ {
+  "time_start": "2023-10-27 12:00:00",
+  "time_end": "2023-11-14 14:59:59",
+  "offset": "GMT+8",
+  "image": "Sunset Clause 2023-10-27.png",
+  "five_star": [
+   "Topaz & Numby"
+  ],
+  "four_star": [
+   "Guinaifen",
+   "Luka",
+   "Sushang"
+  ],
+  "page": "Sunset Clause/2023-10-27",
+  "banner": "Sunset Clause",
+  "run_date": "2023-10-27",
+  "version": "1.4",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/7/72/Sunset_Clause_2023-10-27.png/revision/latest?cb=20231030012929"
+ },
+ {
+  "time_start": "2023-10-27 12:00:00",
+  "time_end": "2023-11-14 14:59:59",
+  "offset": "GMT+8",
+  "image": "Butterfly on Swordtip 2023-10-27.png",
+  "five_star": [
+   "Seele"
+  ],
+  "four_star": [
+   "Guinaifen",
+   "Luka",
+   "Sushang"
+  ],
+  "page": "Butterfly on Swordtip/2023-10-27",
+  "banner": "Butterfly on Swordtip",
+  "run_date": "2023-10-27",
+  "version": "1.4",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/8/83/Butterfly_on_Swordtip_2023-10-27.png/revision/latest?cb=20231030012927"
+ },
+ {
+  "time_start": "2023-11-15 11:00:00",
+  "time_end": "2023-12-06 11:59:00",
+  "offset": "GMT+8",
+  "image": "Bloom in Gloom 2023-11-15.png",
+  "five_star": [
+   "Huohuo"
+  ],
+  "four_star": [
+   "Dan Heng",
+   "Arlan",
+   "Serval"
+  ],
+  "page": "Bloom in Gloom/2023-11-15",
+  "banner": "Bloom in Gloom",
+  "run_date": "2023-11-15",
+  "version": "1.5",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/3/38/Bloom_in_Gloom_2023-11-15.png/revision/latest?cb=20231114044608"
+ },
+ {
+  "time_start": "2023-12-06 12:00:00",
+  "time_end": "2023-12-26 14:59:59",
+  "offset": "GMT+8",
+  "image": "Thorns of Scented Crown 2023-12-06.png",
+  "five_star": [
+   "Argenti"
+  ],
+  "four_star": [
+   "Hanya",
+   "Lynx",
+   "Asta"
+  ],
+  "page": "Thorns of Scented Crown/2023-12-06",
+  "banner": "Thorns of Scented Crown",
+  "run_date": "2023-12-06",
+  "version": "1.5",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/9/94/Thorns_of_Scented_Crown_2023-12-06.png/revision/latest?cb=20231209075927"
+ },
+ {
+  "time_start": "2023-12-06 12:00:00",
+  "time_end": "2023-12-26 14:59:59",
+  "offset": "GMT+8",
+  "image": "Contract Zero 2023-12-06.png",
+  "five_star": [
+   "Silver Wolf"
+  ],
+  "four_star": [
+   "Hanya",
+   "Lynx",
+   "Asta"
+  ],
+  "page": "Contract Zero/2023-12-06",
+  "banner": "Contract Zero",
+  "run_date": "2023-12-06",
+  "version": "1.5",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/7/74/Contract_Zero_2023-12-06.png/revision/latest?cb=20231209075909"
+ },
+ {
+  "time_start": "2023-12-27 11:00:00",
+  "time_end": "2024-01-17 11:59:00",
+  "offset": "GMT+8",
+  "image": "Floral Triptych 2023-12-27.png",
+  "five_star": [
+   "Ruan Mei"
+  ],
+  "four_star": [
+   "Xueyi",
+   "March 7th (Preservation)",
+   "Tingyun"
+  ],
+  "page": "Floral Triptych/2023-12-27",
+  "banner": "Floral Triptych",
+  "run_date": "2023-12-27",
+  "version": "1.6",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/b/b6/Floral_Triptych_2023-12-27.png/revision/latest?cb=20240101152355"
+ },
+ {
+  "time_start": "2023-12-27 11:00:00",
+  "time_end": "2024-01-17 11:59:59",
+  "offset": "GMT+8",
+  "image": "A Lost Soul 2023-12-27.png",
+  "five_star": [
+   "Blade"
+  ],
+  "four_star": [
+   "Xueyi",
+   "March 7th (Preservation)",
+   "Tingyun"
+  ],
+  "page": "A Lost Soul/2023-12-27",
+  "banner": "A Lost Soul",
+  "run_date": "2023-12-27",
+  "version": "1.6",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/a/aa/A_Lost_Soul_2023-12-27.png/revision/latest?cb=20240101152846"
+ },
+ {
+  "time_start": "2024-01-17 12:00:00",
+  "time_end": "2024-02-05 14:59:59",
+  "offset": "GMT+8",
+  "image": "Panta Rhei 2024-01-17.png",
+  "five_star": [
+   "Dr. Ratio"
+  ],
+  "four_star": [
+   "Sushang",
+   "Natasha",
+   "Hook"
+  ],
+  "page": "Panta Rhei/2024-01-17",
+  "banner": "Panta Rhei",
+  "run_date": "2024-01-17",
+  "version": "1.6",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/a/ab/Panta_Rhei_2024-01-17.png/revision/latest?cb=20250521015951"
+ },
+ {
+  "time_start": "2024-01-17 12:00:00",
+  "time_end": "2024-02-05 14:59:59",
+  "offset": "GMT+8",
+  "image": "Nessun Dorma 2024-01-17.png",
+  "five_star": [
+   "Kafka"
+  ],
+  "four_star": [
+   "Sushang",
+   "Natasha",
+   "Hook"
+  ],
+  "page": "Nessun Dorma/2024-01-17",
+  "banner": "Nessun Dorma",
+  "run_date": "2024-01-17",
+  "version": "1.6",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/2/2a/Nessun_Dorma_2024-01-17.png/revision/latest?cb=20240127114016"
+ },
+ {
+  "time_start": "2024-02-06 11:00:00",
+  "time_end": "2024-02-29 11:59:00",
+  "offset": "GMT+8",
+  "image": "Ripples in Reflection 2024-02-06.png",
+  "five_star": [
+   "Black Swan"
+  ],
+  "four_star": [
+   "Misha",
+   "Tingyun",
+   "Guinaifen"
+  ],
+  "page": "Ripples in Reflection/2024-02-06",
+  "banner": "Ripples in Reflection",
+  "run_date": "2024-02-06",
+  "version": "2.0",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/e/ef/Ripples_in_Reflection_2024-02-06.png/revision/latest?cb=20240206093548"
+ },
+ {
+  "time_start": "2024-02-06 11:00:00",
+  "time_end": "2024-02-29 11:59:00",
+  "offset": "GMT+8",
+  "image": "Epochal Spectrum 2024-02-06.png",
+  "five_star": [
+   "Dan Heng • Imbibitor Lunae"
+  ],
+  "four_star": [
+   "Misha",
+   "Tingyun",
+   "Guinaifen"
+  ],
+  "page": "Epochal Spectrum/2024-02-06",
+  "banner": "Epochal Spectrum",
+  "run_date": "2024-02-06",
+  "version": "2.0",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/e/ed/Epochal_Spectrum_2024-02-06.png/revision/latest?cb=20240206093523"
+ },
+ {
+  "time_start": "2024-02-29 12:00:00",
+  "time_end": "2024-03-26 14:59:00",
+  "offset": "GMT+8",
+  "image": "Sparkling Splendor 2024-02-29.png",
+  "five_star": [
+   "Sparkle"
+  ],
+  "four_star": [
+   "Sampo",
+   "Qingque",
+   "Hanya"
+  ],
+  "page": "Sparkling Splendor/2024-02-29",
+  "banner": "Sparkling Splendor",
+  "run_date": "2024-02-29",
+  "version": "2.0",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/1/1d/Sparkling_Splendor_2024-02-29.png/revision/latest?cb=20240229163852"
+ },
+ {
+  "time_start": "2024-02-29 12:00:00",
+  "time_end": "2024-03-26 14:59:00",
+  "offset": "GMT+8",
+  "image": "Swirl of Heavenly Spear 2024-02-29.png",
+  "five_star": [
+   "Jing Yuan"
+  ],
+  "four_star": [
+   "Sampo",
+   "Qingque",
+   "Hanya"
+  ],
+  "page": "Swirl of Heavenly Spear/2024-02-29",
+  "banner": "Swirl of Heavenly Spear",
+  "run_date": "2024-02-29",
+  "version": "2.0",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/2/2a/Swirl_of_Heavenly_Spear_2024-02-29.png/revision/latest?cb=20240229163855"
+ },
+ {
+  "time_start": "2024-03-27 11:00:00",
+  "time_end": "2024-04-17 11:59:59",
+  "offset": "GMT+8",
+  "image": "Words of Yore 2024-03-27.png",
+  "five_star": [
+   "Acheron"
+  ],
+  "four_star": [
+   "Gallagher",
+   "Pela",
+   "Dan Heng"
+  ],
+  "page": "Words of Yore/2024-03-27",
+  "banner": "Words of Yore",
+  "run_date": "2024-03-27",
+  "version": "2.1",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/7/7f/Words_of_Yore_2024-03-27.png/revision/latest?cb=20250521020520"
+ },
+ {
+  "time_start": "2024-03-27 11:00:00",
+  "time_end": "2024-04-17 11:59:59",
+  "offset": "GMT+8",
+  "image": "Laic Pursuit 2024-03-27.png",
+  "five_star": [
+   "Luocha"
+  ],
+  "four_star": [
+   "Gallagher",
+   "Pela",
+   "Dan Heng"
+  ],
+  "page": "Laic Pursuit/2024-03-27",
+  "banner": "Laic Pursuit",
+  "run_date": "2024-03-27",
+  "version": "2.1",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/2/2e/Laic_Pursuit_2024-03-27.png/revision/latest?cb=20240327063945"
+ },
+ {
+  "time_start": "2024-04-17 12:00:00",
+  "time_end": "2024-05-07 15:00:00",
+  "offset": "GMT+8",
+  "image": "Gilded Imprisonment 2024-04-17.png",
+  "five_star": [
+   "Aventurine"
+  ],
+  "four_star": [
+   "Lynx",
+   "Luka",
+   "Serval"
+  ],
+  "page": "Gilded Imprisonment/2024-04-17",
+  "banner": "Gilded Imprisonment",
+  "run_date": "2024-04-17",
+  "version": "2.1",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/2/2b/Gilded_Imprisonment_2024-04-17.png/revision/latest?cb=20250521020449"
+ },
+ {
+  "time_start": "2024-04-17 12:00:00",
+  "time_end": "2024-05-07 15:00:00",
+  "offset": "GMT+8",
+  "image": "Gentle Eclipse of the Moon 2024-04-17.png",
+  "five_star": [
+   "Jingliu"
+  ],
+  "four_star": [
+   "Lynx",
+   "Luka",
+   "Serval"
+  ],
+  "page": "Gentle Eclipse of the Moon/2024-04-17",
+  "banner": "Gentle Eclipse of the Moon",
+  "run_date": "2024-04-17",
+  "version": "2.1",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/4/48/Gentle_Eclipse_of_the_Moon_2024-04-17.png/revision/latest?cb=20240501221328"
+ },
+ {
+  "time_start": "2024-05-08 11:00:00",
+  "time_end": "2024-05-29 11:59:00",
+  "offset": "GMT+8",
+  "image": "Just Intonation 2024-05-08.png",
+  "five_star": [
+   "Robin"
+  ],
+  "four_star": [
+   "March 7th (Preservation)",
+   "Hanya",
+   "Xueyi"
+  ],
+  "page": "Just Intonation/2024-05-08",
+  "banner": "Just Intonation",
+  "run_date": "2024-05-08",
+  "version": "2.2",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/a/aa/Just_Intonation_2024-05-08.png/revision/latest?cb=20240519234056"
+ },
+ {
+  "time_start": "2024-05-08 11:00:00",
+  "time_end": "2024-05-29 11:59:00",
+  "offset": "GMT+8",
+  "image": "Sunset Clause 2024-05-08.png",
+  "five_star": [
+   "Topaz & Numby"
+  ],
+  "four_star": [
+   "March 7th (Preservation)",
+   "Hanya",
+   "Xueyi"
+  ],
+  "page": "Sunset Clause/2024-05-08",
+  "banner": "Sunset Clause",
+  "run_date": "2024-05-08",
+  "version": "2.2",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/4/41/Sunset_Clause_2024-05-08.png/revision/latest?cb=20240519234155"
+ },
+ {
+  "time_start": "2024-05-29 12:00:00",
+  "time_end": "2024-06-18 15:00:00",
+  "offset": "GMT+8",
+  "image": "Dusty Trail's Lone Star 2024-05-29.png",
+  "five_star": [
+   "Boothill"
+  ],
+  "four_star": [
+   "Pela",
+   "Luka",
+   "Hook"
+  ],
+  "page": "Dusty Trail's Lone Star/2024-05-29",
+  "banner": "Dusty Trail's Lone Star",
+  "run_date": "2024-05-29",
+  "version": "2.2",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/f/f4/Dusty_Trail%27s_Lone_Star_2024-05-29.png/revision/latest?cb=20260408030432"
+ },
+ {
+  "time_start": "2024-05-29 12:00:00",
+  "time_end": "2024-06-18 15:00:00",
+  "offset": "GMT+8",
+  "image": "Foreseen, Foreknown, Foretold 2024-05-29.png",
+  "five_star": [
+   "Fu Xuan"
+  ],
+  "four_star": [
+   "Pela",
+   "Luka",
+   "Hook"
+  ],
+  "page": "Foreseen, Foreknown, Foretold/2024-05-29",
+  "banner": "Foreseen, Foreknown, Foretold",
+  "run_date": "2024-05-29",
+  "version": "2.2",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/2/29/Foreseen%2C_Foreknown%2C_Foretold_2024-05-29.png/revision/latest?cb=20240529091911"
+ },
+ {
+  "time_start": "2024-06-19 11:00:00",
+  "time_end": "2024-07-10 11:59:00",
+  "offset": "GMT+8",
+  "image": "Firefull Flyshine 2024-06-19.png",
+  "five_star": [
+   "Firefly"
+  ],
+  "four_star": [
+   "Gallagher",
+   "Misha",
+   "Xueyi"
+  ],
+  "page": "Firefull Flyshine/2024-06-19",
+  "banner": "Firefull Flyshine",
+  "run_date": "2024-06-19",
+  "version": "2.3",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/5/5b/Firefull_Flyshine_2024-06-19.png/revision/latest?cb=20260214213525"
+ },
+ {
+  "time_start": "2024-06-19 11:00:00",
+  "time_end": "2024-07-10 11:59:00",
+  "offset": "GMT+8",
+  "image": "Floral Triptych 2024-06-19.png",
+  "five_star": [
+   "Ruan Mei"
+  ],
+  "four_star": [
+   "Gallagher",
+   "Misha",
+   "Xueyi"
+  ],
+  "page": "Floral Triptych/2024-06-19",
+  "banner": "Floral Triptych",
+  "run_date": "2024-06-19",
+  "version": "2.3",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/9/98/Floral_Triptych_2024-06-19.png/revision/latest?cb=20240710151913"
+ },
+ {
+  "time_start": "2024-07-10 12:00:00",
+  "time_end": "2024-07-30 15:00:00",
+  "offset": "GMT+8",
+  "image": "Lien on Life, Lease on Fate 2024-07-10.png",
+  "five_star": [
+   "Jade"
+  ],
+  "four_star": [
+   "Serval",
+   "Natasha",
+   "Asta"
+  ],
+  "page": "Lien on Life, Lease on Fate/2024-07-10",
+  "banner": "Lien on Life, Lease on Fate",
+  "run_date": "2024-07-10",
+  "version": "2.3",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/a/a9/Lien_on_Life%2C_Lease_on_Fate_2024-07-10.png/revision/latest?cb=20240710171927"
+ },
+ {
+  "time_start": "2024-07-10 12:00:00",
+  "time_end": "2024-07-30 15:00:00",
+  "offset": "GMT+8",
+  "image": "Thorns of Scented Crown 2024-07-10.png",
+  "five_star": [
+   "Argenti"
+  ],
+  "four_star": [
+   "Serval",
+   "Natasha",
+   "Asta"
+  ],
+  "page": "Thorns of Scented Crown/2024-07-10",
+  "banner": "Thorns of Scented Crown",
+  "run_date": "2024-07-10",
+  "version": "2.3",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/9/9a/Thorns_of_Scented_Crown_2024-07-10.png/revision/latest?cb=20240710172013"
+ },
+ {
+  "time_start": "2024-07-31 11:00:00",
+  "time_end": "2024-08-21 11:59:00",
+  "offset": "GMT+8",
+  "image": "Earth Hurled, Ether Curled 2024-07-31.png",
+  "five_star": [
+   "Yunli"
+  ],
+  "four_star": [
+   "Hanya",
+   "Yukong",
+   "Lynx"
+  ],
+  "page": "Earth Hurled, Ether Curled/2024-07-31",
+  "banner": "Earth Hurled, Ether Curled",
+  "run_date": "2024-07-31",
+  "version": "2.4",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/a/ac/Earth_Hurled%2C_Ether_Curled_2024-07-31.png/revision/latest?cb=20240814180300"
+ },
+ {
+  "time_start": "2024-07-31 11:00:00",
+  "time_end": "2024-08-21 11:59:00",
+  "offset": "GMT+8",
+  "image": "Bloom in Gloom 2024-07-31.png",
+  "five_star": [
+   "Huohuo"
+  ],
+  "four_star": [
+   "Hanya",
+   "Yukong",
+   "Lynx"
+  ],
+  "page": "Bloom in Gloom/2024-07-31",
+  "banner": "Bloom in Gloom",
+  "run_date": "2024-07-31",
+  "version": "2.4",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/0/0d/Bloom_in_Gloom_2024-07-31.png/revision/latest?cb=20240814180316"
+ },
+ {
+  "time_start": "2024-08-21 12:00:00",
+  "time_end": "2024-09-09 15:00:00",
+  "offset": "GMT+8",
+  "image": "Cauldron Contrivance 2024-08-21.png",
+  "five_star": [
+   "Jiaoqiu"
+  ],
+  "four_star": [
+   "Hook",
+   "Guinaifen",
+   "Arlan"
+  ],
+  "page": "Cauldron Contrivance/2024-08-21",
+  "banner": "Cauldron Contrivance",
+  "run_date": "2024-08-21",
+  "version": "2.4",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/7/7d/Cauldron_Contrivance_2024-08-21.png/revision/latest?cb=20240830054328"
+ },
+ {
+  "time_start": "2024-08-21 12:00:00",
+  "time_end": "2024-09-09 15:00:00",
+  "offset": "GMT+8",
+  "image": "Sparkling Splendor 2024-08-21.png",
+  "five_star": [
+   "Sparkle"
+  ],
+  "four_star": [
+   "Hook",
+   "Guinaifen",
+   "Arlan"
+  ],
+  "page": "Sparkling Splendor/2024-08-21",
+  "banner": "Sparkling Splendor",
+  "run_date": "2024-08-21",
+  "version": "2.4",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/0/0c/Sparkling_Splendor_2024-08-21.png/revision/latest?cb=20240830054343"
+ },
+ {
+  "time_start": "2024-09-10 11:00:00",
+  "time_end": "2024-10-02 11:59:00",
+  "offset": "GMT+8",
+  "image": "Stormrider&#39;s Bolt 2024-09-10.png",
+  "five_star": [
+   "Feixiao"
+  ],
+  "four_star": [
+   "Moze",
+   "Asta",
+   "Luka"
+  ],
+  "page": "Stormrider's Bolt/2024-09-10",
+  "banner": "Stormrider's Bolt",
+  "run_date": "2024-09-10",
+  "version": "2.5",
+  "phase": 1,
+  "art_url": null
+ },
+ {
+  "time_start": "2024-09-10 11:00:00",
+  "time_end": "2024-10-02 11:59:00",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2024-09-10.png",
+  "five_star": [
+   "Kafka",
+   "Black Swan",
+   "Robin"
+  ],
+  "four_star": [
+   "Moze",
+   "Asta",
+   "Luka"
+  ],
+  "page": "Indelible Coterie/2024-09-10",
+  "banner": "Indelible Coterie",
+  "run_date": "2024-09-10",
+  "version": "2.5",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/5/5e/Indelible_Coterie_2024-09-10.png/revision/latest?cb=20250521020638"
+ },
+ {
+  "time_start": "2024-10-02 12:00:00",
+  "time_end": "2024-10-22 15:00:00",
+  "offset": "GMT+8",
+  "image": "Let Scent Sink In 2024-10-02.png",
+  "five_star": [
+   "Lingsha"
+  ],
+  "four_star": [
+   "Misha",
+   "Natasha",
+   "Guinaifen"
+  ],
+  "page": "Let Scent Sink In/2024-10-02",
+  "banner": "Let Scent Sink In",
+  "run_date": "2024-10-02",
+  "version": "2.5",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/7/7c/Let_Scent_Sink_In_2024-10-02.png/revision/latest?cb=20260108033358"
+ },
+ {
+  "time_start": "2024-10-02 12:00:00",
+  "time_end": "2024-10-22 15:00:00",
+  "offset": "GMT+8",
+  "image": "Sunset Clause 2024-10-02.png",
+  "five_star": [
+   "Topaz & Numby"
+  ],
+  "four_star": [
+   "Misha",
+   "Natasha",
+   "Guinaifen"
+  ],
+  "page": "Sunset Clause/2024-10-02",
+  "banner": "Sunset Clause",
+  "run_date": "2024-10-02",
+  "version": "2.5",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/8/8d/Sunset_Clause_2024-10-02.png/revision/latest?cb=20241002170321"
+ },
+ {
+  "time_start": "2024-10-23 11:00:00",
+  "time_end": "2024-11-13 11:59:00",
+  "offset": "GMT+8",
+  "image": "Eyes of a Ninja 2024-10-23.png",
+  "five_star": [
+   "Rappa"
+  ],
+  "four_star": [
+   "Lynx",
+   "Xueyi",
+   "Yukong"
+  ],
+  "page": "Eyes of a Ninja/2024-10-23",
+  "banner": "Eyes of a Ninja",
+  "run_date": "2024-10-23",
+  "version": "2.6",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/c/c2/Eyes_of_a_Ninja_2024-10-23.png/revision/latest?cb=20241117180152"
+ },
+ {
+  "time_start": "2024-10-23 11:00:00",
+  "time_end": "2024-11-13 11:59:00",
+  "offset": "GMT+8",
+  "image": "Epochal Spectrum 2024-10-23.png",
+  "five_star": [
+   "Dan Heng • Imbibitor Lunae"
+  ],
+  "four_star": [
+   "Lynx",
+   "Xueyi",
+   "Yukong"
+  ],
+  "page": "Epochal Spectrum/2024-10-23",
+  "banner": "Epochal Spectrum",
+  "run_date": "2024-10-23",
+  "version": "2.6",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/4/41/Epochal_Spectrum_2024-10-23.png/revision/latest?cb=20241025180132"
+ },
+ {
+  "time_start": "2024-11-13 12:00:00",
+  "time_end": "2024-12-03 15:00:00",
+  "offset": "GMT+8",
+  "image": "Words of Yore 2024-11-13.png",
+  "five_star": [
+   "Acheron"
+  ],
+  "four_star": [
+   "March 7th (Preservation)",
+   "Pela",
+   "Sampo"
+  ],
+  "page": "Words of Yore/2024-11-13",
+  "banner": "Words of Yore",
+  "run_date": "2024-11-13",
+  "version": "2.6",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/3/35/Words_of_Yore_2024-11-13.png/revision/latest?cb=20250521020547"
+ },
+ {
+  "time_start": "2024-11-13 12:00:00",
+  "time_end": "2024-12-03 15:00:00",
+  "offset": "GMT+8",
+  "image": "Gilded Imprisonment 2024-11-13.png",
+  "five_star": [
+   "Aventurine"
+  ],
+  "four_star": [
+   "March 7th (Preservation)",
+   "Pela",
+   "Sampo"
+  ],
+  "page": "Gilded Imprisonment/2024-11-13",
+  "banner": "Gilded Imprisonment",
+  "run_date": "2024-11-13",
+  "version": "2.6",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/3/3f/Gilded_Imprisonment_2024-11-13.png/revision/latest?cb=20241117180213"
+ },
+ {
+  "time_start": "2024-12-04 11:00:00",
+  "time_end": "2024-12-25 11:59:00",
+  "offset": "GMT+8",
+  "image": "Eyes to the Stars 2024-12-04.png",
+  "five_star": [
+   "Sunday"
+  ],
+  "four_star": [
+   "Qingque",
+   "Arlan",
+   "Tingyun"
+  ],
+  "page": "Eyes to the Stars/2024-12-04",
+  "banner": "Eyes to the Stars",
+  "run_date": "2024-12-04",
+  "version": "2.7",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/a/a2/Eyes_to_the_Stars_2024-12-04.png/revision/latest?cb=20260213024051"
+ },
+ {
+  "time_start": "2024-12-04 11:00:00",
+  "time_end": "2024-12-25 11:59:00",
+  "offset": "GMT+8",
+  "image": "Swirl of Heavenly Spear 2024-12-04.png",
+  "five_star": [
+   "Jing Yuan"
+  ],
+  "four_star": [
+   "Qingque",
+   "Arlan",
+   "Tingyun"
+  ],
+  "page": "Swirl of Heavenly Spear/2024-12-04",
+  "banner": "Swirl of Heavenly Spear",
+  "run_date": "2024-12-04",
+  "version": "2.7",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/d/d9/Swirl_of_Heavenly_Spear_2024-12-04.png/revision/latest?cb=20241207201901"
+ },
+ {
+  "time_start": "2024-12-25 12:00:00",
+  "time_end": "2025-01-14 14:59:59",
+  "offset": "GMT+8",
+  "image": "The Long Voyage Home 2024-12-25.png",
+  "five_star": [
+   "Fugue"
+  ],
+  "four_star": [
+   "Gallagher",
+   "Yukong",
+   "Misha"
+  ],
+  "page": "The Long Voyage Home/2024-12-25",
+  "banner": "The Long Voyage Home",
+  "run_date": "2024-12-25",
+  "version": "2.7",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/d/d8/The_Long_Voyage_Home_2024-12-25.png/revision/latest?cb=20260108032702"
+ },
+ {
+  "time_start": "2024-12-25 12:00:00",
+  "time_end": "2025-01-14 14:59:59",
+  "offset": "GMT+8",
+  "image": "Firefull Flyshine 2024-12-25.png",
+  "five_star": [
+   "Firefly"
+  ],
+  "four_star": [
+   "Gallagher",
+   "Yukong",
+   "Misha"
+  ],
+  "page": "Firefull Flyshine/2024-12-25",
+  "banner": "Firefull Flyshine",
+  "run_date": "2024-12-25",
+  "version": "2.7",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/3/3f/Firefull_Flyshine_2024-12-25.png/revision/latest?cb=20260214213514"
+ },
+ {
+  "time_start": "2025-01-15 11:00:00",
+  "time_end": "2025-02-05 11:59:00",
+  "offset": "GMT+8",
+  "image": "Message From Beyond 2025-01-15.png",
+  "five_star": [
+   "The Herta"
+  ],
+  "four_star": [
+   "Natasha",
+   "Asta",
+   "Moze"
+  ],
+  "page": "Message From Beyond/2025-01-15",
+  "banner": "Message From Beyond",
+  "run_date": "2025-01-15",
+  "version": "3.0",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/c/cc/Message_From_Beyond_2025-01-15.png/revision/latest?cb=20260216025438"
+ },
+ {
+  "time_start": "2025-01-15 11:00:00",
+  "time_end": "2025-02-05 11:59:00",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2025-01-15.png",
+  "five_star": [
+   "Lingsha",
+   "Feixiao",
+   "Jade"
+  ],
+  "four_star": [
+   "Natasha",
+   "Asta",
+   "Moze"
+  ],
+  "page": "Indelible Coterie/2025-01-15",
+  "banner": "Indelible Coterie",
+  "run_date": "2025-01-15",
+  "version": "3.0",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/8/82/Indelible_Coterie_2025-01-15.png/revision/latest?cb=20250117100347"
+ },
+ {
+  "time_start": "2025-02-05 12:00:00",
+  "time_end": "2025-02-25 14:59:59",
+  "offset": "GMT+8",
+  "image": "Tailored Fate 2025-02-05.png",
+  "five_star": [
+   "Aglaea"
+  ],
+  "four_star": [
+   "Tingyun",
+   "Hanya",
+   "Sushang"
+  ],
+  "page": "Tailored Fate/2025-02-05",
+  "banner": "Tailored Fate",
+  "run_date": "2025-02-05",
+  "version": "3.0",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/e/e5/Tailored_Fate_2025-02-05.png/revision/latest?cb=20260213024011"
+ },
+ {
+  "time_start": "2025-02-05 12:00:00",
+  "time_end": "2025-02-25 14:59:59",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2025-02-05.png",
+  "five_star": [
+   "Boothill",
+   "Robin",
+   "Silver Wolf"
+  ],
+  "four_star": [
+   "Tingyun",
+   "Hanya",
+   "Sushang"
+  ],
+  "page": "Indelible Coterie/2025-02-05",
+  "banner": "Indelible Coterie",
+  "run_date": "2025-02-05",
+  "version": "3.0",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/4/47/Indelible_Coterie_2025-02-05.png/revision/latest?cb=20250205204750"
+ },
+ {
+  "time_start": "2025-02-26 11:00:00",
+  "time_end": "2025-03-19 11:59:00",
+  "offset": "GMT+8",
+  "image": "Back to Fons et Origo 2025-02-26.png",
+  "five_star": [
+   "Tribbie"
+  ],
+  "four_star": [
+   "Lynx",
+   "Hook",
+   "Guinaifen"
+  ],
+  "page": "Back to Fons et Origo/2025-02-26",
+  "banner": "Back to Fons et Origo",
+  "run_date": "2025-02-26",
+  "version": "3.1",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/7/72/Back_to_Fons_et_Origo_2025-02-26.png/revision/latest?cb=20250226052620"
+ },
+ {
+  "time_start": "2025-02-26 11:00:00",
+  "time_end": "2025-03-19 11:59:00",
+  "offset": "GMT+8",
+  "image": "Earth Hurled, Ether Curled 2025-02-26.png",
+  "five_star": [
+   "Yunli"
+  ],
+  "four_star": [
+   "Lynx",
+   "Hook",
+   "Guinaifen"
+  ],
+  "page": "Earth Hurled, Ether Curled/2025-02-26",
+  "banner": "Earth Hurled, Ether Curled",
+  "run_date": "2025-02-26",
+  "version": "3.1",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/d/d0/Earth_Hurled%2C_Ether_Curled_2025-02-26.png/revision/latest?cb=20250226052638"
+ },
+ {
+  "time_start": "2025-03-19 12:00:00",
+  "time_end": "2025-04-08 15:00:00",
+  "offset": "GMT+8",
+  "image": "Fiery Lionheart 2025-03-19.png",
+  "five_star": [
+   "Mydei"
+  ],
+  "four_star": [
+   "Arlan",
+   "Xueyi",
+   "Natasha"
+  ],
+  "page": "Fiery Lionheart/2025-03-19",
+  "banner": "Fiery Lionheart",
+  "run_date": "2025-03-19",
+  "version": "3.1",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/b/b2/Fiery_Lionheart_2025-03-19.png/revision/latest?cb=20250320080216"
+ },
+ {
+  "time_start": "2025-03-19 12:00:00",
+  "time_end": "2025-04-08 15:00:00",
+  "offset": "GMT+8",
+  "image": "Bloom in Gloom 2025-03-19.png",
+  "five_star": [
+   "Huohuo"
+  ],
+  "four_star": [
+   "Arlan",
+   "Xueyi",
+   "Natasha"
+  ],
+  "page": "Bloom in Gloom/2025-03-19",
+  "banner": "Bloom in Gloom",
+  "run_date": "2025-03-19",
+  "version": "3.1",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/8/8a/Bloom_in_Gloom_2025-03-19.png/revision/latest?cb=20250320080256"
+ },
+ {
+  "time_start": "2025-04-09 11:00:00",
+  "time_end": "2025-04-30 11:59:00",
+  "offset": "GMT+8",
+  "image": "Blossom to the Beyond 2025-04-09.png",
+  "five_star": [
+   "Castorice"
+  ],
+  "four_star": [
+   "Pela",
+   "Gallagher",
+   "Lynx"
+  ],
+  "page": "Blossom to the Beyond/2025-04-09",
+  "banner": "Blossom to the Beyond",
+  "run_date": "2025-04-09",
+  "version": "3.2",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/4/43/Blossom_to_the_Beyond_2025-04-09.png/revision/latest?cb=20250409041415"
+ },
+ {
+  "time_start": "2025-04-09 11:00:00",
+  "time_end": "2025-04-30 11:59:00",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2025-04-09.png",
+  "five_star": [
+   "Fugue",
+   "Jiaoqiu",
+   "Acheron"
+  ],
+  "four_star": [
+   "Pela",
+   "Gallagher",
+   "Lynx"
+  ],
+  "page": "Indelible Coterie/2025-04-09",
+  "banner": "Indelible Coterie",
+  "run_date": "2025-04-09",
+  "version": "3.2",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/1/18/Indelible_Coterie_2025-04-09.png/revision/latest?cb=20250409041430"
+ },
+ {
+  "time_start": "2025-04-30 12:00",
+  "time_end": "2025-05-20 15:00",
+  "offset": "GMT+8",
+  "image": "The Universe in a Seed 2025-04-30.png",
+  "five_star": [
+   "Anaxa"
+  ],
+  "four_star": [
+   "Dan Heng",
+   "Serval",
+   "Moze"
+  ],
+  "page": "The Universe in a Seed/2025-04-30",
+  "banner": "The Universe in a Seed",
+  "run_date": "2025-04-30",
+  "version": "3.2",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/e/e5/The_Universe_in_a_Seed_2025-04-30.png/revision/latest?cb=20260214225816"
+ },
+ {
+  "time_start": "2025-04-30 12:00",
+  "time_end": "2025-05-20 15:00",
+  "offset": "GMT+8",
+  "image": "Panta Rhei 2025-04-30.png",
+  "five_star": [
+   "Dr. Ratio"
+  ],
+  "four_star": [
+   "Dan Heng",
+   "Serval",
+   "Moze"
+  ],
+  "page": "Panta Rhei/2025-04-30",
+  "banner": "Panta Rhei",
+  "run_date": "2025-04-30",
+  "version": "3.2",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/f/f0/Panta_Rhei_2025-04-30.png/revision/latest?cb=20250521021023"
+ },
+ {
+  "time_start": "2025-05-21 11:00:00",
+  "time_end": "2025-06-11 11:59:00",
+  "offset": "GMT+8",
+  "image": "A Rainbow onto Twilight 2025-05-21.png",
+  "five_star": [
+   "Hyacine"
+  ],
+  "four_star": [
+   "Misha",
+   "Serval",
+   "Natasha"
+  ],
+  "page": "A Rainbow onto Twilight/2025-05-21",
+  "banner": "A Rainbow onto Twilight",
+  "run_date": "2025-05-21",
+  "version": "3.3",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/6/6f/A_Rainbow_onto_Twilight_2025-05-21.png/revision/latest?cb=20260327045650"
+ },
+ {
+  "time_start": "2025-05-21 11:00:00",
+  "time_end": "2025-06-11 11:59:00",
+  "offset": "GMT+8",
+  "image": "Message From Beyond 2025-05-21.png",
+  "five_star": [
+   "The Herta"
+  ],
+  "four_star": [
+   "Misha",
+   "Serval",
+   "Natasha"
+  ],
+  "page": "Message From Beyond/2025-05-21",
+  "banner": "Message From Beyond",
+  "run_date": "2025-05-21",
+  "version": "3.3",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/d/d0/Message_From_Beyond_2025-05-21.png/revision/latest?cb=20260216025453"
+ },
+ {
+  "time_start": "2025-06-11 12:00:00",
+  "time_end": "2025-07-01 15:00:00",
+  "offset": "GMT+8",
+  "image": "Tailored Fate 2025-06-11.png",
+  "five_star": [
+   "Aglaea"
+  ],
+  "four_star": [
+   "Qingque",
+   "Xueyi",
+   "Sushang"
+  ],
+  "page": "Tailored Fate/2025-06-11",
+  "banner": "Tailored Fate",
+  "run_date": "2025-06-11",
+  "version": "3.3",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/c/c4/Tailored_Fate_2025-06-11.png/revision/latest?cb=20260213024034"
+ },
+ {
+  "time_start": "2025-06-11 12:00:00",
+  "time_end": "2025-07-01 15:00:00",
+  "offset": "GMT+8",
+  "image": "Slick and Speedy Steals the Sky 2025-06-11.png",
+  "five_star": [
+   "Cipher"
+  ],
+  "four_star": [
+   "Qingque",
+   "Xueyi",
+   "Sushang"
+  ],
+  "page": "Slick and Speedy Steals the Sky/2025-06-11",
+  "banner": "Slick and Speedy Steals the Sky",
+  "run_date": "2025-06-11",
+  "version": "3.3",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/d/d5/Slick_and_Speedy_Steals_the_Sky_2025-06-11.png/revision/latest?cb=20250611184753"
+ },
+ {
+  "time_start": "2025-07-02 11:00:00",
+  "time_end": "2025-07-23 11:59:00",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2025-07-02.png",
+  "five_star": [
+   "Tribbie",
+   "Sunday",
+   "Sparkle"
+  ],
+  "four_star": [
+   "Tingyun",
+   "March 7th (Preservation)",
+   "Yukong"
+  ],
+  "page": "Indelible Coterie/2025-07-02",
+  "banner": "Indelible Coterie",
+  "run_date": "2025-07-02",
+  "version": "3.4",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/9/91/Indelible_Coterie_2025-07-02.png/revision/latest?cb=20250702035631"
+ },
+ {
+  "time_start": "2025-07-02 11:00:00",
+  "time_end": "2025-07-23 11:59:00",
+  "offset": "GMT+8",
+  "image": "To Evermore Burn as the Sun 2025-07-02.png",
+  "five_star": [
+   "Phainon"
+  ],
+  "four_star": [
+   "Tingyun",
+   "March 7th (Preservation)",
+   "Yukong"
+  ],
+  "page": "To Evermore Burn as the Sun/2025-07-02",
+  "banner": "To Evermore Burn as the Sun",
+  "run_date": "2025-07-02",
+  "version": "3.4",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/9/91/To_Evermore_Burn_as_the_Sun_2025-07-02.png/revision/latest?cb=20260624041129"
+ },
+ {
+  "time_start": "2025-07-11 12:00:00",
+  "time_end": "none",
+  "offset": "GMT+8",
+  "image": "Excalibur Excelsior 2025-07-11.png",
+  "five_star": [
+   "Saber"
+  ],
+  "four_star": [],
+  "page": "Excalibur Excelsior/2025-07-11",
+  "banner": "Excalibur Excelsior",
+  "run_date": "2025-07-11",
+  "version": "4.4",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/c/ce/Excalibur_Excelsior_2025-07-11.png/revision/latest?cb=20250716183430"
+ },
+ {
+  "time_start": "2025-07-11 12:00:00",
+  "time_end": "none",
+  "offset": "GMT+8",
+  "image": "I Am the Bone of My Sword 2025-07-11.png",
+  "five_star": [
+   "Archer"
+  ],
+  "four_star": [],
+  "page": "I Am the Bone of My Sword/2025-07-11",
+  "banner": "I Am the Bone of My Sword",
+  "run_date": "2025-07-11",
+  "version": "4.4",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/f/f3/I_Am_the_Bone_of_My_Sword_2025-07-11.png/revision/latest?cb=20250716184326"
+ },
+ {
+  "time_start": "2025-07-23 12:00:00",
+  "time_end": "2025-08-12 14:59:59",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2025-07-23.png",
+  "five_star": [
+   "Firefly",
+   "Jingliu",
+   "Blade"
+  ],
+  "four_star": [
+   "Hanya",
+   "Lynx",
+   "Luka"
+  ],
+  "page": "Indelible Coterie/2025-07-23",
+  "banner": "Indelible Coterie",
+  "run_date": "2025-07-23",
+  "version": "3.4",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/5/5f/Indelible_Coterie_2025-07-23.png/revision/latest?cb=20250725220524"
+ },
+ {
+  "time_start": "2025-08-13 11:00:00",
+  "time_end": "2025-09-02 11:59:00",
+  "offset": "GMT+8",
+  "image": "Winedark Swansong 2025-08-13.png",
+  "five_star": [
+   "Hysilens"
+  ],
+  "four_star": [
+   "Arlan",
+   "Asta",
+   "Hook"
+  ],
+  "page": "Winedark Swansong/2025-08-13",
+  "banner": "Winedark Swansong",
+  "run_date": "2025-08-13",
+  "version": "3.5",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/c/cf/Winedark_Swansong_2025-08-13.png/revision/latest?cb=20250813033530"
+ },
+ {
+  "time_start": "2025-08-13 11:00:00",
+  "time_end": "2025-09-02 11:59:00",
+  "offset": "GMT+8",
+  "image": "Nessun Dorma 2025-08-13.png",
+  "five_star": [
+   "Kafka"
+  ],
+  "four_star": [
+   "Arlan",
+   "Asta",
+   "Hook"
+  ],
+  "page": "Nessun Dorma/2025-08-13",
+  "banner": "Nessun Dorma",
+  "run_date": "2025-08-13",
+  "version": "3.5",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/e/e4/Nessun_Dorma_2025-08-13.png/revision/latest?cb=20250813033554"
+ },
+ {
+  "time_start": "2025-09-02 12:00:00",
+  "time_end": "2025-09-23 14:59:59",
+  "offset": "GMT+8",
+  "image": "The Iron Tamer of Tides 2025-09-02.png",
+  "five_star": [
+   "Cerydra"
+  ],
+  "four_star": [
+   "Dan Heng",
+   "Qingque",
+   "Sampo"
+  ],
+  "page": "The Iron Tamer of Tides/2025-09-02",
+  "banner": "The Iron Tamer of Tides",
+  "run_date": "2025-09-02",
+  "version": "3.5",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/b/bf/The_Iron_Tamer_of_Tides_2025-09-02.png/revision/latest?cb=20250903025422"
+ },
+ {
+  "time_start": "2025-09-02 12:00:00",
+  "time_end": "2025-09-23 14:59:59",
+  "offset": "GMT+8",
+  "image": "Contract Zero 2025-09-02.png",
+  "five_star": [
+   "Silver Wolf"
+  ],
+  "four_star": [
+   "Dan Heng",
+   "Qingque",
+   "Sampo"
+  ],
+  "page": "Contract Zero/2025-09-02",
+  "banner": "Contract Zero",
+  "run_date": "2025-09-02",
+  "version": "3.5",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/2/26/Contract_Zero_2025-09-02.png/revision/latest?cb=20250903025505"
+ },
+ {
+  "time_start": "2025-09-24 11:00:00",
+  "time_end": "2025-10-15 11:59:00",
+  "offset": "GMT+8",
+  "image": "The Remembrance of None 2025-09-24.png",
+  "five_star": [
+   "Evernight"
+  ],
+  "four_star": [
+   "Guinaifen",
+   "Misha",
+   "Xueyi"
+  ],
+  "page": "The Remembrance of None/2025-09-24",
+  "banner": "The Remembrance of None",
+  "run_date": "2025-09-24",
+  "version": "3.6",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/3/36/The_Remembrance_of_None_2025-09-24.png/revision/latest?cb=20260215034500"
+ },
+ {
+  "time_start": "2025-09-24 11:00:00",
+  "time_end": "2025-10-15 11:59:00",
+  "offset": "GMT+8",
+  "image": "Message From Beyond 2025-09-24.png",
+  "five_star": [
+   "The Herta"
+  ],
+  "four_star": [
+   "Guinaifen",
+   "Misha",
+   "Xueyi"
+  ],
+  "page": "Message From Beyond/2025-09-24",
+  "banner": "Message From Beyond",
+  "run_date": "2025-09-24",
+  "version": "3.6",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/6/6e/Message_From_Beyond_2025-09-24.png/revision/latest?cb=20260216025514"
+ },
+ {
+  "time_start": "2025-10-15 12:00:00",
+  "time_end": "2025-11-04 14:59:59",
+  "offset": "GMT+8",
+  "image": "Slay Until Evil Ends 2025-10-15.png",
+  "five_star": [
+   "Dan Heng • Permansor Terrae"
+  ],
+  "four_star": [
+   "Hanya",
+   "Serval",
+   "Sushang"
+  ],
+  "page": "Slay Until Evil Ends/2025-10-15",
+  "banner": "Slay Until Evil Ends",
+  "run_date": "2025-10-15",
+  "version": "3.6",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/1/1d/Slay_Until_Evil_Ends_2025-10-15.png/revision/latest?cb=20260214215356"
+ },
+ {
+  "time_start": "2025-10-15 12:00:00",
+  "time_end": "2025-11-04 14:59:59",
+  "offset": "GMT+8",
+  "image": "The Universe in a Seed 2025-10-15.png",
+  "five_star": [
+   "Anaxa"
+  ],
+  "four_star": [
+   "Hanya",
+   "Serval",
+   "Sushang"
+  ],
+  "page": "The Universe in a Seed/2025-10-15",
+  "banner": "The Universe in a Seed",
+  "run_date": "2025-10-15",
+  "version": "3.6",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/8/86/The_Universe_in_a_Seed_2025-10-15.png/revision/latest?cb=20260214225857"
+ },
+ {
+  "time_start": "2025-11-05 11:00:00",
+  "time_end": "2025-12-16 15:00:00",
+  "offset": "GMT+8",
+  "image": "Ripples Rejoined 2025-11-05.png",
+  "five_star": [
+   "Cyrene"
+  ],
+  "four_star": [
+   "Moze",
+   "Lynx",
+   "Pela"
+  ],
+  "page": "Ripples Rejoined/2025-11-05",
+  "banner": "Ripples Rejoined",
+  "run_date": "2025-11-05",
+  "version": "3.7",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/3/30/Ripples_Rejoined_2025-11-05.png/revision/latest?cb=20260106044218"
+ },
+ {
+  "time_start": "2025-11-05 11:00:00",
+  "time_end": "2025-11-26 11:59:00",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2025-11-05.png",
+  "five_star": [
+   "Hyacine",
+   "Castorice",
+   "Tribbie"
+  ],
+  "four_star": [
+   "Moze",
+   "Lynx",
+   "Pela"
+  ],
+  "page": "Indelible Coterie/2025-11-05",
+  "banner": "Indelible Coterie",
+  "run_date": "2025-11-05",
+  "version": "3.7",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/c/c2/Indelible_Coterie_2025-11-05.png/revision/latest?cb=20260106044059"
+ },
+ {
+  "time_start": "2025-11-26 12:00:00",
+  "time_end": "2025-12-16 14:59:59",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2025-11-26.png",
+  "five_star": [
+   "Phainon",
+   "Cipher",
+   "Mydei"
+  ],
+  "four_star": [
+   "Moze",
+   "Lynx",
+   "Pela"
+  ],
+  "page": "Indelible Coterie/2025-11-26",
+  "banner": "Indelible Coterie",
+  "run_date": "2025-11-26",
+  "version": "3.7",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/7/70/Indelible_Coterie_2025-11-26.png/revision/latest?cb=20260106043932"
+ },
+ {
+  "time_start": "2025-12-17 11:00:00",
+  "time_end": "2026-01-07 11:59:00",
+  "offset": "GMT+8",
+  "image": "Dance in Flame 2025-12-17.png",
+  "five_star": [
+   "The Dahlia"
+  ],
+  "four_star": [
+   "Gallagher",
+   "Luka",
+   "March 7th (Preservation)"
+  ],
+  "page": "Dance in Flame/2025-12-17",
+  "banner": "Dance in Flame",
+  "run_date": "2025-12-17",
+  "version": "3.8",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/9/93/Dance_in_Flame_2025-12-17.png/revision/latest?cb=20260214211914"
+ },
+ {
+  "time_start": "2025-12-17 11:00:00",
+  "time_end": "2026-01-07 11:59:00",
+  "offset": "GMT+8",
+  "image": "Firefull Flyshine 2025-12-17.png",
+  "five_star": [
+   "Firefly"
+  ],
+  "four_star": [
+   "Gallagher",
+   "Luka",
+   "March 7th (Preservation)"
+  ],
+  "page": "Firefull Flyshine/2025-12-17",
+  "banner": "Firefull Flyshine",
+  "run_date": "2025-12-17",
+  "version": "3.8",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/d/d2/Firefull_Flyshine_2025-12-17.png/revision/latest?cb=20260214213538"
+ },
+ {
+  "time_start": "2026-01-07 12:00:00",
+  "time_end": "2026-01-28 11:59:00",
+  "offset": "GMT+8",
+  "image": "The Long Voyage Home 2026-01-07.png",
+  "five_star": [
+   "Fugue"
+  ],
+  "four_star": [
+   "Sampo",
+   "Natasha",
+   "Arlan"
+  ],
+  "page": "The Long Voyage Home/2026-01-07",
+  "banner": "The Long Voyage Home",
+  "run_date": "2026-01-07",
+  "version": "3.8",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/6/67/The_Long_Voyage_Home_2026-01-07.png/revision/latest?cb=20260108032359"
+ },
+ {
+  "time_start": "2026-01-07 12:00:00",
+  "time_end": "2026-01-28 11:59:00",
+  "offset": "GMT+8",
+  "image": "Let Scent Sink In 2026-01-07.png",
+  "five_star": [
+   "Lingsha"
+  ],
+  "four_star": [
+   "Sampo",
+   "Natasha",
+   "Arlan"
+  ],
+  "page": "Let Scent Sink In/2026-01-07",
+  "banner": "Let Scent Sink In",
+  "run_date": "2026-01-07",
+  "version": "3.8",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/b/bc/Let_Scent_Sink_In_2026-01-07.png/revision/latest?cb=20260108032348"
+ },
+ {
+  "time_start": "2026-01-28 12:00:00",
+  "time_end": "2026-02-12 15:00:00",
+  "offset": "GMT+8",
+  "image": "Tailored Fate 2026-01-28.png",
+  "five_star": [
+   "Aglaea"
+  ],
+  "four_star": [
+   "Yukong",
+   "Tingyun",
+   "Dan Heng"
+  ],
+  "page": "Tailored Fate/2026-01-28",
+  "banner": "Tailored Fate",
+  "run_date": "2026-01-28",
+  "version": "3.8",
+  "phase": 3,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/9/94/Tailored_Fate_2026-01-28.png/revision/latest?cb=20260213021524"
+ },
+ {
+  "time_start": "2026-01-28 12:00:00",
+  "time_end": "2026-02-12 15:00:00",
+  "offset": "GMT+8",
+  "image": "Eyes to the Stars 2026-01-28.png",
+  "five_star": [
+   "Sunday"
+  ],
+  "four_star": [
+   "Yukong",
+   "Tingyun",
+   "Dan Heng"
+  ],
+  "page": "Eyes to the Stars/2026-01-28",
+  "banner": "Eyes to the Stars",
+  "run_date": "2026-01-28",
+  "version": "3.8",
+  "phase": 3,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/6/64/Eyes_to_the_Stars_2026-01-28.png/revision/latest?cb=20260213021704"
+ },
+ {
+  "time_start": "2026-02-13 11:00:00",
+  "time_end": "2026-03-24 15:00:00",
+  "offset": "GMT+8",
+  "image": "Gleam of a Thousand Plumes 2026-02-13.png",
+  "five_star": [
+   "Yao Guang"
+  ],
+  "four_star": [
+   "Pela",
+   "Hanya",
+   "Qingque"
+  ],
+  "page": "Gleam of a Thousand Plumes/2026-02-13",
+  "banner": "Gleam of a Thousand Plumes",
+  "run_date": "2026-02-13",
+  "version": "4.0",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/3/3a/Gleam_of_a_Thousand_Plumes_2026-02-13.png/revision/latest?cb=20260213185244"
+ },
+ {
+  "time_start": "2026-02-13 11:00:00",
+  "time_end": "2026-03-03 11:59:00",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2026-02-13.png",
+  "five_star": [
+   "Evernight",
+   "Hysilens",
+   "Black Swan"
+  ],
+  "four_star": [
+   "Pela",
+   "Hanya",
+   "Qingque"
+  ],
+  "page": "Indelible Coterie/2026-02-13",
+  "banner": "Indelible Coterie",
+  "run_date": "2026-02-13",
+  "version": "4.0",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/4/4e/Indelible_Coterie_2026-02-13.png/revision/latest?cb=20260213185303"
+ },
+ {
+  "time_start": "2026-03-03 12:00:00",
+  "time_end": "2026-03-24 15:00:00",
+  "offset": "GMT+8",
+  "image": "Project Party Time 2026-03-03.png",
+  "five_star": [
+   "Sparxie"
+  ],
+  "four_star": [
+   "Pela",
+   "Hanya",
+   "Qingque"
+  ],
+  "page": "Project Party Time/2026-03-03",
+  "banner": "Project Party Time",
+  "run_date": "2026-03-03",
+  "version": "4.0",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/5/54/Project_Party_Time_2026-03-03.png/revision/latest?cb=20260303052832"
+ },
+ {
+  "time_start": "2026-03-03 12:00:00",
+  "time_end": "2026-03-24 15:00:00",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2026-03-03.png",
+  "five_star": [
+   "Cerydra",
+   "Rappa",
+   "Sparkle"
+  ],
+  "four_star": [
+   "Pela",
+   "Hanya",
+   "Qingque"
+  ],
+  "page": "Indelible Coterie/2026-03-03",
+  "banner": "Indelible Coterie",
+  "run_date": "2026-03-03",
+  "version": "4.0",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/0/0b/Indelible_Coterie_2026-03-03.png/revision/latest?cb=20260428010659"
+ },
+ {
+  "time_start": "2026-03-25 11:00:00",
+  "time_end": "2026-04-21 15:00:00",
+  "offset": "GMT+8",
+  "image": "A Hunt Through Night 2026-03-25.png",
+  "five_star": [
+   "Ashveil"
+  ],
+  "four_star": [
+   "Asta",
+   "Moze",
+   "Misha"
+  ],
+  "page": "A Hunt Through Night/2026-03-25",
+  "banner": "A Hunt Through Night",
+  "run_date": "2026-03-25",
+  "version": "4.1",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/8/85/A_Hunt_Through_Night_2026-03-25.png/revision/latest?cb=20260327045115"
+ },
+ {
+  "time_start": "2026-03-25 11:00:00",
+  "time_end": "2026-04-08 11:59:59",
+  "offset": "GMT+8",
+  "image": "A Rainbow onto Twilight 2026-03-25.png",
+  "five_star": [
+   "Hyacine"
+  ],
+  "four_star": [
+   "Asta",
+   "Moze",
+   "Misha"
+  ],
+  "page": "A Rainbow onto Twilight/2026-03-25",
+  "banner": "A Rainbow onto Twilight",
+  "run_date": "2026-03-25",
+  "version": "4.1",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/2/2b/A_Rainbow_onto_Twilight_2026-03-25.png/revision/latest?cb=20260327045517"
+ },
+ {
+  "time_start": "2026-04-08 12:00:00",
+  "time_end": "2026-04-21 15:00:00",
+  "offset": "GMT+8",
+  "image": "Dusty Trail's Lone Star 2026-04-08.png",
+  "five_star": [
+   "Boothill"
+  ],
+  "four_star": [
+   "Asta",
+   "Moze",
+   "Misha"
+  ],
+  "page": "Dusty Trail's Lone Star/2026-04-08",
+  "banner": "Dusty Trail's Lone Star",
+  "run_date": "2026-04-08",
+  "version": "4.1",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/3/32/Dusty_Trail%27s_Lone_Star_2026-04-08.png/revision/latest?cb=20260408025327"
+ },
+ {
+  "time_start": "2026-04-22 11:00:00",
+  "time_end": "2026-05-13 11:59:00",
+  "offset": "GMT+8",
+  "image": "Godmode Player 2026-04-22.png",
+  "five_star": [
+   "Silver Wolf LV.999"
+  ],
+  "four_star": [
+   "Gallagher",
+   "Xueyi",
+   "Hook"
+  ],
+  "page": "Godmode Player/2026-04-22",
+  "banner": "Godmode Player",
+  "run_date": "2026-04-22",
+  "version": "4.2",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/b/b7/Godmode_Player_2026-04-22.png/revision/latest?cb=20260428010451"
+ },
+ {
+  "time_start": "2026-04-22 11:00:00",
+  "time_end": "2026-05-13 11:59:00",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2026-04-22.png",
+  "five_star": [
+   "The Dahlia",
+   "Castorice",
+   "Firefly"
+  ],
+  "four_star": [
+   "Gallagher",
+   "Xueyi",
+   "Hook"
+  ],
+  "page": "Indelible Coterie/2026-04-22",
+  "banner": "Indelible Coterie",
+  "run_date": "2026-04-22",
+  "version": "4.2",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/e/ea/Indelible_Coterie_2026-04-22.png/revision/latest?cb=20260428010532"
+ },
+ {
+  "time_start": "2026-05-13 12:00:00",
+  "time_end": "2026-06-01 3:59:59",
+  "offset": "GMT+8",
+  "image": "The Demoiselle in Charge 2026-05-13.png",
+  "five_star": [
+   "Evanescia"
+  ],
+  "four_star": [
+   "Guinaifen",
+   "Sushang",
+   "Lynx"
+  ],
+  "page": "The Demoiselle in Charge/2026-05-13",
+  "banner": "The Demoiselle in Charge",
+  "run_date": "2026-05-13",
+  "version": "4.2",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/a/a1/The_Demoiselle_in_Charge_2026-05-13.png/revision/latest?cb=20260515060019"
+ },
+ {
+  "time_start": "2026-05-13 12:00:00",
+  "time_end": "2026-06-01 3:59:59",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2026-05-13.png",
+  "five_star": [
+   "Tribbie",
+   "Sunday",
+   "Feixiao"
+  ],
+  "four_star": [
+   "Guinaifen",
+   "Lynx",
+   "Sushang"
+  ],
+  "page": "Indelible Coterie/2026-05-13",
+  "banner": "Indelible Coterie",
+  "run_date": "2026-05-13",
+  "version": "4.2",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/1/11/Indelible_Coterie_2026-05-13.png/revision/latest?cb=20260515060027"
+ },
+ {
+  "time_start": "2026-06-01 11:00:00",
+  "time_end": "2026-06-24 11:59:00",
+  "offset": "GMT+8",
+  "image": "Now I Am Become Blade 2026-06-01.png",
+  "five_star": [
+   "Mortenax Blade"
+  ],
+  "four_star": [
+   "Sampo",
+   "Luka",
+   "Tingyun"
+  ],
+  "page": "Now I Am Become Blade/2026-06-01",
+  "banner": "Now I Am Become Blade",
+  "run_date": "2026-06-01",
+  "version": "4.3",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/5/52/Now_I_Am_Become_Blade_2026-06-01.png/revision/latest?cb=20260609021311"
+ },
+ {
+  "time_start": "2026-06-01 11:00:00",
+  "time_end": "2026-06-24 11:59:00",
+  "offset": "GMT+8",
+  "image": "Gleam of a Thousand Plumes 2026-06-01.png",
+  "five_star": [
+   "Yao Guang"
+  ],
+  "four_star": [
+   "Sampo",
+   "Luka",
+   "Tingyun"
+  ],
+  "page": "Gleam of a Thousand Plumes/2026-06-01",
+  "banner": "Gleam of a Thousand Plumes",
+  "run_date": "2026-06-01",
+  "version": "4.3",
+  "phase": 1,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/d/d1/Gleam_of_a_Thousand_Plumes_2026-06-01.png/revision/latest?cb=20260609021318"
+ },
+ {
+  "time_start": "2026-06-24 12:00:00",
+  "time_end": "2026-07-14 15:00:00",
+  "offset": "GMT+8",
+  "image": "Ripples Rejoined 2026-06-24.png",
+  "five_star": [
+   "Cyrene"
+  ],
+  "four_star": [
+   "Arlan",
+   "March 7th (Preservation)",
+   "Yukong"
+  ],
+  "page": "Ripples Rejoined/2026-06-24",
+  "banner": "Ripples Rejoined",
+  "run_date": "2026-06-24",
+  "version": "4.3",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/d/d3/Ripples_Rejoined_2026-06-24.png/revision/latest?cb=20260624040933"
+ },
+ {
+  "time_start": "2026-06-24 12:00:00",
+  "time_end": "2026-07-14 15:00:00",
+  "offset": "GMT+8",
+  "image": "To Evermore Burn as the Sun 2026-06-24.png",
+  "five_star": [
+   "Phainon"
+  ],
+  "four_star": [
+   "Arlan",
+   "March 7th (Preservation)",
+   "Yukong"
+  ],
+  "page": "To Evermore Burn as the Sun/2026-06-24",
+  "banner": "To Evermore Burn as the Sun",
+  "run_date": "2026-06-24",
+  "version": "4.3",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/5/50/To_Evermore_Burn_as_the_Sun_2026-06-24.png/revision/latest?cb=20260624040943"
+ },
+ {
+  "time_start": "2026-07-15 11:00:00",
+  "time_end": "2026-08-25 15:00:00",
+  "offset": "GMT+8",
+  "image": "Ad Astra Nova 2026-07-15.png",
+  "five_star": [
+   "Himeko • Nova"
+  ],
+  "four_star": [
+   "Moze",
+   "Hanya",
+   "Serval"
+  ],
+  "page": "Ad Astra Nova/2026-07-15",
+  "banner": "Ad Astra Nova",
+  "run_date": "2026-07-15",
+  "version": "4.4",
+  "phase": 1,
+  "art_url": null
+ },
+ {
+  "time_start": "2026-07-15 11:00:00",
+  "time_end": "2026-08-05 11:59:00",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2026-07-15.png",
+  "five_star": [
+   "Sparxie",
+   "Dan Heng • Permansor Terrae",
+   "Evernight"
+  ],
+  "four_star": [
+   "Moze",
+   "Hanya",
+   "Serval"
+  ],
+  "page": "Indelible Coterie/2026-07-15",
+  "banner": "Indelible Coterie",
+  "run_date": "2026-07-15",
+  "version": "4.4",
+  "phase": 1,
+  "art_url": null
+ },
+ {
+  "time_start": "2026-07-24 12:00:00",
+  "time_end": "none",
+  "offset": "GMT+8",
+  "image": "The Gem Coursing in Red 2026-07-24.png",
+  "five_star": [
+   "Rin Tohsaka"
+  ],
+  "four_star": [],
+  "page": "The Gem Coursing in Red/2026-07-24",
+  "banner": "The Gem Coursing in Red",
+  "run_date": "2026-07-24",
+  "version": "4.4",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/0/0f/The_Gem_Coursing_in_Red_2026-07-24.png/revision/latest?cb=20260805003218"
+ },
+ {
+  "time_start": "2026-07-24 12:00:00",
+  "time_end": "none",
+  "offset": "GMT+8",
+  "image": "Of the Beginning, Enuma Elish 2026-07-24.png",
+  "five_star": [
+   "Gilgamesh"
+  ],
+  "four_star": [],
+  "page": "Of the Beginning, Enuma Elish/2026-07-24",
+  "banner": "Of the Beginning, Enuma Elish",
+  "run_date": "2026-07-24",
+  "version": "4.4",
+  "phase": 2,
+  "art_url": "https://static.wikia.nocookie.net/houkai-star-rail/images/7/7f/Of_the_Beginning%2C_Enuma_Elish_2026-07-24.png/revision/latest?cb=20260805003335"
+ },
+ {
+  "time_start": "2026-08-05 12:00:00",
+  "time_end": "2026-08-25 15:00:00",
+  "offset": "GMT+8",
+  "image": "Indelible Coterie 2026-08-05.png",
+  "five_star": [
+   "Cerydra",
+   "Anaxa",
+   "Aventurine"
+  ],
+  "four_star": [
+   "Moze",
+   "Hanya",
+   "Serval"
+  ],
+  "page": "Indelible Coterie/2026-08-05",
+  "banner": "Indelible Coterie",
+  "run_date": "2026-08-05",
+  "version": "4.4",
+  "phase": 2,
+  "art_url": null
+ }
+]
