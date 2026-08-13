@@ -23,9 +23,11 @@ export default async function HomePage() {
     getTranslations("home"),
     getHomePageBundle(),
   ]);
-  // Only feature games that actually have characters — empty slots advertise
-  // an unfinished site and the audit explicitly called this out as proof rot.
-  const featured = bundle.stats.filter((s) => s.characterCount > 0).slice(0, 8);
+  // Only feature games that actually have catalogue entries — empty slots
+  // advertise an unfinished site and the audit explicitly called this out as
+  // proof rot. Banner presets don't count: every game has a banners section, so
+  // a calendar-only game would otherwise look populated.
+  const featured = bundle.stats.filter((s) => s.entryCount > 0).slice(0, 8);
 
   // Visible FAQ + its matching FAQPage structured data are built from the same
   // strings so the markup never drifts from what users read.
@@ -118,7 +120,7 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {featured.map(({ game, characterCount }) => (
+            {featured.map(({ game }) => (
               <Link
                 key={game.id}
                 href={`/games/${game.slug}`}
@@ -140,9 +142,6 @@ export default async function HomePage() {
                 </div>
                 <div className="p-3">
                   <p className="font-semibold text-sm group-hover:text-amber-300 transition">{game.name}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    {t("charactersCount", { count: characterCount })}
-                  </p>
                 </div>
               </Link>
             ))}
