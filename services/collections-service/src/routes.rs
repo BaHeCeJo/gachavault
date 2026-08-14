@@ -23,6 +23,28 @@ pub struct DbEntry {
     pub updated_at: chrono::DateTime<Utc>,
 }
 
+/// What a public profile is allowed to know about someone's collection: how
+/// many items they own, per game. Never which ones.
+#[derive(Debug, Serialize)]
+pub struct GameOwnedCount {
+    pub game_id: Uuid,
+    pub owned_count: i64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PublicCollectionStats {
+    /// False when the user hasn't opted in — the page shows nothing shared
+    /// rather than an error, and `games` is empty.
+    pub is_public: bool,
+    pub total_owned: i64,
+    pub games: Vec<GameOwnedCount>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct VisibilityResponse {
+    pub collection_public: bool,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct UpsertEntryRequest {
     pub game_id: Uuid,
@@ -72,6 +94,95 @@ pub async fn get_collection_by_game(
     .map_err(AppError::Database)?;
 
     Ok(Json(ApiResponse::success(entries)))
+}
+
+/// Per-game owned counts for a user's public profile.
+///
+/// Deliberately not `get_user_collection` with the auth check relaxed. This is
+/// the one collections endpoint anyone may call, so it returns only totals —
+/// never the entries, their levels, or which items they are. And it answers
+/// only for users who opted in: no row in collections.visibility, or the flag
+/// off, reads as private and yields empty stats rather than 403, since "this
+/// profile shares nothing" is a normal state for a public page, not an error.
+pub async fn get_public_collection_stats(
+    State(pool): State<PgPool>,
+    Path(user_id): Path<Uuid>,
+) -> AppResult<Json<ApiResponse<PublicCollectionStats>>> {
+    let public: Option<(bool,)> =
+        sqlx::query_as("SELECT collection_public FROM collections.visibility WHERE user_id = $1")
+            .bind(user_id)
+            .fetch_optional(&pool)
+            .await
+            .map_err(AppError::Database)?;
+
+    if !matches!(public, Some((true,))) {
+        return Ok(Json(ApiResponse::success(PublicCollectionStats {
+            is_public: false,
+            total_owned: 0,
+            games: vec![],
+        })));
+    }
+
+    let rows: Vec<(Uuid, i64)> = sqlx::query_as(
+        "SELECT game_id, COUNT(*) FROM collections.entries \
+         WHERE user_id = $1 AND owned = TRUE \
+         GROUP BY game_id",
+    )
+    .bind(user_id)
+    .fetch_all(&pool)
+    .await
+    .map_err(AppError::Database)?;
+
+    let games: Vec<GameOwnedCount> = rows
+        .into_iter()
+        .map(|(game_id, owned_count)| GameOwnedCount {
+            game_id,
+            owned_count,
+        })
+        .collect();
+
+    Ok(Json(ApiResponse::success(PublicCollectionStats {
+        is_public: true,
+        total_owned: games.iter().map(|g| g.owned_count).sum(),
+        games,
+    })))
+}
+
+/// The caller's own visibility setting. Absent row = private.
+pub async fn get_visibility(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+) -> AppResult<Json<ApiResponse<VisibilityResponse>>> {
+    let row: Option<(bool,)> =
+        sqlx::query_as("SELECT collection_public FROM collections.visibility WHERE user_id = $1")
+            .bind(auth.id())
+            .fetch_optional(&pool)
+            .await
+            .map_err(AppError::Database)?;
+
+    Ok(Json(ApiResponse::success(VisibilityResponse {
+        collection_public: matches!(row, Some((true,))),
+    })))
+}
+
+pub async fn set_visibility(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Json(body): Json<VisibilityResponse>,
+) -> AppResult<Json<ApiResponse<VisibilityResponse>>> {
+    sqlx::query(
+        "INSERT INTO collections.visibility (user_id, collection_public) \
+         VALUES ($1, $2) \
+         ON CONFLICT (user_id) DO UPDATE \
+           SET collection_public = EXCLUDED.collection_public, updated_at = NOW()",
+    )
+    .bind(auth.id())
+    .bind(body.collection_public)
+    .execute(&pool)
+    .await
+    .map_err(AppError::Database)?;
+
+    Ok(Json(ApiResponse::success(body)))
 }
 
 pub async fn get_user_collection(
