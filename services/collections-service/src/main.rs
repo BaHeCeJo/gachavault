@@ -34,15 +34,6 @@ async fn main() {
             "/api/v1/users/:user_id/collections",
             get(routes::get_user_collection),
         )
-        // Public: aggregate counts only, and only for users who opted in.
-        .route(
-            "/api/v1/users/:user_id/collection-stats",
-            get(routes::get_public_collection_stats),
-        )
-        .route(
-            "/api/v1/collections/visibility",
-            get(routes::get_visibility).put(routes::set_visibility),
-        )
         .with_state(pool);
 
     shared_server::serve(SERVICE, 3004, app).await;

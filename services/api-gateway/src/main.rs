@@ -132,16 +132,6 @@ async fn main() {
         .route("/api/v1/search/*path", any(proxy_search))
         .route("/api/v1/events/*path", any(proxy_events))
         .route("/api/v1/checklists/*path", any(proxy_events))
-        // Two /users/* paths belong to collections-service, not auth. They must
-        // be declared before the wildcard below, which would otherwise swallow
-        // them and hand them to auth-service — which has no such handlers, so
-        // both 404'd and the public profile's collection section was always
-        // empty. Static segments outrank the wildcard in the router.
-        .route("/api/v1/users/:user_id/collections", any(proxy_collections))
-        .route(
-            "/api/v1/users/:user_id/collection-stats",
-            any(proxy_collections),
-        )
         .route("/api/v1/users/*path", any(proxy_users))
         .merge(admin_router)
         .layer(middleware::from_fn_with_state(

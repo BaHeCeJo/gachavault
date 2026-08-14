@@ -293,15 +293,14 @@ export function getPublicUserByUsername(username: string) {
   return apiGet<SeoPublicUser>(`/users/by-username/${encodeURIComponent(username)}`);
 }
 
-/** Aggregate owned counts for a public profile. Returns counts only, and only
- *  when the user opted in — this page renders with no token, so it can't use
- *  the owner-gated /users/:id/collections. */
-function getPublicCollectionStats(userId: string) {
-  return apiGet<{
-    is_public: boolean;
-    total_owned: number;
-    games: { game_id: string; owned_count: number }[];
-  }>(`/users/${encodeURIComponent(userId)}/collection-stats`);
+interface SeoCollectionEntry {
+  item_id: string;
+  game_id: string;
+  owned: boolean;
+}
+
+function getUserCollection(userId: string) {
+  return apiGet<SeoCollectionEntry[]>(`/users/${encodeURIComponent(userId)}/collections`);
 }
 
 export interface UserGameStat {
@@ -355,21 +354,22 @@ export async function getHomePageBundle(): Promise<HomePageBundle> {
 export async function getPublicProfileBundle(username: string): Promise<PublicProfileBundle | null> {
   const user = await getPublicUserByUsername(username);
   if (!user) return null;
-  const [collection, games] = await Promise.all([
-    getPublicCollectionStats(user.id),
+  const [entries, games] = await Promise.all([
+    getUserCollection(user.id),
     listGames(),
   ]);
+  const owned = (entries ?? []).filter((e) => e.owned);
+  const countsByGame = new Map<string, number>();
+  for (const e of owned) {
+    countsByGame.set(e.game_id, (countsByGame.get(e.game_id) ?? 0) + 1);
+  }
   const stats: UserGameStat[] = [];
-  for (const row of collection?.games ?? []) {
-    const game = games?.find((g) => g.id === row.game_id);
-    if (game)
-      stats.push({
-        game: { id: game.id, slug: game.slug, name: game.name },
-        ownedCount: row.owned_count,
-      });
+  for (const [gameId, count] of Array.from(countsByGame.entries())) {
+    const game = games?.find((g) => g.id === gameId);
+    if (game) stats.push({ game: { id: game.id, slug: game.slug, name: game.name }, ownedCount: count });
   }
   stats.sort((a, b) => b.ownedCount - a.ownedCount);
-  return { user, gameStats: stats, totalOwned: collection?.total_owned ?? 0 };
+  return { user, gameStats: stats, totalOwned: owned.length };
 }
 
 export function listGames() {
