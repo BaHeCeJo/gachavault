@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { api, authApi, mediaApi } from "@/lib/api";
+import { api, authApi, collectionsApi, mediaApi } from "@/lib/api";
 import { Avatar } from "@/components/Avatar";
 
 export default function ProfilePage() {
@@ -30,6 +30,9 @@ export default function ProfilePage() {
   const [deleteError, setDeleteError] = useState("");
   const [showDelete, setShowDelete] = useState(false);
 
+  const [collectionPublic, setCollectionPublic] = useState(false);
+  const [visibilityMsg, setVisibilityMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
   useEffect(() => {
     if (!isLoading && !user) router.replace("/auth/login?redirect=/profile");
   }, [isLoading, user, router]);
@@ -37,6 +40,31 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) setUsername(user.username);
   }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    collectionsApi
+      .getVisibility()
+      .then((r) => setCollectionPublic(!!r.data.data?.collection_public))
+      .catch(() => {});
+  }, [user]);
+
+  const handleVisibility = async (next: boolean) => {
+    // Optimistic: the toggle is cheap to reverse and a lagging switch reads as
+    // broken. Roll back if the write fails.
+    setCollectionPublic(next);
+    setVisibilityMsg(null);
+    try {
+      await collectionsApi.setVisibility(next);
+      setVisibilityMsg({
+        ok: true,
+        text: next ? "Your collection totals are now public." : "Your collection is private again.",
+      });
+    } catch {
+      setCollectionPublic(!next);
+      setVisibilityMsg({ ok: false, text: "Couldn't save that — please try again." });
+    }
+  };
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -233,6 +261,35 @@ export default function ProfilePage() {
           )}
         </section>
       )}
+
+      {/* ── Privacy ─────────────────────────────────────────────────── */}
+      <section className="rounded-xl border border-gray-800 bg-gray-900 p-6">
+        <h2 className="text-lg font-semibold mb-1">Public profile</h2>
+        <p className="text-sm text-gray-400 mb-4">
+          Your collection is private. Turn this on to show how many items you own, per game, on{" "}
+          <a
+            href={`/users/${user.username}`}
+            className="text-amber-300 hover:underline"
+          >
+            your public profile
+          </a>
+          . Only the totals are shared — never which items you own, or their levels.
+        </p>
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={collectionPublic}
+            onChange={(e) => handleVisibility(e.target.checked)}
+            className="h-4 w-4 accent-amber-500"
+          />
+          <span className="text-sm text-gray-200">Show my collection totals publicly</span>
+        </label>
+        {visibilityMsg && (
+          <p className={`mt-2 text-sm ${visibilityMsg.ok ? "text-green-400" : "text-red-400"}`}>
+            {visibilityMsg.text}
+          </p>
+        )}
+      </section>
 
       {/* ── Quick links ─────────────────────────────────────────────── */}
       <section>
