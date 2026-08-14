@@ -101,6 +101,51 @@ export function eventStatus(e: CalendarEvent, now: number = Date.now()): EventSt
   return statusOf(start, end, now);
 }
 
+/** Which run answers "can I pull this now?" on a collectable's page. */
+export interface Availability {
+  state: EventStatus;
+  run: CalendarEvent;
+}
+
+/** Pick the run that decides an item's availability, given every run it has
+ *  appeared in (any order).
+ *
+ *  A live run wins; otherwise the soonest announced one; otherwise the most
+ *  recent finished one. Checking only whether the newest run has ended would
+ *  read a scheduled future banner as live. */
+export function availabilityOf(
+  runs: CalendarEvent[],
+  now: number = Date.now(),
+): Availability | null {
+  let active: CalendarEvent | null = null;
+  let upcoming: CalendarEvent | null = null;
+  let ended: CalendarEvent | null = null;
+  for (const run of runs) {
+    const { start, end } = effectiveTimes(run);
+    switch (statusOf(start, end, now)) {
+      case "active":
+        // A shorter window is the tighter answer to "until when".
+        if (!active || new Date(end ?? start) < new Date(effectiveTimes(active).end ?? start)) {
+          active = run;
+        }
+        break;
+      case "upcoming":
+        if (!upcoming || new Date(start) < new Date(effectiveTimes(upcoming).start)) {
+          upcoming = run;
+        }
+        break;
+      default:
+        if (!ended || new Date(end ?? start) > new Date(effectiveTimes(ended).end ?? start)) {
+          ended = run;
+        }
+    }
+  }
+  if (active) return { state: "active", run: active };
+  if (upcoming) return { state: "upcoming", run: upcoming };
+  if (ended) return { state: "ended", run: ended };
+  return null;
+}
+
 export interface GroupedEvents {
   active: CalendarEvent[];
   upcoming: CalendarEvent[];

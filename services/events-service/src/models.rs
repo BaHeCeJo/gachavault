@@ -130,8 +130,9 @@ pub struct BulkEventRow {
     pub is_published: Option<bool>,
     /// Slug of the banner preset this run belongs to, if any.
     pub banner: Option<String>,
-    /// Featured item slugs. Split by role because that's how banner rosters are
-    /// authored; both land in event_items with the role recorded.
+    /// Featured item slugs, split the way banner rosters are authored. They
+    /// land in event_items as the roles the rest of the app uses: featured_5
+    /// as "featured" (the headline rate-up), featured_4 as "rate_up".
     pub featured_5: Option<Vec<String>>,
     pub featured_4: Option<Vec<String>>,
     /// Any other featured items, for events that aren't rate-up banners.

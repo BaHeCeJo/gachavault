@@ -154,8 +154,10 @@
   "bannerHistory": {
     "title": "Historique des bannières",
     "count": "{count, plural, one {# passage} other {# passages}}",
-    "lastAvailable": "dernière disponibilité {when}",
-    "availableNow": "disponible actuellement"
+    "availableUntil": "Disponible jusqu'au {date} · se termine {rel}",
+    "availableFrom": "Prochaine diffusion le {date} · {rel}",
+    "availableOngoing": "Disponible actuellement",
+    "lastAvailableOn": "Dernière disponibilité le {date} · {rel}"
   },
   "banners": {
     "title": "Bannières",

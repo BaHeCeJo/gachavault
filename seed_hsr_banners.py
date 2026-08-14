@@ -409,14 +409,16 @@ def main():
             skipped_events += 1
             continue
 
+        # Roles are the app's vocabulary, not the wiki's: the 5-stars are the
+        # headline "featured", the 4-stars the "rate_up" extras riding along.
         featured = []
         for i, n in enumerate(r["five_star"]):
             if char_slug(n) in char_ids:
-                featured.append({"item_id": char_ids[char_slug(n)], "role": "featured_5", "order": i})
+                featured.append({"item_id": char_ids[char_slug(n)], "role": "featured", "order": i})
         for i, n in enumerate(r["four_star"]):
             if char_slug(n) in char_ids:
                 featured.append(
-                    {"item_id": char_ids[char_slug(n)], "role": "featured_4", "order": len(r["five_star"]) + i}
+                    {"item_id": char_ids[char_slug(n)], "role": "rate_up", "order": len(r["five_star"]) + i}
                 )
 
         title = ", ".join(r["five_star"]) or r["banner"]

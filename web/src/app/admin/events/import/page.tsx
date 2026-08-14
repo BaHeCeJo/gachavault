@@ -138,7 +138,9 @@ export default function EventImportPage() {
         <p className="text-xs text-gray-500 mt-2">
           Everything is addressed by slug. <code className="text-gray-300">banner</code> is the slug of a
           banner preset in the game&apos;s Banners section; <code className="text-gray-300">featured_5</code>{" "}
-          and <code className="text-gray-300">featured_4</code> are item slugs. Times are ISO 8601 in UTC —{" "}
+          and <code className="text-gray-300">featured_4</code> are item slugs, stored as the roles the rest
+          of the app uses (<code className="text-gray-300">featured</code> and{" "}
+          <code className="text-gray-300">rate_up</code>). Times are ISO 8601 in UTC —{" "}
           <code className="text-gray-300">timezone</code> is only the label shown to readers. An event whose
           slug already exists in that game is skipped rather than overwritten, so re-running a file is safe.
           Item slugs that don&apos;t resolve are reported as warnings and the event is still created.

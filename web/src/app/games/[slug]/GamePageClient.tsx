@@ -11,8 +11,9 @@ import { cardGradient } from "@/lib/theme";
 import ItemCard, { type CardLayout } from "@/components/ItemCard";
 import { cardIsPortrait } from "@/lib/imageSlots";
 import { CalendarView } from "@/components/CalendarView";
+import { BannerShowcase } from "@/components/BannerShowcase";
 import { type AttrMap, type GameAttribute, type SchemaFieldLite, buildAttrMap } from "@/lib/attrs";
-import type { CalendarEvent } from "@/lib/events";
+import { BANNER_SECTION_SLUG, type CalendarEvent } from "@/lib/events";
 import type { GamePageBundle } from "@/lib/seo";
 
 type Tab = "overview" | "sections" | "calendar" | "tierlists" | "collection";
@@ -177,6 +178,23 @@ export default function GamePageClient({ initial }: ClientProps) {
       .catch(() => setItems([]));
   }, [game.id, activeSection, initial.initialSectionId]);
 
+  // The banners section renders as a schedule showcase rather than an item
+  // grid. It gets its own fetch rather than reusing the calendar tab's: this
+  // one is every run ever (a game's banners are mostly history), where the
+  // calendar deliberately starts at today.
+  const isBannerSection = useMemo(
+    () => sections.find((s) => s.id === activeSection)?.slug === BANNER_SECTION_SLUG,
+    [sections, activeSection],
+  );
+  const [bannerRuns, setBannerRuns] = useState<CalendarEvent[] | null>(null);
+  useEffect(() => {
+    if (!isBannerSection || bannerRuns !== null) return;
+    eventsApi
+      .list({ game: game.slug, event_type: "banner", locale })
+      .then((r) => setBannerRuns(r.data.data ?? []))
+      .catch(() => setBannerRuns([]));
+  }, [isBannerSection, bannerRuns, game.slug, locale]);
+
   const visibleItems = useMemo(
     () => filterItems(items, activeFilters, search),
     [items, activeFilters, search],
@@ -301,6 +319,19 @@ export default function GamePageClient({ initial }: ClientProps) {
             </div>
           )}
 
+          {/* Banners are runs on a schedule, not catalogue entries: a grid of
+              identical cards says nothing about what's live. Render the same
+              showcase /banners uses, scoped to this game. */}
+          {isBannerSection ? (
+            <div className="mb-12">
+              <BannerShowcase
+                events={bannerRuns ?? []}
+                showGame={false}
+                isLoading={bannerRuns === null}
+              />
+            </div>
+          ) : (
+          <>
           {items.length > 0 && (
             <ItemFilterBar
               attributes={attrList}
@@ -336,6 +367,8 @@ export default function GamePageClient({ initial }: ClientProps) {
                 );
               })}
             </div>
+          )}
+          </>
           )}
         </>
       )}
