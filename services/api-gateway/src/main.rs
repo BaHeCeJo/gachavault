@@ -163,18 +163,6 @@ fn proxy_routes() -> Router<AppState> {
         .route("/api/v1/users/*path", any(proxy_users))
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // Builds the real route table. axum panics on a conflicting pattern at
-    // construction, so this fails loudly here rather than on the VPS.
-    #[test]
-    fn proxy_route_table_has_no_conflicts() {
-        let _ = proxy_routes();
-    }
-}
-
 /// CSRF defense-in-depth on top of SameSite cookies.
 /// State-changing methods must carry an `Origin` (or `Referer` fallback) that
 /// matches the configured ALLOWED_ORIGINS. Same-origin browser requests always
@@ -466,4 +454,16 @@ async fn proxy_request(
         .map_err(|_| StatusCode::BAD_GATEWAY)?;
     resp.body(Body::from(bytes))
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Builds the real route table. axum panics on a conflicting pattern at
+    // construction, so this fails loudly here rather than on the VPS.
+    #[test]
+    fn proxy_route_table_has_no_conflicts() {
+        let _ = proxy_routes();
+    }
 }
