@@ -30,9 +30,19 @@ async fn main() {
             "/api/v1/collections/items/:item_id",
             post(routes::upsert_entry).delete(routes::delete_entry),
         )
+        // Public: aggregate counts only, and only for users who opted in.
+        // Lives under /collections rather than the more natural
+        // /users/:id/collection-stats because the gateway sends all of
+        // /api/v1/users/* to auth-service and cannot carve out a sub-path
+        // without a router conflict — this prefix is the one it already
+        // proxies here.
         .route(
-            "/api/v1/users/:user_id/collections",
-            get(routes::get_user_collection),
+            "/api/v1/collections/public/:user_id",
+            get(routes::get_public_collection_stats),
+        )
+        .route(
+            "/api/v1/collections/visibility",
+            get(routes::get_visibility).put(routes::set_visibility),
         )
         .with_state(pool);
 
