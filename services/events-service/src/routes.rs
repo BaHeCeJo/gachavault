@@ -343,21 +343,120 @@ pub async fn create_event(
 /// upload pages can promise the same thing.
 const BULK_IMPORT_MAX: usize = 500;
 
+/// Dump events as bulk-import rows — the same shape the import consumes, so a
+/// correction is download, edit, re-upload with `?mode=update` rather than a
+/// hand-written script against the API.
+///
+/// Everything is addressed by slug, ids are dropped, and the featured lineup is
+/// split back into `featured_5`/`featured_4` by role. Per-server times are the
+/// one thing that doesn't survive the round trip: the row format can't express
+/// them, which is also why the import leaves existing ones alone.
+pub async fn bulk_export(
+    State(pool): State<PgPool>,
+    auth: AuthUser,
+    Query(q): Query<BulkExportQuery>,
+) -> AppResult<Json<Vec<serde_json::Value>>> {
+    ensure_admin(&auth)?;
+
+    let game_id = match &q.game {
+        Some(slug) => Some(
+            db::resolve_game_id(&pool, slug)
+                .await
+                .map_err(AppError::Database)?
+                .ok_or_else(|| AppError::NotFound(format!("Unknown game '{}'", slug)))?,
+        ),
+        None => None,
+    };
+
+    let events = db::list_events_for_export(&pool, game_id, q.event_type.as_deref())
+        .await
+        .map_err(AppError::Database)?;
+    if events.is_empty() {
+        return Ok(Json(vec![]));
+    }
+
+    let event_ids: Vec<Uuid> = events.iter().map(|e| e.id).collect();
+    let game_ids: Vec<Uuid> = events.iter().map(|e| e.game_id).collect();
+    let games = db::load_game_info(&pool, &game_ids)
+        .await
+        .map_err(AppError::Database)?;
+    let mut featured = db::load_featured_items(&pool, &event_ids)
+        .await
+        .map_err(AppError::Database)?;
+    let banner_ids: Vec<Uuid> = events.iter().filter_map(|e| e.banner_item_id).collect();
+    let banners = db::load_banner_info(&pool, &banner_ids)
+        .await
+        .map_err(AppError::Database)?;
+
+    let rows = events
+        .into_iter()
+        .map(|event| {
+            let game_slug = games
+                .get(&event.game_id)
+                .map(|(s, _)| s.clone())
+                .unwrap_or_default();
+            let items = featured.remove(&event.id).unwrap_or_default();
+            let by_role = |want: &str| -> Vec<String> {
+                items
+                    .iter()
+                    .filter(|i| i.get("role").and_then(|r| r.as_str()) == Some(want))
+                    .filter_map(|i| i.get("slug").and_then(|s| s.as_str()).map(String::from))
+                    .collect()
+            };
+            let banner = event
+                .banner_item_id
+                .and_then(|bid| banners.get(&bid))
+                .and_then(|b| b.get("slug").and_then(|s| s.as_str()).map(String::from));
+
+            let mut row = serde_json::Map::new();
+            row.insert("game".into(), serde_json::json!(game_slug));
+            row.insert("event_type".into(), serde_json::json!(event.event_type));
+            row.insert("slug".into(), serde_json::json!(event.slug));
+            row.insert("title".into(), serde_json::json!(event.title));
+            row.insert("description".into(), serde_json::json!(event.description));
+            row.insert("image_url".into(), serde_json::json!(event.image_url));
+            row.insert("start_at".into(), serde_json::json!(event.start_at));
+            row.insert("end_at".into(), serde_json::json!(event.end_at));
+            row.insert("timezone".into(), serde_json::json!(event.timezone));
+            row.insert("is_published".into(), serde_json::json!(event.is_published));
+            row.insert("data".into(), event.data);
+            if let Some(b) = banner {
+                row.insert("banner".into(), serde_json::json!(b));
+            }
+            let f5 = by_role("featured");
+            let f4 = by_role("rate_up");
+            if !f5.is_empty() {
+                row.insert("featured_5".into(), serde_json::json!(f5));
+            }
+            if !f4.is_empty() {
+                row.insert("featured_4".into(), serde_json::json!(f4));
+            }
+            serde_json::Value::Object(row)
+        })
+        .collect();
+
+    Ok(Json(rows))
+}
+
 /// Create many events from slug-addressed rows — the events counterpart of the
 /// items bulk import, so a whole banner history can be loaded from one file
 /// instead of authored by hand.
 ///
-/// A row whose slug already exists for its game is skipped rather than
-/// overwritten: the caller asked to create, so honouring that is safer than
-/// silently rewriting history. Featured item slugs that don't resolve are
-/// reported as warnings and the event is still created without them — a
+/// A row whose slug already exists for its game is skipped by default: the
+/// caller asked to create, so honouring that is safer than silently rewriting
+/// history. `?mode=update` opts into overwriting those rows instead, which is
+/// what makes export → edit → re-import a workable correction loop; without it
+/// every fix needs a one-off script. Featured item slugs that don't resolve are
+/// reported as warnings and the event is still written without them — a
 /// missing 4★ shouldn't cost you the run.
 pub async fn bulk_import(
     State(pool): State<PgPool>,
     auth: AuthUser,
+    Query(q): Query<BulkImportQuery>,
     Json(rows): Json<Vec<BulkEventRow>>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
     ensure_admin(&auth)?;
+    let overwrite = q.overwrites();
     if rows.is_empty() {
         return Err(AppError::BadRequest("No events provided".into()));
     }
@@ -369,6 +468,7 @@ pub async fn bulk_import(
     }
 
     let mut created = 0u32;
+    let mut updated = 0u32;
     let mut skipped = 0u32;
     let mut errors: Vec<serde_json::Value> = Vec::new();
     let mut warnings: Vec<serde_json::Value> = Vec::new();
@@ -484,10 +584,30 @@ pub async fn bulk_import(
             seed_from_banner: Some(false),
         };
 
+        // Try the insert first either way and let the unique index answer
+        // "does this exist?", rather than racing a SELECT against it.
         match db::create_event(&pool, auth.id(), &body).await {
             Ok(_) => created += 1,
             Err(sqlx::Error::Database(e)) if e.constraint() == Some("events_game_id_slug_key") => {
-                skipped += 1
+                if !overwrite {
+                    skipped += 1;
+                    continue;
+                }
+                match db::find_event_by_slug(&pool, game_id, &row.slug).await {
+                    Ok(Some(existing)) => {
+                        match db::overwrite_event(&pool, existing.id, &body).await {
+                            Ok(_) => updated += 1,
+                            Err(e) => errors.push(
+                                serde_json::json!({"slug": row.slug, "error": e.to_string()}),
+                            ),
+                        }
+                    }
+                    // Gone between the failed insert and the lookup.
+                    Ok(None) => skipped += 1,
+                    Err(e) => {
+                        errors.push(serde_json::json!({"slug": row.slug, "error": e.to_string()}))
+                    }
+                }
             }
             Err(e) => errors.push(serde_json::json!({"slug": row.slug, "error": e.to_string()})),
         }
@@ -496,6 +616,7 @@ pub async fn bulk_import(
     Ok(Json(ApiResponse::success(serde_json::json!({
         "total": rows.len(),
         "created": created,
+        "updated": updated,
         "skipped": skipped,
         "errors": errors,
         "warnings": warnings,

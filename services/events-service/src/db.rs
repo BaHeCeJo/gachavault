@@ -165,6 +165,100 @@ pub async fn create_event(
     Ok(event)
 }
 
+/// Every event matching the export filters, oldest first — including
+/// unpublished ones, since the point is to round-trip exactly what's stored.
+/// Ordered by start so a downloaded file reads chronologically.
+pub async fn list_events_for_export(
+    pool: &PgPool,
+    game_id: Option<Uuid>,
+    event_type: Option<&str>,
+) -> Result<Vec<DbEvent>, sqlx::Error> {
+    sqlx::query_as::<_, DbEvent>(
+        "SELECT * FROM events.events \
+         WHERE ($1::uuid IS NULL OR game_id = $1) \
+           AND ($2::text IS NULL OR event_type = $2) \
+         ORDER BY start_at ASC",
+    )
+    .bind(game_id)
+    .bind(event_type)
+    .fetch_all(pool)
+    .await
+}
+
+/// The event with this slug in this game. Backs the bulk import's update mode,
+/// which has only the slug to go on — the file never mentions a UUID.
+pub async fn find_event_by_slug(
+    pool: &PgPool,
+    game_id: Uuid,
+    slug: &str,
+) -> Result<Option<DbEvent>, sqlx::Error> {
+    sqlx::query_as::<_, DbEvent>("SELECT * FROM events.events WHERE game_id = $1 AND slug = $2")
+        .bind(game_id)
+        .bind(slug)
+        .fetch_optional(pool)
+        .await
+}
+
+/// Overwrite an existing event and its featured items from a bulk-import row.
+///
+/// Deliberately not `update_event`: that one COALESCEs, so an absent field
+/// means "leave it alone" — right for a PATCH from the admin form, wrong here.
+/// A re-imported file is the run's full intended state, so a row that drops
+/// `end_at` means the run became open-ended and must actually clear it. Every
+/// field is written as given, NULL included.
+///
+/// `created_by` is left as-is: the person correcting a file didn't author the
+/// run. Server times are untouched for the opposite reason — the file format
+/// can't express them, so absent doesn't mean "delete the ones you have".
+pub async fn overwrite_event(
+    pool: &PgPool,
+    id: Uuid,
+    body: &CreateEventRequest,
+) -> Result<DbEvent, sqlx::Error> {
+    let mut tx = pool.begin().await?;
+
+    let event = sqlx::query_as::<_, DbEvent>(
+        r#"UPDATE events.events SET
+             event_type     = $2,
+             title          = $3,
+             description    = $4,
+             image_url      = $5,
+             start_at       = $6,
+             end_at         = $7,
+             timezone       = $8,
+             data           = $9,
+             is_published   = $10,
+             banner_item_id = $11,
+             updated_at     = NOW()
+           WHERE id = $1
+           RETURNING *"#,
+    )
+    .bind(id)
+    .bind(body.event_type.as_deref().unwrap_or("banner"))
+    .bind(&body.title)
+    .bind(body.description.as_deref())
+    .bind(body.image_url.as_deref())
+    .bind(body.start_at)
+    .bind(body.end_at)
+    .bind(body.timezone.as_deref().unwrap_or("UTC"))
+    .bind(body.data.clone().unwrap_or_else(|| serde_json::json!({})))
+    .bind(body.is_published.unwrap_or(true))
+    .bind(body.banner_item_id)
+    .fetch_one(&mut *tx)
+    .await?;
+
+    if let Some(items) = &body.featured_items {
+        sqlx::query("DELETE FROM events.event_items WHERE event_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
+            .await?;
+        insert_event_items(&mut tx, id, items).await?;
+    }
+
+    tx.commit().await?;
+    Ok(event)
+}
+
 pub async fn update_event(
     pool: &PgPool,
     id: Uuid,

@@ -28,6 +28,7 @@ interface EventRow {
 interface ImportResult {
   total: number;
   created: number;
+  updated: number;
   skipped: number;
   errors: Array<{ slug: string; error: string }>;
   warnings: Array<{ slug: string; warning: string }>;
@@ -56,6 +57,31 @@ export default function EventImportPage() {
   const [parseError, setParseError] = useState("");
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
+  // Overwriting is opt-in per upload rather than remembered: re-importing a
+  // file is routine, rewriting live history shouldn't be a setting you forgot.
+  const [mode, setMode] = useState<"skip" | "update">("skip");
+  const [exportGame, setExportGame] = useState("");
+  const [exporting, setExporting] = useState(false);
+
+  async function handleExport() {
+    setExporting(true);
+    setParseError("");
+    try {
+      const res = await eventsApi.bulkExport(exportGame ? { game: exportGame } : undefined);
+      const rows = res.data;
+      const blob = new Blob([JSON.stringify(rows, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `events-export${exportGame ? `-${exportGame}` : ""}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setParseError("Export failed.");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -97,7 +123,7 @@ export default function EventImportPage() {
     setImporting(true);
     setResult(null);
     try {
-      const res = await eventsApi.bulkImport(parsed);
+      const res = await eventsApi.bulkImport(parsed, mode);
       setResult(res.data.data);
       for (const g of Array.from(new Set(parsed.map((r) => r.game).filter(Boolean)))) {
         revalidateGame(g);
@@ -142,9 +168,34 @@ export default function EventImportPage() {
           of the app uses (<code className="text-gray-300">featured</code> and{" "}
           <code className="text-gray-300">rate_up</code>). Times are ISO 8601 in UTC —{" "}
           <code className="text-gray-300">timezone</code> is only the label shown to readers. An event whose
-          slug already exists in that game is skipped rather than overwritten, so re-running a file is safe.
-          Item slugs that don&apos;t resolve are reported as warnings and the event is still created.
+          slug already exists in that game is skipped or overwritten depending on the mode below; on the
+          default, re-running a file is safe. Item slugs that don&apos;t resolve are reported as warnings and
+          the event is still written.
         </p>
+      </div>
+
+      <div className="rounded-xl border border-gray-800 bg-gray-900 p-4">
+        <h2 className="text-sm font-semibold mb-1 text-gray-300">Export existing events</h2>
+        <p className="text-xs text-gray-500 mb-3">
+          Downloads events in this same format, so fixing what&apos;s already stored is
+          download → edit → re-upload with <em>Update</em> below. Per-server times aren&apos;t in
+          the format and are left untouched by a re-import.
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            value={exportGame}
+            onChange={(e) => setExportGame(e.target.value)}
+            placeholder="game slug (blank = all games)"
+            className="flex-1 min-w-[220px] rounded-lg bg-gray-950 border border-gray-800 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-600"
+          />
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            className="px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-200 hover:bg-gray-800 transition disabled:opacity-50"
+          >
+            {exporting ? "Exporting…" : "Download JSON"}
+          </button>
+        </div>
       </div>
 
       <div>
@@ -156,6 +207,38 @@ export default function EventImportPage() {
           onChange={handleFile}
           className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gray-800 file:text-gray-200 hover:file:bg-gray-700 file:cursor-pointer"
         />
+      </div>
+
+      <div className="rounded-xl border border-gray-800 bg-gray-900 p-4">
+        <h2 className="text-sm font-semibold mb-2 text-gray-300">Existing slugs</h2>
+        <div className="space-y-2">
+          {(
+            [
+              ["skip", "Skip them", "Only create events that don't exist yet. Nothing already stored is touched."],
+              ["update", "Update them", "Overwrite the stored event from the file, lineup included. The file becomes the truth."],
+            ] as const
+          ).map(([value, label, hint]) => (
+            <label key={value} className="flex gap-3 items-start cursor-pointer">
+              <input
+                type="radio"
+                name="mode"
+                checked={mode === value}
+                onChange={() => setMode(value)}
+                className="mt-1"
+              />
+              <span>
+                <span className="text-sm text-gray-200">{label}</span>
+                <span className="block text-xs text-gray-500">{hint}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+        {mode === "update" && (
+          <p className="mt-3 text-xs text-amber-300">
+            Fields absent from a row are written as empty, not left alone — export first and edit
+            that file rather than uploading a partial one.
+          </p>
+        )}
       </div>
 
       {parseError && (
@@ -175,7 +258,9 @@ export default function EventImportPage() {
               disabled={importing}
               className="px-5 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-gray-200 transition disabled:opacity-50"
             >
-              {importing ? "Importing…" : `Import ${parsed.length} events`}
+              {importing
+                ? "Importing…"
+                : `${mode === "update" ? "Import / update" : "Import"} ${parsed.length} events`}
             </button>
           </div>
 
@@ -234,6 +319,9 @@ export default function EventImportPage() {
           <h2 className="text-sm font-semibold">Import complete</h2>
           <div className="flex flex-wrap gap-6 text-sm">
             <span className="text-green-400">✓ {result.created} created</span>
+            {result.updated > 0 && (
+              <span className="text-blue-400">↻ {result.updated} updated</span>
+            )}
             {result.skipped > 0 && (
               <span className="text-gray-400">⊘ {result.skipped} skipped (slug already exists)</span>
             )}
