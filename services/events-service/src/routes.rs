@@ -123,9 +123,10 @@ pub async fn list_banner_runs(
     )))
 }
 
-/// Banner history for a collectable: every run of every banner whose preset
-/// roster features this item, newest first. `[0].end_at` is "last time this
-/// character was available to pull".
+/// Banner history for a collectable: every run this item was pullable in,
+/// newest first — whether the run's own lineup names it or its banner preset
+/// does. The frontend reads the whole list rather than just `[0]`, because the
+/// newest run is not necessarily the current one; see `availabilityOf()`.
 pub async fn list_item_banner_history(
     State(pool): State<PgPool>,
     auth: OptionalAuthUser,
@@ -437,9 +438,13 @@ pub async fn bulk_import(
 
         let mut featured_items: Vec<FeaturedItemInput> = Vec::new();
         let mut missing: Vec<String> = Vec::new();
+        // Roles match what the admin UI writes — "featured" is the headline
+        // rate-up, "rate_up" the extras riding along — so imported runs and
+        // hand-authored ones render identically. featured_5/featured_4 are an
+        // authoring convenience in the file, not a second vocabulary in the DB.
         for (slugs, role) in [
-            (row.featured_5.as_ref(), "featured_5"),
-            (row.featured_4.as_ref(), "featured_4"),
+            (row.featured_5.as_ref(), "featured"),
+            (row.featured_4.as_ref(), "rate_up"),
             (row.featured.as_ref(), "featured"),
         ] {
             for slug in slugs.into_iter().flatten() {

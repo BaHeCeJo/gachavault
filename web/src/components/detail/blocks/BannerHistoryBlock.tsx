@@ -57,7 +57,6 @@ export function BannerHistoryBlock({ bundle }: { bundle: ItemPageBundle }) {
 
       <AvailabilityPill runs={runs} now={now} />
 
-
       <ol className="space-y-2">
         {runs.map((run) => (
           <li
