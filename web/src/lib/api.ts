@@ -212,7 +212,13 @@ export const eventsApi = {
     api.put(`/events/servers/${gameId}`, { servers }),
   // Admin authoring.
   create: (data: object) => api.post("/events", data),
-  bulkImport: (events: object[]) => api.post("/events/bulk-import", events),
+  // mode "update" overwrites events whose slug already exists instead of
+  // skipping them, so a file exported, corrected and sent back through this
+  // endpoint actually lands. Default stays "skip".
+  bulkImport: (events: object[], mode?: "skip" | "update") =>
+    api.post("/events/bulk-import", events, { params: mode ? { mode } : {} }),
+  bulkExport: (params?: { game?: string; event_type?: string }) =>
+    api.get("/events/bulk-export", { params }),
   update: (id: string, data: object) => api.put(`/events/${id}`, data),
   delete: (id: string) => api.delete(`/events/${id}`),
   setItems: (id: string, items: object[]) => api.put(`/events/${id}/items`, { items }),

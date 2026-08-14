@@ -139,6 +139,30 @@ pub struct BulkEventRow {
     pub featured: Option<Vec<String>>,
 }
 
+/// Query for the bulk import. `mode` is "skip" (default) or "update".
+#[derive(Debug, Deserialize)]
+pub struct BulkImportQuery {
+    pub mode: Option<String>,
+}
+
+impl BulkImportQuery {
+    /// Whether rows whose slug already exists should overwrite rather than be
+    /// skipped. Only the exact word opts in: a typo, or a stale client sending
+    /// nothing, lands on skip rather than quietly rewriting banner history.
+    pub fn overwrites(&self) -> bool {
+        self.mode.as_deref() == Some("update")
+    }
+}
+
+/// Query for the bulk export — the other half of the correction loop. Narrows
+/// to one game and/or event type so a file can be edited and sent straight back
+/// through the import without carrying rows nobody meant to touch.
+#[derive(Debug, Deserialize)]
+pub struct BulkExportQuery {
+    pub game: Option<String>,
+    pub event_type: Option<String>,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct UpdateEventRequest {
     pub event_type: Option<String>,
@@ -322,5 +346,24 @@ mod tests {
         assert!(rows[0].end_at.is_none());
         assert!(rows[0].event_type.is_none());
         assert!(rows[0].featured_4.is_none());
+    }
+
+    // Overwriting live events is opt-in, and only the exact word opts in. A
+    // typo, a stale client sending nothing, or any other value must land on
+    // skip — the safe side — rather than quietly rewriting banner history.
+    #[test]
+    fn only_the_exact_update_mode_overwrites() {
+        let mode = |m: Option<&str>| {
+            BulkImportQuery {
+                mode: m.map(String::from),
+            }
+            .overwrites()
+        };
+        assert!(mode(Some("update")));
+        assert!(!mode(None));
+        assert!(!mode(Some("skip")));
+        assert!(!mode(Some("Update")));
+        assert!(!mode(Some("updates")));
+        assert!(!mode(Some("overwrite")));
     }
 }
