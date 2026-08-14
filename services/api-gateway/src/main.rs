@@ -104,7 +104,29 @@ async fn main() {
             admin_role_check,
         ));
 
-    let app = Router::new()
+    let app = proxy_routes()
+        .merge(admin_router)
+        .layer(middleware::from_fn_with_state(
+            state.clone(),
+            csrf_origin_check,
+        ))
+        .layer(middleware::from_fn(request_id_middleware))
+        .with_state(state)
+        .layer(cors);
+
+    shared_server::serve(SERVICE, 3000, app).await;
+}
+
+/// The proxy route table, split out of `main` so a test can build it.
+///
+/// Route conflicts are a runtime panic at construction, not a compile error —
+/// `cargo check` is perfectly happy with a table that kills the process on
+/// boot. That shipped once: a `/api/v1/users/:id/...` route registered
+/// alongside `/api/v1/users/*path` made the gateway panic before it bound, and
+/// every API call 502'd until it was reverted. `proxy_route_table_has_no_conflicts`
+/// below now builds this in CI, so the next one fails the build instead.
+fn proxy_routes() -> Router<AppState> {
+    Router::new()
         .route(
             "/health",
             axum::routing::get(|| async { shared_server::health(SERVICE) }),
@@ -132,27 +154,25 @@ async fn main() {
         .route("/api/v1/search/*path", any(proxy_search))
         .route("/api/v1/events/*path", any(proxy_events))
         .route("/api/v1/checklists/*path", any(proxy_events))
-        // Two /users/* paths belong to collections-service, not auth. They must
-        // be declared before the wildcard below, which would otherwise swallow
-        // them and hand them to auth-service — which has no such handlers, so
-        // both 404'd and the public profile's collection section was always
-        // empty. Static segments outrank the wildcard in the router.
-        .route("/api/v1/users/:user_id/collections", any(proxy_collections))
-        .route(
-            "/api/v1/users/:user_id/collection-stats",
-            any(proxy_collections),
-        )
+        // Everything under /api/v1/users/* goes to auth-service. Carving out a
+        // sub-path for another upstream is not possible here: a catch-all and a
+        // param sibling can't coexist in the router, so adding
+        // /api/v1/users/:id/<anything> makes this line panic at startup and the
+        // gateway never binds. Endpoints owned by other services therefore live
+        // under that service's own prefix — see /collections/public/:user_id.
         .route("/api/v1/users/*path", any(proxy_users))
-        .merge(admin_router)
-        .layer(middleware::from_fn_with_state(
-            state.clone(),
-            csrf_origin_check,
-        ))
-        .layer(middleware::from_fn(request_id_middleware))
-        .with_state(state)
-        .layer(cors);
+}
 
-    shared_server::serve(SERVICE, 3000, app).await;
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Builds the real route table. axum panics on a conflicting pattern at
+    // construction, so this fails loudly here rather than on the VPS.
+    #[test]
+    fn proxy_route_table_has_no_conflicts() {
+        let _ = proxy_routes();
+    }
 }
 
 /// CSRF defense-in-depth on top of SameSite cookies.

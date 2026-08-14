@@ -153,7 +153,6 @@ export const itemsApi = {
 export const collectionsApi = {
   getMyCollection: () => api.get("/collections"),
   getByGame: (gameId: string) => api.get(`/collections/${gameId}`),
-  getUserCollection: (userId: string) => api.get(`/users/${userId}/collections`),
   // Whether this user's collection totals show on their public profile.
   getVisibility: () => api.get("/collections/visibility"),
   setVisibility: (collectionPublic: boolean) =>

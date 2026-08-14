@@ -301,7 +301,7 @@ function getPublicCollectionStats(userId: string) {
     is_public: boolean;
     total_owned: number;
     games: { game_id: string; owned_count: number }[];
-  }>(`/users/${encodeURIComponent(userId)}/collection-stats`);
+  }>(`/collections/public/${encodeURIComponent(userId)}`);
 }
 
 export interface UserGameStat {

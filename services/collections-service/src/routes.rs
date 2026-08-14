@@ -185,30 +185,6 @@ pub async fn set_visibility(
     Ok(Json(ApiResponse::success(body)))
 }
 
-pub async fn get_user_collection(
-    State(pool): State<PgPool>,
-    auth: AuthUser,
-    Path(user_id): Path<Uuid>,
-) -> AppResult<Json<ApiResponse<Vec<DbEntry>>>> {
-    // Only the owner or an admin may view a user's collection
-    if auth.id() != user_id && !auth.is_admin() {
-        return Err(AppError::Forbidden(
-            "You can only view your own collection".into(),
-        ));
-    }
-
-    let entries = sqlx::query_as!(
-        DbEntry,
-        "SELECT * FROM collections.entries WHERE user_id = $1 ORDER BY updated_at DESC",
-        user_id
-    )
-    .fetch_all(&pool)
-    .await
-    .map_err(AppError::Database)?;
-
-    Ok(Json(ApiResponse::success(entries)))
-}
-
 pub async fn upsert_entry(
     State(pool): State<PgPool>,
     auth: AuthUser,

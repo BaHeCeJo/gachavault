@@ -119,13 +119,6 @@ export const useCollectionByGame = (gameId: string) =>
     enabled: !!gameId,
   });
 
-export const useUserCollection = (userId: string) =>
-  useQuery({
-    queryKey: ["user-collection", userId],
-    queryFn: () => collectionsApi.getUserCollection(userId).then((r) => r.data.data),
-    enabled: !!userId,
-  });
-
 // ── Tier lists ───────────────────────────────────────────────────────────────
 
 export const useMyTierlists = () =>
