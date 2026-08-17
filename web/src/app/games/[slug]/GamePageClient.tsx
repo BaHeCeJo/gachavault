@@ -153,6 +153,30 @@ export default function GamePageClient({ initial }: ClientProps) {
       .catch(() => setAllGameItems([]));
   }, [activeTab, user, game.id, allGameItems]);
 
+  // Owning an item is a one-click, high-volume action — a catalogue is built
+  // by clicking through dozens in a row — so the card flips immediately and
+  // the write happens behind it. On failure we put the card back rather than
+  // leaving it claiming something the server didn't record.
+  const toggleOwned = async (itemId: string, next: boolean) => {
+    setCollectionEntries((prev) => {
+      const list = prev ?? [];
+      return list.some((e) => e.item_id === itemId)
+        ? list.map((e) => (e.item_id === itemId ? { ...e, owned: next } : e))
+        : [...list, { item_id: itemId, game_id: game.id, owned: next }];
+    });
+    try {
+      if (next) {
+        await collectionsApi.upsertEntry(itemId, { game_id: game.id, owned: true });
+      } else {
+        await collectionsApi.deleteEntry(itemId);
+      }
+    } catch {
+      setCollectionEntries((prev) =>
+        (prev ?? []).map((e) => (e.item_id === itemId ? { ...e, owned: !next } : e)),
+      );
+    }
+  };
+
   useEffect(() => {
     if (activeTab !== "calendar" || events !== null) return;
     eventsApi
@@ -388,6 +412,9 @@ export default function GamePageClient({ initial }: ClientProps) {
           allItems={allGameItems}
           sections={sections}
           gameSlug={game.slug}
+          attrMap={attrMap}
+          schemas={schemas}
+          onToggleOwned={toggleOwned}
           tSignInCTA={t("collection.signInCTA")}
           tSignInDesc={t("collection.signInDesc")}
           tEmpty={t("collection.empty")}
@@ -551,7 +578,7 @@ function TierListsTab({ tierlists }: { tierlists: TierList[] }) {
 }
 
 function CollectionTab({
-  isLoggedIn, entries, allItems, sections, gameSlug,
+  isLoggedIn, entries, allItems, sections, gameSlug, attrMap, schemas, onToggleOwned,
   tSignInCTA, tSignInDesc, tEmpty,
 }: {
   isLoggedIn: boolean;
@@ -559,10 +586,18 @@ function CollectionTab({
   allItems: Item[] | null;
   sections: Section[];
   gameSlug: string;
+  attrMap: AttrMap;
+  schemas: Schema[];
+  onToggleOwned: (itemId: string, next: boolean) => void;
   tSignInCTA: string;
   tSignInDesc: string;
   tEmpty: string;
 }) {
+  // One section open at a time. A game can hold hundreds of items across
+  // sections, and mounting every card at once to tick three boxes is the
+  // wrong trade — the summary rows stay the overview, a section opens into
+  // the grid you actually click through.
+  const [openSection, setOpenSection] = useState<string | null>(null);
   if (!isLoggedIn) {
     return (
       <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-6 sm:p-8 text-center">
@@ -625,28 +660,81 @@ function CollectionTab({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="space-y-3">
         {sections.map((s) => {
           const sectionItems = allItems.filter((it) => it.section_id === s.id);
           const sectionOwned = sectionItems.filter((it) => ownedIds.has(it.id)).length;
           if (sectionItems.length === 0) return null;
+          const isOpen = openSection === s.id;
           return (
-            <div
-              key={s.id}
-              className="rounded-xl border border-gray-800 bg-gray-900 px-5 py-4"
-            >
-              <div className="flex items-baseline justify-between">
-                <p>{s.name}</p>
-                <p className="text-sm text-gray-400">
-                  {sectionOwned} / {sectionItems.length}
-                </p>
-              </div>
-              <div className="h-1.5 rounded-full bg-gray-800 mt-2 overflow-hidden">
-                <div
-                  className="h-full bg-amber-500/70"
-                  style={{ width: `${sectionItems.length > 0 ? Math.round((sectionOwned / sectionItems.length) * 100) : 0}%` }}
-                />
-              </div>
+            <div key={s.id} className="rounded-xl border border-gray-800 bg-gray-900">
+              <button
+                type="button"
+                onClick={() => setOpenSection(isOpen ? null : s.id)}
+                aria-expanded={isOpen}
+                className="w-full px-5 py-4 text-left hover:bg-gray-800/40 transition rounded-xl"
+              >
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="flex items-center gap-2">
+                    <span
+                      className={`text-gray-500 transition-transform ${isOpen ? "rotate-90" : ""}`}
+                      aria-hidden
+                    >
+                      ›
+                    </span>
+                    {s.name}
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    {sectionOwned} / {sectionItems.length}
+                  </p>
+                </div>
+                <div className="h-1.5 rounded-full bg-gray-800 mt-2 overflow-hidden">
+                  <div
+                    className="h-full bg-amber-500/70"
+                    style={{ width: `${sectionItems.length > 0 ? Math.round((sectionOwned / sectionItems.length) * 100) : 0}%` }}
+                  />
+                </div>
+              </button>
+
+              {isOpen && (
+                <div className="border-t border-gray-800 p-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    {sectionItems.map((item) => {
+                      const sch = schemaForItem(schemas, item);
+                      const owned = ownedIds.has(item.id);
+                      return (
+                        <ItemCard
+                          key={item.id}
+                          item={item}
+                          attrMap={attrMap}
+                          layout={sch?.card_layout ?? null}
+                          schemaFields={sch?.fields}
+                          fallbackGameSlug={gameSlug}
+                          portrait={cardIsPortrait(sch)}
+                          // The image still links through to the item; the
+                          // footer is the toggle, so a mis-aimed click browses
+                          // rather than silently editing the collection.
+                          linkMode="image"
+                          footer={
+                            <button
+                              type="button"
+                              onClick={() => onToggleOwned(item.id, !owned)}
+                              aria-pressed={owned}
+                              className={`mt-1 w-full rounded-md px-2 py-1 text-xs font-medium transition ${
+                                owned
+                                  ? "bg-amber-500 text-black hover:bg-amber-400"
+                                  : "border border-gray-700 text-gray-400 hover:border-amber-400 hover:text-amber-300"
+                              }`}
+                            >
+                              {owned ? "✓ Owned" : "+ Own"}
+                            </button>
+                          }
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
