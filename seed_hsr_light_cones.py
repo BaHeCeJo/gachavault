@@ -4,9 +4,8 @@
 Consumes seed_data/hsr_light_cones_import.json (written by
 make_hsr_light_cones.py) and writes through the public API as an admin:
 
-  * widens the "Light Cones" schema so the HP/ATK/DEF the catalog carries have
-    somewhere to live, and turns on rarity/path filters — with 167 rows the
-    section is unusable without them
+  * turns on the rarity/path filters — with 167 rows the section is unusable
+    without them
   * uploads each cone's full art and icon, scraped from the HSR fandom wiki,
     into the schema's fullart_url / icon_url image slots
   * creates one item per cone, updating rather than duplicating the ones
@@ -43,12 +42,6 @@ SCHEMA_NAME = "Light Cones"
 WIKI_API = "https://honkai-star-rail.fandom.com/api.php"
 UA = "gachavault-seed/1.0 (light cone import)"
 
-# The catalog carries max-level base stats; the schema had no home for them.
-STAT_FIELDS = [
-    {"key": "base_hp", "label": "Base HP", "type": "number"},
-    {"key": "base_atk", "label": "Base ATK", "type": "number"},
-    {"key": "base_def", "label": "Base DEF", "type": "number"},
-]
 FILTERS = ["rarity", "path"]
 
 # Wiki file name patterns, mapped to the schema's image slots.
@@ -173,30 +166,16 @@ def login(base, email, password):
 
 
 def ensure_schema(site, schema, dry_run):
-    """Add the stat fields and the rarity/path filters if they aren't there."""
-    fields = list(schema.get("fields") or [])
-    have = {f.get("key") for f in fields}
-    added = [f for f in STAT_FIELDS if f["key"] not in have]
-    patch = {}
-    if added:
-        patch["fields"] = fields + added
-    if not schema.get("filter_attrs"):
-        patch["filter_attrs"] = FILTERS
-    if not patch:
-        print("schema already has the stat fields and filters")
+    """Turn on the rarity/path filters if they aren't already on."""
+    if schema.get("filter_attrs"):
+        print("schema already filters on %s" % schema["filter_attrs"])
         return
-    what = []
-    if added:
-        what.append("fields +%s" % ", ".join(f["key"] for f in added))
-    if "filter_attrs" in patch:
-        what.append("filter_attrs = %s" % FILTERS)
-    if dry_run:
-        print("  ~ schema  %s" % "; ".join(what))
-        return
-    res = site.patch("/games/%s/schemas/%s" % (GAME_SLUG, schema["id"]), patch)
-    if not res.get("success"):
-        sys.exit("schema update failed: %s" % json.dumps(res)[:300])
-    print("  ~ schema  %s" % "; ".join(what))
+    what = "filter_attrs = %s" % FILTERS
+    if not dry_run:
+        res = site.patch("/games/%s/schemas/%s" % (GAME_SLUG, schema["id"]), {"filter_attrs": FILTERS})
+        if not res.get("success"):
+            sys.exit("schema update failed: %s" % json.dumps(res)[:300])
+    print("  ~ schema  %s" % what)
 
 
 def main():
@@ -299,10 +278,8 @@ def main():
         print("\ndry run: would create %d, update %d" % (len(creates), len(updates)))
         for e in creates[:5]:
             d = e["data"]
-            print(
-                "  + %-38s %s★ %-12s hp=%s atk=%s def=%s"
-                % (e["slug"][:38], d.get("rarity"), d.get("path"), d.get("base_hp"), d.get("base_atk"), d.get("base_def"))
-            )
+            slots = ", ".join(k for k in ("fullart_url", "icon_url") if art.get(d["name"], {}).get(k))
+            print("  + %-38s %s★ %-12s art: %s" % (e["slug"][:38], d.get("rarity"), d.get("path"), slots or "none"))
         if len(creates) > 5:
             print("  ... and %d more" % (len(creates) - 5))
         for e in updates:

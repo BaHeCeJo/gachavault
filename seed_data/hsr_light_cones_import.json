@@ -7,11 +7,7 @@
   "data": {
    "name": "A Dream Scented in Wheat",
    "rarity": "4",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's CRIT Rate by 12/14/16/18/20%. The Ultimate DMG and Follow-up ATK DMG dealt by the wearer increase by 24/28/32/36/40%.",
-   "base_hp": 953,
-   "base_atk": 529,
-   "base_def": 397
+   "path": "erudition"
   }
  },
  {
@@ -22,11 +18,7 @@
   "data": {
    "name": "A Grounded Ascent",
    "rarity": "5",
-   "path": "harmony",
-   "skill_description": "After the wearer uses Skill or Ultimate on one ally character, the wearer regenerates 6/6.5/7/7.5/8 Energy and the ability's target receives 1 stack of \"Hymn\" for 3 turn(s), stacking up to 3 time(s). Each stack of \"Hymn\" increases its holder's DMG dealt by 15/17.25/19.5/21.75/24%. After every 2 instance(s) of Skill or Ultimate the wearer uses on one ally character, recovers 1 Skill Point.",
-   "base_hp": 1164,
-   "base_atk": 476,
-   "base_def": 529
+   "path": "harmony"
   }
  },
  {
@@ -37,11 +29,7 @@
   "data": {
    "name": "A Secret Vow",
    "rarity": "4",
-   "path": "destruction",
-   "skill_description": "Increases DMG dealt by the wearer by 20/25/30/35/40%. The wearer also deals an extra 20/25/30/35/40% of DMG to enemies whose current HP percentage is equal to or higher than the wearer's current HP percentage.",
-   "base_hp": 1058,
-   "base_atk": 476,
-   "base_def": 264
+   "path": "destruction"
   }
  },
  {
@@ -52,11 +40,7 @@
   "data": {
    "name": "A Star That Lights the Night",
    "rarity": "5",
-   "path": "erudition",
-   "skill_description": "The wearer ignores 32/36/40/44/48% of the target's DEF when dealing DMG. When the wearer uses an Assist Skill, they regenerate 6 Energy and gain \"Sail,\" lasting for 2 turns and stacking up to 3 time(s). Each stack of \"Sail\" increases Assist Skill DMG by 20/25/30/35/40%. When \"Sail\" reaches 3 stacks, each stack of \"Sail\" increases Ultimate DMG by 20/25/30/35/40%.",
-   "base_hp": 847,
-   "base_atk": 635,
-   "base_def": 529
+   "path": "erudition"
   }
  },
  {
@@ -67,11 +51,7 @@
   "data": {
    "name": "A Thankless Coronation",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's CRIT DMG by 36/45/54/63/72%. When using Ultimate, increases the wearer's ATK by 40/50/60/70/80%, and if the wearer's Max Energy is greater than or equal to 300, regenerates a fixed amount of Energy equal to 10% of the wearer's Max Energy and once again increases the wearer's ATK by 40/50/60/70/80%, lasting for 2 turns.",
-   "base_hp": 953,
-   "base_atk": 582,
-   "base_def": 529
+   "path": "destruction"
   }
  },
  {
@@ -82,11 +62,7 @@
   "data": {
    "name": "A Trail of Bygone Blood",
    "rarity": "4",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's CRIT Rate by 12/14/16/18/20%. The Skill DMG and Ultimate DMG dealt by the wearer increase by 24/28/32/36/40%.",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 331
+   "path": "destruction"
   }
  },
  {
@@ -97,11 +73,7 @@
   "data": {
    "name": "Adversarial",
    "rarity": "3",
-   "path": "the_hunt",
-   "skill_description": "When the wearer defeats an enemy, increases SPD by 10/12/14/16/18% for 2 turn(s)",
-   "base_hp": 740,
-   "base_atk": 370,
-   "base_def": 264
+   "path": "the_hunt"
   }
  },
  {
@@ -112,11 +84,7 @@
   "data": {
    "name": "After the Charmony Fall",
    "rarity": "4",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's Break Effect by 28/35/42/49/56%. After the wearer uses Ultimate, increases SPD by 8/10/12/14/16, lasting for 2 turn(s).",
-   "base_hp": 847,
-   "base_atk": 476,
-   "base_def": 397
+   "path": "erudition"
   }
  },
  {
@@ -127,11 +95,7 @@
   "data": {
    "name": "Along the Passing Shore",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's CRIT DMG by 36/42/48/54/60%. When the wearer hits an enemy target, inflicts Mirage Fizzle on the enemy, lasting for 1 turn. Each time the wearer attacks, this effect can only trigger 1 time on each target. The wearer deals 24/28/32/36/40% increased DMG to targets afflicted with Mirage Fizzle, and the DMG dealt by the wearer's Ultimate additionally increases by 24/28/32/36/40%.",
-   "base_hp": 1058,
-   "base_atk": 635,
-   "base_def": 396
+   "path": "nihility"
   }
  },
  {
@@ -142,11 +106,7 @@
   "data": {
    "name": "Amber",
    "rarity": "3",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's DEF by 16/20/24/28/32%. If the wearer's current HP is lower than 50%, increases their DEF by a further 16/20/24/28/32%.",
-   "base_hp": 846,
-   "base_atk": 264,
-   "base_def": 330
+   "path": "preservation"
   }
  },
  {
@@ -157,11 +117,7 @@
   "data": {
    "name": "An Instant Before A Gaze",
    "rarity": "5",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's CRIT DMG by 36/42/48/54/60%. When the wearer uses their Ultimate, the wearer's Ultimate DMG increases based on their Max Energy; Ultimate DMG increases by 0.36/0.42/0.48/0.54/0.6% per point of Energy, up to 180 Energy.",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "erudition"
   }
  },
  {
@@ -172,11 +128,7 @@
   "data": {
    "name": "Arrows",
    "rarity": "3",
-   "path": "the_hunt",
-   "skill_description": "At the beginning of the battle, increases the wearer's CRIT Rate by 12/15/18/21/24% for 3 turn(s).",
-   "base_hp": 846,
-   "base_atk": 317,
-   "base_def": 264
+   "path": "the_hunt"
   }
  },
  {
@@ -187,11 +139,7 @@
   "data": {
    "name": "Baptism of Pure Thought",
    "rarity": "5",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's CRIT DMG by 20/23/26/29/32%. For every debuff on the enemy target, the wearer's CRIT DMG dealt against this target increases by 8/9/10/11/12%, stacking up to 3 times. When using Ultimate to attack the enemy target, the wearer receives the Disputation effect, which increases DMG dealt by 36/42/48/54/60% and enables their follow-up attacks to ignore 24/28/32/36/40% of the target's DEF. This effect lasts for 2 turns.",
-   "base_hp": 952,
-   "base_atk": 582,
-   "base_def": 529
+   "path": "the_hunt"
   }
  },
  {
@@ -202,11 +150,7 @@
   "data": {
    "name": "Before Dawn",
    "rarity": "5",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's CRIT DMG by 36/42/48/54/60%. Increases the wearer's Skill and Ultimate DMG by 18/21/24/27/30%. After the wearer uses their Skill or Ultimate, they gain Somnus Corpus. Upon triggering a follow-up attack, Somnus Corpus will be consumed and the follow-up attack DMG increases by 48/56/64/72/80%.",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "erudition"
   }
  },
  {
@@ -217,11 +161,7 @@
   "data": {
    "name": "Before the Tutorial Mission Starts",
    "rarity": "4",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's Effect Hit Rate by 20/25/30/35/40%. When the wearer attacks enemies that have reduced DEF, regenerates 4/5/6/7/8 Energy.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "nihility"
   }
  },
  {
@@ -232,11 +172,7 @@
   "data": {
    "name": "Boundless Choreo",
    "rarity": "4",
-   "path": "nihility",
-   "skill_description": "Increase the wearer's CRIT Rate by 8/10/12/14/16%. The wearer deals 24/30/36/42/48% more CRIT DMG to enemies that are currently DEF reduced or Slowed.",
-   "base_hp": 953,
-   "base_atk": 476,
-   "base_def": 331
+   "path": "nihility"
   }
  },
  {
@@ -247,11 +183,7 @@
   "data": {
    "name": "Brighter Than the Sun",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's CRIT Rate by 18/21/24/27/30%. When the wearer uses their Basic ATK, they will gain 1 stack of Dragon's Call for 2 turns. Each stack of Dragon's Call increases the wearer's ATK by 18/21/24/27/30% and Energy Regeneration Rate by 6/7/8/9/10%. Dragon's Call can be stacked up to 2 times.",
-   "base_hp": 1058,
-   "base_atk": 635,
-   "base_def": 396
+   "path": "destruction"
   }
  },
  {
@@ -262,11 +194,7 @@
   "data": {
    "name": "But the Battle Isn't Over",
    "rarity": "5",
-   "path": "harmony",
-   "skill_description": "Increases the wearer's Energy Regeneration Rate by 10/12/14/16/18% and regenerates 1 Skill Point when the wearer uses their Ultimate on an ally. This effect can be triggered after every 2 uses of the wearer's Ultimate. When the wearer uses their Skill, the next ally taking action (except the wearer) deals 30/35/40/45/50% more DMG for 1 turn(s).",
-   "base_hp": 1164,
-   "base_atk": 529,
-   "base_def": 463
+   "path": "harmony"
   }
  },
  {
@@ -277,11 +205,7 @@
   "data": {
    "name": "Carve the Moon, Weave the Clouds",
    "rarity": "4",
-   "path": "harmony",
-   "skill_description": "At the start of the battle and whenever the wearer's turn begins, one of the following effects is applied randomly: All allies' ATK increases by 10/12.5/15/17.5/20%, all allies' CRIT DMG increases by 12/15/18/21/24%, or all allies' Energy Regeneration Rate increases by 6/7.5/9/10.5/12%. The applied effect cannot be identical to the last effect applied, and will replace the previous effect. The applied effect will be removed when the wearer has been knocked down. Effects of the similar type cannot be stacked.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "harmony"
   }
  },
  {
@@ -292,11 +216,7 @@
   "data": {
    "name": "Chorus",
    "rarity": "3",
-   "path": "harmony",
-   "skill_description": "After entering battle, increases the ATK of all allies by 8/9/10/11/12%. Effects of the same type cannot stack.",
-   "base_hp": 846,
-   "base_atk": 317,
-   "base_def": 264
+   "path": "harmony"
   }
  },
  {
@@ -307,11 +227,7 @@
   "data": {
    "name": "Collapsing Sky",
    "rarity": "3",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's Basic ATK and Skill DMG by 20/25/30/35/40%.",
-   "base_hp": 846,
-   "base_atk": 370,
-   "base_def": 198
+   "path": "destruction"
   }
  },
  {
@@ -322,11 +238,7 @@
   "data": {
    "name": "Concert for Two",
    "rarity": "4",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's DEF by 16/20/24/28/32%. For every on-field character that has a Shield, the DMG dealt by the wearer increases by 4/5/6/7/8%.",
-   "base_hp": 952,
-   "base_atk": 370,
-   "base_def": 463
+   "path": "preservation"
   }
  },
  {
@@ -337,11 +249,7 @@
   "data": {
    "name": "Cornucopia",
    "rarity": "3",
-   "path": "abundance",
-   "skill_description": "When the wearer uses their Skill or Ultimate, their Outgoing Healing increases by 12/15/18/21/24%.",
-   "base_hp": 952,
-   "base_atk": 264,
-   "base_def": 264
+   "path": "abundance"
   }
  },
  {
@@ -352,11 +260,7 @@
   "data": {
    "name": "Cruising in the Stellar Sea",
    "rarity": "5",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's CRIT rate by 8/10/12/14/16%, and increases their CRIT rate against enemies with HP less than or equal to 50% by an extra 8/10/12/14/16%. When the wearer defeats an enemy, their ATK is increased by 20/25/30/35/40% for 2 turn(s).",
-   "base_hp": 952,
-   "base_atk": 529,
-   "base_def": 463
+   "path": "the_hunt"
   }
  },
  {
@@ -367,11 +271,7 @@
   "data": {
    "name": "Dance at Sunset",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "Greatly increases the odds that the wearer will be attacked and increases the wearer's CRIT DMG by 36/42/48/54/60%. After the wearer uses their Ultimate, they receive 1 stack of Firedance, lasting for 2 turns and up to 2 stacks. Each stack of Firedance increases the DMG dealt by the wearer's follow-up attack by 36/42/48/54/60%.",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "destruction"
   }
  },
  {
@@ -382,11 +282,7 @@
   "data": {
    "name": "Dance! Dance! Dance!",
    "rarity": "4",
-   "path": "harmony",
-   "skill_description": "When the wearer uses their Ultimate, all allies' actions are Advanced Forward by 16/18/20/22/24%",
-   "base_hp": 952,
-   "base_atk": 423,
-   "base_def": 396
+   "path": "harmony"
   }
  },
  {
@@ -397,11 +293,7 @@
   "data": {
    "name": "Darting Arrow",
    "rarity": "3",
-   "path": "the_hunt",
-   "skill_description": "When the wearer defeats an enemy, increase ATK by 24/30/36/42/48% for 3 turn(s).",
-   "base_hp": 740,
-   "base_atk": 370,
-   "base_def": 264
+   "path": "the_hunt"
   }
  },
  {
@@ -412,11 +304,7 @@
   "data": {
    "name": "Data Bank",
    "rarity": "3",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's Ultimate DMG by 28/35/42/49/56%.",
-   "base_hp": 740,
-   "base_atk": 370,
-   "base_def": 264
+   "path": "erudition"
   }
  },
  {
@@ -427,11 +315,7 @@
   "data": {
    "name": "Day One of My New Life",
    "rarity": "4",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's DEF by 16/18/20/22/24%. After entering battle, increases DMG RES of all allies by 8/9/10/11/12%. Effects of the same type cannot stack.",
-   "base_hp": 952,
-   "base_atk": 370,
-   "base_def": 463
+   "path": "preservation"
   }
  },
  {
@@ -442,11 +326,7 @@
   "data": {
    "name": "Dazzled by a Flowery World",
    "rarity": "5",
-   "path": "elation",
-   "skill_description": "Increases the wearer's CRIT DMG by 48/56/64/72/80%. While the wearer is on the field, for every 1 Elation character in the team, increases the Skill Point upper limit by 1, up to a max increase of 3. For every 1 Skill Point the wearer consumes, enables the Elation DMG dealt by this unit to ignore 5/6/7/8/9% of enemy targets' DEF, stacking up to 4 times. If 4 or more Skill Points are consumed in the same turn, the wearer gains \"Stream Promo,\" which increases all allies' Elation by 20/24/28/32/36%. Light Cone effects of the same type cannot stack.",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "elation"
   }
  },
  {
@@ -457,11 +337,7 @@
   "data": {
    "name": "Defense",
    "rarity": "3",
-   "path": "preservation",
-   "skill_description": "When the wearer unleashes their Ultimate, they restore HP by 18/21/24/27/30% of their Max HP.",
-   "base_hp": 952,
-   "base_atk": 264,
-   "base_def": 264
+   "path": "preservation"
   }
  },
  {
@@ -472,11 +348,7 @@
   "data": {
    "name": "Destiny's Threads Forewoven",
    "rarity": "4",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's Effect RES by 12/14/16/18/20%. For every 100 of DEF the wearer has, increases the DMG dealt by 0.8/0.9/1/1.1/1.2% to a max increase of 32/36/40/44/48%.",
-   "base_hp": 952,
-   "base_atk": 370,
-   "base_def": 463
+   "path": "preservation"
   }
  },
  {
@@ -487,11 +359,7 @@
   "data": {
    "name": "Dream's Montage",
    "rarity": "4",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's SPD by 8/9/10/11/12%. After attacking enemy targets that are Weakness Broken, regenerates 3/3.5/4/4.5/5 Energy. This effect can trigger up to 2 time(s) per turn.",
-   "base_hp": 953,
-   "base_atk": 423,
-   "base_def": 397
+   "path": "abundance"
   }
  },
  {
@@ -502,11 +370,7 @@
   "data": {
    "name": "Dreamville Adventure",
    "rarity": "4",
-   "path": "harmony",
-   "skill_description": "After the wearer uses a Basic ATK, Skill, or Ultimate, all allies gain Childishness, which increases the DMG dealt by the corresponding ability they used by 12/14/16/18/20%. Childishness only takes effect with the most recent ability used by the wearer and cannot be stacked.",
-   "base_hp": 953,
-   "base_atk": 423,
-   "base_def": 397
+   "path": "harmony"
   }
  },
  {
@@ -517,11 +381,7 @@
   "data": {
    "name": "Earthly Escapade",
    "rarity": "5",
-   "path": "harmony",
-   "skill_description": "Increases the wearer's CRIT DMG by 32/39/46/52/60%. At the start of the battle, the wearer gains Mask, lasting for 3 turn(s). While the wearer has Mask, the wearer's allies have their CRIT Rate increased by 10/11/12/13/14% and their CRIT DMG increased by 28/35/42/49/56%. For every 1 Skill Point the wearer recovers (including Skill Points that exceed the limit), they gain 1 stack of Radiant Flame. And when the wearer has 4 stacks of Radiant Flame, all the stacks are removed, and they gain Mask, lasting for 4 turn(s).",
-   "base_hp": 1164,
-   "base_atk": 529,
-   "base_def": 463
+   "path": "harmony"
   }
  },
  {
@@ -532,11 +392,7 @@
   "data": {
    "name": "Echoes of the Coffin",
    "rarity": "5",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's ATK by 24/28/32/36/40%. After the wearer uses an attack, for each different enemy target the wearer hits, regenerates 3/3.5/4/4.5/5 Energy. Each attack can regenerate Energy up to 3 time(s) this way. After the wearer uses their Ultimate, all allies gain 12/14/16/18/20 SPD for 1 turn.",
-   "base_hp": 1164,
-   "base_atk": 582,
-   "base_def": 396
+   "path": "abundance"
   }
  },
  {
@@ -547,11 +403,7 @@
   "data": {
    "name": "Elation Brimming With Blessings",
    "rarity": "5",
-   "path": "elation",
-   "skill_description": "Increases the wearer's ATK by 20/25/30/35/40%. After the wearer uses Skill or Ultimate on one ally character, increases the target's Elation stat by 12/15/18/21/24%for 2 turn(s).",
-   "base_hp": 953,
-   "base_atk": 529,
-   "base_def": 463
+   "path": "elation"
   }
  },
  {
@@ -562,11 +414,7 @@
   "data": {
    "name": "Epoch Etched in Golden Blood",
    "rarity": "5",
-   "path": "harmony",
-   "skill_description": "Increases the wearer's ATK by 64/80/96/112/128%. After using Ultimate to attack, recovers 1 Skill Point(s). After the wearer uses their Skill on one ally character, increases the Skill DMG dealt by the target by 54/67.5/81/94.5/108% for 3 turn(s).",
-   "base_hp": 953,
-   "base_atk": 635,
-   "base_def": 463
+   "path": "harmony"
   }
  },
  {
@@ -577,11 +425,7 @@
   "data": {
    "name": "Eternal Calculus",
    "rarity": "5",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's ATK by 8/9/10/11/12%. After using an attack, for each enemy target hit, additionally increases ATK by 4/5/6/7/8%. This effect can stack 5 times and lasts until the next attack. If there are 3 or more enemy targets hit, this unit's SPD increases by 8/10/12/14/16%, lasting for 1 turn(s).",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 396
+   "path": "erudition"
   }
  },
  {
@@ -592,11 +436,7 @@
   "data": {
    "name": "Eyes of the Prey",
    "rarity": "4",
-   "path": "nihility",
-   "skill_description": "Increases Effect Hit Rate of its wearer by 20/25/30/35/40% and increases DoT by 24/30/36/42/48%.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "nihility"
   }
  },
  {
@@ -607,11 +447,7 @@
   "data": {
    "name": "Fermata",
    "rarity": "4",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's Break Effect by 16/20/24/28/32%, and increases their DMG to enemies afflicted with Shock or Wind Shear by 16/20/24/28/32%. This also applies to DoT.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "nihility"
   }
  },
  {
@@ -622,11 +458,7 @@
   "data": {
    "name": "Final Victor",
    "rarity": "4",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's ATK by 12/14/16/18/20%. When the wearer lands a CRIT hit on enemies, they will gain a stack of Good Fortune. This effect can be stacked 4 time(s). Every stack of Good Fortune the wearer has will increase their CRIT DMG by 8/9/10/11/12%. Good Fortune will be removed at the end of the wearer's turn.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "the_hunt"
   }
  },
  {
@@ -637,11 +469,7 @@
   "data": {
    "name": "Fine Fruit",
    "rarity": "3",
-   "path": "abundance",
-   "skill_description": "At the beginning of battle, immediately regenerates 6/8/9/11/12 Energy for all allies.",
-   "base_hp": 952,
-   "base_atk": 317,
-   "base_def": 198
+   "path": "abundance"
   }
  },
  {
@@ -652,11 +480,7 @@
   "data": {
    "name": "Flame of Blood, Blaze My Path",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's Max HP by 18/21/24/27/30% and Incoming Healing by 20/25/30/35/40%. When using Skill or Ultimate, consumes HP equal to 6/6.5/7/7.5/8% of the wearer's Max HP and increases the DMG dealt by this attack by 30/35/40/45/50%. If this effect's consumed HP is greater than 500, the DMG additionally increases by 30/35/40/45/50%.\n\nIf the current HP is not sufficient, this effect reduces the wearer's current HP down to 1.",
-   "base_hp": 1375,
-   "base_atk": 476,
-   "base_def": 396
+   "path": "destruction"
   }
  },
  {
@@ -667,11 +491,7 @@
   "data": {
    "name": "Flames Afar",
    "rarity": "4",
-   "path": "destruction",
-   "skill_description": "When the HP lost by the wearer during a single attack exceeds 25% of their Max HP, or if the HP they consume is greater than 25% of their Max HP, then immediately heals them for 15% of their Max HP while also increasing the DMG they deal by 25/31/38/44/50% for 2 turn(s). This effect can only be triggered once every 3 turn(s).",
-   "base_hp": 1058,
-   "base_atk": 476,
-   "base_def": 265
+   "path": "destruction"
   }
  },
  {
@@ -682,11 +502,7 @@
   "data": {
    "name": "Flickering Stars",
    "rarity": "5",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's CRIT Rate by 18/21/24/27/30%. When any ally character consumes a total of 4 or more Skill Points in a single turn, the wearer gains \"Radiant Crown,\" lasting for 3 turn(s). While the wearer holds \"Radiant Crown,\" all allies' DMG dealt ignores 20/23/26/29/32% of the target's DEF, and the Skill DMG dealt by the wearer increases by 72/84/96/108/120%. Effects of the same type cannot stack.",
-   "base_hp": 847,
-   "base_atk": 635,
-   "base_def": 529
+   "path": "erudition"
   }
  },
  {
@@ -697,11 +513,7 @@
   "data": {
    "name": "Flowing Nightglow",
    "rarity": "5",
-   "path": "harmony",
-   "skill_description": "Every time any ally attacks, the wearer gains 1 stack of Cantillation. Each stack of Cantillation increases the wearer's Energy Regeneration Rate by 3/3.5/4/4.5/5%, stacking up to 5 times. When the wearer uses their Ultimate, removes Cantillation and gains Cadenza. Cadenza increases the Wearer's ATK by 48/60/72/84/96% and all allies' DMG dealt by 24/28/32/36/40%, lasting for 1 turn(s).",
-   "base_hp": 953,
-   "base_atk": 635,
-   "base_def": 463
+   "path": "harmony"
   }
  },
  {
@@ -712,11 +524,7 @@
   "data": {
    "name": "Fly Into a Pink Tomorrow",
    "rarity": "4",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's CRIT DMG by 12/15/18/21/24%. When equipped by Trailblazer (Remembrance), increases all ally targets' DMG dealt by 8/10/12/14/16% and DMG dealt by Enhanced Basic ATK \"Together, We Script Tomorrow!\" by 60/70/80/90/100%.",
-   "base_hp": 847,
-   "base_atk": 476,
-   "base_def": 397
+   "path": "remembrance"
   }
  },
  {
@@ -727,11 +535,7 @@
   "data": {
    "name": "For Tomorrow's Journey",
    "rarity": "4",
-   "path": "harmony",
-   "skill_description": "Increases the wearer's ATK by 16/20/24/28/32%. After the wearer uses their Ultimate, increases their DMG dealt by 18/21/24/27/30%, lasting for 1 turn.",
-   "base_hp": 953,
-   "base_atk": 476,
-   "base_def": 331
+   "path": "harmony"
   }
  },
  {
@@ -742,11 +546,7 @@
   "data": {
    "name": "Geniuses' Greetings",
    "rarity": "4",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's ATK by 16/20/24/28/32%. After the wearer uses their Ultimate, additionally increases the wearer and their memosprite's Basic ATK DMG dealt by 20/25/30/35/40% for 3 turn(s).",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "remembrance"
   }
  },
  {
@@ -757,11 +557,7 @@
   "data": {
    "name": "Geniuses' Repose",
    "rarity": "4",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's ATK by 16/20/24/28/32%. When the wearer defeats an enemy, the wearer's CRIT DMG increases by 24/30/36/42/48% for 3 turn(s).",
-   "base_hp": 846,
-   "base_atk": 476,
-   "base_def": 396
+   "path": "erudition"
   }
  },
  {
@@ -772,11 +568,7 @@
   "data": {
    "name": "Good Night and Sleep Well",
    "rarity": "4",
-   "path": "nihility",
-   "skill_description": "For every debuff the target enemy has, the DMG dealt by the wearer increases by 12/15/18/21/24%, stacking up to 3 time(s). This effect also applies to DoT.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "nihility"
   }
  },
  {
@@ -787,11 +579,7 @@
   "data": {
    "name": "Hey, Over Here",
    "rarity": "4",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's Max HP by 8/9/10/11/12%. When the wearer uses Skill, increases Outgoing Healing by 16/19/22/25/28%, lasting for 2 turn(s).",
-   "base_hp": 952,
-   "base_atk": 423,
-   "base_def": 396
+   "path": "abundance"
   }
  },
  {
@@ -802,11 +590,7 @@
   "data": {
    "name": "Hidden Shadow",
    "rarity": "3",
-   "path": "nihility",
-   "skill_description": "After using Skill, the wearer's next Basic ATK deals Additional DMG equal to 60/75/90/105/120% of ATK to the target enemy.",
-   "base_hp": 846,
-   "base_atk": 317,
-   "base_def": 264
+   "path": "nihility"
   }
  },
  {
@@ -817,11 +601,7 @@
   "data": {
    "name": "Holiday Thermae Escapade",
    "rarity": "4",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's DMG dealt by 16/20/24/28/32%. After the wearer attacks, there is a 100% base chance that the attacked target is inflicted with Vulnerability, increasing the DMG they receive by 10/11/13/14/16% for 2 turn(s). The same effect type cannot be stacked.",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 331
+   "path": "nihility"
   }
  },
  {
@@ -832,11 +612,7 @@
   "data": {
    "name": "I Am As You Behold",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's ATK by 18/21/24/27/30% and Energy Regeneration Rate by 10/12.5/15/17.5/20%. When the wearer uses Ultimate, for every 1 Energy consumed, increases the Ultimate DMG dealt this time by 0.2/0.25/0.3/0.35/0.4%, up to a max increase of 72/90/108/126/144%. When the wearer enters combat or uses Ultimate, the wearer gains \"King's Entertainment,\" lasting for 3 turn(s). While the wearer holds \"King's Entertainment,\" increases all allies' CRIT DMG by 24/30/36/42/48%. Effects of the same type cannot stack.",
-   "base_hp": 953,
-   "base_atk": 635,
-   "base_def": 463
+   "path": "destruction"
   }
  },
  {
@@ -847,11 +623,7 @@
   "data": {
    "name": "I Shall Be My Own Sword",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's CRIT DMG by 20/23/26/29/32%. When an ally gets attacked or loses HP, the wearer gains 1 stack of Eclipse, up to a max of 3 stack(s). Each stack of Eclipse increases the DMG of the wearer's next attack by 14/16.5/19/21.5/24%. When 3 stack(s) are reached, additionally enables the attack to ignore 12/14/16/18/20% of the enemy's DEF. This effect will be removed after the wearer uses an attack.",
-   "base_hp": 1164,
-   "base_atk": 582,
-   "base_def": 396
+   "path": "destruction"
   }
  },
  {
@@ -862,11 +634,7 @@
   "data": {
    "name": "I Venture Forth to Hunt",
    "rarity": "5",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's CRIT Rate by 15/17.5/20/22.5/25%. When the wearer launches a follow-up attack, gains 1 stack of \"Luminflux,\" to a max of 2 stacks. Each stack of \"Luminflux\" enables the Ultimate DMG dealt by the wearer to ignore 27/30/33/36/39% of the target's DEF. When the wearer's turn ends, removes 1 stack of \"Luminflux.\"",
-   "base_hp": 952,
-   "base_atk": 635,
-   "base_def": 463
+   "path": "the_hunt"
   }
  },
  {
@@ -877,11 +645,7 @@
   "data": {
    "name": "If Time Were a Flower",
    "rarity": "5",
-   "path": "harmony",
-   "skill_description": "Increases the wearer's CRIT DMG by 36/42/48/54/60%. After the wearer launches a Follow-up ATK, additionally regenerates 12 Energy and gains \"Presage,\" lasting for 2 turn(s). While the wearer has \"Presage,\" all ally targets' CRIT DMG increases by 48/60/72/84/96%. When entering battle, the wearer regenerates 21 Energy and gains \"Presage,\" lasting for 2 turn(s).",
-   "base_hp": 1270,
-   "base_atk": 529,
-   "base_def": 397
+   "path": "harmony"
   }
  },
  {
@@ -892,11 +656,7 @@
   "data": {
    "name": "In Pursuit of the Wind",
    "rarity": "4",
-   "path": "harmony",
-   "skill_description": "After entering battle, increases all allies' Break DMG dealt by 16/18/20/22/24%. Abilities of the same type cannot stack.",
-   "base_hp": 1058,
-   "base_atk": 476,
-   "base_def": 397
+   "path": "harmony"
   }
  },
  {
@@ -907,11 +667,7 @@
   "data": {
    "name": "In the Name of the World",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's DMG to debuffed enemies by 24/28/32/36/40%. When the wearer uses their Skill, the Effect Hit Rate for this attack increases by 18/21/24/27/30%, and ATK increases by 24/28/32/36/40%.",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "nihility"
   }
  },
  {
@@ -922,11 +678,7 @@
   "data": {
    "name": "In the Night",
    "rarity": "5",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's CRIT Rate by 18/21/24/27/30%. While the wearer is in battle, for every 10 SPD that exceeds 100, the DMG of the wearer's Basic ATK and Skill is increased by 6/7/8/9/10% and the CRIT DMG of their Ultimate is increased by 12/14/16/18/20%. This effect can stack up to 6 time(s).",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "the_hunt"
   }
  },
  {
@@ -937,11 +689,7 @@
   "data": {
    "name": "Incessant Rain",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's Effect Hit Rate by 24/28/32/36/40%. When the wearer deals DMG to an enemy with 3 or more debuffs, increases CRIT Rate by 12/14/16/18/20%. After the wearer uses their Basic ATK, Skill, or Ultimate, there is a 100% base chance to implant Aether Code on a random hit target that does not have it yet. Targets with Aether Code receive 12/14/16/18/20% increased DMG for 1 turn.",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "nihility"
   }
  },
  {
@@ -952,11 +700,7 @@
   "data": {
    "name": "Indelible Promise",
    "rarity": "4",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's Break Effect by 28/35/42/49/56%. When the wearer uses their Ultimate, increases CRIT Rate by 15/18.75/22.5/26.25/30%, lasting for 2 turns.",
-   "base_hp": 953,
-   "base_atk": 476,
-   "base_def": 331
+   "path": "destruction"
   }
  },
  {
@@ -967,11 +711,7 @@
   "data": {
    "name": "Inherently Unjust Destiny",
    "rarity": "5",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's DEF by 40/46/52/58/64%. When the wearer provides a Shield to an ally, the wearer's CRIT DMG increases by 40/46/52/58/64%, lasting for 2 turn(s). When the wearer's follow-up attack hits an enemy target, there is a 100/115/130/145/160% base chance to increase the DMG taken by the attacked enemy target by 10/11.5/13/14.5/16%, lasting for 2 turn(s).",
-   "base_hp": 1058,
-   "base_atk": 423,
-   "base_def": 661
+   "path": "preservation"
   }
  },
  {
@@ -982,11 +722,7 @@
   "data": {
    "name": "Into the Unreachable Veil",
    "rarity": "5",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's CRIT Rate by 12/14/16/18/20%. When the wearer uses their Ultimate, increases DMG dealt by the wearer's Skill and Ultimate by 60/70/80/90/100%, lasting for 3 turn(s). After the wearer uses their Ultimate, if this Ultimate consumed 140 or more Energy, recovers 1 Skill Point.",
-   "base_hp": 953,
-   "base_atk": 635,
-   "base_def": 463
+   "path": "erudition"
   }
  },
  {
@@ -997,11 +733,7 @@
   "data": {
    "name": "It's Showtime",
    "rarity": "4",
-   "path": "nihility",
-   "skill_description": "When the wearer inflicts a debuff on an enemy, they gain a stack of Trick. Every stack of Trick increases the wearer's DMG dealt by 6/7/8/9/10% for a max of 3 stack(s). This effect lasts for 1 turn(s). When the wearer's Effect Hit Rate is greater than or equal to 80%, increases ATK by 20/24/28/32/36%.",
-   "base_hp": 1058,
-   "base_atk": 476,
-   "base_def": 265
+   "path": "nihility"
   }
  },
  {
@@ -1012,11 +744,7 @@
   "data": {
    "name": "Journey, Forever Peaceful",
    "rarity": "4",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's provided Shield Effect by 12/15/18/21/24%. When an ally target has a Shield, the DMG dealt increases by 12/14/16/18/20%.",
-   "base_hp": 1058,
-   "base_atk": 370,
-   "base_def": 529
+   "path": "preservation"
   }
  },
  {
@@ -1027,11 +755,7 @@
   "data": {
    "name": "Landau's Choice",
    "rarity": "4",
-   "path": "preservation",
-   "skill_description": "The wearer is more likely to be attacked, but DMG taken is reduced by 16/18/20/22/24%.",
-   "base_hp": 952,
-   "base_atk": 423,
-   "base_def": 396
+   "path": "preservation"
   }
  },
  {
@@ -1042,11 +766,7 @@
   "data": {
    "name": "Lies Dance on the Breeze",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's SPD by 18/21/24/27/30%. After the wearer uses an attack, there is a 120% base chance to inflict the \"Bamboozle\" state on every enemy target. While under the \"Bamboozle\" state, enemy targets have their DEF decreased by 16/18/20/22/24% for 2 turn(s). If the wearer's SPD is higher than or equal to 170, there is a 120% base chance to inflict the \"Theft\" state on every enemy target. While under the \"Theft\" state, enemy targets have their DEF decreased by 8/9/10/11/12% for 2 turn(s). When \"Bamboozle\" or \"Theft\" is repeatedly inflicted, only the most recently inflicted instance takes effect.",
-   "base_hp": 953,
-   "base_atk": 582,
-   "base_def": 529
+   "path": "nihility"
   }
  },
  {
@@ -1057,11 +777,7 @@
   "data": {
    "name": "Life Should Be Cast to Flames",
    "rarity": "5",
-   "path": "erudition",
-   "skill_description": "When the wearer's turn starts, regenerates 10 Energy. If the enemy target has a Weakness implanted by the wearer, increases the wearer's DMG dealt to it by 60/70/80/90/100%.\n\nWhen an enemy target gets attacked by the wearer, the wearer decreases the target's DEF by 12/15/18/21/24%, lasting for 2 turn(s). The same types of effects cannot stack.",
-   "base_hp": 953,
-   "base_atk": 582,
-   "base_def": 529
+   "path": "erudition"
   }
  },
  {
@@ -1072,11 +788,7 @@
   "data": {
    "name": "Lingering Tear",
    "rarity": "3",
-   "path": "elation",
-   "skill_description": "When Punchline is 10 or more, the wearer's CRIT DMG increases by 20/25/30/35/40%.",
-   "base_hp": 847,
-   "base_atk": 318,
-   "base_def": 265
+   "path": "elation"
   }
  },
  {
@@ -1087,11 +799,7 @@
   "data": {
    "name": "Long May Rainbows Adorn the Sky",
    "rarity": "5",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's SPD by 18/21/24/27/30%. When the wearer uses Basic ATK, Skill, or Ultimate, consumes all allies' HP equal to 1/1.3/1.5/1.7/2.0% of their current HP and additionally deals 1 instance of Additional DMG of the wearer's memosprite Type equal to 250/312.5/375/437.5/500% of the total consumed HP to the attacked target after the next attack launched by the wearer's memosprite. The total HP consumed is then reset. When the wearer's memosprite uses Memosprite Skill, increases the DMG taken by all enemies by 18/22.5/27/31.5/36% for 2 turn(s). The same types of effects cannot stack.",
-   "base_hp": 1164,
-   "base_atk": 476,
-   "base_def": 529
+   "path": "remembrance"
   }
  },
  {
@@ -1102,11 +810,7 @@
   "data": {
    "name": "Long Road Leads Home",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's Break Effect by 60/70/80/90/100%. When an enemy target's Weakness gets broken, there is a 100% base chance to inflict the \"Charring\" state on it, which increases its Break DMG taken by 18/21/24/27/30%, lasting for 2 turn(s). This effect can stack 2 time(s).",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 661
+   "path": "nihility"
   }
  },
  {
@@ -1117,11 +821,7 @@
   "data": {
    "name": "Loop",
    "rarity": "3",
-   "path": "nihility",
-   "skill_description": "Increases DMG dealt from its wearer to Slowed enemies by 24/30/36/42/48%",
-   "base_hp": 846,
-   "base_atk": 317,
-   "base_def": 264
+   "path": "nihility"
   }
  },
  {
@@ -1132,11 +832,7 @@
   "data": {
    "name": "Make Farewells More Beautiful",
    "rarity": "5",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's Max HP by 30/38/45/53/60%. When the wearer or their memosprite loses HP during their own turn, the wearer gains \"Death Flower,\" which allows the wearer and their memosprite to ignore 30/35/40/45/50% of the target's DEF when dealing DMG, lasting for 2 turn(s).\n\nWhen the wearer's memosprite disappears, advances the wearer's action by 12/15/18/21/24%. This effect can only trigger up to 1 time, and the trigger count resets every time the wearer uses Ultimate.",
-   "base_hp": 1270,
-   "base_atk": 529,
-   "base_def": 397
+   "path": "remembrance"
   }
  },
  {
@@ -1147,11 +843,7 @@
   "data": {
    "name": "Make the World Clamor",
    "rarity": "4",
-   "path": "erudition",
-   "skill_description": "The wearer regenerates 20/23/26/29/32 Energy immediately upon entering battle, and increases Ultimate DMG by 32/40/48/56/64%.",
-   "base_hp": 846,
-   "base_atk": 476,
-   "base_def": 396
+   "path": "erudition"
   }
  },
  {
@@ -1162,11 +854,7 @@
   "data": {
    "name": "Mediation",
    "rarity": "3",
-   "path": "harmony",
-   "skill_description": "Upon battle entry, all allies receive 12/14/16/18/20 increased SPD for 1 turn(s).",
-   "base_hp": 846,
-   "base_atk": 317,
-   "base_def": 264
+   "path": "harmony"
   }
  },
  {
@@ -1177,11 +865,7 @@
   "data": {
    "name": "Memories of the Past",
    "rarity": "4",
-   "path": "harmony",
-   "skill_description": "Increases the wearer's Break Effect by 28/35/42/49/56%. When the wearer attacks, additionally regenerates 4/5/6/7/8 Energy. This effect can only be triggered 1 time per turn.",
-   "base_hp": 952,
-   "base_atk": 423,
-   "base_def": 396
+   "path": "harmony"
   }
  },
  {
@@ -1192,11 +876,7 @@
   "data": {
    "name": "Memory's Curtain Never Falls",
    "rarity": "5",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's SPD by 6/7.5/9/10.5/12%. After the wearer uses Skill, increases the DMG dealt by all allies by 8/10/12/14/16%, lasting for 3 turn(s).",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 397
+   "path": "remembrance"
   }
  },
  {
@@ -1207,11 +887,7 @@
   "data": {
    "name": "Meshing Cogs",
    "rarity": "3",
-   "path": "harmony",
-   "skill_description": "After the wearer uses attacks or gets hit, additionally regenerates 4/5/6/7/8 Energy. This effect can only be triggered 1 time per turn.",
-   "base_hp": 846,
-   "base_atk": 317,
-   "base_def": 264
+   "path": "harmony"
   }
  },
  {
@@ -1222,11 +898,7 @@
   "data": {
    "name": "Moment of Victory",
    "rarity": "5",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's DEF by 24/28/32/36/40% and Effect Hit Rate by 24/28/32/36/40%. Increases the chance for the wearer to be attacked by enemies. When the wearer is attacked, increase their DEF by an additional 24/28/32/36/40% until the end of the wearer's turn.",
-   "base_hp": 1058,
-   "base_atk": 476,
-   "base_def": 595
+   "path": "preservation"
   }
  },
  {
@@ -1237,11 +909,7 @@
   "data": {
    "name": "Multiplication",
    "rarity": "3",
-   "path": "abundance",
-   "skill_description": "After the wearer uses their Basic ATK, their next action will be Advanced Forward by 12/14/16/18/20%.",
-   "base_hp": 952,
-   "base_atk": 317,
-   "base_def": 198
+   "path": "abundance"
   }
  },
  {
@@ -1252,11 +920,7 @@
   "data": {
    "name": "Mushy Shroomy's Adventures",
    "rarity": "4",
-   "path": "elation",
-   "skill_description": "Increases the wearer's Elation by 12/14/16/18/20%. When the wearer uses an Elation Skill, increases Elation DMG taken by all enemies by 6/7/8/9/10% for 2 turn(s).",
-   "base_hp": 847,
-   "base_atk": 476,
-   "base_def": 397
+   "path": "elation"
   }
  },
  {
@@ -1267,11 +931,7 @@
   "data": {
    "name": "Mutual Demise",
    "rarity": "3",
-   "path": "destruction",
-   "skill_description": "If the wearer's current HP is lower than 80%, CRIT Rate increases by 12/15/18/21/24%.",
-   "base_hp": 846,
-   "base_atk": 370,
-   "base_def": 198
+   "path": "destruction"
   }
  },
  {
@@ -1282,11 +942,7 @@
   "data": {
    "name": "Never Forget Her Flame",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's Break Effect by 60/75/90/105/120%. When entering combat, increases Break DMG dealt by the wearer and another teammate who triggered combat by 32/42/52/62/72%. If there is no teammate who triggered combat, applies this effect to the wearer and the teammate with the highest Break Effect. Effects of the same type cannot be stacked. When the wearer applies Weakness to an enemy target, recovers 1 Skill Point. This effect can only trigger once, and trigger count resets when using Ultimate.",
-   "base_hp": 1164,
-   "base_atk": 529,
-   "base_def": 463
+   "path": "nihility"
   }
  },
  {
@@ -1297,11 +953,7 @@
   "data": {
    "name": "Night of Fright",
    "rarity": "5",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's Energy Regeneration Rate by 12/14/16/18/20%. When any ally uses their Ultimate, the wearer restores HP for the ally currently with the lowest HP percentage by an amount equal to 10/11/12/13/14% of the healed ally's Max HP. When the wearer provides healing for an ally, increases the healed ally's ATK by 2.4/2.8/3.2/3.6/4%. This effect can stack up to 5 times and lasts for 2 turn(s).",
-   "base_hp": 1164,
-   "base_atk": 476,
-   "base_def": 529
+   "path": "abundance"
   }
  },
  {
@@ -1312,11 +964,7 @@
   "data": {
    "name": "Night on the Milky Way",
    "rarity": "5",
-   "path": "erudition",
-   "skill_description": "For every enemy on the field, increases the wearer's ATK by 9/10.5/12/13.5/15%, up to 5 stacks. When an enemy is inflicted with Weakness Break, the DMG dealt by the wearer increases by 30/35/40/45/50% for 1 turn.",
-   "base_hp": 1164,
-   "base_atk": 582,
-   "base_def": 396
+   "path": "erudition"
   }
  },
  {
@@ -1327,11 +975,7 @@
   "data": {
    "name": "Ninja Record: Sound Hunt",
    "rarity": "4",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's Max HP by 12/15/18/21/24%. When losing or restoring this unit's HP, increases CRIT DMG by 18/22.5/27/31.5/36%, lasting for 2 turn(s). This effect can only trigger once per turn.",
-   "base_hp": 1058,
-   "base_atk": 476,
-   "base_def": 265
+   "path": "destruction"
   }
  },
  {
@@ -1342,11 +986,7 @@
   "data": {
    "name": "Ninjutsu Inscription: Dazzling Evilbreaker",
    "rarity": "5",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's Break Effect by 60/70/80/90/100%. When entering battle, immediately regenerates 30/32.5/35/37.5/40 Energy. After the wearer uses Ultimate, obtains \"Raiton.\" After using 2 Basic ATKs, advances the wearer's action by 50/55/60/65/70% and removes \"Raiton.\" After the wearer uses Ultimate, resets \"Raiton.\"",
-   "base_hp": 953,
-   "base_atk": 582,
-   "base_def": 529
+   "path": "erudition"
   }
  },
  {
@@ -1357,11 +997,7 @@
   "data": {
    "name": "Nowhere to Run",
    "rarity": "4",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's ATK by 24/30/36/42/48%. Whenever the wearer defeats an enemy, they restore HP equal to 12/15/18/21/24% of their ATK.",
-   "base_hp": 952,
-   "base_atk": 529,
-   "base_def": 264
+   "path": "destruction"
   }
  },
  {
@@ -1372,11 +1008,7 @@
   "data": {
    "name": "On the Fall of an Aeon",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "Whenever the wearer attacks, their ATK is increased by 8/10/12/14/16% in this battle, up to 4 time(s). When the wearer inflicts Weakness Break on enemies, the wearer's DMG increases by 12/15/18/21/24% for 2 turn(s).",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 396
+   "path": "destruction"
   }
  },
  {
@@ -1387,11 +1019,7 @@
   "data": {
    "name": "Only Silence Remains",
    "rarity": "4",
-   "path": "the_hunt",
-   "skill_description": "Increases ATK of its wearer by 16/20/24/28/32%. If there are 2 or fewer enemies on the field, increases wearer's CRIT Rate by 12/15/18/21/24%.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "the_hunt"
   }
  },
  {
@@ -1402,11 +1030,7 @@
   "data": {
    "name": "Passkey",
    "rarity": "3",
-   "path": "erudition",
-   "skill_description": "After the wearer uses their Skill, additionally regenerates 8/9/10/11/12 Energy. This effect can only be triggered 1 time per turn.",
-   "base_hp": 740,
-   "base_atk": 370,
-   "base_def": 264
+   "path": "erudition"
   }
  },
  {
@@ -1417,11 +1041,7 @@
   "data": {
    "name": "Past and Future",
    "rarity": "4",
-   "path": "harmony",
-   "skill_description": "When the wearer uses their Skill, then the next ally taking action (except the wearer) deals 16/20/24/28/32% increased DMG for 1 turn(s).",
-   "base_hp": 952,
-   "base_atk": 423,
-   "base_def": 396
+   "path": "harmony"
   }
  },
  {
@@ -1432,11 +1052,7 @@
   "data": {
    "name": "Past Self in Mirror",
    "rarity": "5",
-   "path": "harmony",
-   "skill_description": "Increases the wearer's Break Effect by 60/70/80/90/100%. After the wearer uses their Ultimate, increases all allies' DMG by 24/28/32/36/40%, lasting for 3 turns. Should the wearer's Break Effect exceed or equal 150%, 1 Skill Point will be recovered. At the start of each wave, immediately regenerates 10/12.5/15/17.5/20 Energy for all allies. Effects of the same type cannot stack.",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 529
+   "path": "harmony"
   }
  },
  {
@@ -1447,11 +1063,7 @@
   "data": {
    "name": "Patience Is All You Need",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases DMG dealt by the wearer by 24/28/32/36/40%. After every attack launched by wearer, their SPD increases by 4.8/5.6/6.4/7.2/8%, stacking up to 3 times. If the wearer hits an enemy target that is not afflicted by Erode, there is a 100% base chance to inflict Erode to the target. Enemies afflicted with Erode are also considered to be Shocked and will receive Lightning DoT at the start of each turn equal to 60/70/80/90/100% of the wearer's ATK, lasting for 1 turn(s).",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "nihility"
   }
  },
  {
@@ -1462,11 +1074,7 @@
   "data": {
    "name": "Perfect Timing",
    "rarity": "4",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's Effect RES by 16/20/24/28/32% and increases Outgoing Healing by an amount that is equal to 33/36/39/42/45% of Effect RES. Outgoing Healing can be increased this way by up to 15/18/21/24/27%.",
-   "base_hp": 952,
-   "base_atk": 423,
-   "base_def": 396
+   "path": "abundance"
   }
  },
  {
@@ -1477,11 +1085,7 @@
   "data": {
    "name": "Pioneering",
    "rarity": "3",
-   "path": "preservation",
-   "skill_description": "When the wearer Breaks an enemy's Weakness, the wearer restores HP by 12/14/16/18/20% of their Max HP.",
-   "base_hp": 952,
-   "base_atk": 264,
-   "base_def": 264
+   "path": "preservation"
   }
  },
  {
@@ -1492,11 +1096,7 @@
   "data": {
    "name": "Planetary Rendezvous",
    "rarity": "4",
-   "path": "harmony",
-   "skill_description": "Upon battle entry, if an ally deals the same DMG Type as the wearer, DMG dealt increases by 12/15/18/21/24%.",
-   "base_hp": 1058,
-   "base_atk": 423,
-   "base_def": 330
+   "path": "harmony"
   }
  },
  {
@@ -1507,11 +1107,7 @@
   "data": {
    "name": "Poised to Bloom",
    "rarity": "4",
-   "path": "harmony",
-   "skill_description": "Increases the wearer's ATK by 16/20/24/28/32%. Upon entering battle, if two or more characters follow the same Path, then these characters' CRIT DMG increases by 16/20/24/28/32%. Abilities of the same type cannot stack.",
-   "base_hp": 952,
-   "base_atk": 423,
-   "base_def": 396
+   "path": "harmony"
   }
  },
  {
@@ -1522,11 +1118,7 @@
   "data": {
    "name": "Post-Op Conversation",
    "rarity": "4",
-   "path": "abundance",
-   "skill_description": "Increases Energy Regeneration Rate of its wearer by 8/10/12/14/16% and increases Outgoing Healing when they use their Ultimate by 12/15/18/21/24%.",
-   "base_hp": 1058,
-   "base_atk": 423,
-   "base_def": 330
+   "path": "abundance"
   }
  },
  {
@@ -1537,11 +1129,7 @@
   "data": {
    "name": "Quid Pro Quo",
    "rarity": "4",
-   "path": "abundance",
-   "skill_description": "At the start of the wearer's turn, regenerates 8/10/12/14/16 Energy for a randomly chosen ally (excluding the wearer) whose current Energy is lower than 50%.",
-   "base_hp": 952,
-   "base_atk": 423,
-   "base_def": 396
+   "path": "abundance"
   }
  },
  {
@@ -1552,11 +1140,7 @@
   "data": {
    "name": "Reforged in Hellfire",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's Max HP by 30/38/45/53/60%. At the start of the wearer's turn, regenerates a fixed amount of 20 Energy. This effect can trigger 1 time each wave. After the wearer uses Skill to attack, inflicts the target with the \"Purgatory\" state, lasting for 2 turn(s). While in the \"Purgatory\" state, the target receives 30/38/45/53/60% increased CRIT DMG and 30/38/45/53/60% additionally increased CRIT DMG from the wearer.",
-   "base_hp": 1376,
-   "base_atk": 423,
-   "base_def": 463
+   "path": "nihility"
   }
  },
  {
@@ -1567,11 +1151,7 @@
   "data": {
    "name": "Reforged Remembrance",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases wearer's Effect Hit Rate by 40/45/50/55/60%. When the wearer deals DMG to an enemy inflicted with Wind Shear, Burn, Shock, or Bleed, they will individually gain 1 stack of Prophet. This effect can stack up to 4 times. In a single battle, each type of DoT can only generate 1 stack of Prophet. Every stack of Prophet increases wearer's ATK by 5/6/7/8/9% and the DoT dealt will ignore 7.2/7.9/8.6/9.3/10% of the target's DEF.",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "nihility"
   }
  },
  {
@@ -1582,11 +1162,7 @@
   "data": {
    "name": "Reminiscence",
    "rarity": "3",
-   "path": "remembrance",
-   "skill_description": "When memosprite's turn starts, the wearer and the memosprite each gain 1 stack of \"Commemoration.\" Each stack increases DMG dealt by 8/9/10/11/12%, stacking up to 4 time(s). \"Commemoration\" is removed from the wearer and the memosprite when the memosprite disappears.",
-   "base_hp": 635,
-   "base_atk": 423,
-   "base_def": 265
+   "path": "remembrance"
   }
  },
  {
@@ -1597,11 +1173,7 @@
   "data": {
    "name": "Resolution Shines As Pearls of Sweat",
    "rarity": "4",
-   "path": "nihility",
-   "skill_description": "When the wearer hits an enemy and if the hit enemy is not already Ensnared, then there is a 60/70/80/90/100% base chance to Ensnare the hit enemy. Ensnared enemies' DEF decreases by 12/13/14/15/16% for 1 turn(s).",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "nihility"
   }
  },
  {
@@ -1612,11 +1184,7 @@
   "data": {
    "name": "Return to Darkness",
    "rarity": "4",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's CRIT Rate by 12/15/18/21/24%. After a CRIT Hit, there is a 16/20/24/28/32% fixed chance to dispel 1 buff on the target enemy. This effect can only trigger once per attack.",
-   "base_hp": 846,
-   "base_atk": 529,
-   "base_def": 330
+   "path": "the_hunt"
   }
  },
  {
@@ -1638,11 +1206,7 @@
   "data": {
    "name": "River Flows in Spring",
    "rarity": "4",
-   "path": "the_hunt",
-   "skill_description": "After entering battle, increases the wearer's SPD by 8/9/10/11/12% and DMG by 12/15/18/21/24%. When the wearer takes DMG, this effect will disappear. This effect will resume after the end of the wearer's next turn.",
-   "base_hp": 846,
-   "base_atk": 476,
-   "base_def": 396
+   "path": "the_hunt"
   }
  },
  {
@@ -1653,11 +1217,7 @@
   "data": {
    "name": "Sagacity",
    "rarity": "3",
-   "path": "erudition",
-   "skill_description": "When the wearer uses their Ultimate, increases ATK by 24/30/36/42/48% for 2 turn(s).",
-   "base_hp": 740,
-   "base_atk": 370,
-   "base_def": 264
+   "path": "erudition"
   }
  },
  {
@@ -1668,11 +1228,7 @@
   "data": {
    "name": "Sailing Towards A Second Life",
    "rarity": "5",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's Break Effect by 60/70/80/90/100%. The Break DMG dealt by the wearer ignores 20/23/26/29/32% of the target's DEF. When the wearer's Break Effect in battle is at 150% or greater, increases their SPD by 12/14/16/18/20%.",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "the_hunt"
   }
  },
  {
@@ -1683,11 +1239,7 @@
   "data": {
    "name": "Scent Alone Stays True",
    "rarity": "5",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's Break Effect by 60/70/80/90/100%. After the wearer uses Ultimate to attack enemy targets, inflicts the targets with the \"Woefree\" state, lasting for 2 turn(s). While in \"Woefree,\" enemy targets take 10/12/14/16/18% increased DMG. The effect of increasing DMG taken is additionally boosted by 8/10/12/14/16% if the wearer's current Break Effect is 150% or higher.",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 529
+   "path": "abundance"
   }
  },
  {
@@ -1698,11 +1250,7 @@
   "data": {
    "name": "See You at the End",
    "rarity": "4",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's CRIT DMG by 24/28/32/36/40%. The Skill DMG and Follow-up ATK DMG dealt by the wearer increase by 24/28/32/36/40%.",
-   "base_hp": 953,
-   "base_atk": 529,
-   "base_def": 397
+   "path": "the_hunt"
   }
  },
  {
@@ -1713,11 +1261,7 @@
   "data": {
    "name": "Shadowburn",
    "rarity": "3",
-   "path": "remembrance",
-   "skill_description": "When the wearer summons memosprite for the first time in battle, recovers 1 Skill Point(s) and regenerates 12/14/16/18/20 Energy for this unit.",
-   "base_hp": 847,
-   "base_atk": 318,
-   "base_def": 265
+   "path": "remembrance"
   }
  },
  {
@@ -1728,11 +1272,7 @@
   "data": {
    "name": "Shadowed By Night",
    "rarity": "4",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's Break Effect by 28/35/42/49/56%. When entering battle or after dealing Break DMG, increases SPD by 8/9/10/11/12%, lasting for 2 turn(s). This effect can only trigger once per turn.",
-   "base_hp": 846,
-   "base_atk": 476,
-   "base_def": 396
+   "path": "the_hunt"
   }
  },
  {
@@ -1743,11 +1283,7 @@
   "data": {
    "name": "Shared Feeling",
    "rarity": "4",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's Outgoing Healing by 10/12.5/15/17.5/20%. When using Skill, regenerates 2/2/3/3/4 Energy for all allies.",
-   "base_hp": 952,
-   "base_atk": 423,
-   "base_def": 396
+   "path": "abundance"
   }
  },
  {
@@ -1758,11 +1294,7 @@
   "data": {
    "name": "Shattered Home",
    "rarity": "3",
-   "path": "destruction",
-   "skill_description": "Deals 20/25/30/35/40% increased DMG to any enemies whose HP is above 50%.",
-   "base_hp": 846,
-   "base_atk": 370,
-   "base_def": 198
+   "path": "destruction"
   }
  },
  {
@@ -1773,11 +1305,7 @@
   "data": {
    "name": "She Already Shut Her Eyes",
    "rarity": "5",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's Max HP by 24/28/32/36/40% and Energy Regeneration Rate by 12/14/16/18/20%. When the wearer's HP is decreased, increases the DMG of all allies by 9/10.5/12/13.5/15% for 2 turns. At the beginning of each wave, restores HP equal to 80/85/90/95/100% of HP already lost by the character themselves for team.",
-   "base_hp": 1270,
-   "base_atk": 423,
-   "base_def": 529
+   "path": "preservation"
   }
  },
  {
@@ -1788,11 +1316,7 @@
   "data": {
    "name": "Sleep Like the Dead",
    "rarity": "5",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's CRIT DMG by 30/35/40/45/50%. When the wearer's Basic ATK or Skill does not result in a CRIT Hit, increases their CRIT Rate by 36/42/48/54/60% for 1 turn(s). This effect can only trigger once every 3 turn(s).",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "the_hunt"
   }
  },
  {
@@ -1803,11 +1327,7 @@
   "data": {
    "name": "Sneering",
    "rarity": "3",
-   "path": "elation",
-   "skill_description": "When Aha Instant is activated, the wearer's Elation increases by 16/20/24/28/32%, lasting until Aha Instant ends.",
-   "base_hp": 741,
-   "base_atk": 370,
-   "base_def": 265
+   "path": "elation"
   }
  },
  {
@@ -1818,11 +1338,7 @@
   "data": {
    "name": "Solitary Healing",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's Break Effect by 20/25/30/35/40%. When the wearer unleashes their Ultimate, increases DoT dealt by the wearer by 24/30/36/42/48% for 2 turn(s). Defeating the target suffering from the wearer's DoT allows the wearer to regenerate 4/4.5/5/5.5/6 Energy.",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 396
+   "path": "nihility"
   }
  },
  {
@@ -1833,11 +1349,7 @@
   "data": {
    "name": "Something Irreplaceable",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's ATK by 24/28/32/36/40%. When the wearer defeats an enemy or is hit, immediately restores HP equal to 8/9/10/11/12% of the wearer's ATK. At the same time, the wearer's DMG is increased by 24/28/32/36/40% until the end of their next turn. This effect cannot stack and can only trigger 1 time per turn.",
-   "base_hp": 1164,
-   "base_atk": 582,
-   "base_def": 396
+   "path": "destruction"
   }
  },
  {
@@ -1848,11 +1360,7 @@
   "data": {
    "name": "Subscribe for More!",
    "rarity": "4",
-   "path": "the_hunt",
-   "skill_description": "Increases the DMG of the wearer's Basic ATK and Skill by 24/30/36/42/48%. This effect increases by an extra 24/30/36/42/48% when the wearer's current Energy reaches its max level.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "the_hunt"
   }
  },
  {
@@ -1874,11 +1382,7 @@
   "data": {
    "name": "Sweat Now, Cry Less",
    "rarity": "4",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's CRIT Rate by 12/14/16/18/20%. When the wearer's memosprite is on the field, increases the wearer and their memosprite's DMG dealt by 24/27/30/33/36%.",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 198
+   "path": "remembrance"
   }
  },
  {
@@ -1889,11 +1393,7 @@
   "data": {
    "name": "Swordplay",
    "rarity": "4",
-   "path": "the_hunt",
-   "skill_description": "For each time the wearer hits the same target, DMG dealt increases by 8/10/12/14/16%, stacking up to 5 time(s). This effect will be dispelled when the wearer changes targets.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "the_hunt"
   }
  },
  {
@@ -1904,11 +1404,7 @@
   "data": {
    "name": "Texture of Memories",
    "rarity": "5",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's Effect RES by 8/10/12/14/16%. If the wearer is attacked and has no Shield, they gain a Shield equal to 16/20/24/28/32% of their Max HP for 2 turn(s). This effect can only be triggered once every 3 turn(s). If the wearer has a Shield when attacked, the DMG they receive decreases by 12/15/18/21/24%.",
-   "base_hp": 1058,
-   "base_atk": 423,
-   "base_def": 529
+   "path": "preservation"
   }
  },
  {
@@ -1919,11 +1415,7 @@
   "data": {
    "name": "The Birth of the Self",
    "rarity": "4",
-   "path": "erudition",
-   "skill_description": "Increases DMG dealt by the wearer's follow-up attacks by 24/30/36/42/48%. If the current HP of the target enemy is below 50% of their Max HP, increases DMG dealt by follow-up attacks by an extra 24/30/36/42/48%.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "erudition"
   }
  },
  {
@@ -1934,11 +1426,7 @@
   "data": {
    "name": "The Day The Cosmos Fell",
    "rarity": "4",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's ATK by 16/18/20/22/24%. When the wearer uses an attack and affects no fewer than 2 attacked enemies with a corresponding Weakness, the wearer's CRIT DMG increases by 20/25/30/35/40% for 2 turn(s).",
-   "base_hp": 953,
-   "base_atk": 476,
-   "base_def": 331
+   "path": "erudition"
   }
  },
  {
@@ -1949,11 +1437,7 @@
   "data": {
    "name": "The Finale of a Lie",
    "rarity": "5",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's CRIT Rate by 18/21/24/27/30%. At the start of battle or for every 4 instance(s) of Follow-Up ATK the wearer uses, the wearer gains \"Umbra Devourer,\" lasting for 3 turn(s). While the wearer holds \"Umbra Devourer,\" increases ATK by 40/50/60/70/80% and increases the DMG taken by all enemies by 20/22/25/27/30%. Effects of the same type cannot stack.",
-   "base_hp": 846,
-   "base_atk": 635,
-   "base_def": 529
+   "path": "the_hunt"
   }
  },
  {
@@ -1964,11 +1448,7 @@
   "data": {
    "name": "The Flower Remembers",
    "rarity": "4",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's CRIT DMG by 24/28/32/36/40%. The CRIT DMG dealt by the wearer's memosprite increases by 24/28/32/36/40%.",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 331
+   "path": "remembrance"
   }
  },
  {
@@ -1979,11 +1459,7 @@
   "data": {
    "name": "The Forever Victual",
    "rarity": "4",
-   "path": "harmony",
-   "skill_description": "Increases the wearer's ATK by 16/20/24/28/32%. After the wearer uses Skill, increases ATK by 8/10/12/14/16%, stacking up to 3 times.",
-   "base_hp": 953,
-   "base_atk": 476,
-   "base_def": 331
+   "path": "harmony"
   }
  },
  {
@@ -1994,11 +1470,7 @@
   "data": {
    "name": "The Great Cosmic Enterprise",
    "rarity": "4",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's ATK by 8/10/12/14/16%. For every different Weakness Type an enemy target has, increases the DMG dealt by the wearer by 4/5/6/7/8%, up to a max of 7 Weakness Types.",
-   "base_hp": 953,
-   "base_atk": 476,
-   "base_def": 331
+   "path": "erudition"
   }
  },
  {
@@ -2009,11 +1481,7 @@
   "data": {
    "name": "The Hell Where Ideals Burn",
    "rarity": "5",
-   "path": "the_hunt",
-   "skill_description": "Increases the wearer's CRIT Rate by 16/20/24/28/32%. When entering battle and if the allies' Skill Points max limit is 6 or higher, increases the wearer's ATK by 40/50/60/70/80%. After the wearer uses a Skill, increases their ATK by 10/12/15/17/20%, stacking up to 4 time(s).",
-   "base_hp": 953,
-   "base_atk": 582,
-   "base_def": 529
+   "path": "the_hunt"
   }
  },
  {
@@ -2024,11 +1492,7 @@
   "data": {
    "name": "The Moles Welcome You",
    "rarity": "4",
-   "path": "destruction",
-   "skill_description": "When the wearer uses Basic ATK, Skill, or Ultimate to attack enemies, the wearer gains one stack of Mischievous. Each stack increases the wearer's ATK by 12/15/18/21/24%.",
-   "base_hp": 1058,
-   "base_atk": 476,
-   "base_def": 264
+   "path": "destruction"
   }
  },
  {
@@ -2039,11 +1503,7 @@
   "data": {
    "name": "The Seriousness of Breakfast",
    "rarity": "4",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's DMG by 12/15/18/21/24%. For every defeated enemy, the wearer's ATK increases by 4/5/6/7/8%, stacking up to 3 time(s).",
-   "base_hp": 846,
-   "base_atk": 476,
-   "base_def": 396
+   "path": "erudition"
   }
  },
  {
@@ -2054,11 +1514,7 @@
   "data": {
    "name": "The Story's Next Page",
    "rarity": "4",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's Max HP by 16/20/24/28/32%. After the wearer's memosprite attacks, the Outgoing Healing of the wearer and their memosprite increases by 12/15/18/21/24%, lasting for 1 turn(s).",
-   "base_hp": 1058,
-   "base_atk": 370,
-   "base_def": 397
+   "path": "remembrance"
   }
  },
  {
@@ -2069,11 +1525,7 @@
   "data": {
    "name": "The Unreachable Side",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's CRIT rate by 18/21/24/27/30% and increases their Max HP by 18/21/24/27/30%. When the wearer is attacked or consumes their own HP, their DMG increases by 24/28/32/36/40%. This effect is removed after the wearer uses an attack.",
-   "base_hp": 1270,
-   "base_atk": 582,
-   "base_def": 330
+   "path": "destruction"
   }
  },
  {
@@ -2084,11 +1536,7 @@
   "data": {
    "name": "This Is Me!",
    "rarity": "4",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's DEF by 16/20/24/28/32%. Increases the DMG of the wearer when they use their Ultimate by 60/75/90/105/120% of the wearer's DEF. This effect only apply 1 time per enemy target.",
-   "base_hp": 846,
-   "base_atk": 370,
-   "base_def": 529
+   "path": "preservation"
   }
  },
  {
@@ -2099,11 +1547,7 @@
   "data": {
    "name": "This Love, Forever",
    "rarity": "5",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's SPD by 18/21/24/27/30%. When the wearer's memosprite uses a Memosprite Skill on an ally, gains \"Blank,\" which increases DMG taken by all enemies by 10/12/14/16/18%. When the wearer's memosprite uses a Memosprite Skill on an enemy, gains \"Verse,\" which increases CRIT DMG of all allies by 16/19/22/25/28%. When the wearer's memosprite has both \"Blank\" and \"Verse,\" increases the effects of \"Blank\" and \"Verse\" by 60/65/70/75/80%.",
-   "base_hp": 1270,
-   "base_atk": 476,
-   "base_def": 463
+   "path": "remembrance"
   }
  },
  {
@@ -2114,11 +1558,7 @@
   "data": {
    "name": "Those Many Springs",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's Effect Hit Rate by 60/70/80/90/100%. After the wearer uses Basic ATK, Skill, or Ultimate to attack an enemy target, there is a 60% base chance to inflict \"Unarmored\" on the target. While in the Unarmored state, the enemy target receives 10/12/14/16/18% increased DMG, lasting for 2 turn(s). If the target is under a DoT state inflicted by the wearer, there is a 60% base chance to upgrade the \"Unarmored\" state inflicted by the wearer to the \"Cornered\" state, which additionally increases the DMG the target enemy receives by 14/16/18/20/22%, lasting for 2 turn(s). During this period, the wearer cannot inflict \"Unarmored\" on the target.",
-   "base_hp": 952,
-   "base_atk": 582,
-   "base_def": 529
+   "path": "nihility"
   }
  },
  {
@@ -2129,11 +1569,7 @@
   "data": {
    "name": "Though Worlds Apart",
    "rarity": "5",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's ATK by 64/80/96/112/128%. When the wearer uses Ultimate, restores HP equal to 10/13/15/18/20% of the wearer's ATK for all allies, and additionally restores HP equal to 10/13/15/18/20% of the wearer's ATK for the character with the lowest current HP, and grants \"Redoubt\" to all allies for 3 turn(s). Targets with \"Redoubt\" deal 24/30/36/42/48% increased DMG, which further increases by 12/15/18/21/24% if the targets have summons.",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "preservation"
   }
  },
  {
@@ -2144,11 +1580,7 @@
   "data": {
    "name": "Thus Burns the Dawn",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "The wearer's base SPD increases by 12/14/16/18/20. When the wearer deals DMG, ignores 18/22/27/31/36% of the target's DEF. After the wearer uses Ultimate, obtains \"Blazing Sun,\" which is removed at the start of their turn. While \"Blazing Sun\" is in possession, increases the wearer's DMG dealt by 60/78/96/114/132%.",
-   "base_hp": 953,
-   "base_atk": 687,
-   "base_def": 397
+   "path": "destruction"
   }
  },
  {
@@ -2159,11 +1591,7 @@
   "data": {
    "name": "Time Waits for No One",
    "rarity": "5",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's Max HP by 18/21/24/27/30% and Outgoing Healing by 12/14/16/18/20%. When the wearer heals allies, record the amount of Outgoing Healing. When any ally launches an attack, a random attacked enemy takes Additional DMG equal to 36/42/48/54/60% of the recorded Outgoing Healing value. This Additional DMG is of the same Type as the wearer's, is not affected by other buffs, and can only occur 1 time per turn",
-   "base_hp": 1270,
-   "base_atk": 476,
-   "base_def": 463
+   "path": "abundance"
   }
  },
  {
@@ -2174,11 +1602,7 @@
   "data": {
    "name": "Time Woven Into Gold",
    "rarity": "5",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's base SPD by 12/14/16/18/20. After the wearer and the wearer's memosprite attacks, the wearer gains 1 stack of \"Brocade.\" Each stack of \"Brocade\" increases the wearer's and their memosprite's CRIT DMG by 9/10.5/12/13.5/15%, stacking up to 6 time(s). When reaching maximum stacks, each \"Brocade\" stack additionally increases Basic ATK DMG dealt by 9/10.5/12/13.5/15%.",
-   "base_hp": 1058,
-   "base_atk": 635,
-   "base_def": 397
+   "path": "remembrance"
   }
  },
  {
@@ -2189,11 +1613,7 @@
   "data": {
    "name": "To Evernight's Stars",
    "rarity": "5",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's Max HP by 30/38/45/53/60%. When the wearer's memosprite uses an ability, the wearer gains \"Noctis.\" While the wearer has \"Noctis,\" all allies' memosprites ignore 20/22/25/27/30% of the target's DEF when dealing DMG. Increases the DMG dealt by the wearer and their memosprite by 30/38/45/53/60%. When the wearer's memosprite disappears, the wearer recovers 8/10/12/14/16 Energy. Similar effects cannot stack.",
-   "base_hp": 1164,
-   "base_atk": 529,
-   "base_def": 463
+   "path": "remembrance"
   }
  },
  {
@@ -2204,11 +1624,7 @@
   "data": {
    "name": "Today Is Another Peaceful Day",
    "rarity": "4",
-   "path": "erudition",
-   "skill_description": "After entering battle, increases the wearer's DMG based on their Max Energy. DMG increases by 0.2/0.25/0.3/0.35/0.4% per point of Energy, up to 160 Energy.",
-   "base_hp": 846,
-   "base_atk": 529,
-   "base_def": 330
+   "path": "erudition"
   }
  },
  {
@@ -2219,11 +1635,7 @@
   "data": {
    "name": "Today's Good Luck",
    "rarity": "4",
-   "path": "elation",
-   "skill_description": "Increases the wearer's CRIT Rate by 12/14/16/18/20%. When the wearer uses an Elation Skill, increases Elation by 12/14/16/18/20%, stacking up to 2 times.",
-   "base_hp": 953,
-   "base_atk": 529,
-   "base_def": 397
+   "path": "elation"
   }
  },
  {
@@ -2234,11 +1646,7 @@
   "data": {
    "name": "Tomorrow, Together",
    "rarity": "4",
-   "path": "elation",
-   "skill_description": "Increases the wearer's CRIT DMG by 12/15/18/21/24%. After the wearer uses their Ultimate, increases the Elation of all allies by 8/9/10/11/12%, lasting for 1 turn(s).",
-   "base_hp": 953,
-   "base_atk": 476,
-   "base_def": 331
+   "path": "elation"
   }
  },
  {
@@ -2249,11 +1657,7 @@
   "data": {
    "name": "Trend of the Universal Market",
    "rarity": "4",
-   "path": "preservation",
-   "skill_description": "Increases the wearer's DEF by 16/20/24/28/32%. When the wearer is attacked, there is a 100/105/110/115/120% base chance to Burn the enemy. For each turn, the wearer deals DoT that is equal to 40/50/60/70/80% of the wearer's DEF for 2 turn(s).",
-   "base_hp": 1058,
-   "base_atk": 370,
-   "base_def": 396
+   "path": "preservation"
   }
  },
  {
@@ -2264,11 +1668,7 @@
   "data": {
    "name": "Under the Blue Sky",
    "rarity": "4",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's ATK by 16/20/24/28/32%. When the wearer defeats an enemy, the wearer's CRIT Rate increases by 12/15/18/21/24% for 3 turn(s).",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "destruction"
   }
  },
  {
@@ -2279,11 +1679,7 @@
   "data": {
    "name": "Until the Flowers Bloom Again",
    "rarity": "5",
-   "path": "elation",
-   "skill_description": "Increases the wearer's CRIT DMG by 60/75/90/105/120% and Energy Regeneration Rate by 10/11.5/13/14.5/16%. When the wearer's Max Energy is greater than 120, for every 10 points of Max Energy that exceeds this amount, further increases Energy Regeneration Rate by 0.3%. Up to a maximum of 360 points of excess Max Energy can be taken into account. When the wearer uses Elation Skill, increases the DMG received by all enemies by 15/18.8/22.5/26.3/30% for 2 turn(s). Effects of the same type cannot stack.",
-   "base_hp": 953,
-   "base_atk": 635,
-   "base_def": 463
+   "path": "elation"
   }
  },
  {
@@ -2294,11 +1690,7 @@
   "data": {
    "name": "Unto Tomorrow's Morrow",
    "rarity": "4",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's Outgoing Healing by 12/15/18/21/24%. When an ally target's current HP percentage is greater than or equal to 50%, increases the DMG dealt by 12/14/16/18/20%.",
-   "base_hp": 1058,
-   "base_atk": 476,
-   "base_def": 397
+   "path": "abundance"
   }
  },
  {
@@ -2309,11 +1701,7 @@
   "data": {
    "name": "Victory In a Blink",
    "rarity": "4",
-   "path": "remembrance",
-   "skill_description": "Increases the wearer's CRIT DMG by 12/15/18/21/24%. When the wearer's memosprite uses an ability on any ally target, increases all ally targets' DMG dealt by 8/10/12/14/16%, lasting for 3 turn(s).",
-   "base_hp": 847,
-   "base_atk": 476,
-   "base_def": 397
+   "path": "remembrance"
   }
  },
  {
@@ -2324,11 +1712,7 @@
   "data": {
    "name": "Void",
    "rarity": "3",
-   "path": "nihility",
-   "skill_description": "At the start of battle, increases the wearer's Effect Hit Rate by 20/25/30/35/40% for 3 turn(s).",
-   "base_hp": 846,
-   "base_atk": 317,
-   "base_def": 264
+   "path": "nihility"
   }
  },
  {
@@ -2339,11 +1723,7 @@
   "data": {
    "name": "Warmth Shortens Cold Nights",
    "rarity": "4",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's Max HP by 16/20/24/28/32%. When using Basic ATK or Skill, restores all allies' HP by an amount equal to 2/2.5/3/3.5/4% of their respective Max HP.",
-   "base_hp": 1058,
-   "base_atk": 370,
-   "base_def": 396
+   "path": "abundance"
   }
  },
  {
@@ -2354,11 +1734,7 @@
   "data": {
    "name": "We Are Wildfire",
    "rarity": "4",
-   "path": "preservation",
-   "skill_description": "At the start of the battle, the DMG dealt to all allies decreases by 8/10/12/14/16% for 5 turn(s). At the same time, immediately restores HP to all allies equal to 30/35/40/45/50% of the respective HP difference between the characters' Max HP and current HP.",
-   "base_hp": 740,
-   "base_atk": 476,
-   "base_def": 463
+   "path": "preservation"
   }
  },
  {
@@ -2369,11 +1745,7 @@
   "data": {
    "name": "We Will Meet Again",
    "rarity": "4",
-   "path": "nihility",
-   "skill_description": "After the wearer uses Basic ATK or Skill, the wearer deals 48/60/72/84/96% of ATK as additional DMG to a random enemy that is attacked by abilities.",
-   "base_hp": 846,
-   "base_atk": 529,
-   "base_def": 330
+   "path": "nihility"
   }
  },
  {
@@ -2384,11 +1756,7 @@
   "data": {
    "name": "Welcome to the Cosmic City",
    "rarity": "5",
-   "path": "elation",
-   "skill_description": "Increases the wearer's SPD by 18/21/24/27/30%, and the Elation DMG dealt ignores 20/24/2/32/36% of the target's DEF. When the wearer uses Ultimate on themselves, gains 20/25/30/35/40 \"Punchline.\" This effect can be triggered up to 1 time, and will be reset after using Basic ATK 3 time(s).",
-   "base_hp": 1164,
-   "base_atk": 476,
-   "base_def": 529
+   "path": "elation"
   }
  },
  {
@@ -2399,11 +1767,7 @@
   "data": {
    "name": "What Is Real?",
    "rarity": "4",
-   "path": "abundance",
-   "skill_description": "Increases the wearer's Break Effect by 24/30/36/42/48%. Wearer's Basic ATKs restore an amount equal to 2/2.5/3/3.5/4% of Max HP plus 800 for themselves.",
-   "base_hp": 1058,
-   "base_atk": 423,
-   "base_def": 331
+   "path": "abundance"
   }
  },
  {
@@ -2414,11 +1778,7 @@
   "data": {
    "name": "When She Decided to See",
    "rarity": "5",
-   "path": "elation",
-   "skill_description": "Increases the wearer's SPD by 18/21/24/27/30%. When the wearer enters combat or uses Ultimate on an ally target, the wearer gains \"Great Fortune\" for 3 turn(s). While the wearer holds \"Great Fortune,\" all allies' CRIT Rate increases by 10/11/12/13/14%, CRIT DMG increases by 30/38/45/53/60%, and the wearer's Energy Regeneration Rate increases by 12/14/16/18/20%.\n\nAt the start of each wave, the wearer regenerates a fixed amount of 15 Energy.",
-   "base_hp": 1058,
-   "base_atk": 529,
-   "base_def": 529
+   "path": "elation"
   }
  },
  {
@@ -2429,11 +1789,7 @@
   "data": {
    "name": "Whereabouts Should Dreams Rest",
    "rarity": "5",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's Break Effect by 60/70/80/90/100%. When the wearer deals Break DMG to an enemy target, inflicts Routed on the enemy, lasting for 2 turn(s). Targets afflicted with Routed receive 24/28/32/36/40% increased Break DMG from the wearer, and their SPD is lowered by 20%. Effects of the similar type cannot be stacked.",
-   "base_hp": 1164,
-   "base_atk": 476,
-   "base_def": 529
+   "path": "destruction"
   }
  },
  {
@@ -2444,11 +1800,7 @@
   "data": {
    "name": "Why Does the Ocean Sing",
    "rarity": "5",
-   "path": "nihility",
-   "skill_description": "Increases the wearer's Effect Hit Rate by 40/45/50/55/60%. When an enemy target gets inflicted with a debuff by the wearer, there is a 80% base chance for them to enter \"Enthrallment,\" lasting for 3 turn(s). Effects of the same type cannot stack. While the target is in \"Enthrallment,\" for every 1 debuff applied by the wearer on the target, increases the target's received DoT by 5/6.3/7.5/8.7/10%, stacking up to 6 time(s). When the target gets attacked by an ally, increases the attacker's SPD by 10/12.5/15/17.5/20% for 3 turn(s). When the wearer gets knocked down, removes all \"Enthrallment.\"",
-   "base_hp": 953,
-   "base_atk": 635,
-   "base_def": 463
+   "path": "nihility"
   }
  },
  {
@@ -2459,11 +1811,7 @@
   "data": {
    "name": "Woof! Walk Time!",
    "rarity": "4",
-   "path": "destruction",
-   "skill_description": "Increases the wearer's ATK by 10/12.5/15/17.5/20%, and increases their DMG to enemies afflicted with Burn or Bleed by 16/20/24/28/32%. This also applies to DoT.",
-   "base_hp": 952,
-   "base_atk": 476,
-   "base_def": 330
+   "path": "destruction"
   }
  },
  {
@@ -2474,11 +1822,7 @@
   "data": {
    "name": "Worrisome, Blissful",
    "rarity": "5",
-   "path": "the_hunt",
-   "skill_description": "Increase the wearer's CRIT Rate by 18/21/24/27/30% and their follow-up attacks' DMG by 30/35/40/45/50%. After the wearer uses a follow-up attack, apply the Tame state to the target, stacking up to 2 stacks. When allies hit enemy targets under the Tame state, every Tame stack increases the CRIT DMG dealt by 12/14/16/18/20%.",
-   "base_hp": 1058,
-   "base_atk": 582,
-   "base_def": 463
+   "path": "the_hunt"
   }
  },
  {
@@ -2489,11 +1833,7 @@
   "data": {
    "name": "Yet Hope Is Priceless",
    "rarity": "5",
-   "path": "erudition",
-   "skill_description": "Increases the wearer's CRIT Rate by 16/19/22/25/28%. While the wearer is in battle, for every 20% CRIT DMG that exceeds 120%, the DMG dealt by follow-up attack increases by 12/14/16/18/20%. This effect can stack up to 4 time(s). When the battle starts or after the wearer uses their Basic ATK, enables Ultimate or the DMG dealt by follow-up attack to ignore 20/24/28/32/36% of the target's DEF, lasting for 2 turn(s).",
-   "base_hp": 952,
-   "base_atk": 582,
-   "base_def": 529
+   "path": "erudition"
   }
  }
 ]

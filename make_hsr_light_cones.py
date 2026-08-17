@@ -26,7 +26,15 @@ and writes:
 
   seed_data/hsr_light_cones_import.json
       One row per light cone in the shape /admin/items/import expects:
-      {game, section, schema, slug, data}.
+      {game, section, schema, slug, data} — name, rarity and path only.
+
+The effect text and the HP/ATK/DEF are parsed (they validate the file's shape,
+and the counts get reported) but deliberately not imported: both are curves,
+not values. The slash-separated numbers in an effect are its five superimpose
+levels, and the stats depend on the cone's level and ascension. Storing one
+snapshot of either in a flat field would state as fact something that is only
+true at one point on the curve, so they stay in the raw file until there is a
+schema that can express the scaling.
 
 The source gives no availability, release version/date, skill name, or art, so
 those fields are left unset rather than guessed — see seed_hsr_light_cones.py
@@ -150,16 +158,17 @@ def main():
 
     rows, placeholder = [], []
     for e in entries:
-        data = {"name": e["name"], "rarity": e["rarity"], "path": e["path"]}
-        # "Coming Soon!" is the source's placeholder, not an effect — an empty
-        # field renders as "not filled in", which is the honest state.
-        if e["stats"]:
-            data["skill_description"] = e["effect"]
-            data.update(e["stats"])
-        else:
+        if not e["stats"]:
             placeholder.append(e["name"])
         rows.append(
-            {"game": GAME, "section": "light-cones", "schema": "Light Cones", "slug": e["slug"], "data": data}
+            {
+                "game": GAME,
+                "section": "light-cones",
+                "schema": "Light Cones",
+                "slug": e["slug"],
+                # Effect and stats are scaling curves — see the module docstring.
+                "data": {"name": e["name"], "rarity": e["rarity"], "path": e["path"]},
+            }
         )
 
     rows.sort(key=lambda r: r["slug"])
@@ -175,8 +184,9 @@ def main():
     print("%-32s %d rows" % (os.path.basename(OUT), len(rows)))
     print("  rarity: %s" % ", ".join("%s★ %d" % (k, by_rarity[k]) for k in sorted(by_rarity)))
     print("  path:   %s" % ", ".join("%s %d" % (k, by_path[k]) for k in sorted(by_path)))
+    print("  effect + HP/ATK/DEF parsed but not imported (scaling curves)")
     if placeholder:
-        print("  no effect/stats published yet (left blank): %s" % ", ".join(placeholder))
+        print("  not published at the source yet: %s" % ", ".join(placeholder))
     new = [e["name"] for e in entries if e["is_new"]]
     if new:
         print("  flagged New by the source: %s" % ", ".join(new))
