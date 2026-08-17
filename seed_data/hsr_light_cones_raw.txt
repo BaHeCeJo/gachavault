@@ -1,0 +1,2831 @@
+A Dream Scented in Wheat
+A Dream Scented in Wheat
+Rarity: 4★
+
+Path: Erudition
+
+Increases the wearer's CRIT Rate by 12/14/16/18/20%. The Ultimate DMG and Follow-up ATK DMG dealt by the wearer increase by 24/28/32/36/40%.
+
+HP
+HP
++953
+ATK
+ATK
++529
+DEF
+DEF
++397
+A Grounded Ascent
+A Grounded Ascent
+Rarity: 5★
+
+Path: Harmony
+
+After the wearer uses Skill or Ultimate on one ally character, the wearer regenerates 6/6.5/7/7.5/8 Energy and the ability's target receives 1 stack of "Hymn" for 3 turn(s), stacking up to 3 time(s). Each stack of "Hymn" increases its holder's DMG dealt by 15/17.25/19.5/21.75/24%. After every 2 instance(s) of Skill or Ultimate the wearer uses on one ally character, recovers 1 Skill Point.
+
+HP
+HP
++1164
+ATK
+ATK
++476
+DEF
+DEF
++529
+A Secret Vow
+A Secret Vow
+Rarity: 4★
+
+Path: Destruction
+
+Increases DMG dealt by the wearer by 20/25/30/35/40%. The wearer also deals an extra 20/25/30/35/40% of DMG to enemies whose current HP percentage is equal to or higher than the wearer's current HP percentage.
+
+HP
+HP
++1058
+ATK
+ATK
++476
+DEF
+DEF
++264
+A Star That Lights the Night
+A Star That Lights the Night
+Rarity: 5★
+
+Path: Erudition
+
+The wearer ignores 32/36/40/44/48% of the target's DEF when dealing DMG. When the wearer uses an Assist Skill, they regenerate 6 Energy and gain "Sail," lasting for 2 turns and stacking up to 3 time(s). Each stack of "Sail" increases Assist Skill DMG by 20/25/30/35/40%. When "Sail" reaches 3 stacks, each stack of "Sail" increases Ultimate DMG by 20/25/30/35/40%.
+
+HP
+HP
++847
+ATK
+ATK
++635
+DEF
+DEF
++529
+A Thankless Coronation
+A Thankless Coronation
+Rarity: 5★
+
+Path: Destruction
+
+Increases the wearer's CRIT DMG by 36/45/54/63/72%. When using Ultimate, increases the wearer's ATK by 40/50/60/70/80%, and if the wearer's Max Energy is greater than or equal to 300, regenerates a fixed amount of Energy equal to 10% of the wearer's Max Energy and once again increases the wearer's ATK by 40/50/60/70/80%, lasting for 2 turns.
+
+HP
+HP
++953
+ATK
+ATK
++582
+DEF
+DEF
++529
+A Trail of Bygone Blood
+A Trail of Bygone Blood
+Rarity: 4★
+
+Path: Destruction
+
+Increases the wearer's CRIT Rate by 12/14/16/18/20%. The Skill DMG and Ultimate DMG dealt by the wearer increase by 24/28/32/36/40%.
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++331
+Adversarial
+Adversarial
+Rarity: 3★
+
+Path: Hunt
+
+When the wearer defeats an enemy, increases SPD by 10/12/14/16/18% for 2 turn(s)
+
+HP
+HP
++740
+ATK
+ATK
++370
+DEF
+DEF
++264
+After the Charmony Fall
+After the Charmony Fall
+Rarity: 4★
+
+Path: Erudition
+
+Increases the wearer's Break Effect by 28/35/42/49/56%. After the wearer uses Ultimate, increases SPD by 8/10/12/14/16, lasting for 2 turn(s).
+
+HP
+HP
++847
+ATK
+ATK
++476
+DEF
+DEF
++397
+Along the Passing Shore
+Along the Passing Shore
+Rarity: 5★
+
+Path: Nihility
+
+Increases the wearer's CRIT DMG by 36/42/48/54/60%. When the wearer hits an enemy target, inflicts Mirage Fizzle on the enemy, lasting for 1 turn. Each time the wearer attacks, this effect can only trigger 1 time on each target. The wearer deals 24/28/32/36/40% increased DMG to targets afflicted with Mirage Fizzle, and the DMG dealt by the wearer's Ultimate additionally increases by 24/28/32/36/40%.
+
+HP
+HP
++1058
+ATK
+ATK
++635
+DEF
+DEF
++396
+Amber
+Amber
+Rarity: 3★
+
+Path: Preservation
+
+Increases the wearer's DEF by 16/20/24/28/32%. If the wearer's current HP is lower than 50%, increases their DEF by a further 16/20/24/28/32%.
+
+HP
+HP
++846
+ATK
+ATK
++264
+DEF
+DEF
++330
+An Instant Before A Gaze
+An Instant Before A Gaze
+Rarity: 5★
+
+Path: Erudition
+
+Increases the wearer's CRIT DMG by 36/42/48/54/60%. When the wearer uses their Ultimate, the wearer's Ultimate DMG increases based on their Max Energy; Ultimate DMG increases by 0.36/0.42/0.48/0.54/0.6% per point of Energy, up to 180 Energy.
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Arrows
+Arrows
+Rarity: 3★
+
+Path: Hunt
+
+At the beginning of the battle, increases the wearer's CRIT Rate by 12/15/18/21/24% for 3 turn(s).
+
+HP
+HP
++846
+ATK
+ATK
++317
+DEF
+DEF
++264
+Baptism of Pure Thought
+Baptism of Pure Thought
+Rarity: 5★
+
+Path: Hunt
+
+Increases the wearer's CRIT DMG by 20/23/26/29/32%. For every debuff on the enemy target, the wearer's CRIT DMG dealt against this target increases by 8/9/10/11/12%, stacking up to 3 times. When using Ultimate to attack the enemy target, the wearer receives the Disputation effect, which increases DMG dealt by 36/42/48/54/60% and enables their follow-up attacks to ignore 24/28/32/36/40% of the target's DEF. This effect lasts for 2 turns.
+
+HP
+HP
++952
+ATK
+ATK
++582
+DEF
+DEF
++529
+Before Dawn
+Before Dawn
+Rarity: 5★
+
+Path: Erudition
+
+Increases the wearer's CRIT DMG by 36/42/48/54/60%. Increases the wearer's Skill and Ultimate DMG by 18/21/24/27/30%. After the wearer uses their Skill or Ultimate, they gain Somnus Corpus. Upon triggering a follow-up attack, Somnus Corpus will be consumed and the follow-up attack DMG increases by 48/56/64/72/80%.
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Before the Tutorial Mission Starts
+Before the Tutorial Mission Starts
+Rarity: 4★
+
+Path: Nihility
+
+Increases the wearer's Effect Hit Rate by 20/25/30/35/40%. When the wearer attacks enemies that have reduced DEF, regenerates 4/5/6/7/8 Energy.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Boundless Choreo
+Boundless Choreo
+Rarity: 4★
+
+Path: Nihility
+
+Increase the wearer's CRIT Rate by 8/10/12/14/16%. The wearer deals 24/30/36/42/48% more CRIT DMG to enemies that are currently DEF reduced or Slowed.
+
+HP
+HP
++953
+ATK
+ATK
++476
+DEF
+DEF
++331
+Brighter Than the Sun
+Brighter Than the Sun
+Rarity: 5★
+
+Path: Destruction
+
+Increases the wearer's CRIT Rate by 18/21/24/27/30%. When the wearer uses their Basic ATK, they will gain 1 stack of Dragon's Call for 2 turns. Each stack of Dragon's Call increases the wearer's ATK by 18/21/24/27/30% and Energy Regeneration Rate by 6/7/8/9/10%. Dragon's Call can be stacked up to 2 times.
+
+HP
+HP
++1058
+ATK
+ATK
++635
+DEF
+DEF
++396
+But the Battle Isn't Over
+But the Battle Isn't Over
+Rarity: 5★
+
+Path: Harmony
+
+Increases the wearer's Energy Regeneration Rate by 10/12/14/16/18% and regenerates 1 Skill Point when the wearer uses their Ultimate on an ally. This effect can be triggered after every 2 uses of the wearer's Ultimate. When the wearer uses their Skill, the next ally taking action (except the wearer) deals 30/35/40/45/50% more DMG for 1 turn(s).
+
+HP
+HP
++1164
+ATK
+ATK
++529
+DEF
+DEF
++463
+Carve the Moon, Weave the Clouds
+Carve the Moon, Weave the Clouds
+Rarity: 4★
+
+Path: Harmony
+
+At the start of the battle and whenever the wearer's turn begins, one of the following effects is applied randomly: All allies' ATK increases by 10/12.5/15/17.5/20%, all allies' CRIT DMG increases by 12/15/18/21/24%, or all allies' Energy Regeneration Rate increases by 6/7.5/9/10.5/12%. The applied effect cannot be identical to the last effect applied, and will replace the previous effect. The applied effect will be removed when the wearer has been knocked down. Effects of the similar type cannot be stacked.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Chorus
+Chorus
+Rarity: 3★
+
+Path: Harmony
+
+After entering battle, increases the ATK of all allies by 8/9/10/11/12%. Effects of the same type cannot stack.
+
+HP
+HP
++846
+ATK
+ATK
++317
+DEF
+DEF
++264
+Collapsing Sky
+Collapsing Sky
+Rarity: 3★
+
+Path: Destruction
+
+Increases the wearer's Basic ATK and Skill DMG by 20/25/30/35/40%.
+
+HP
+HP
++846
+ATK
+ATK
++370
+DEF
+DEF
++198
+Concert for Two
+Concert for Two
+Rarity: 4★
+
+Path: Preservation
+
+Increases the wearer's DEF by 16/20/24/28/32%. For every on-field character that has a Shield, the DMG dealt by the wearer increases by 4/5/6/7/8%.
+
+HP
+HP
++952
+ATK
+ATK
++370
+DEF
+DEF
++463
+Cornucopia
+Cornucopia
+Rarity: 3★
+
+Path: Abundance
+
+When the wearer uses their Skill or Ultimate, their Outgoing Healing increases by 12/15/18/21/24%.
+
+HP
+HP
++952
+ATK
+ATK
++264
+DEF
+DEF
++264
+Cruising in the Stellar Sea
+Cruising in the Stellar Sea
+Rarity: 5★
+
+Path: Hunt
+
+Increases the wearer's CRIT rate by 8/10/12/14/16%, and increases their CRIT rate against enemies with HP less than or equal to 50% by an extra 8/10/12/14/16%. When the wearer defeats an enemy, their ATK is increased by 20/25/30/35/40% for 2 turn(s).
+
+HP
+HP
++952
+ATK
+ATK
++529
+DEF
+DEF
++463
+Dance at Sunset
+Dance at Sunset
+Rarity: 5★
+
+Path: Destruction
+
+Greatly increases the odds that the wearer will be attacked and increases the wearer's CRIT DMG by 36/42/48/54/60%. After the wearer uses their Ultimate, they receive 1 stack of Firedance, lasting for 2 turns and up to 2 stacks. Each stack of Firedance increases the DMG dealt by the wearer's follow-up attack by 36/42/48/54/60%.
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Dance! Dance! Dance!
+Dance! Dance! Dance!
+Rarity: 4★
+
+Path: Harmony
+
+When the wearer uses their Ultimate, all allies' actions are Advanced Forward by 16/18/20/22/24%
+
+HP
+HP
++952
+ATK
+ATK
++423
+DEF
+DEF
++396
+Darting Arrow
+Darting Arrow
+Rarity: 3★
+
+Path: Hunt
+
+When the wearer defeats an enemy, increase ATK by 24/30/36/42/48% for 3 turn(s).
+
+HP
+HP
++740
+ATK
+ATK
++370
+DEF
+DEF
++264
+Data Bank
+Data Bank
+Rarity: 3★
+
+Path: Erudition
+
+Increases the wearer's Ultimate DMG by 28/35/42/49/56%.
+
+HP
+HP
++740
+ATK
+ATK
++370
+DEF
+DEF
++264
+Day One of My New Life
+Day One of My New Life
+Rarity: 4★
+
+Path: Preservation
+
+Increases the wearer's DEF by 16/18/20/22/24%. After entering battle, increases DMG RES of all allies by 8/9/10/11/12%. Effects of the same type cannot stack.
+
+HP
+HP
++952
+ATK
+ATK
++370
+DEF
+DEF
++463
+Dazzled by a Flowery World
+Dazzled by a Flowery World
+Rarity: 5★
+
+Path: Elation
+
+Increases the wearer's CRIT DMG by 48/56/64/72/80%. While the wearer is on the field, for every 1 Elation character in the team, increases the Skill Point upper limit by 1, up to a max increase of 3. For every 1 Skill Point the wearer consumes, enables the Elation DMG dealt by this unit to ignore 5/6/7/8/9% of enemy targets' DEF, stacking up to 4 times. If 4 or more Skill Points are consumed in the same turn, the wearer gains "Stream Promo," which increases all allies' Elation by 20/24/28/32/36%. Light Cone effects of the same type cannot stack.
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Defense
+Defense
+Rarity: 3★
+
+Path: Preservation
+
+When the wearer unleashes their Ultimate, they restore HP by 18/21/24/27/30% of their Max HP.
+
+HP
+HP
++952
+ATK
+ATK
++264
+DEF
+DEF
++264
+Destiny's Threads Forewoven
+Destiny's Threads Forewoven
+Rarity: 4★
+
+Path: Preservation
+
+Increases the wearer's Effect RES by 12/14/16/18/20%. For every 100 of DEF the wearer has, increases the DMG dealt by 0.8/0.9/1/1.1/1.2% to a max increase of 32/36/40/44/48%.
+
+HP
+HP
++952
+ATK
+ATK
++370
+DEF
+DEF
++463
+Dream's Montage
+Dream's Montage
+Rarity: 4★
+
+Path: Abundance
+
+Increases the wearer's SPD by 8/9/10/11/12%. After attacking enemy targets that are Weakness Broken, regenerates 3/3.5/4/4.5/5 Energy. This effect can trigger up to 2 time(s) per turn.
+
+HP
+HP
++953
+ATK
+ATK
++423
+DEF
+DEF
++397
+Dreamville Adventure
+Dreamville Adventure
+Rarity: 4★
+
+Path: Harmony
+
+After the wearer uses a Basic ATK, Skill, or Ultimate, all allies gain Childishness, which increases the DMG dealt by the corresponding ability they used by 12/14/16/18/20%. Childishness only takes effect with the most recent ability used by the wearer and cannot be stacked.
+
+HP
+HP
++953
+ATK
+ATK
++423
+DEF
+DEF
++397
+Earthly Escapade
+Earthly Escapade
+Rarity: 5★
+
+Path: Harmony
+
+Increases the wearer's CRIT DMG by 32/39/46/52/60%. At the start of the battle, the wearer gains Mask, lasting for 3 turn(s). While the wearer has Mask, the wearer's allies have their CRIT Rate increased by 10/11/12/13/14% and their CRIT DMG increased by 28/35/42/49/56%. For every 1 Skill Point the wearer recovers (including Skill Points that exceed the limit), they gain 1 stack of Radiant Flame. And when the wearer has 4 stacks of Radiant Flame, all the stacks are removed, and they gain Mask, lasting for 4 turn(s).
+
+HP
+HP
++1164
+ATK
+ATK
++529
+DEF
+DEF
++463
+Echoes of the Coffin
+Echoes of the Coffin
+Rarity: 5★
+
+Path: Abundance
+
+Increases the wearer's ATK by 24/28/32/36/40%. After the wearer uses an attack, for each different enemy target the wearer hits, regenerates 3/3.5/4/4.5/5 Energy. Each attack can regenerate Energy up to 3 time(s) this way. After the wearer uses their Ultimate, all allies gain 12/14/16/18/20 SPD for 1 turn.
+
+HP
+HP
++1164
+ATK
+ATK
++582
+DEF
+DEF
++396
+Elation Brimming With Blessings
+Elation Brimming With Blessings
+Rarity: 5★
+
+Path: Elation
+
+Increases the wearer's ATK by 20/25/30/35/40%. After the wearer uses Skill or Ultimate on one ally character, increases the target's Elation stat by 12/15/18/21/24%for 2 turn(s).
+
+HP
+HP
++953
+ATK
+ATK
++529
+DEF
+DEF
++463
+Epoch Etched in Golden Blood
+Epoch Etched in Golden Blood
+Rarity: 5★
+
+Path: Harmony
+
+Increases the wearer's ATK by 64/80/96/112/128%. After using Ultimate to attack, recovers 1 Skill Point(s). After the wearer uses their Skill on one ally character, increases the Skill DMG dealt by the target by 54/67.5/81/94.5/108% for 3 turn(s).
+
+HP
+HP
++953
+ATK
+ATK
++635
+DEF
+DEF
++463
+Eternal Calculus
+Eternal Calculus
+Rarity: 5★
+
+Path: Erudition
+
+Increases the wearer's ATK by 8/9/10/11/12%. After using an attack, for each enemy target hit, additionally increases ATK by 4/5/6/7/8%. This effect can stack 5 times and lasts until the next attack. If there are 3 or more enemy targets hit, this unit's SPD increases by 8/10/12/14/16%, lasting for 1 turn(s).
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++396
+Eyes of the Prey
+Eyes of the Prey
+Rarity: 4★
+
+Path: Nihility
+
+Increases Effect Hit Rate of its wearer by 20/25/30/35/40% and increases DoT by 24/30/36/42/48%.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Fermata
+Fermata
+Rarity: 4★
+
+Path: Nihility
+
+Increases the wearer's Break Effect by 16/20/24/28/32%, and increases their DMG to enemies afflicted with Shock or Wind Shear by 16/20/24/28/32%. This also applies to DoT.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Final Victor
+Final Victor
+Rarity: 4★
+
+Path: Hunt
+
+Increases the wearer's ATK by 12/14/16/18/20%. When the wearer lands a CRIT hit on enemies, they will gain a stack of Good Fortune. This effect can be stacked 4 time(s). Every stack of Good Fortune the wearer has will increase their CRIT DMG by 8/9/10/11/12%. Good Fortune will be removed at the end of the wearer's turn.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Fine Fruit
+Fine Fruit
+Rarity: 3★
+
+Path: Abundance
+
+At the beginning of battle, immediately regenerates 6/8/9/11/12 Energy for all allies.
+
+HP
+HP
++952
+ATK
+ATK
++317
+DEF
+DEF
++198
+Flame of Blood, Blaze My Path
+Flame of Blood, Blaze My Path
+Rarity: 5★
+
+Path: Destruction
+
+Increases the wearer's Max HP by 18/21/24/27/30% and Incoming Healing by 20/25/30/35/40%. When using Skill or Ultimate, consumes HP equal to 6/6.5/7/7.5/8% of the wearer's Max HP and increases the DMG dealt by this attack by 30/35/40/45/50%. If this effect's consumed HP is greater than 500, the DMG additionally increases by 30/35/40/45/50%.
+
+If the current HP is not sufficient, this effect reduces the wearer's current HP down to 1.
+
+HP
+HP
++1375
+ATK
+ATK
++476
+DEF
+DEF
++396
+Flames Afar
+Flames Afar
+Rarity: 4★
+
+Path: Destruction
+
+When the HP lost by the wearer during a single attack exceeds 25% of their Max HP, or if the HP they consume is greater than 25% of their Max HP, then immediately heals them for 15% of their Max HP while also increasing the DMG they deal by 25/31/38/44/50% for 2 turn(s). This effect can only be triggered once every 3 turn(s).
+
+HP
+HP
++1058
+ATK
+ATK
++476
+DEF
+DEF
++265
+Flickering Stars
+Flickering Stars New
+Rarity: 5★
+
+Path: Erudition
+
+Increases the wearer's CRIT Rate by 18/21/24/27/30%. When any ally character consumes a total of 4 or more Skill Points in a single turn, the wearer gains "Radiant Crown," lasting for 3 turn(s). While the wearer holds "Radiant Crown," all allies' DMG dealt ignores 20/23/26/29/32% of the target's DEF, and the Skill DMG dealt by the wearer increases by 72/84/96/108/120%. Effects of the same type cannot stack.
+
+HP
+HP
++847
+ATK
+ATK
++635
+DEF
+DEF
++529
+Flowing Nightglow
+Flowing Nightglow
+Rarity: 5★
+
+Path: Harmony
+
+Every time any ally attacks, the wearer gains 1 stack of Cantillation. Each stack of Cantillation increases the wearer's Energy Regeneration Rate by 3/3.5/4/4.5/5%, stacking up to 5 times. When the wearer uses their Ultimate, removes Cantillation and gains Cadenza. Cadenza increases the Wearer's ATK by 48/60/72/84/96% and all allies' DMG dealt by 24/28/32/36/40%, lasting for 1 turn(s).
+
+HP
+HP
++953
+ATK
+ATK
++635
+DEF
+DEF
++463
+Fly Into a Pink Tomorrow
+Fly Into a Pink Tomorrow
+Rarity: 4★
+
+Path: Remembrance
+
+Increases the wearer's CRIT DMG by 12/15/18/21/24%. When equipped by Trailblazer (Remembrance), increases all ally targets' DMG dealt by 8/10/12/14/16% and DMG dealt by Enhanced Basic ATK "Together, We Script Tomorrow!" by 60/70/80/90/100%.
+
+HP
+HP
++847
+ATK
+ATK
++476
+DEF
+DEF
++397
+For Tomorrow's Journey
+For Tomorrow's Journey
+Rarity: 4★
+
+Path: Harmony
+
+Increases the wearer's ATK by 16/20/24/28/32%. After the wearer uses their Ultimate, increases their DMG dealt by 18/21/24/27/30%, lasting for 1 turn.
+
+HP
+HP
++953
+ATK
+ATK
++476
+DEF
+DEF
++331
+Geniuses' Greetings
+Geniuses' Greetings
+Rarity: 4★
+
+Path: Remembrance
+
+Increases the wearer's ATK by 16/20/24/28/32%. After the wearer uses their Ultimate, additionally increases the wearer and their memosprite's Basic ATK DMG dealt by 20/25/30/35/40% for 3 turn(s).
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Geniuses' Repose
+Geniuses' Repose
+Rarity: 4★
+
+Path: Erudition
+
+Increases the wearer's ATK by 16/20/24/28/32%. When the wearer defeats an enemy, the wearer's CRIT DMG increases by 24/30/36/42/48% for 3 turn(s).
+
+HP
+HP
++846
+ATK
+ATK
++476
+DEF
+DEF
++396
+Good Night and Sleep Well
+Good Night and Sleep Well
+Rarity: 4★
+
+Path: Nihility
+
+For every debuff the target enemy has, the DMG dealt by the wearer increases by 12/15/18/21/24%, stacking up to 3 time(s). This effect also applies to DoT.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Hey, Over Here
+Hey, Over Here
+Rarity: 4★
+
+Path: Abundance
+
+Increases the wearer's Max HP by 8/9/10/11/12%. When the wearer uses Skill, increases Outgoing Healing by 16/19/22/25/28%, lasting for 2 turn(s).
+
+HP
+HP
++952
+ATK
+ATK
++423
+DEF
+DEF
++396
+Hidden Shadow
+Hidden Shadow
+Rarity: 3★
+
+Path: Nihility
+
+After using Skill, the wearer's next Basic ATK deals Additional DMG equal to 60/75/90/105/120% of ATK to the target enemy.
+
+HP
+HP
++846
+ATK
+ATK
++317
+DEF
+DEF
++264
+Holiday Thermae Escapade
+Holiday Thermae Escapade
+Rarity: 4★
+
+Path: Nihility
+
+Increases the wearer's DMG dealt by 16/20/24/28/32%. After the wearer attacks, there is a 100% base chance that the attacked target is inflicted with Vulnerability, increasing the DMG they receive by 10/11/13/14/16% for 2 turn(s). The same effect type cannot be stacked.
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++331
+I Am As You Behold
+I Am As You Behold New
+Rarity: 5★
+
+Path: Destruction
+
+Increases the wearer's ATK by 18/21/24/27/30% and Energy Regeneration Rate by 10/12.5/15/17.5/20%. When the wearer uses Ultimate, for every 1 Energy consumed, increases the Ultimate DMG dealt this time by 0.2/0.25/0.3/0.35/0.4%, up to a max increase of 72/90/108/126/144%. When the wearer enters combat or uses Ultimate, the wearer gains "King's Entertainment," lasting for 3 turn(s). While the wearer holds "King's Entertainment," increases all allies' CRIT DMG by 24/30/36/42/48%. Effects of the same type cannot stack.
+
+HP
+HP
++953
+ATK
+ATK
++635
+DEF
+DEF
++463
+I Shall Be My Own Sword
+I Shall Be My Own Sword
+Rarity: 5★
+
+Path: Destruction
+
+Increases the wearer's CRIT DMG by 20/23/26/29/32%. When an ally gets attacked or loses HP, the wearer gains 1 stack of Eclipse, up to a max of 3 stack(s). Each stack of Eclipse increases the DMG of the wearer's next attack by 14/16.5/19/21.5/24%. When 3 stack(s) are reached, additionally enables the attack to ignore 12/14/16/18/20% of the enemy's DEF. This effect will be removed after the wearer uses an attack.
+
+HP
+HP
++1164
+ATK
+ATK
++582
+DEF
+DEF
++396
+I Venture Forth to Hunt
+I Venture Forth to Hunt
+Rarity: 5★
+
+Path: Hunt
+
+Increases the wearer's CRIT Rate by 15/17.5/20/22.5/25%. When the wearer launches a follow-up attack, gains 1 stack of "Luminflux," to a max of 2 stacks. Each stack of "Luminflux" enables the Ultimate DMG dealt by the wearer to ignore 27/30/33/36/39% of the target's DEF. When the wearer's turn ends, removes 1 stack of "Luminflux."
+
+HP
+HP
++952
+ATK
+ATK
++635
+DEF
+DEF
++463
+If Time Were a Flower
+If Time Were a Flower
+Rarity: 5★
+
+Path: Harmony
+
+Increases the wearer's CRIT DMG by 36/42/48/54/60%. After the wearer launches a Follow-up ATK, additionally regenerates 12 Energy and gains "Presage," lasting for 2 turn(s). While the wearer has "Presage," all ally targets' CRIT DMG increases by 48/60/72/84/96%. When entering battle, the wearer regenerates 21 Energy and gains "Presage," lasting for 2 turn(s).
+
+HP
+HP
++1270
+ATK
+ATK
++529
+DEF
+DEF
++397
+In Pursuit of the Wind
+In Pursuit of the Wind
+Rarity: 4★
+
+Path: Harmony
+
+After entering battle, increases all allies' Break DMG dealt by 16/18/20/22/24%. Abilities of the same type cannot stack.
+
+HP
+HP
++1058
+ATK
+ATK
++476
+DEF
+DEF
++397
+In the Name of the World
+In the Name of the World
+Rarity: 5★
+
+Path: Nihility
+
+Increases the wearer's DMG to debuffed enemies by 24/28/32/36/40%. When the wearer uses their Skill, the Effect Hit Rate for this attack increases by 18/21/24/27/30%, and ATK increases by 24/28/32/36/40%.
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+In the Night
+In the Night
+Rarity: 5★
+
+Path: Hunt
+
+Increases the wearer's CRIT Rate by 18/21/24/27/30%. While the wearer is in battle, for every 10 SPD that exceeds 100, the DMG of the wearer's Basic ATK and Skill is increased by 6/7/8/9/10% and the CRIT DMG of their Ultimate is increased by 12/14/16/18/20%. This effect can stack up to 6 time(s).
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Incessant Rain
+Incessant Rain
+Rarity: 5★
+
+Path: Nihility
+
+Increases the wearer's Effect Hit Rate by 24/28/32/36/40%. When the wearer deals DMG to an enemy with 3 or more debuffs, increases CRIT Rate by 12/14/16/18/20%. After the wearer uses their Basic ATK, Skill, or Ultimate, there is a 100% base chance to implant Aether Code on a random hit target that does not have it yet. Targets with Aether Code receive 12/14/16/18/20% increased DMG for 1 turn.
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Indelible Promise
+Indelible Promise
+Rarity: 4★
+
+Path: Destruction
+
+Increases the wearer's Break Effect by 28/35/42/49/56%. When the wearer uses their Ultimate, increases CRIT Rate by 15/18.75/22.5/26.25/30%, lasting for 2 turns.
+
+HP
+HP
++953
+ATK
+ATK
++476
+DEF
+DEF
++331
+Inherently Unjust Destiny
+Inherently Unjust Destiny
+Rarity: 5★
+
+Path: Preservation
+
+Increases the wearer's DEF by 40/46/52/58/64%. When the wearer provides a Shield to an ally, the wearer's CRIT DMG increases by 40/46/52/58/64%, lasting for 2 turn(s). When the wearer's follow-up attack hits an enemy target, there is a 100/115/130/145/160% base chance to increase the DMG taken by the attacked enemy target by 10/11.5/13/14.5/16%, lasting for 2 turn(s).
+
+HP
+HP
++1058
+ATK
+ATK
++423
+DEF
+DEF
++661
+Into the Unreachable Veil
+Into the Unreachable Veil
+Rarity: 5★
+
+Path: Erudition
+
+Increases the wearer's CRIT Rate by 12/14/16/18/20%. When the wearer uses their Ultimate, increases DMG dealt by the wearer's Skill and Ultimate by 60/70/80/90/100%, lasting for 3 turn(s). After the wearer uses their Ultimate, if this Ultimate consumed 140 or more Energy, recovers 1 Skill Point.
+
+HP
+HP
++953
+ATK
+ATK
++635
+DEF
+DEF
++463
+It's Showtime
+It's Showtime
+Rarity: 4★
+
+Path: Nihility
+
+When the wearer inflicts a debuff on an enemy, they gain a stack of Trick. Every stack of Trick increases the wearer's DMG dealt by 6/7/8/9/10% for a max of 3 stack(s). This effect lasts for 1 turn(s). When the wearer's Effect Hit Rate is greater than or equal to 80%, increases ATK by 20/24/28/32/36%.
+
+HP
+HP
++1058
+ATK
+ATK
++476
+DEF
+DEF
++265
+Journey, Forever Peaceful
+Journey, Forever Peaceful
+Rarity: 4★
+
+Path: Preservation
+
+Increases the wearer's provided Shield Effect by 12/15/18/21/24%. When an ally target has a Shield, the DMG dealt increases by 12/14/16/18/20%.
+
+HP
+HP
++1058
+ATK
+ATK
++370
+DEF
+DEF
++529
+Landau's Choice
+Landau's Choice
+Rarity: 4★
+
+Path: Preservation
+
+The wearer is more likely to be attacked, but DMG taken is reduced by 16/18/20/22/24%.
+
+HP
+HP
++952
+ATK
+ATK
++423
+DEF
+DEF
++396
+Lies Dance on the Breeze
+Lies Dance on the Breeze
+Rarity: 5★
+
+Path: Nihility
+
+Increases the wearer's SPD by 18/21/24/27/30%. After the wearer uses an attack, there is a 120% base chance to inflict the "Bamboozle" state on every enemy target. While under the "Bamboozle" state, enemy targets have their DEF decreased by 16/18/20/22/24% for 2 turn(s). If the wearer's SPD is higher than or equal to 170, there is a 120% base chance to inflict the "Theft" state on every enemy target. While under the "Theft" state, enemy targets have their DEF decreased by 8/9/10/11/12% for 2 turn(s). When "Bamboozle" or "Theft" is repeatedly inflicted, only the most recently inflicted instance takes effect.
+
+HP
+HP
++953
+ATK
+ATK
++582
+DEF
+DEF
++529
+Life Should Be Cast to Flames
+Life Should Be Cast to Flames
+Rarity: 5★
+
+Path: Erudition
+
+When the wearer's turn starts, regenerates 10 Energy. If the enemy target has a Weakness implanted by the wearer, increases the wearer's DMG dealt to it by 60/70/80/90/100%.
+
+When an enemy target gets attacked by the wearer, the wearer decreases the target's DEF by 12/15/18/21/24%, lasting for 2 turn(s). The same types of effects cannot stack.
+
+HP
+HP
++953
+ATK
+ATK
++582
+DEF
+DEF
++529
+Lingering Tear
+Lingering Tear
+Rarity: 3★
+
+Path: Elation
+
+When Punchline is 10 or more, the wearer's CRIT DMG increases by 20/25/30/35/40%.
+
+HP
+HP
++847
+ATK
+ATK
++318
+DEF
+DEF
++265
+Long May Rainbows Adorn the Sky
+Long May Rainbows Adorn the Sky
+Rarity: 5★
+
+Path: Remembrance
+
+Increases the wearer's SPD by 18/21/24/27/30%. When the wearer uses Basic ATK, Skill, or Ultimate, consumes all allies' HP equal to 1/1.3/1.5/1.7/2.0% of their current HP and additionally deals 1 instance of Additional DMG of the wearer's memosprite Type equal to 250/312.5/375/437.5/500% of the total consumed HP to the attacked target after the next attack launched by the wearer's memosprite. The total HP consumed is then reset. When the wearer's memosprite uses Memosprite Skill, increases the DMG taken by all enemies by 18/22.5/27/31.5/36% for 2 turn(s). The same types of effects cannot stack.
+
+HP
+HP
++1164
+ATK
+ATK
++476
+DEF
+DEF
++529
+Long Road Leads Home
+Long Road Leads Home
+Rarity: 5★
+
+Path: Nihility
+
+Increases the wearer's Break Effect by 60/70/80/90/100%. When an enemy target's Weakness gets broken, there is a 100% base chance to inflict the "Charring" state on it, which increases its Break DMG taken by 18/21/24/27/30%, lasting for 2 turn(s). This effect can stack 2 time(s).
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++661
+Loop
+Loop
+Rarity: 3★
+
+Path: Nihility
+
+Increases DMG dealt from its wearer to Slowed enemies by 24/30/36/42/48%
+
+HP
+HP
++846
+ATK
+ATK
++317
+DEF
+DEF
++264
+Make Farewells More Beautiful
+Make Farewells More Beautiful
+Rarity: 5★
+
+Path: Remembrance
+
+Increases the wearer's Max HP by 30/38/45/53/60%. When the wearer or their memosprite loses HP during their own turn, the wearer gains "Death Flower," which allows the wearer and their memosprite to ignore 30/35/40/45/50% of the target's DEF when dealing DMG, lasting for 2 turn(s).
+
+When the wearer's memosprite disappears, advances the wearer's action by 12/15/18/21/24%. This effect can only trigger up to 1 time, and the trigger count resets every time the wearer uses Ultimate.
+
+HP
+HP
++1270
+ATK
+ATK
++529
+DEF
+DEF
++397
+Make the World Clamor
+Make the World Clamor
+Rarity: 4★
+
+Path: Erudition
+
+The wearer regenerates 20/23/26/29/32 Energy immediately upon entering battle, and increases Ultimate DMG by 32/40/48/56/64%.
+
+HP
+HP
++846
+ATK
+ATK
++476
+DEF
+DEF
++396
+Mediation
+Mediation
+Rarity: 3★
+
+Path: Harmony
+
+Upon battle entry, all allies receive 12/14/16/18/20 increased SPD for 1 turn(s).
+
+HP
+HP
++846
+ATK
+ATK
++317
+DEF
+DEF
++264
+Memories of the Past
+Memories of the Past
+Rarity: 4★
+
+Path: Harmony
+
+Increases the wearer's Break Effect by 28/35/42/49/56%. When the wearer attacks, additionally regenerates 4/5/6/7/8 Energy. This effect can only be triggered 1 time per turn.
+
+HP
+HP
++952
+ATK
+ATK
++423
+DEF
+DEF
++396
+Memory's Curtain Never Falls
+Memory's Curtain Never Falls
+Rarity: 5★
+
+Path: Remembrance
+
+Increases the wearer's SPD by 6/7.5/9/10.5/12%. After the wearer uses Skill, increases the DMG dealt by all allies by 8/10/12/14/16%, lasting for 3 turn(s).
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++397
+Meshing Cogs
+Meshing Cogs
+Rarity: 3★
+
+Path: Harmony
+
+After the wearer uses attacks or gets hit, additionally regenerates 4/5/6/7/8 Energy. This effect can only be triggered 1 time per turn.
+
+HP
+HP
++846
+ATK
+ATK
++317
+DEF
+DEF
++264
+Moment of Victory
+Moment of Victory
+Rarity: 5★
+
+Path: Preservation
+
+Increases the wearer's DEF by 24/28/32/36/40% and Effect Hit Rate by 24/28/32/36/40%. Increases the chance for the wearer to be attacked by enemies. When the wearer is attacked, increase their DEF by an additional 24/28/32/36/40% until the end of the wearer's turn.
+
+HP
+HP
++1058
+ATK
+ATK
++476
+DEF
+DEF
++595
+Multiplication
+Multiplication
+Rarity: 3★
+
+Path: Abundance
+
+After the wearer uses their Basic ATK, their next action will be Advanced Forward by 12/14/16/18/20%.
+
+HP
+HP
++952
+ATK
+ATK
++317
+DEF
+DEF
++198
+Mushy Shroomy's Adventures
+Mushy Shroomy's Adventures
+Rarity: 4★
+
+Path: Elation
+
+Increases the wearer's Elation by 12/14/16/18/20%. When the wearer uses an Elation Skill, increases Elation DMG taken by all enemies by 6/7/8/9/10% for 2 turn(s).
+
+HP
+HP
++847
+ATK
+ATK
++476
+DEF
+DEF
++397
+Mutual Demise
+Mutual Demise
+Rarity: 3★
+
+Path: Destruction
+
+If the wearer's current HP is lower than 80%, CRIT Rate increases by 12/15/18/21/24%.
+
+HP
+HP
++846
+ATK
+ATK
++370
+DEF
+DEF
++198
+Never Forget Her Flame
+Never Forget Her Flame
+Rarity: 5★
+
+Path: Nihility
+
+Increases the wearer's Break Effect by 60/75/90/105/120%. When entering combat, increases Break DMG dealt by the wearer and another teammate who triggered combat by 32/42/52/62/72%. If there is no teammate who triggered combat, applies this effect to the wearer and the teammate with the highest Break Effect. Effects of the same type cannot be stacked. When the wearer applies Weakness to an enemy target, recovers 1 Skill Point. This effect can only trigger once, and trigger count resets when using Ultimate.
+
+HP
+HP
++1164
+ATK
+ATK
++529
+DEF
+DEF
++463
+Night of Fright
+Night of Fright
+Rarity: 5★
+
+Path: Abundance
+
+Increases the wearer's Energy Regeneration Rate by 12/14/16/18/20%. When any ally uses their Ultimate, the wearer restores HP for the ally currently with the lowest HP percentage by an amount equal to 10/11/12/13/14% of the healed ally's Max HP. When the wearer provides healing for an ally, increases the healed ally's ATK by 2.4/2.8/3.2/3.6/4%. This effect can stack up to 5 times and lasts for 2 turn(s).
+
+HP
+HP
++1164
+ATK
+ATK
++476
+DEF
+DEF
++529
+Night on the Milky Way
+Night on the Milky Way
+Rarity: 5★
+
+Path: Erudition
+
+For every enemy on the field, increases the wearer's ATK by 9/10.5/12/13.5/15%, up to 5 stacks. When an enemy is inflicted with Weakness Break, the DMG dealt by the wearer increases by 30/35/40/45/50% for 1 turn.
+
+HP
+HP
++1164
+ATK
+ATK
++582
+DEF
+DEF
++396
+Ninja Record: Sound Hunt
+Ninja Record: Sound Hunt
+Rarity: 4★
+
+Path: Destruction
+
+Increases the wearer's Max HP by 12/15/18/21/24%. When losing or restoring this unit's HP, increases CRIT DMG by 18/22.5/27/31.5/36%, lasting for 2 turn(s). This effect can only trigger once per turn.
+
+HP
+HP
++1058
+ATK
+ATK
++476
+DEF
+DEF
++265
+Ninjutsu Inscription: Dazzling Evilbreaker
+Ninjutsu Inscription: Dazzling Evilbreaker
+Rarity: 5★
+
+Path: Erudition
+
+Increases the wearer's Break Effect by 60/70/80/90/100%. When entering battle, immediately regenerates 30/32.5/35/37.5/40 Energy. After the wearer uses Ultimate, obtains "Raiton." After using 2 Basic ATKs, advances the wearer's action by 50/55/60/65/70% and removes "Raiton." After the wearer uses Ultimate, resets "Raiton."
+
+HP
+HP
++953
+ATK
+ATK
++582
+DEF
+DEF
++529
+Nowhere to Run
+Nowhere to Run
+Rarity: 4★
+
+Path: Destruction
+
+Increases the wearer's ATK by 24/30/36/42/48%. Whenever the wearer defeats an enemy, they restore HP equal to 12/15/18/21/24% of their ATK.
+
+HP
+HP
++952
+ATK
+ATK
++529
+DEF
+DEF
++264
+On the Fall of an Aeon
+On the Fall of an Aeon
+Rarity: 5★
+
+Path: Destruction
+
+Whenever the wearer attacks, their ATK is increased by 8/10/12/14/16% in this battle, up to 4 time(s). When the wearer inflicts Weakness Break on enemies, the wearer's DMG increases by 12/15/18/21/24% for 2 turn(s).
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++396
+Only Silence Remains
+Only Silence Remains
+Rarity: 4★
+
+Path: Hunt
+
+Increases ATK of its wearer by 16/20/24/28/32%. If there are 2 or fewer enemies on the field, increases wearer's CRIT Rate by 12/15/18/21/24%.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Passkey
+Passkey
+Rarity: 3★
+
+Path: Erudition
+
+After the wearer uses their Skill, additionally regenerates 8/9/10/11/12 Energy. This effect can only be triggered 1 time per turn.
+
+HP
+HP
++740
+ATK
+ATK
++370
+DEF
+DEF
++264
+Past Self in Mirror
+Past Self in Mirror
+Rarity: 5★
+
+Path: Harmony
+
+Increases the wearer's Break Effect by 60/70/80/90/100%. After the wearer uses their Ultimate, increases all allies' DMG by 24/28/32/36/40%, lasting for 3 turns. Should the wearer's Break Effect exceed or equal 150%, 1 Skill Point will be recovered. At the start of each wave, immediately regenerates 10/12.5/15/17.5/20 Energy for all allies. Effects of the same type cannot stack.
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++529
+Past and Future
+Past and Future
+Rarity: 4★
+
+Path: Harmony
+
+When the wearer uses their Skill, then the next ally taking action (except the wearer) deals 16/20/24/28/32% increased DMG for 1 turn(s).
+
+HP
+HP
++952
+ATK
+ATK
++423
+DEF
+DEF
++396
+Patience Is All You Need
+Patience Is All You Need
+Rarity: 5★
+
+Path: Nihility
+
+Increases DMG dealt by the wearer by 24/28/32/36/40%. After every attack launched by wearer, their SPD increases by 4.8/5.6/6.4/7.2/8%, stacking up to 3 times. If the wearer hits an enemy target that is not afflicted by Erode, there is a 100% base chance to inflict Erode to the target. Enemies afflicted with Erode are also considered to be Shocked and will receive Lightning DoT at the start of each turn equal to 60/70/80/90/100% of the wearer's ATK, lasting for 1 turn(s).
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Perfect Timing
+Perfect Timing
+Rarity: 4★
+
+Path: Abundance
+
+Increases the wearer's Effect RES by 16/20/24/28/32% and increases Outgoing Healing by an amount that is equal to 33/36/39/42/45% of Effect RES. Outgoing Healing can be increased this way by up to 15/18/21/24/27%.
+
+HP
+HP
++952
+ATK
+ATK
++423
+DEF
+DEF
++396
+Pioneering
+Pioneering
+Rarity: 3★
+
+Path: Preservation
+
+When the wearer Breaks an enemy's Weakness, the wearer restores HP by 12/14/16/18/20% of their Max HP.
+
+HP
+HP
++952
+ATK
+ATK
++264
+DEF
+DEF
++264
+Planetary Rendezvous
+Planetary Rendezvous
+Rarity: 4★
+
+Path: Harmony
+
+Upon battle entry, if an ally deals the same DMG Type as the wearer, DMG dealt increases by 12/15/18/21/24%.
+
+HP
+HP
++1058
+ATK
+ATK
++423
+DEF
+DEF
++330
+Poised to Bloom
+Poised to Bloom
+Rarity: 4★
+
+Path: Harmony
+
+Increases the wearer's ATK by 16/20/24/28/32%. Upon entering battle, if two or more characters follow the same Path, then these characters' CRIT DMG increases by 16/20/24/28/32%. Abilities of the same type cannot stack.
+
+HP
+HP
++952
+ATK
+ATK
++423
+DEF
+DEF
++396
+Post-Op Conversation
+Post-Op Conversation
+Rarity: 4★
+
+Path: Abundance
+
+Increases Energy Regeneration Rate of its wearer by 8/10/12/14/16% and increases Outgoing Healing when they use their Ultimate by 12/15/18/21/24%.
+
+HP
+HP
++1058
+ATK
+ATK
++423
+DEF
+DEF
++330
+Quid Pro Quo
+Quid Pro Quo
+Rarity: 4★
+
+Path: Abundance
+
+At the start of the wearer's turn, regenerates 8/10/12/14/16 Energy for a randomly chosen ally (excluding the wearer) whose current Energy is lower than 50%.
+
+HP
+HP
++952
+ATK
+ATK
++423
+DEF
+DEF
++396
+Reforged Remembrance
+Reforged Remembrance
+Rarity: 5★
+
+Path: Nihility
+
+Increases wearer's Effect Hit Rate by 40/45/50/55/60%. When the wearer deals DMG to an enemy inflicted with Wind Shear, Burn, Shock, or Bleed, they will individually gain 1 stack of Prophet. This effect can stack up to 4 times. In a single battle, each type of DoT can only generate 1 stack of Prophet. Every stack of Prophet increases wearer's ATK by 5/6/7/8/9% and the DoT dealt will ignore 7.2/7.9/8.6/9.3/10% of the target's DEF.
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Reforged in Hellfire
+Reforged in Hellfire New
+Rarity: 5★
+
+Path: Nihility
+
+Increases the wearer's Max HP by 30/38/45/53/60%. At the start of the wearer's turn, regenerates a fixed amount of 20 Energy. This effect can trigger 1 time each wave. After the wearer uses Skill to attack, inflicts the target with the "Purgatory" state, lasting for 2 turn(s). While in the "Purgatory" state, the target receives 30/38/45/53/60% increased CRIT DMG and 30/38/45/53/60% additionally increased CRIT DMG from the wearer.
+
+HP
+HP
++1376
+ATK
+ATK
++423
+DEF
+DEF
++463
+Reminiscence
+Reminiscence
+Rarity: 3★
+
+Path: Remembrance
+
+When memosprite's turn starts, the wearer and the memosprite each gain 1 stack of "Commemoration." Each stack increases DMG dealt by 8/9/10/11/12%, stacking up to 4 time(s). "Commemoration" is removed from the wearer and the memosprite when the memosprite disappears.
+
+HP
+HP
++635
+ATK
+ATK
++423
+DEF
+DEF
++265
+Resolution Shines As Pearls of Sweat
+Resolution Shines As Pearls of Sweat
+Rarity: 4★
+
+Path: Nihility
+
+When the wearer hits an enemy and if the hit enemy is not already Ensnared, then there is a 60/70/80/90/100% base chance to Ensnare the hit enemy. Ensnared enemies' DEF decreases by 12/13/14/15/16% for 1 turn(s).
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Return to Darkness
+Return to Darkness
+Rarity: 4★
+
+Path: Hunt
+
+Increases the wearer's CRIT Rate by 12/15/18/21/24%. After a CRIT Hit, there is a 16/20/24/28/32% fixed chance to dispel 1 buff on the target enemy. This effect can only trigger once per attack.
+
+HP
+HP
++846
+ATK
+ATK
++529
+DEF
+DEF
++330
+Rise and Sing
+Rise and Sing
+Rarity: 5★
+
+Path: Remembrance
+
+Coming Soon!
+
+Stats for this Light Cone aren't available yet.
+River Flows in Spring
+River Flows in Spring
+Rarity: 4★
+
+Path: Hunt
+
+After entering battle, increases the wearer's SPD by 8/9/10/11/12% and DMG by 12/15/18/21/24%. When the wearer takes DMG, this effect will disappear. This effect will resume after the end of the wearer's next turn.
+
+HP
+HP
++846
+ATK
+ATK
++476
+DEF
+DEF
++396
+Sagacity
+Sagacity
+Rarity: 3★
+
+Path: Erudition
+
+When the wearer uses their Ultimate, increases ATK by 24/30/36/42/48% for 2 turn(s).
+
+HP
+HP
++740
+ATK
+ATK
++370
+DEF
+DEF
++264
+Sailing Towards A Second Life
+Sailing Towards A Second Life
+Rarity: 5★
+
+Path: Hunt
+
+Increases the wearer's Break Effect by 60/70/80/90/100%. The Break DMG dealt by the wearer ignores 20/23/26/29/32% of the target's DEF. When the wearer's Break Effect in battle is at 150% or greater, increases their SPD by 12/14/16/18/20%.
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Scent Alone Stays True
+Scent Alone Stays True
+Rarity: 5★
+
+Path: Abundance
+
+Increases the wearer's Break Effect by 60/70/80/90/100%. After the wearer uses Ultimate to attack enemy targets, inflicts the targets with the "Woefree" state, lasting for 2 turn(s). While in "Woefree," enemy targets take 10/12/14/16/18% increased DMG. The effect of increasing DMG taken is additionally boosted by 8/10/12/14/16% if the wearer's current Break Effect is 150% or higher.
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++529
+See You at the End
+See You at the End
+Rarity: 4★
+
+Path: Hunt
+
+Increases the wearer's CRIT DMG by 24/28/32/36/40%. The Skill DMG and Follow-up ATK DMG dealt by the wearer increase by 24/28/32/36/40%.
+
+HP
+HP
++953
+ATK
+ATK
++529
+DEF
+DEF
++397
+Shadowburn
+Shadowburn
+Rarity: 3★
+
+Path: Remembrance
+
+When the wearer summons memosprite for the first time in battle, recovers 1 Skill Point(s) and regenerates 12/14/16/18/20 Energy for this unit.
+
+HP
+HP
++847
+ATK
+ATK
++318
+DEF
+DEF
++265
+Shadowed By Night
+Shadowed By Night
+Rarity: 4★
+
+Path: Hunt
+
+Increases the wearer's Break Effect by 28/35/42/49/56%. When entering battle or after dealing Break DMG, increases SPD by 8/9/10/11/12%, lasting for 2 turn(s). This effect can only trigger once per turn.
+
+HP
+HP
++846
+ATK
+ATK
++476
+DEF
+DEF
++396
+Shared Feeling
+Shared Feeling
+Rarity: 4★
+
+Path: Abundance
+
+Increases the wearer's Outgoing Healing by 10/12.5/15/17.5/20%. When using Skill, regenerates 2/2/3/3/4 Energy for all allies.
+
+HP
+HP
++952
+ATK
+ATK
++423
+DEF
+DEF
++396
+Shattered Home
+Shattered Home
+Rarity: 3★
+
+Path: Destruction
+
+Deals 20/25/30/35/40% increased DMG to any enemies whose HP is above 50%.
+
+HP
+HP
++846
+ATK
+ATK
++370
+DEF
+DEF
++198
+She Already Shut Her Eyes
+She Already Shut Her Eyes
+Rarity: 5★
+
+Path: Preservation
+
+Increases the wearer's Max HP by 24/28/32/36/40% and Energy Regeneration Rate by 12/14/16/18/20%. When the wearer's HP is decreased, increases the DMG of all allies by 9/10.5/12/13.5/15% for 2 turns. At the beginning of each wave, restores HP equal to 80/85/90/95/100% of HP already lost by the character themselves for team.
+
+HP
+HP
++1270
+ATK
+ATK
++423
+DEF
+DEF
++529
+Sleep Like the Dead
+Sleep Like the Dead
+Rarity: 5★
+
+Path: Hunt
+
+Increases the wearer's CRIT DMG by 30/35/40/45/50%. When the wearer's Basic ATK or Skill does not result in a CRIT Hit, increases their CRIT Rate by 36/42/48/54/60% for 1 turn(s). This effect can only trigger once every 3 turn(s).
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Sneering
+Sneering
+Rarity: 3★
+
+Path: Elation
+
+When Aha Instant is activated, the wearer's Elation increases by 16/20/24/28/32%, lasting until Aha Instant ends.
+
+HP
+HP
++741
+ATK
+ATK
++370
+DEF
+DEF
++265
+Solitary Healing
+Solitary Healing
+Rarity: 5★
+
+Path: Nihility
+
+Increases the wearer's Break Effect by 20/25/30/35/40%. When the wearer unleashes their Ultimate, increases DoT dealt by the wearer by 24/30/36/42/48% for 2 turn(s). Defeating the target suffering from the wearer's DoT allows the wearer to regenerate 4/4.5/5/5.5/6 Energy.
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++396
+Something Irreplaceable
+Something Irreplaceable
+Rarity: 5★
+
+Path: Destruction
+
+Increases the wearer's ATK by 24/28/32/36/40%. When the wearer defeats an enemy or is hit, immediately restores HP equal to 8/9/10/11/12% of the wearer's ATK. At the same time, the wearer's DMG is increased by 24/28/32/36/40% until the end of their next turn. This effect cannot stack and can only trigger 1 time per turn.
+
+HP
+HP
++1164
+ATK
+ATK
++582
+DEF
+DEF
++396
+Subscribe for More!
+Subscribe for More!
+Rarity: 4★
+
+Path: Hunt
+
+Increases the DMG of the wearer's Basic ATK and Skill by 24/30/36/42/48%. This effect increases by an extra 24/30/36/42/48% when the wearer's current Energy reaches its max level.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Summer Rides the Surf
+Summer Rides the Surf
+Rarity: 5★
+
+Path: Elation
+
+Coming Soon!
+
+Stats for this Light Cone aren't available yet.
+Sweat Now, Cry Less
+Sweat Now, Cry Less
+Rarity: 4★
+
+Path: Remembrance
+
+Increases the wearer's CRIT Rate by 12/14/16/18/20%. When the wearer's memosprite is on the field, increases the wearer and their memosprite's DMG dealt by 24/27/30/33/36%.
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++198
+Swordplay
+Swordplay
+Rarity: 4★
+
+Path: Hunt
+
+For each time the wearer hits the same target, DMG dealt increases by 8/10/12/14/16%, stacking up to 5 time(s). This effect will be dispelled when the wearer changes targets.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Texture of Memories
+Texture of Memories
+Rarity: 5★
+
+Path: Preservation
+
+Increases the wearer's Effect RES by 8/10/12/14/16%. If the wearer is attacked and has no Shield, they gain a Shield equal to 16/20/24/28/32% of their Max HP for 2 turn(s). This effect can only be triggered once every 3 turn(s). If the wearer has a Shield when attacked, the DMG they receive decreases by 12/15/18/21/24%.
+
+HP
+HP
++1058
+ATK
+ATK
++423
+DEF
+DEF
++529
+The Birth of the Self
+The Birth of the Self
+Rarity: 4★
+
+Path: Erudition
+
+Increases DMG dealt by the wearer's follow-up attacks by 24/30/36/42/48%. If the current HP of the target enemy is below 50% of their Max HP, increases DMG dealt by follow-up attacks by an extra 24/30/36/42/48%.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+The Day The Cosmos Fell
+The Day The Cosmos Fell
+Rarity: 4★
+
+Path: Erudition
+
+Increases the wearer's ATK by 16/18/20/22/24%. When the wearer uses an attack and affects no fewer than 2 attacked enemies with a corresponding Weakness, the wearer's CRIT DMG increases by 20/25/30/35/40% for 2 turn(s).
+
+HP
+HP
++953
+ATK
+ATK
++476
+DEF
+DEF
++331
+The Finale of a Lie
+The Finale of a Lie
+Rarity: 5★
+
+Path: Hunt
+
+Increases the wearer's CRIT Rate by 18/21/24/27/30%. At the start of battle or for every 4 instance(s) of Follow-Up ATK the wearer uses, the wearer gains "Umbra Devourer," lasting for 3 turn(s). While the wearer holds "Umbra Devourer," increases ATK by 40/50/60/70/80% and increases the DMG taken by all enemies by 20/22/25/27/30%. Effects of the same type cannot stack.
+
+HP
+HP
++846
+ATK
+ATK
++635
+DEF
+DEF
++529
+The Flower Remembers
+The Flower Remembers
+Rarity: 4★
+
+Path: Remembrance
+
+Increases the wearer's CRIT DMG by 24/28/32/36/40%. The CRIT DMG dealt by the wearer's memosprite increases by 24/28/32/36/40%.
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++331
+The Forever Victual
+The Forever Victual
+Rarity: 4★
+
+Path: Harmony
+
+Increases the wearer's ATK by 16/20/24/28/32%. After the wearer uses Skill, increases ATK by 8/10/12/14/16%, stacking up to 3 times.
+
+HP
+HP
++953
+ATK
+ATK
++476
+DEF
+DEF
++331
+The Great Cosmic Enterprise
+The Great Cosmic Enterprise
+Rarity: 4★
+
+Path: Erudition
+
+Increases the wearer's ATK by 8/10/12/14/16%. For every different Weakness Type an enemy target has, increases the DMG dealt by the wearer by 4/5/6/7/8%, up to a max of 7 Weakness Types.
+
+HP
+HP
++953
+ATK
+ATK
++476
+DEF
+DEF
++331
+The Hell Where Ideals Burn
+The Hell Where Ideals Burn
+Rarity: 5★
+
+Path: Hunt
+
+Increases the wearer's CRIT Rate by 16/20/24/28/32%. When entering battle and if the allies' Skill Points max limit is 6 or higher, increases the wearer's ATK by 40/50/60/70/80%. After the wearer uses a Skill, increases their ATK by 10/12/15/17/20%, stacking up to 4 time(s).
+
+HP
+HP
++953
+ATK
+ATK
++582
+DEF
+DEF
++529
+The Moles Welcome You
+The Moles Welcome You
+Rarity: 4★
+
+Path: Destruction
+
+When the wearer uses Basic ATK, Skill, or Ultimate to attack enemies, the wearer gains one stack of Mischievous. Each stack increases the wearer's ATK by 12/15/18/21/24%.
+
+HP
+HP
++1058
+ATK
+ATK
++476
+DEF
+DEF
++264
+The Seriousness of Breakfast
+The Seriousness of Breakfast
+Rarity: 4★
+
+Path: Erudition
+
+Increases the wearer's DMG by 12/15/18/21/24%. For every defeated enemy, the wearer's ATK increases by 4/5/6/7/8%, stacking up to 3 time(s).
+
+HP
+HP
++846
+ATK
+ATK
++476
+DEF
+DEF
++396
+The Story's Next Page
+The Story's Next Page
+Rarity: 4★
+
+Path: Remembrance
+
+Increases the wearer's Max HP by 16/20/24/28/32%. After the wearer's memosprite attacks, the Outgoing Healing of the wearer and their memosprite increases by 12/15/18/21/24%, lasting for 1 turn(s).
+
+HP
+HP
++1058
+ATK
+ATK
++370
+DEF
+DEF
++397
+The Unreachable Side
+The Unreachable Side
+Rarity: 5★
+
+Path: Destruction
+
+Increases the wearer's CRIT rate by 18/21/24/27/30% and increases their Max HP by 18/21/24/27/30%. When the wearer is attacked or consumes their own HP, their DMG increases by 24/28/32/36/40%. This effect is removed after the wearer uses an attack.
+
+HP
+HP
++1270
+ATK
+ATK
++582
+DEF
+DEF
++330
+This Is Me!
+This Is Me!
+Rarity: 4★
+
+Path: Preservation
+
+Increases the wearer's DEF by 16/20/24/28/32%. Increases the DMG of the wearer when they use their Ultimate by 60/75/90/105/120% of the wearer's DEF. This effect only apply 1 time per enemy target.
+
+HP
+HP
++846
+ATK
+ATK
++370
+DEF
+DEF
++529
+This Love, Forever
+This Love, Forever
+Rarity: 5★
+
+Path: Remembrance
+
+Increases the wearer's SPD by 18/21/24/27/30%. When the wearer's memosprite uses a Memosprite Skill on an ally, gains "Blank," which increases DMG taken by all enemies by 10/12/14/16/18%. When the wearer's memosprite uses a Memosprite Skill on an enemy, gains "Verse," which increases CRIT DMG of all allies by 16/19/22/25/28%. When the wearer's memosprite has both "Blank" and "Verse," increases the effects of "Blank" and "Verse" by 60/65/70/75/80%.
+
+HP
+HP
++1270
+ATK
+ATK
++476
+DEF
+DEF
++463
+Those Many Springs
+Those Many Springs
+Rarity: 5★
+
+Path: Nihility
+
+Increases the wearer's Effect Hit Rate by 60/70/80/90/100%. After the wearer uses Basic ATK, Skill, or Ultimate to attack an enemy target, there is a 60% base chance to inflict "Unarmored" on the target. While in the Unarmored state, the enemy target receives 10/12/14/16/18% increased DMG, lasting for 2 turn(s). If the target is under a DoT state inflicted by the wearer, there is a 60% base chance to upgrade the "Unarmored" state inflicted by the wearer to the "Cornered" state, which additionally increases the DMG the target enemy receives by 14/16/18/20/22%, lasting for 2 turn(s). During this period, the wearer cannot inflict "Unarmored" on the target.
+
+HP
+HP
++952
+ATK
+ATK
++582
+DEF
+DEF
++529
+Though Worlds Apart
+Though Worlds Apart
+Rarity: 5★
+
+Path: Preservation
+
+Increases the wearer's ATK by 64/80/96/112/128%. When the wearer uses Ultimate, restores HP equal to 10/13/15/18/20% of the wearer's ATK for all allies, and additionally restores HP equal to 10/13/15/18/20% of the wearer's ATK for the character with the lowest current HP, and grants "Redoubt" to all allies for 3 turn(s). Targets with "Redoubt" deal 24/30/36/42/48% increased DMG, which further increases by 12/15/18/21/24% if the targets have summons.
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Thus Burns the Dawn
+Thus Burns the Dawn
+Rarity: 5★
+
+Path: Destruction
+
+The wearer's base SPD increases by 12/14/16/18/20. When the wearer deals DMG, ignores 18/22/27/31/36% of the target's DEF. After the wearer uses Ultimate, obtains "Blazing Sun," which is removed at the start of their turn. While "Blazing Sun" is in possession, increases the wearer's DMG dealt by 60/78/96/114/132%.
+
+HP
+HP
++953
+ATK
+ATK
++687
+DEF
+DEF
++397
+Time Waits for No One
+Time Waits for No One
+Rarity: 5★
+
+Path: Abundance
+
+Increases the wearer's Max HP by 18/21/24/27/30% and Outgoing Healing by 12/14/16/18/20%. When the wearer heals allies, record the amount of Outgoing Healing. When any ally launches an attack, a random attacked enemy takes Additional DMG equal to 36/42/48/54/60% of the recorded Outgoing Healing value. This Additional DMG is of the same Type as the wearer's, is not affected by other buffs, and can only occur 1 time per turn
+
+HP
+HP
++1270
+ATK
+ATK
++476
+DEF
+DEF
++463
+Time Woven Into Gold
+Time Woven Into Gold
+Rarity: 5★
+
+Path: Remembrance
+
+Increases the wearer's base SPD by 12/14/16/18/20. After the wearer and the wearer's memosprite attacks, the wearer gains 1 stack of "Brocade." Each stack of "Brocade" increases the wearer's and their memosprite's CRIT DMG by 9/10.5/12/13.5/15%, stacking up to 6 time(s). When reaching maximum stacks, each "Brocade" stack additionally increases Basic ATK DMG dealt by 9/10.5/12/13.5/15%.
+
+HP
+HP
++1058
+ATK
+ATK
++635
+DEF
+DEF
++397
+To Evernight's Stars
+To Evernight's Stars
+Rarity: 5★
+
+Path: Remembrance
+
+Increases the wearer's Max HP by 30/38/45/53/60%. When the wearer's memosprite uses an ability, the wearer gains "Noctis." While the wearer has "Noctis," all allies' memosprites ignore 20/22/25/27/30% of the target's DEF when dealing DMG. Increases the DMG dealt by the wearer and their memosprite by 30/38/45/53/60%. When the wearer's memosprite disappears, the wearer recovers 8/10/12/14/16 Energy. Similar effects cannot stack.
+
+HP
+HP
++1164
+ATK
+ATK
++529
+DEF
+DEF
++463
+Today Is Another Peaceful Day
+Today Is Another Peaceful Day
+Rarity: 4★
+
+Path: Erudition
+
+After entering battle, increases the wearer's DMG based on their Max Energy. DMG increases by 0.2/0.25/0.3/0.35/0.4% per point of Energy, up to 160 Energy.
+
+HP
+HP
++846
+ATK
+ATK
++529
+DEF
+DEF
++330
+Today's Good Luck
+Today's Good Luck
+Rarity: 4★
+
+Path: Elation
+
+Increases the wearer's CRIT Rate by 12/14/16/18/20%. When the wearer uses an Elation Skill, increases Elation by 12/14/16/18/20%, stacking up to 2 times.
+
+HP
+HP
++953
+ATK
+ATK
++529
+DEF
+DEF
++397
+Tomorrow, Together
+Tomorrow, Together
+Rarity: 4★
+
+Path: Elation
+
+Increases the wearer's CRIT DMG by 12/15/18/21/24%. After the wearer uses their Ultimate, increases the Elation of all allies by 8/9/10/11/12%, lasting for 1 turn(s).
+
+HP
+HP
++953
+ATK
+ATK
++476
+DEF
+DEF
++331
+Trend of the Universal Market
+Trend of the Universal Market
+Rarity: 4★
+
+Path: Preservation
+
+Increases the wearer's DEF by 16/20/24/28/32%. When the wearer is attacked, there is a 100/105/110/115/120% base chance to Burn the enemy. For each turn, the wearer deals DoT that is equal to 40/50/60/70/80% of the wearer's DEF for 2 turn(s).
+
+HP
+HP
++1058
+ATK
+ATK
++370
+DEF
+DEF
++396
+Under the Blue Sky
+Under the Blue Sky
+Rarity: 4★
+
+Path: Destruction
+
+Increases the wearer's ATK by 16/20/24/28/32%. When the wearer defeats an enemy, the wearer's CRIT Rate increases by 12/15/18/21/24% for 3 turn(s).
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Until the Flowers Bloom Again
+Until the Flowers Bloom Again New
+Rarity: 5★
+
+Path: Elation
+
+Increases the wearer's CRIT DMG by 60/75/90/105/120% and Energy Regeneration Rate by 10/11.5/13/14.5/16%. When the wearer's Max Energy is greater than 120, for every 10 points of Max Energy that exceeds this amount, further increases Energy Regeneration Rate by 0.3%. Up to a maximum of 360 points of excess Max Energy can be taken into account. When the wearer uses Elation Skill, increases the DMG received by all enemies by 15/18.8/22.5/26.3/30% for 2 turn(s). Effects of the same type cannot stack.
+
+HP
+HP
++953
+ATK
+ATK
++635
+DEF
+DEF
++463
+Unto Tomorrow's Morrow
+Unto Tomorrow's Morrow
+Rarity: 4★
+
+Path: Abundance
+
+Increases the wearer's Outgoing Healing by 12/15/18/21/24%. When an ally target's current HP percentage is greater than or equal to 50%, increases the DMG dealt by 12/14/16/18/20%.
+
+HP
+HP
++1058
+ATK
+ATK
++476
+DEF
+DEF
++397
+Victory In a Blink
+Victory In a Blink
+Rarity: 4★
+
+Path: Remembrance
+
+Increases the wearer's CRIT DMG by 12/15/18/21/24%. When the wearer's memosprite uses an ability on any ally target, increases all ally targets' DMG dealt by 8/10/12/14/16%, lasting for 3 turn(s).
+
+HP
+HP
++847
+ATK
+ATK
++476
+DEF
+DEF
++397
+Void
+Void
+Rarity: 3★
+
+Path: Nihility
+
+At the start of battle, increases the wearer's Effect Hit Rate by 20/25/30/35/40% for 3 turn(s).
+
+HP
+HP
++846
+ATK
+ATK
++317
+DEF
+DEF
++264
+Warmth Shortens Cold Nights
+Warmth Shortens Cold Nights
+Rarity: 4★
+
+Path: Abundance
+
+Increases the wearer's Max HP by 16/20/24/28/32%. When using Basic ATK or Skill, restores all allies' HP by an amount equal to 2/2.5/3/3.5/4% of their respective Max HP.
+
+HP
+HP
++1058
+ATK
+ATK
++370
+DEF
+DEF
++396
+We Are Wildfire
+We Are Wildfire
+Rarity: 4★
+
+Path: Preservation
+
+At the start of the battle, the DMG dealt to all allies decreases by 8/10/12/14/16% for 5 turn(s). At the same time, immediately restores HP to all allies equal to 30/35/40/45/50% of the respective HP difference between the characters' Max HP and current HP.
+
+HP
+HP
++740
+ATK
+ATK
++476
+DEF
+DEF
++463
+We Will Meet Again
+We Will Meet Again
+Rarity: 4★
+
+Path: Nihility
+
+After the wearer uses Basic ATK or Skill, the wearer deals 48/60/72/84/96% of ATK as additional DMG to a random enemy that is attacked by abilities.
+
+HP
+HP
++846
+ATK
+ATK
++529
+DEF
+DEF
++330
+Welcome to the Cosmic City
+Welcome to the Cosmic City
+Rarity: 5★
+
+Path: Elation
+
+Increases the wearer's SPD by 18/21/24/27/30%, and the Elation DMG dealt ignores 20/24/2/32/36% of the target's DEF. When the wearer uses Ultimate on themselves, gains 20/25/30/35/40 "Punchline." This effect can be triggered up to 1 time, and will be reset after using Basic ATK 3 time(s).
+
+HP
+HP
++1164
+ATK
+ATK
++476
+DEF
+DEF
++529
+What Is Real?
+What Is Real?
+Rarity: 4★
+
+Path: Abundance
+
+Increases the wearer's Break Effect by 24/30/36/42/48%. Wearer's Basic ATKs restore an amount equal to 2/2.5/3/3.5/4% of Max HP plus 800 for themselves.
+
+HP
+HP
++1058
+ATK
+ATK
++423
+DEF
+DEF
++331
+When She Decided to See
+When She Decided to See
+Rarity: 5★
+
+Path: Elation
+
+Increases the wearer's SPD by 18/21/24/27/30%. When the wearer enters combat or uses Ultimate on an ally target, the wearer gains "Great Fortune" for 3 turn(s). While the wearer holds "Great Fortune," all allies' CRIT Rate increases by 10/11/12/13/14%, CRIT DMG increases by 30/38/45/53/60%, and the wearer's Energy Regeneration Rate increases by 12/14/16/18/20%.
+
+At the start of each wave, the wearer regenerates a fixed amount of 15 Energy.
+
+HP
+HP
++1058
+ATK
+ATK
++529
+DEF
+DEF
++529
+Whereabouts Should Dreams Rest
+Whereabouts Should Dreams Rest
+Rarity: 5★
+
+Path: Destruction
+
+Increases the wearer's Break Effect by 60/70/80/90/100%. When the wearer deals Break DMG to an enemy target, inflicts Routed on the enemy, lasting for 2 turn(s). Targets afflicted with Routed receive 24/28/32/36/40% increased Break DMG from the wearer, and their SPD is lowered by 20%. Effects of the similar type cannot be stacked.
+
+HP
+HP
++1164
+ATK
+ATK
++476
+DEF
+DEF
++529
+Why Does the Ocean Sing
+Why Does the Ocean Sing
+Rarity: 5★
+
+Path: Nihility
+
+Increases the wearer's Effect Hit Rate by 40/45/50/55/60%. When an enemy target gets inflicted with a debuff by the wearer, there is a 80% base chance for them to enter "Enthrallment," lasting for 3 turn(s). Effects of the same type cannot stack. While the target is in "Enthrallment," for every 1 debuff applied by the wearer on the target, increases the target's received DoT by 5/6.3/7.5/8.7/10%, stacking up to 6 time(s). When the target gets attacked by an ally, increases the attacker's SPD by 10/12.5/15/17.5/20% for 3 turn(s). When the wearer gets knocked down, removes all "Enthrallment."
+
+HP
+HP
++953
+ATK
+ATK
++635
+DEF
+DEF
++463
+Woof! Walk Time!
+Woof! Walk Time!
+Rarity: 4★
+
+Path: Destruction
+
+Increases the wearer's ATK by 10/12.5/15/17.5/20%, and increases their DMG to enemies afflicted with Burn or Bleed by 16/20/24/28/32%. This also applies to DoT.
+
+HP
+HP
++952
+ATK
+ATK
++476
+DEF
+DEF
++330
+Worrisome, Blissful
+Worrisome, Blissful
+Rarity: 5★
+
+Path: Hunt
+
+Increase the wearer's CRIT Rate by 18/21/24/27/30% and their follow-up attacks' DMG by 30/35/40/45/50%. After the wearer uses a follow-up attack, apply the Tame state to the target, stacking up to 2 stacks. When allies hit enemy targets under the Tame state, every Tame stack increases the CRIT DMG dealt by 12/14/16/18/20%.
+
+HP
+HP
++1058
+ATK
+ATK
++582
+DEF
+DEF
++463
+Yet Hope Is Priceless
+Yet Hope Is Priceless
+Rarity: 5★
+
+Path: Erudition
+
+Increases the wearer's CRIT Rate by 16/19/22/25/28%. While the wearer is in battle, for every 20% CRIT DMG that exceeds 120%, the DMG dealt by follow-up attack increases by 12/14/16/18/20%. This effect can stack up to 4 time(s). When the battle starts or after the wearer uses their Basic ATK, enables Ultimate or the DMG dealt by follow-up attack to ignore 20/24/28/32/36% of the target's DEF, lasting for 2 turn(s).
+
+HP
+HP
++952
+ATK
+ATK
++582
+DEF
+DEF
++529
