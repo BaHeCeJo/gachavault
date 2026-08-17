@@ -3,6 +3,8 @@
 import { Fragment, useState } from "react";
 import type { ItemPageBundle } from "@/lib/seo";
 import type { SkillsConfig } from "@/lib/pageLayout";
+import { hasTokens, renderTemplate, tokenizedScalings } from "@/lib/skillScaling";
+import { resolveTicks, skillPresetFor, trackFor } from "@/lib/skillPresets";
 
 // A list of skills/abilities read from a field whose value is an array of
 // objects ({ type, name, description, icon_url, group, scalings } by default;
@@ -14,6 +16,33 @@ import type { SkillsConfig } from "@/lib/pageLayout";
 interface Scaling {
   label: string;
   values: string[];
+}
+
+// An ability description with its `{token}` placeholders replaced by the values
+// for the selected level, each highlighted so the level-dependent numbers stand
+// out from the prose. A description with no tokens renders unchanged.
+function SkillDescription({
+  description,
+  scalings,
+  levelIndex,
+}: {
+  description: string;
+  scalings: Scaling[];
+  levelIndex: number;
+}) {
+  return (
+    <p className="text-sm text-gray-400 leading-relaxed whitespace-pre-line mt-1">
+      {renderTemplate(description, scalings, levelIndex).map((part, i) =>
+        part.kind === "value" ? (
+          <span key={i} className="font-semibold text-amber-300 tabular-nums">
+            {part.text}
+          </span>
+        ) : (
+          <Fragment key={i}>{part.text}</Fragment>
+        ),
+      )}
+    </p>
+  );
 }
 
 function readScalings(s: Record<string, unknown>, key: string): Scaling[] {
@@ -48,29 +77,55 @@ export function SkillsBlock({
 
   const str = (v: unknown) => (typeof v === "string" ? v : "");
 
+  const trackKey = c.track_key || "track";
+  const tracks = c.tracks?.length
+    ? c.tracks
+    : skillPresetFor(bundle.item.game_slug, bundle.game?.name).tracks;
+
   const skills = rawList
-    .map((s) => ({
-      name: str(s?.[nameKey]),
-      desc: str(s?.[descKey]),
-      icon: str(s?.[iconKey]),
-      type: str(s?.[typeKey]),
-      group: str(s?.[groupKey]),
-      scalings: readScalings(s, scalingsKey),
-    }))
+    .map((s) => {
+      const type = str(s?.[typeKey]);
+      const scalings = readScalings(s, scalingsKey);
+      const track = trackFor(tracks, str(s?.[trackKey]), type);
+      return {
+        name: str(s?.[nameKey]),
+        desc: str(s?.[descKey]),
+        icon: str(s?.[iconKey]),
+        type,
+        group: str(s?.[groupKey]),
+        scalings,
+        track,
+        // Its own ticks, so a Basic ATK that stops at 7 shows 7 stops even
+        // though the Skill beside it runs to 10.
+        ticks: resolveTicks(track, scalings.reduce((m, x) => Math.max(m, x.values.length), 0)),
+      };
+    })
     .filter((sk) => sk.name || sk.desc || sk.icon || sk.type || sk.scalings.length > 0);
 
-  // The level slider spans 1..(longest scaling array across all skills). Skills
-  // with fewer levels (e.g. a Basic ATK that maxes earlier) clamp to their own
-  // last value, so the slider stays a single shared control.
-  const maxLevel = skills.reduce(
-    (m, sk) => Math.max(m, ...sk.scalings.map((x) => x.values.length), 0),
-    0,
-  );
+  // One slider per track that any ability actually scales along — a kit with a
+  // memosprite, or a Basic ATK capping earlier than the Skill, gets independent
+  // controls instead of one slider silently clamping the shorter ones.
+  const sliders: { key: string; label: string; ticks: string[] }[] = [];
+  for (const sk of skills) {
+    const track = sk.track;
+    if (!track || sk.ticks.length < 2) continue;
+    const seen = sliders.find((s) => s.key === track.key);
+    // Two abilities can share a track with different value counts (an Ultimate
+    // with 10, a Talent with 8) — the slider spans the longer of them.
+    if (!seen) sliders.push({ key: track.key, label: track.label, ticks: sk.ticks });
+    else if (sk.ticks.length > seen.ticks.length) seen.ticks = sk.ticks;
+  }
 
-  // null = "follow max" so the slider starts maxed without an effect.
-  const [level, setLevel] = useState<number | null>(null);
+  // A missing entry means "follow max", so every slider starts at the top
+  // without needing the tick counts up front.
+  const [levels, setLevels] = useState<Record<string, number>>({});
   const [showTable, setShowTable] = useState(false);
-  const effLevel = level ?? maxLevel;
+
+  const levelOf = (key: string | undefined, ticks: string[]) => {
+    const max = ticks.length;
+    const chosen = key !== undefined ? levels[key] : undefined;
+    return Math.min(chosen ?? max, max);
+  };
 
   if (skills.length === 0) return null;
 
@@ -80,20 +135,30 @@ export function SkillsBlock({
     <section className="mb-8">
       {c.title && <h2 className="text-xl font-semibold mb-4">{c.title}</h2>}
 
-      {maxLevel > 1 && (
-        <div className="flex items-center gap-3 mb-4">
+      {sliders.length > 0 && (
+        <div className="flex items-start gap-3 mb-4">
           {!showTable && (
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <span className="text-xs text-gray-500 shrink-0">Lv</span>
-              <input
-                type="range"
-                min={1}
-                max={maxLevel}
-                value={effLevel}
-                onChange={(e) => setLevel(Number(e.target.value))}
-                className="flex-1 accent-amber-500"
-              />
-              <span className="text-xs text-gray-300 w-6 text-right tabular-nums shrink-0">{effLevel}</span>
+            <div className="flex-1 min-w-0 space-y-1.5">
+              {sliders.map((s) => {
+                const level = levelOf(s.key, s.ticks);
+                return (
+                  <div key={s.key} className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 shrink-0 w-16">{s.label}</span>
+                    <input
+                      type="range"
+                      min={1}
+                      max={s.ticks.length}
+                      value={level}
+                      aria-label={s.label}
+                      onChange={(e) => setLevels((prev) => ({ ...prev, [s.key]: Number(e.target.value) }))}
+                      className="flex-1 accent-amber-500"
+                    />
+                    <span className="text-xs text-gray-300 w-8 text-right tabular-nums shrink-0">
+                      {s.ticks[level - 1]}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           )}
           <button
@@ -110,7 +175,14 @@ export function SkillsBlock({
         {skills.map((sk, i) => {
           const showHeader = sk.group !== "" && sk.group !== lastGroup;
           lastGroup = sk.group;
-          const maxLen = sk.scalings.reduce((m, x) => Math.max(m, x.values.length), 0);
+          const maxLen = sk.ticks.length;
+          // Each ability reads the slider for its own track, so a memosprite
+          // skill doesn't move when the main kit's level does.
+          const effLevel = levelOf(sk.track?.key, sk.ticks);
+          // Scalings spliced into the sentence don't repeat as rows underneath
+          // — but the "All levels" table still shows every one of them.
+          const inlined = hasTokens(sk.desc) ? tokenizedScalings(sk.desc, sk.scalings) : new Set<number>();
+          const listed = sk.scalings.filter((_, j) => !inlined.has(j));
           return (
             <Fragment key={i}>
               {showHeader && (
@@ -130,7 +202,9 @@ export function SkillsBlock({
                     )}
                     {sk.name && <p className="text-sm font-semibold text-gray-200">{sk.name}</p>}
                   </div>
-                  {sk.desc && <p className="text-sm text-gray-400 leading-relaxed whitespace-pre-line mt-1">{sk.desc}</p>}
+                  {sk.desc && (
+                    <SkillDescription description={sk.desc} scalings={sk.scalings} levelIndex={effLevel - 1} />
+                  )}
 
                   {sk.scalings.length > 0 && (
                     showTable && maxLen > 0 ? (
@@ -139,8 +213,8 @@ export function SkillsBlock({
                           <thead>
                             <tr className="text-gray-500">
                               <th className="text-left font-medium pr-3 pb-1" />
-                              {Array.from({ length: maxLen }, (_, k) => (
-                                <th key={k} className="px-2 pb-1 font-medium text-right tabular-nums">{k + 1}</th>
+                              {sk.ticks.map((tick, k) => (
+                                <th key={k} className="px-2 pb-1 font-medium text-right tabular-nums">{tick}</th>
                               ))}
                             </tr>
                           </thead>
@@ -159,8 +233,8 @@ export function SkillsBlock({
                         </table>
                       </div>
                     ) : (
-                      <div className="mt-2 space-y-1">
-                        {sk.scalings.map((sc, j) => {
+                      <div className={listed.length > 0 ? "mt-2 space-y-1" : ""}>
+                        {listed.map((sc, j) => {
                           const idx = Math.min(effLevel - 1, sc.values.length - 1);
                           const val = sc.values.length > 0 ? (sc.values[idx] ?? sc.values[sc.values.length - 1]) : "";
                           if (!val) return null;

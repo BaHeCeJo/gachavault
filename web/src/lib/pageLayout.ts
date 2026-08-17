@@ -9,6 +9,8 @@
 // type written by a future admin build degrades to "unknown → skipped" on an
 // older frontend instead of corrupting the whole layout.
 
+import type { SkillTrack } from "./skillPresets";
+
 export type BlockType =
   | "legacy"
   | "hero"
@@ -96,6 +98,11 @@ export interface SkillsConfig {
   type_key?: string; // default "type" — rendered as a category tag (e.g. "Skill", "Ultimate")
   group_key?: string; // default "group" — a value change starts a labelled subsection (e.g. "Memosprite")
   scalings_key?: string; // default "scalings" — array of { label, values[] } per-level multipliers, shown via a level slider
+  track_key?: string; // default "track" — names the level track an ability scales along
+  // Level tracks for this schema. Omitted (the norm) = the game's preset
+  // tracks, so a light cone slider reads S1-S5 and a ZZZ core passive A-F
+  // without any per-schema setup.
+  tracks?: SkillTrack[];
 }
 
 export interface ColumnsConfig {
