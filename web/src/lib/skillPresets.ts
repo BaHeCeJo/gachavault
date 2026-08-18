@@ -23,6 +23,11 @@ export interface SkillTrack {
   // Ability "Type" tags that default to this track, so an admin rarely picks
   // one by hand. The first track is the fallback for anything unmatched.
   types?: string[];
+  // Which tick the slider sits on before the reader touches it, 1-based.
+  // Omitted = the last one. A character's kit is usually discussed at max
+  // level, but gear is not: nearly everyone holds a light cone at S1, so
+  // opening a light cone at S5 would quote numbers almost no reader has.
+  defaultTick?: number;
 }
 
 export interface SkillPreset {
@@ -58,7 +63,7 @@ const PRESETS: SkillPreset[] = [
       // abilities get their own slider (Hyacine, Castorice, Aglaea).
       { key: "memo", label: "Memo Lv", ticks: range(10), types: ["Memosprite Skill", "Memosprite Talent"] },
       // Light cone superimposition.
-      { key: "superimposition", label: "S", ticks: prefixed("S", 5), types: ["Light Cone Effect"] },
+      { key: "superimposition", label: "Superimposition", ticks: prefixed("S", 5), types: ["Light Cone Effect"], defaultTick: 1 },
     ],
   },
   {
@@ -68,7 +73,7 @@ const PRESETS: SkillPreset[] = [
     tracks: [
       // 10 base, up to 15 with the C3/C5 constellation bonuses.
       { key: "talent", label: "Lv", ticks: range(15), types: ["Normal Attack", "Elemental Skill", "Elemental Burst"] },
-      { key: "refinement", label: "R", ticks: prefixed("R", 5), types: ["Weapon Passive"] },
+      { key: "refinement", label: "Refinement", ticks: prefixed("R", 5), types: ["Weapon Passive"], defaultTick: 1 },
     ],
   },
   {
@@ -80,7 +85,7 @@ const PRESETS: SkillPreset[] = [
       // Core passives are letter-graded, not numbered — the case that makes
       // tick labels mandatory rather than derived from a count.
       { key: "core", label: "Core", ticks: ["A", "B", "C", "D", "E", "F"], types: ["Core Skill", "Additional Ability"] },
-      { key: "engine", label: "P", ticks: prefixed("P", 5), types: ["W-Engine Passive"] },
+      { key: "engine", label: "Phase", ticks: prefixed("P", 5), types: ["W-Engine Passive"], defaultTick: 1 },
     ],
   },
   {
@@ -89,7 +94,7 @@ const PRESETS: SkillPreset[] = [
     groups: ["Resonance Chain"],
     tracks: [
       { key: "skill", label: "Lv", ticks: range(10), types: ["Basic Attack", "Resonance Skill", "Resonance Liberation", "Forte Circuit", "Intro Skill", "Outro Skill"] },
-      { key: "tune", label: "S", ticks: prefixed("S", 5), types: ["Weapon Passive"] },
+      { key: "tune", label: "Sync", ticks: prefixed("S", 5), types: ["Weapon Passive"], defaultTick: 1 },
     ],
   },
   // Endfield before plain Arknights so the more specific slug wins.
@@ -214,6 +219,13 @@ export function trackFor(
 // directions — the slider spans exactly as many stops as there are values, and
 // any beyond the preset's labels fall back to their 1-based number so nothing
 // is silently unreachable.
+// The tick a track opens on, as a 1-based index clamped into range.
+export function defaultTickOf(track: SkillTrack | undefined, tickCount: number): number {
+  if (tickCount <= 0) return 0;
+  const want = track?.defaultTick ?? tickCount;
+  return Math.max(1, Math.min(want, tickCount));
+}
+
 export function resolveTicks(track: SkillTrack | undefined, valueCount: number): string[] {
   const ticks = track?.ticks ?? [];
   if (valueCount <= 0) return [];

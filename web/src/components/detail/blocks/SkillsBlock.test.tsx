@@ -177,9 +177,10 @@ describe("SkillsBlock level tracks", () => {
       "honkai-star-rail",
     );
 
-    expect(screen.getByLabelText("S")).toBeInTheDocument();
-    expect(screen.getByText("S5")).toBeInTheDocument();
-    expect(screen.getByText("20%")).toBeInTheDocument();
+    // Ticks read S1..S5, and the slider opens on S1 rather than maxed.
+    expect(screen.getByLabelText("Superimposition")).toBeInTheDocument();
+    expect(screen.getByText("S1")).toBeInTheDocument();
+    expect(screen.getByText("12%")).toBeInTheDocument();
   });
 
   it("grades a ZZZ core passive by letter rather than by number", () => {
@@ -237,7 +238,7 @@ describe("SkillsBlock level tracks", () => {
       "honkai-star-rail",
     );
 
-    expect(screen.getByLabelText("S")).toBeInTheDocument();
+    expect(screen.getByLabelText("Superimposition")).toBeInTheDocument();
   });
 
   it("shows no slider for a kit of level-less abilities", () => {
@@ -251,5 +252,44 @@ describe("SkillsBlock level tracks", () => {
 
     expect(screen.queryByRole("slider")).not.toBeInTheDocument();
     expect(screen.getByText("A fixed bonus.")).toBeInTheDocument();
+  });
+});
+
+describe("SkillsBlock slider defaults", () => {
+  const LIGHT_CONE = [
+    {
+      type: "Light Cone Effect",
+      name: "Longing",
+      description: "Increases CRIT Rate by {crit_rate}.",
+      scalings: [{ label: "CRIT Rate", values: ["12%", "14%", "16%", "18%", "20%"] }],
+    },
+  ];
+
+  it("opens a light cone at S1, the superimposition almost every reader has", () => {
+    renderKit(LIGHT_CONE, "honkai-star-rail");
+
+    expect(screen.getByText("S1")).toBeInTheDocument();
+    expect(screen.getByText("12%")).toBeInTheDocument();
+    expect(screen.queryByText("20%")).not.toBeInTheDocument();
+  });
+
+  it("labels that slider in full instead of a bare letter", () => {
+    renderKit(LIGHT_CONE, "honkai-star-rail");
+    expect(screen.getByLabelText("Superimposition")).toBeInTheDocument();
+  });
+
+  it("still opens a character's kit at max level", () => {
+    renderKit(MEMOSPRITE_KIT, "honkai-star-rail");
+
+    expect(screen.getByText("110%")).toBeInTheDocument();
+    expect(screen.getByText("10%")).toBeInTheDocument();
+  });
+
+  it("lets the reader move a defaulted slider up", () => {
+    renderKit(LIGHT_CONE, "honkai-star-rail");
+
+    fireEvent.change(screen.getByLabelText("Superimposition"), { target: { value: "5" } });
+    expect(screen.getByText("20%")).toBeInTheDocument();
+    expect(screen.getByText("S5")).toBeInTheDocument();
   });
 });

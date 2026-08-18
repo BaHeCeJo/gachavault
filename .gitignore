@@ -34,3 +34,7 @@ secrets/
 
 # Claude Code per-machine settings (the shared .claude/settings.json IS tracked)
 .claude/settings.local.json
+
+# Python bytecode from the seed/transform scripts
+__pycache__/
+*.pyc

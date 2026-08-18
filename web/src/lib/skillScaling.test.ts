@@ -1,4 +1,6 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import type { Scaling } from "./skillScaling";
 import {
   extractScalingRuns,
   hasTokens,
@@ -194,4 +196,25 @@ describe("round trip", () => {
       "Increases the wearer's CRIT Rate by 20%.",
     );
   });
+});
+
+// Shared with the Python importer (make_hsr_light_cones.py), which extracts the
+// same runs offline for bulk seeding. Both read this file, so a change to the
+// heuristic on one side fails loudly on the other instead of quietly producing
+// different tokens for the same effect text.
+describe("shared extraction fixtures", () => {
+  // Relative to the vitest cwd (web/), so the repo-root seed_data is one up.
+  const fixtures = JSON.parse(
+    readFileSync("../seed_data/scaling_extraction_fixtures.json", "utf8"),
+  ) as { cases: { description: string; expected: { text: string; scalings: Scaling[] } }[] };
+
+  it("covers the shapes the light cone catalog actually contains", () => {
+    expect(fixtures.cases.length).toBeGreaterThanOrEqual(8);
+  });
+
+  for (const c of fixtures.cases) {
+    it(`matches: ${c.description.slice(0, 60)}…`, () => {
+      expect(extractScalingRuns(c.description)).toEqual(c.expected);
+    });
+  }
 });
