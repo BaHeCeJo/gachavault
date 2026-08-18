@@ -301,7 +301,10 @@ export const adminApi = {
   },
   items: {
     create: (data: object) => api.post("/items", data),
-    bulkImport: (items: object[]) => api.post("/items/bulk-import", items),
+    // mode "update" overwrites rows whose slug already exists instead of
+    // skipping them — needed to enrich an existing catalog from a file.
+    bulkImport: (items: object[], mode?: "skip" | "update") =>
+      api.post("/items/bulk-import", items, { params: mode ? { mode } : {} }),
     update: (id: string, data: object) => api.put(`/items/${id}`, data),
     delete: (id: string) => api.delete(`/items/${id}`),
     createSkill: (id: string, data: object) => api.post(`/items/${id}/skills`, data),
