@@ -131,6 +131,21 @@ pub struct UpdateItemRequest {
     pub slug: Option<String>,
 }
 
+/// Query for the bulk item import.
+#[derive(Debug, Deserialize)]
+pub struct BulkImportQuery {
+    pub mode: Option<String>,
+}
+
+impl BulkImportQuery {
+    /// Whether a row whose slug already exists should overwrite rather than be
+    /// skipped. Only the exact word opts in: a typo, or a stale client sending
+    /// nothing, lands on skip rather than quietly rewriting a catalog.
+    pub fn overwrites(&self) -> bool {
+        self.mode.as_deref() == Some("update")
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct CreateSkillRequest {
     pub name: String,
@@ -152,4 +167,28 @@ pub struct CreateChangelogRequest {
     pub patch: Option<String>,
     pub changes: String,
     pub change_date: Option<NaiveDate>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Overwriting a stored catalog is opt-in, and only the exact word opts in.
+    // A typo, or a stale client sending nothing, must land on skip — the safe
+    // side — rather than quietly rewriting items.
+    #[test]
+    fn only_the_exact_update_mode_overwrites() {
+        let mode = |m: Option<&str>| {
+            BulkImportQuery {
+                mode: m.map(String::from),
+            }
+            .overwrites()
+        };
+        assert!(mode(Some("update")));
+        assert!(!mode(None));
+        assert!(!mode(Some("skip")));
+        assert!(!mode(Some("Update")));
+        assert!(!mode(Some("updates")));
+        assert!(!mode(Some("overwrite")));
+    }
 }

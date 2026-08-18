@@ -36,6 +36,10 @@ export default function BulkImportPage() {
   const [parseError, setParseError] = useState("");
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
+  // Rows carry no item id, so a slug that already exists is a clash. Skipping
+  // honours "create"; updating is what lets a generated catalog file enrich
+  // items that are already there.
+  const [mode, setMode] = useState<"skip" | "update">("skip");
 
   useEffect(() => {
     if (!user) return;
@@ -89,7 +93,7 @@ export default function BulkImportPage() {
     setImporting(true);
     setResult(null);
     try {
-      const res = await adminApi.items.bulkImport(parsed);
+      const res = await adminApi.items.bulkImport(parsed, mode);
       setResult(res.data.data);
       // Bulk import may touch multiple games — revalidate every game slug
       // referenced in the batch so each affected /games/<slug> refreshes.
@@ -175,8 +179,40 @@ export default function BulkImportPage() {
               disabled={importing}
               className="px-5 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-gray-200 transition disabled:opacity-50"
             >
-              {importing ? "Importing…" : `Import ${parsed.length} items`}
+              {importing
+                ? "Importing…"
+                : `${mode === "update" ? "Import / update" : "Import"} ${parsed.length} items`}
             </button>
+          </div>
+
+          <div className="rounded-xl border border-gray-800 p-4 space-y-2">
+            <p className="text-sm font-semibold text-gray-300">
+              When an item with the same slug already exists
+            </p>
+            {([
+              ["skip", "Skip them", "Only create items that don't exist yet. Nothing already stored is touched."],
+              ["update", "Update them", "Merge the file's fields into the stored item. Fields the file doesn't mention are kept."],
+            ] as const).map(([value, title, help]) => (
+              <label key={value} className="flex gap-2 items-start cursor-pointer">
+                <input
+                  type="radio"
+                  name="mode"
+                  checked={mode === value}
+                  onChange={() => setMode(value)}
+                  className="mt-1 accent-amber-500"
+                />
+                <span className="text-sm">
+                  <span className="text-gray-200">{title}</span>
+                  <span className="text-gray-500"> — {help}</span>
+                </span>
+              </label>
+            ))}
+            {mode === "update" && (
+              <p className="text-xs text-gray-500 pt-1">
+                Merged per field, so uploaded art and hand-written text survive an
+                enrichment file that doesn&apos;t mention them.
+              </p>
+            )}
           </div>
 
           <div className="rounded-xl border border-gray-800 overflow-hidden">

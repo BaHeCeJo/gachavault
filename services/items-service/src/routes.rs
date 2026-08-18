@@ -325,8 +325,10 @@ pub struct BulkImportRow {
 pub async fn bulk_import(
     State(state): State<AppState>,
     auth: AuthUser,
+    Query(q): Query<BulkImportQuery>,
     Json(items): Json<Vec<BulkImportRow>>,
 ) -> AppResult<Json<ApiResponse<serde_json::Value>>> {
+    let overwrite = q.overwrites();
     if !auth.is_admin() {
         return Err(AppError::Forbidden(
             "Admin role required for bulk import".into(),
@@ -453,9 +455,68 @@ pub async fn bulk_import(
                 });
             }
             Err(sqlx::Error::Database(e)) if e.constraint() == Some("items_game_id_slug_key") => {
-                // Row had no id and the slug already exists — caller intended a create,
-                // so we honor the contract and skip rather than silently overwriting.
-                skipped += 1;
+                // Row had no id and the slug already exists. The caller asked to
+                // create, so skipping honors that by default. `?mode=update`
+                // opts into rewriting the row instead, which is what makes a
+                // generated catalog file re-importable — without it, enriching
+                // items that already exist needs a script holding their UUIDs.
+                if !overwrite {
+                    skipped += 1;
+                    continue;
+                }
+                match db::find_item_by_game_slug(&state.pool, game_id, &slug).await {
+                    Ok(Some(existing)) => {
+                        // Merge rather than replace. A slug-matched row is an
+                        // enrichment file — it carries the fields it knows about
+                        // and cannot know the rest, so replacing would drop
+                        // uploaded art and anything written by hand. Per key the
+                        // file wins; keys it omits are left alone. (The id-based
+                        // path above still replaces: those rows come from an
+                        // export and are the whole item.)
+                        let merged = match (existing.data.as_object(), row.data.as_object()) {
+                            (Some(prior), Some(incoming)) => {
+                                let mut m = prior.clone();
+                                for (k, v) in incoming {
+                                    m.insert(k.clone(), v.clone());
+                                }
+                                serde_json::Value::Object(m)
+                            }
+                            _ => row.data.clone(),
+                        };
+                        match db::update_item(&state.pool, existing.id, None, Some(&merged)).await {
+                            Ok(Some(item)) => {
+                                updated += 1;
+                                let state_clone = state.clone();
+                                let item_clone = item.clone();
+                                tokio::spawn(async move {
+                                    index_item(&state_clone, &item_clone).await;
+                                });
+                            }
+                            Ok(None) => {
+                                errors.push(serde_json::json!({
+                                    "slug": slug,
+                                    "error": "Item vanished between lookup and update",
+                                }));
+                            }
+                            Err(e) => {
+                                errors.push(
+                                    serde_json::json!({"slug": slug, "error": e.to_string()}),
+                                );
+                            }
+                        }
+                    }
+                    // The clash was on (game_id, slug), so a miss here means the
+                    // row was deleted in between; report rather than guess.
+                    Ok(None) => {
+                        errors.push(serde_json::json!({
+                            "slug": slug,
+                            "error": "Slug clash but no matching item found",
+                        }));
+                    }
+                    Err(e) => {
+                        errors.push(serde_json::json!({"slug": slug, "error": e.to_string()}));
+                    }
+                }
             }
             Err(e) => {
                 errors.push(serde_json::json!({"slug": slug, "error": e.to_string()}));
