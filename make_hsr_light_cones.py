@@ -28,13 +28,16 @@ and writes:
       One row per light cone in the shape /admin/items/import expects:
       {game, section, schema, slug, data} — name, rarity and path only.
 
-The effect text and the HP/ATK/DEF are parsed (they validate the file's shape,
-and the counts get reported) but deliberately not imported: both are curves,
-not values. The slash-separated numbers in an effect are its five superimpose
-levels, and the stats depend on the cone's level and ascension. Storing one
-snapshot of either in a flat field would state as fact something that is only
-true at one point on the curve, so they stay in the raw file until there is a
-schema that can express the scaling.
+The effect IS imported, as a one-row `effect` skilllist: its slash-separated
+numbers are the five superimposition levels, so each run is lifted into a
+{label, values[]} scaling and replaced by a {token} in the text (see
+scaling_extract.py). The site splices the value for the chosen level back into
+the sentence, which is the schema that can finally express the curve.
+
+The HP/ATK/DEF are still parsed but not imported — they validate the file's
+shape and the counts get reported, but they depend on the cone's level and
+ascension, and storing one snapshot in a flat field would state as fact
+something that is only true at one point on the curve.
 
 The source gives no availability, release version/date, skill name, or art, so
 those fields are left unset rather than guessed — see seed_hsr_light_cones.py
@@ -45,6 +48,8 @@ import io
 import json
 import os
 import re
+
+from scaling_extract import check_fixtures, extract_scaling_runs
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "seed_data")
@@ -148,7 +153,26 @@ def parse(text):
     return entries
 
 
+def effect_row(effect):
+    """One skilllist row for a light cone's effect, or None if there is none.
+
+    Typed "Light Cone Effect" so the site resolves the slider to superimposition
+    (S1-S5) rather than a character's skill levels."""
+    text = (effect or "").strip()
+    if not text:
+        return None
+    tokenized, scalings = extract_scaling_runs(text)
+    row = {"type": "Light Cone Effect", "description": tokenized}
+    if scalings:
+        row["scalings"] = scalings
+    return row
+
+
 def main():
+    # Fail before writing anything if the offline extractor has drifted from the
+    # TypeScript one the admin editor uses.
+    check_fixtures()
+
     with io.open(RAW, encoding="utf-8") as f:
         entries = parse(f.read())
 
@@ -157,17 +181,24 @@ def main():
         raise SystemExit("duplicate slugs: %s" % ", ".join(sorted(dupes)))
 
     rows, placeholder = [], []
+    no_effect = []
     for e in entries:
         if not e["stats"]:
             placeholder.append(e["name"])
+        data = {"name": e["name"], "rarity": e["rarity"], "path": e["path"]}
+        row = effect_row(e["effect"])
+        if row:
+            data["effect"] = [row]
+        else:
+            no_effect.append(e["name"])
         rows.append(
             {
                 "game": GAME,
                 "section": "light-cones",
                 "schema": "Light Cones",
                 "slug": e["slug"],
-                # Effect and stats are scaling curves — see the module docstring.
-                "data": {"name": e["name"], "rarity": e["rarity"], "path": e["path"]},
+                # HP/ATK/DEF stay out — see the module docstring.
+                "data": data,
             }
         )
 
@@ -184,7 +215,12 @@ def main():
     print("%-32s %d rows" % (os.path.basename(OUT), len(rows)))
     print("  rarity: %s" % ", ".join("%s★ %d" % (k, by_rarity[k]) for k in sorted(by_rarity)))
     print("  path:   %s" % ", ".join("%s %d" % (k, by_path[k]) for k in sorted(by_path)))
-    print("  effect + HP/ATK/DEF parsed but not imported (scaling curves)")
+    with_effect = sum(1 for r in rows if r["data"].get("effect"))
+    scaled = sum(1 for r in rows for a in r["data"].get("effect", []) if a.get("scalings"))
+    print("  effect: %d rows, %d with per-superimposition scalings" % (with_effect, scaled))
+    print("  HP/ATK/DEF parsed but not imported (level/ascension curves)")
+    if no_effect:
+        print("  no effect text: %s" % ", ".join(no_effect))
     if placeholder:
         print("  not published at the source yet: %s" % ", ".join(placeholder))
     new = [e["name"] for e in entries if e["is_new"]]

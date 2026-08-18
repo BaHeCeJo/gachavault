@@ -54,7 +54,7 @@ export function splitValues(raw: string): string[] {
 
 // Glue words that never belong in a generated label ("…CRIT Rate by 12/14/16"
 // → "CRIT Rate", not "Rate by").
-const STOPWORDS = new Set(["by", "to", "of", "for", "at", "as", "and", "or", "up", "a", "an", "the", "is", "are", "with", "plus", "additional", "that", "this"]);
+const STOPWORDS = new Set(["by", "to", "of", "for", "at", "as", "and", "or", "up", "a", "an", "the", "is", "are", "with", "plus", "additional", "that", "this", "equal", "each", "every"]);
 // Possessives that only ever lead a phrase, never end one.
 const LEADING_ONLY = new Set(["wearer's", "wearers", "their", "its", "his", "her", "'s"]);
 // Effect verbs. A label made only of these names an action, not a stat, so it
@@ -77,11 +77,20 @@ const isStop = (w: string) => STOPWORDS.has(w.toLowerCase()) || LEADING_ONLY.has
 // "Ultimate DMG"), so a capitalised word is the strongest available hint about
 // where the stat phrase actually starts.
 const isCapitalized = (w: string) => /\p{Lu}/u.test(w);
+const isVerb = (w: string) => VERBS.has(w.toLowerCase());
+// "wearer's", "holder's" — a possessive leads a phrase but is never the stat.
+const isPossessive = (w: string) => /'s$/i.test(w);
+// A bare number is part of the effect's prose ("for 2 turn(s)"), never a stat name.
+const isNumeric = (w: string) => /^\d+(?:\.\d+)?$/.test(w);
 
+// A stat name never opens with a verb or a bare number ("increases the DMG" is
+// the clause, "DMG" is the stat) and never closes with glue or a number.
 function trimEdges(list: string[]): string[] {
   const out = list.slice();
-  while (out.length > 0 && isStop(out[0])) out.shift();
-  while (out.length > 0 && isStop(out[out.length - 1])) out.pop();
+  while (out.length > 0 && (isStop(out[0]) || isPossessive(out[0]) || isVerb(out[0]) || isNumeric(out[0]))) {
+    out.shift();
+  }
+  while (out.length > 0 && (isStop(out[out.length - 1]) || isNumeric(out[out.length - 1]))) out.pop();
   return out;
 }
 
@@ -89,6 +98,8 @@ function trimEdges(list: string[]): string[] {
 function phraseBefore(before: string): string {
   const list = words(before);
   while (list.length > 0 && isStop(list[list.length - 1])) list.pop();
+  // A trailing verb names the action, not the stat ("…holder's DMG dealt").
+  while (list.length > 0 && isVerb(list[list.length - 1])) list.pop();
   if (list.length === 0) return "";
 
   let tail = list.slice(-MAX_LABEL_WORDS);
@@ -103,10 +114,12 @@ function phraseBefore(before: string): string {
 }
 
 // The stat phrase just after a run of values, used when the text reads
-// "Deals <values> of ATK". Stops at the first glue word so it grabs the stat
-// and nothing else.
+// "Deals <values> of ATK" or "regenerates <values> Energy". Stops at the first
+// glue word so it grabs the stat and nothing else, and never crosses a comma or
+// sentence boundary — what follows those is a new clause about something else
+// ("…increases by 3/4/5%, stacking up to 3 times" does not scale "stacking").
 function phraseAfter(after: string): string {
-  const list = words(after);
+  const list = words(after.split(/[.!?,\n]/)[0] ?? "");
   while (list.length > 0 && isStop(list[0])) list.shift();
   const out: string[] = [];
   for (const w of list) {
@@ -118,9 +131,20 @@ function phraseAfter(after: string): string {
 
 // Guess a scaling's label from the prose around its run of values. A suggestion
 // only — the admin can rename it, and a bad guess costs one edit.
+//
+// Which side to read is decided by the word butting up against the values. A
+// verb there ("…regenerates 6/6.5/7/7.5/8 Energy") means the stat trails the
+// numbers, so the text after wins; reaching backwards instead would sail past
+// the verb and label it with whatever capitalised phrase happened to come
+// earlier in the sentence. Everywhere else the stat leads ("CRIT Rate by …").
+// Either side falls back to the other when it comes up empty.
 function labelFromContext(before: string, after: string): string {
+  const lead = words(before).filter((w) => !isStop(w));
+  const verbLed = lead.length > 0 && isVerb(lead[lead.length - 1]);
+  if (verbLed) return phraseAfter(after) || phraseBefore(before);
+
   const label = phraseBefore(before);
-  const onlyVerbs = label === "" || words(label).every((w) => VERBS.has(w.toLowerCase()));
+  const onlyVerbs = label === "" || words(label).every(isVerb);
   return onlyVerbs ? phraseAfter(after) || label : label;
 }
 

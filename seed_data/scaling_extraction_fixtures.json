@@ -1,0 +1,220 @@
+{
+ "cases": [
+  {
+   "description": "Increases the wearer's CRIT Rate by 12/14/16/18/20%. The Ultimate DMG and Follow-up ATK DMG dealt by the wearer increase by 24/28/32/36/40%.",
+   "expected": {
+    "text": "Increases the wearer's CRIT Rate by {crit_rate}. The Ultimate DMG and Follow-up ATK DMG dealt by the wearer increase by {follow_up_atk_dmg}.",
+    "scalings": [
+     {
+      "label": "CRIT Rate",
+      "values": [
+       "12%",
+       "14%",
+       "16%",
+       "18%",
+       "20%"
+      ]
+     },
+     {
+      "label": "Follow-up ATK DMG",
+      "values": [
+       "24%",
+       "28%",
+       "32%",
+       "36%",
+       "40%"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "description": "After the wearer uses Skill or Ultimate on one ally character, the wearer regenerates 6/6.5/7/7.5/8 Energy and the ability's target receives 1 stack of \"Hymn\" for 3 turn(s), stacking up to 3 time(s). Each stack of \"Hymn\" increases its holder's DMG dealt by 15/17.25/19.5/21.75/24%. After every 2 instance(s) of Skill or Ultimate the wearer uses on one ally character, recovers 1 Skill Point.",
+   "expected": {
+    "text": "After the wearer uses Skill or Ultimate on one ally character, the wearer regenerates {energy} Energy and the ability's target receives 1 stack of \"Hymn\" for 3 turn(s), stacking up to 3 time(s). Each stack of \"Hymn\" increases its holder's DMG dealt by {dmg}. After every 2 instance(s) of Skill or Ultimate the wearer uses on one ally character, recovers 1 Skill Point.",
+    "scalings": [
+     {
+      "label": "Energy",
+      "values": [
+       "6",
+       "6.5",
+       "7",
+       "7.5",
+       "8"
+      ]
+     },
+     {
+      "label": "DMG",
+      "values": [
+       "15%",
+       "17.25%",
+       "19.5%",
+       "21.75%",
+       "24%"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "description": "Deals 100.8%/109.4%/118.1%/130.5%/139.1% of ATK as Pyro DMG.",
+   "expected": {
+    "text": "Deals {atk} of ATK as Pyro DMG.",
+    "scalings": [
+     {
+      "label": "ATK",
+      "values": [
+       "100.8%",
+       "109.4%",
+       "118.1%",
+       "130.5%",
+       "139.1%"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "description": "ATK increased by 8/10/12/14/16%.",
+   "expected": {
+    "text": "ATK increased by {atk}.",
+    "scalings": [
+     {
+      "label": "ATK",
+      "values": [
+       "8%",
+       "10%",
+       "12%",
+       "14%",
+       "16%"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "description": "CRIT Rate 1/2/3/4/5%. CRIT Rate 6/7/8/9/10%.",
+   "expected": {
+    "text": "CRIT Rate {crit_rate}. CRIT Rate {2}.",
+    "scalings": [
+     {
+      "label": "CRIT Rate",
+      "values": [
+       "1%",
+       "2%",
+       "3%",
+       "4%",
+       "5%"
+      ]
+     },
+     {
+      "label": "CRIT Rate",
+      "values": [
+       "6%",
+       "7%",
+       "8%",
+       "9%",
+       "10%"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "description": "Available 24/7 during the event.",
+   "expected": {
+    "text": "Available 24/7 during the event.",
+    "scalings": []
+   }
+  },
+  {
+   "description": "Immediately recovers 1 Skill Point.",
+   "expected": {
+    "text": "Immediately recovers 1 Skill Point.",
+    "scalings": []
+   }
+  },
+  {
+   "description": "Increases the wearer's Effect RES by 16/20/24/28/32%.",
+   "expected": {
+    "text": "Increases the wearer's Effect RES by {effect_res}.",
+    "scalings": [
+     {
+      "label": "Effect RES",
+      "values": [
+       "16%",
+       "20%",
+       "24%",
+       "28%",
+       "32%"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "description": "For every debuff on the enemy target, the wearer's CRIT DMG dealt against this target increases by 4/5/6/7/8%, stacking up to 3 times.",
+   "expected": {
+    "text": "For every debuff on the enemy target, the wearer's CRIT DMG dealt against this target increases by {crit_dmg}, stacking up to 3 times.",
+    "scalings": [
+     {
+      "label": "CRIT DMG",
+      "values": [
+       "4%",
+       "5%",
+       "6%",
+       "7%",
+       "8%"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "description": "When the wearer's HP is decreased, increases the DMG of all allies by 12/14/16/18/20% for 2 turn(s).",
+   "expected": {
+    "text": "When the wearer's HP is decreased, increases the DMG of all allies by {dmg} for 2 turn(s).",
+    "scalings": [
+     {
+      "label": "DMG",
+      "values": [
+       "12%",
+       "14%",
+       "16%",
+       "18%",
+       "20%"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "description": "Increases the wearer's Max HP by 8/9/10/11/12% and restores HP equal to 4/5/6/7/8% of Max HP.",
+   "expected": {
+    "text": "Increases the wearer's Max HP by {max_hp} and restores HP equal to {hp} of Max HP.",
+    "scalings": [
+     {
+      "label": "Max HP",
+      "values": [
+       "8%",
+       "9%",
+       "10%",
+       "11%",
+       "12%"
+      ]
+     },
+     {
+      "label": "HP",
+      "values": [
+       "4%",
+       "5%",
+       "6%",
+       "7%",
+       "8%"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}
