@@ -142,6 +142,15 @@ def _label_from_context(before, after):
     return (_phrase_after(after) or label) if only_verbs else label
 
 
+def label_for_context(before, after):
+    """Name a value from the prose on either side of where it sits.
+
+    Public because the light cone importer needs the same naming for values it
+    takes from the wiki's structured fields, where there is no slash-run to
+    parse but the surrounding sentence reads identically."""
+    return _label_from_context(before, after)
+
+
 def _normalize_units(parts):
     """A "%" written once at the end of a run applies to every value in it."""
     with_unit = [p for p in parts if p.endswith("%")]

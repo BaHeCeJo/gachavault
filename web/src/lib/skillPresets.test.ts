@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveTicks, skillPresetFor, trackFor } from "./skillPresets";
+import { defaultTickOf, resolveTicks, skillPresetFor, trackFor } from "./skillPresets";
 
 describe("skillPresetFor", () => {
   it("matches on slug and on display name", () => {
@@ -100,5 +100,42 @@ describe("resolveTicks", () => {
 
   it("numbers the stops when there is no track at all", () => {
     expect(resolveTicks(undefined, 3)).toEqual(["1", "2", "3"]);
+  });
+});
+
+describe("defaultTickOf", () => {
+  it("opens gear tracks at the first tick", () => {
+    // Almost every reader holds a light cone at S1, so opening at S5 would
+    // quote numbers hardly anyone has.
+    const hsr = skillPresetFor("honkai-star-rail").tracks;
+    const superimp = trackFor(hsr, "superimposition");
+    expect(defaultTickOf(superimp, 5)).toBe(1);
+
+    const zzz = trackFor(skillPresetFor("zenless-zone-zero").tracks, "engine");
+    expect(defaultTickOf(zzz, 5)).toBe(1);
+  });
+
+  it("opens a character's kit at max level", () => {
+    const hsr = skillPresetFor("honkai-star-rail").tracks;
+    expect(defaultTickOf(trackFor(hsr, undefined, "Ultimate"), 10)).toBe(10);
+    expect(defaultTickOf(trackFor(hsr, undefined, "Basic ATK"), 7)).toBe(7);
+  });
+
+  it("clamps a default beyond the ticks the data actually has", () => {
+    expect(defaultTickOf({ key: "k", label: "L", ticks: ["1"], defaultTick: 9 }, 1)).toBe(1);
+    expect(defaultTickOf({ key: "k", label: "L", ticks: [], defaultTick: 0 }, 3)).toBe(1);
+  });
+
+  it("is zero when there are no ticks", () => {
+    expect(defaultTickOf(undefined, 0)).toBe(0);
+  });
+});
+
+describe("track labels", () => {
+  it("names prefixed tracks in full rather than repeating the tick letter", () => {
+    // The ticks already read S1..S5, so a bare "S" beside them said nothing.
+    const superimp = trackFor(skillPresetFor("honkai-star-rail").tracks, "superimposition");
+    expect(superimp?.label).toBe("Superimposition");
+    expect(superimp?.ticks[0]).toBe("S1");
   });
 });

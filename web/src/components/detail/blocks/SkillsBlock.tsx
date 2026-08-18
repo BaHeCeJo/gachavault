@@ -3,8 +3,9 @@
 import { Fragment, useState } from "react";
 import type { ItemPageBundle } from "@/lib/seo";
 import type { SkillsConfig } from "@/lib/pageLayout";
+import type { SkillTrack } from "@/lib/skillPresets";
 import { hasTokens, renderTemplate, tokenizedScalings } from "@/lib/skillScaling";
-import { resolveTicks, skillPresetFor, trackFor } from "@/lib/skillPresets";
+import { defaultTickOf, resolveTicks, skillPresetFor, trackFor } from "@/lib/skillPresets";
 
 // A list of skills/abilities read from a field whose value is an array of
 // objects ({ type, name, description, icon_url, group, scalings } by default;
@@ -105,26 +106,26 @@ export function SkillsBlock({
   // One slider per track that any ability actually scales along — a kit with a
   // memosprite, or a Basic ATK capping earlier than the Skill, gets independent
   // controls instead of one slider silently clamping the shorter ones.
-  const sliders: { key: string; label: string; ticks: string[] }[] = [];
+  const sliders: { key: string; label: string; ticks: string[]; track?: SkillTrack }[] = [];
   for (const sk of skills) {
     const track = sk.track;
     if (!track || sk.ticks.length < 2) continue;
     const seen = sliders.find((s) => s.key === track.key);
     // Two abilities can share a track with different value counts (an Ultimate
     // with 10, a Talent with 8) — the slider spans the longer of them.
-    if (!seen) sliders.push({ key: track.key, label: track.label, ticks: sk.ticks });
+    if (!seen) sliders.push({ key: track.key, label: track.label, ticks: sk.ticks, track });
     else if (sk.ticks.length > seen.ticks.length) seen.ticks = sk.ticks;
   }
 
-  // A missing entry means "follow max", so every slider starts at the top
-  // without needing the tick counts up front.
+  // A missing entry means "untouched", so each slider opens on its track's own
+  // default — max for a character's kit, S1 for a light cone.
   const [levels, setLevels] = useState<Record<string, number>>({});
   const [showTable, setShowTable] = useState(false);
 
-  const levelOf = (key: string | undefined, ticks: string[]) => {
+  const levelOf = (track: SkillTrack | undefined, ticks: string[]) => {
     const max = ticks.length;
-    const chosen = key !== undefined ? levels[key] : undefined;
-    return Math.min(chosen ?? max, max);
+    const chosen = track !== undefined ? levels[track.key] : undefined;
+    return Math.min(chosen ?? defaultTickOf(track, max), max);
   };
 
   if (skills.length === 0) return null;
@@ -140,10 +141,10 @@ export function SkillsBlock({
           {!showTable && (
             <div className="flex-1 min-w-0 space-y-1.5">
               {sliders.map((s) => {
-                const level = levelOf(s.key, s.ticks);
+                const level = levelOf(s.track, s.ticks);
                 return (
                   <div key={s.key} className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500 shrink-0 w-16">{s.label}</span>
+                    <span className="text-xs text-gray-500 shrink-0 w-28 truncate" title={s.label}>{s.label}</span>
                     <input
                       type="range"
                       min={1}
@@ -178,7 +179,7 @@ export function SkillsBlock({
           const maxLen = sk.ticks.length;
           // Each ability reads the slider for its own track, so a memosprite
           // skill doesn't move when the main kit's level does.
-          const effLevel = levelOf(sk.track?.key, sk.ticks);
+          const effLevel = levelOf(sk.track, sk.ticks);
           // Scalings spliced into the sentence don't repeat as rows underneath
           // — but the "All levels" table still shows every one of them.
           const inlined = hasTokens(sk.desc) ? tokenizedScalings(sk.desc, sk.scalings) : new Set<number>();

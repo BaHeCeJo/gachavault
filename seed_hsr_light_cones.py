@@ -241,14 +241,37 @@ def main():
         uploaded[url] = res["data"]["public_url"]
         return uploaded[url]
 
+    def keep_ability_names(prior_data, new_data):
+        """Carry hand-written ability names across an effect rewrite.
+
+        The catalog has no skill names — the raw file simply doesn't contain
+        them — so an imported effect row leaves `name` unset. But `data.update`
+        replaces the whole `effect` key, so re-running this would wipe a name
+        typed into admin with nothing. Matched by position: a light cone has one
+        effect row, and the order is the kit order for anything that has more."""
+        prior_rows = (prior_data or {}).get("effect") or []
+        new_rows = (new_data or {}).get("effect") or []
+        for i, row in enumerate(new_rows):
+            if row.get("name"):
+                continue
+            if i < len(prior_rows) and prior_rows[i].get("name"):
+                row["name"] = prior_rows[i]["name"]
+
     payload, art_failures = [], []
     for n, row in enumerate(rows):
         name = row["data"]["name"]
         prior = existing.get(row["slug"])
         # An update replaces data wholesale, so start from what is already
         # stored and let the catalog win: art and any hand-written lore survive.
-        data = dict((prior or {}).get("data") or {})
-        data.update(row["data"])
+        prior_data = (prior or {}).get("data") or {}
+        data = dict(prior_data)
+        # Deep-copy the catalog's effect rows before merging: keep_ability_names
+        # mutates them, and rows are reused if this loop ever runs twice.
+        incoming = dict(row["data"])
+        if "effect" in incoming:
+            incoming["effect"] = json.loads(json.dumps(incoming["effect"]))
+        data.update(incoming)
+        keep_ability_names(prior_data, data)
 
         for slot, url in sorted(art.get(name, {}).items()):
             if data.get(slot) or args.dry_run:

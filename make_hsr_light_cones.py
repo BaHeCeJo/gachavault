@@ -49,13 +49,14 @@ import json
 import os
 import re
 
-from scaling_extract import check_fixtures, extract_scaling_runs
+from scaling_extract import check_fixtures, label_for_context, slugify as slug_label
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "seed_data")
 GAME = "honkai-star-rail"
 RAW = os.path.join(DATA, "hsr_light_cones_raw.txt")
 OUT = os.path.join(DATA, "hsr_light_cones_import.json")
+WIKI = os.path.join(DATA, "hsr_light_cones_wiki.json")
 
 # The site writes the Hunt without its article; the game's attribute key has it.
 PATH_KEYS = {
@@ -153,16 +154,102 @@ def parse(text):
     return entries
 
 
-def effect_row(effect):
-    """One skilllist row for a light cone's effect, or None if there is none.
+# Wiki values corrected here, keyed by (light cone, variable number). Both of
+# these break an otherwise perfect arithmetic series at one position AND
+# disagree with the pasted catalog, which has the arithmetic value — two
+# independent signals that the wiki has a typo. Applied openly and reported on
+# every build rather than silently, and worth re-checking in game.
+VALUE_OVERRIDES = {
+    # 72/84/96/[106]/120 steps by 12 except once; the catalog says 108.
+    ("Flickering Stars", 3): ["72", "84", "96", "108", "120"],
+    # 12/14/16/[20]/20 steps by 2 except once; the catalog says 18.
+    ("Mushy Shroomy's Adventures", 1): ["12", "14", "16", "18", "20"],
+}
+
+
+def arithmetic_breaks(values):
+    """True if exactly one interior value stops the series being arithmetic.
+
+    Every scaling in this catalog steps evenly, so a single value out of line is
+    a typo rather than game design — the check that found the two overrides
+    above, kept so a future wiki edit cannot reintroduce one unnoticed."""
+    try:
+        v = [float(x.rstrip("%")) for x in values]
+    except ValueError:
+        return False
+    if len(v) < 4:
+        return False
+    steps = {round(v[i + 1] - v[i], 6) for i in range(len(v) - 1)}
+    if len(steps) == 1:
+        return False
+    for i in range(1, len(v) - 1):
+        fixed = v[:]
+        fixed[i] = (v[i - 1] + v[i + 1]) / 2.0
+        if len({round(fixed[j + 1] - fixed[j], 6) for j in range(len(v) - 1)}) == 1:
+            return True
+    return False
+
+
+# "(var1)" in the wiki's effect text, optionally carrying the unit that belongs
+# with its value.
+MARKER_RE = re.compile(r"\(var(\d+)\)(%?)")
+
+
+def effect_row_from_wiki(name, entry):
+    """One skilllist row built from a light cone's wiki infobox, or None.
+
+    The wiki marks each value's position in the sentence and lists its value at
+    every rank, so both come across exactly — no parsing numbers back out of
+    prose, and no rounding. Only the value's *name* is inferred, from the words
+    around it, because the infobox does not name its variables.
 
     Typed "Light Cone Effect" so the site resolves the slider to superimposition
     (S1-S5) rather than a character's skill levels."""
-    text = (effect or "").strip()
+    text = (entry.get("effect") or "").strip()
     if not text:
         return None
-    tokenized, scalings = extract_scaling_runs(text)
-    row = {"type": "Light Cone Effect", "description": tokenized}
+
+    variables = entry.get("variables") or {}
+    row = {"type": "Light Cone Effect", "description": text}
+    if entry.get("passive"):
+        row["name"] = entry["passive"]
+
+    scalings, used = [], set()
+    for k in entry.get("var_order") or []:
+        values = VALUE_OVERRIDES.get((name, k)) or variables.get(str(k))
+        if not values:
+            continue
+        marker = "(var%d)" % k
+        at = text.find(marker)
+        if at < 0:
+            continue
+        # A "%" written just after the marker belongs to the value, so it moves
+        # into the value and out of the sentence — the site highlights the whole
+        # "12%" rather than leaving a stray sign behind the number.
+        pct = text[at + len(marker) : at + len(marker) + 1] == "%"
+
+        # Other markers would be read as words, so blank them out of the context
+        # the label is guessed from.
+        before = MARKER_RE.sub(" ", text[:at])
+        after = MARKER_RE.sub(" ", text[at + len(marker) + (1 if pct else 0) :])
+        label = label_for_context(before, after)
+
+        token = slug_label(label)
+        if not token or token in used:
+            token = str(len(scalings) + 1)
+        used.add(token)
+
+        # Every occurrence: a cone can spend the same variable twice in one
+        # sentence ("Subscribe for More!").
+        text = text.replace(marker + "%" if pct else marker, "{%s}" % token)
+        text = text.replace(marker, "{%s}" % token)
+        scalings.append({
+            "label": label or "Value %d" % (len(scalings) + 1),
+            # Exactly as the wiki states them — never re-rounded or reformatted.
+            "values": [v + "%" if pct else v for v in values],
+        })
+
+    row["description"] = text
     if scalings:
         row["scalings"] = scalings
     return row
@@ -172,6 +259,9 @@ def main():
     # Fail before writing anything if the offline extractor has drifted from the
     # TypeScript one the admin editor uses.
     check_fixtures()
+
+    with io.open(WIKI, encoding="utf-8") as f:
+        wiki_effects = json.load(f)
 
     with io.open(RAW, encoding="utf-8") as f:
         entries = parse(f.read())
@@ -186,7 +276,7 @@ def main():
         if not e["stats"]:
             placeholder.append(e["name"])
         data = {"name": e["name"], "rarity": e["rarity"], "path": e["path"]}
-        row = effect_row(e["effect"])
+        row = effect_row_from_wiki(e["name"], wiki_effects.get(e["name"]) or {})
         if row:
             data["effect"] = [row]
         else:
@@ -221,6 +311,20 @@ def main():
     print("  HP/ATK/DEF parsed but not imported (level/ascension curves)")
     if no_effect:
         print("  no effect text: %s" % ", ".join(no_effect))
+    if VALUE_OVERRIDES:
+        print("  wiki values corrected: %s" % ", ".join(
+            "%s var%d" % (n, k) for n, k in sorted(VALUE_OVERRIDES)))
+    odd = [
+        "%s / %s" % (r["data"]["name"], sc["label"])
+        for r in rows
+        for a in r["data"].get("effect", [])
+        for sc in a.get("scalings", [])
+        if arithmetic_breaks(sc["values"])
+    ]
+    if odd:
+        print("  !! %d scaling(s) break an even series — check the wiki:" % len(odd))
+        for o in odd:
+            print("     %s" % o)
     if placeholder:
         print("  not published at the source yet: %s" % ", ".join(placeholder))
     new = [e["name"] for e in entries if e["is_new"]]
