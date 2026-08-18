@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Turn the scraped warp history into files you can hand to the admin UI.
 
-Reads seed_data/hsr_warps.json (produced by seed_hsr_banners.py --refresh) and
+Reads seed_data/hsr_warps.json (a cached scrape of the wiki warp history) and
 writes:
 
   seed_data/hsr_banners_import.json

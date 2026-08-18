@@ -26,22 +26,30 @@ and writes:
 
   seed_data/hsr_light_cones_import.json
       One row per light cone in the shape /admin/items/import expects:
-      {game, section, schema, slug, data} — name, rarity and path only.
+      {game, section, schema, slug, data} — name, rarity, path and effect.
 
-The effect IS imported, as a one-row `effect` skilllist: its slash-separated
-numbers are the five superimposition levels, so each run is lifted into a
-{label, values[]} scaling and replaced by a {token} in the text (see
-scaling_extract.py). The site splices the value for the chosen level back into
-the sentence, which is the schema that can finally express the curve.
+Load that file in the admin bulk-import screen. Nothing here writes to the
+site; these scripts only ever produce a file for a human to import.
 
-The HP/ATK/DEF are still parsed but not imported — they validate the file's
+The effect comes from seed_data/hsr_light_cones_wiki.json, not from the prose
+in the raw file above. The raw text runs its per-superimposition numbers
+together ("by 12/14/16/18/20%") and is lossy — it rounds decimals, truncates
+them, and is in places simply wrong. The wiki states the same effect with a
+marker at each value's position and the value listed at every rank, so both
+come across exactly. See fetch_hsr_light_cone_wiki.py.
+
+Each cone becomes a one-row `effect` skilllist: the ability's name, its
+sentence with a {token} at each value, and one {label, values[]} scaling per
+token. The site splices the value for the chosen superimposition back into the
+sentence — the schema that can finally express the curve.
+
+The HP/ATK/DEF are still parsed but not imported — they validate the raw file's
 shape and the counts get reported, but they depend on the cone's level and
 ascension, and storing one snapshot in a flat field would state as fact
 something that is only true at one point on the curve.
 
-The source gives no availability, release version/date, skill name, or art, so
-those fields are left unset rather than guessed — see seed_hsr_light_cones.py
-for the art, which is scraped separately.
+The source gives no availability or release version/date, so those fields are
+left unset rather than guessed.
 """
 
 import io
