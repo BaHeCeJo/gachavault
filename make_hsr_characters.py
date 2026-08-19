@@ -103,6 +103,52 @@ def dedupe(rows, key):
     return out
 
 
+def infer_enhanced(abilities):
+    """Name the alternate form when the wiki has one page for each of a
+    character's two stances.
+
+    Aglaea has two abilities both typed Basic ATK and both described as "is
+    Aglaea's Basic ATK" — Thorned Nectar is the one she uses normally, and
+    Slash by a Thousandfold Kiss replaces it while Garmentmaker is out. The
+    wiki records no difference between them beyond `tag`, so the game's own
+    distinction has to be reconstructed here.
+
+    The rule is deliberately narrow, because guessing wrong renames a real
+    ability. It fires only when a type has exactly two abilities AND neither
+    came from an "/Enhanced" page, so a character like Blade — who has a base
+    pair and a genuine Enhanced pair — is left alone. Within the pair, the
+    single-target one is the base and the wider-hitting one is the alternate,
+    with sortkey breaking a tie.
+    """
+    by_type = {}
+    for a in abilities:
+        by_type.setdefault((a.get("type") or "").strip().lower(), []).append(a)
+
+    out = list(abilities)
+    for atype, group in by_type.items():
+        enhanced_type = "enhanced %s" % atype
+        if enhanced_type not in LEVEL_CAPS:
+            continue
+        # Already has a real Enhanced counterpart from an "/Enhanced" page.
+        if by_type.get(enhanced_type):
+            continue
+        if len(group) != 2:
+            continue
+
+        def rank(a):
+            tag = (a.get("tag") or "").strip().lower()
+            key = a.get("sortkey") or ""
+            return (tag != "single target", int(key) if key.isdigit() else 0)
+
+        base, alternate = sorted(group, key=rank)
+        if rank(base) == rank(alternate):
+            continue  # nothing separates them; leave both as they are
+        out[out.index(alternate)] = dict(
+            alternate, type="Enhanced %s" % (alternate.get("type") or "").strip()
+        )
+    return out
+
+
 def mark_enhanced(abilities):
     """Retype the second ability of a repeated name as its Enhanced form.
 
@@ -196,7 +242,7 @@ def ability_rows(entry):
         t = (a.get("type") or "").strip().lower()
         return (TYPE_ORDER.index(t) if t in TYPE_ORDER else len(TYPE_ORDER), a.get("title", ""))
 
-    for a in sorted(mark_enhanced(abilities), key=order):
+    for a in sorted(infer_enhanced(mark_enhanced(abilities)), key=order):
         atype = (a.get("type") or "").strip()
         desc = clean_wikitext(a.get("desc") or "")
         if not desc and not a.get("title"):
@@ -206,6 +252,8 @@ def ability_rows(entry):
         # its prose and is grouped away from the levelled kit.
         is_trace = atype.lower() == "bonus ability"
         row = {"type": "Trace" if is_trace else atype, "name": html.unescape(a.get("title", ""))}
+        if a.get("tag"):
+            row["tag"] = a["tag"]
         if is_trace:
             row["group"] = "Traces"
 

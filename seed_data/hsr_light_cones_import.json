@@ -4348,13 +4348,7 @@
    "name": "Rise and Sing",
    "rarity": "5",
    "path": "remembrance",
-   "effect": [
-    {
-     "type": "Light Cone Effect",
-     "description": "|effect_path    = Remembrance",
-     "name": "|effect         ="
-    }
-   ]
+   "effect": []
   }
  },
  {
@@ -4489,7 +4483,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Break Effect by {break_effect}. After the wearer uses Ultimate to attack enemy targets, inflicts the targets with the \"Woefree\" state, lasting for 2 turn(s). While in \"Woefree,\" enemy targets take {while_in_woefree} increased DMG. The effect of increasing DMG taken is additionally boosted by {increasing_dmg} if the wearer's current Break Effect is 150% or higher.",
+     "description": "Increases the wearer's Break Effect by {break_effect}. After the wearer uses Ultimate to attack enemy targets, inflicts the targets with the \"Woefree\" state, lasting for 2 turn(s). While in \"Woefree,\" enemy targets take {while_in_woefree} increased DMG. The effect of increasing DMG taken is additionally boosted by {dmg} if the wearer's current Break Effect is 150% or higher.",
      "name": "Contentment",
      "scalings": [
       {
@@ -4513,7 +4507,7 @@
        ]
       },
       {
-       "label": "increasing DMG",
+       "label": "DMG",
        "values": [
         "8%",
         "10%",
@@ -4956,13 +4950,7 @@
    "name": "Summer Rides the Surf",
    "rarity": "5",
    "path": "elation",
-   "effect": [
-    {
-     "type": "Light Cone Effect",
-     "description": "|effect_path    = Elation",
-     "name": "|effect         ="
-    }
-   ]
+   "effect": []
   }
  },
  {
@@ -5737,7 +5725,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "The wearer's base SPD increases by {base_spd}. When dealing DMG, ignores {dealing_dmg_ignores} of the target's DEF. After the wearer uses Ultimate, gains \"Blazing Sun,\" which is removed at the start of the turn. While holding \"Blazing Sun,\" increases the wearer's DMG dealt by {dmg}.",
+     "description": "The wearer's base SPD increases by {base_spd}. When dealing DMG, ignores {dmg_ignores} of the target's DEF. After the wearer uses Ultimate, gains \"Blazing Sun,\" which is removed at the start of the turn. While holding \"Blazing Sun,\" increases the wearer's DMG dealt by {dmg}.",
      "name": "Dispossession",
      "scalings": [
       {
@@ -5751,7 +5739,7 @@
        ]
       },
       {
-       "label": "dealing DMG ignores",
+       "label": "DMG ignores",
        "values": [
         "18.0%",
         "22.5%",

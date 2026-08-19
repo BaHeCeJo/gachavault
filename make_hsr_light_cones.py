@@ -288,6 +288,11 @@ def main():
         if row:
             data["effect"] = [row]
         else:
+            # An empty list, not an absent key: the import merges per field, so
+            # omitting it would leave behind whatever is already stored — and
+            # an earlier build wrote a broken row for the cones the wiki has
+            # not published yet.
+            data["effect"] = []
             no_effect.append(e["name"])
         rows.append(
             {

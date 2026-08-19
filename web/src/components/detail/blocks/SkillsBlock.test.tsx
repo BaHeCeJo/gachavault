@@ -347,3 +347,25 @@ describe("SkillsBlock abilities sharing a track", () => {
     expect(screen.queryByText("100%")).not.toBeInTheDocument();
   });
 });
+
+describe("SkillsBlock ability tag", () => {
+  it("shows how an ability hits, beside its type", () => {
+    // What tells Aglaea's two Basic ATKs apart on the wiki is the tag, not the
+    // type — both are typed Basic ATK.
+    renderKit([
+      { type: "Basic ATK", tag: "Single Target", name: "Thorned Nectar", description: "Deals DMG." },
+      { type: "Enhanced Basic ATK", tag: "Blast", name: "Slash by a Thousandfold Kiss", description: "Joint ATK." },
+    ], "honkai-star-rail");
+
+    expect(screen.getByText("Single Target")).toBeInTheDocument();
+    expect(screen.getByText("Blast")).toBeInTheDocument();
+    expect(screen.getByText("Basic ATK")).toBeInTheDocument();
+    expect(screen.getByText("Enhanced Basic ATK")).toBeInTheDocument();
+  });
+
+  it("renders nothing extra when an ability has no tag", () => {
+    renderKit([{ type: "Skill", name: "Plain", description: "Does a thing." }], "honkai-star-rail");
+    expect(screen.getByText("Skill")).toBeInTheDocument();
+    expect(screen.getByText("Plain")).toBeInTheDocument();
+  });
+});
