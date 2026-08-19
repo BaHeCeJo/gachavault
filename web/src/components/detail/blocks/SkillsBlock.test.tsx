@@ -143,14 +143,25 @@ describe("SkillsBlock level tracks", () => {
     expect(screen.getByLabelText("Memo Lv")).toBeInTheDocument();
   });
 
-  it("caps each track at its own last level", () => {
+  it("opens each track at its own base cap", () => {
     renderKit(MEMOSPRITE_KIT, "honkai-star-rail");
 
-    // The Basic ATK track stops at 7 while the Skill track reaches 10 — the
-    // old single slider clamped the shorter one silently.
-    expect(screen.getByText("110%")).toBeInTheDocument();
+    // Basic ATK opens at 6 of 7 (its 7th needs an eidolon), while the Skill and
+    // the memosprite open at 10. One shared slider could not express that.
+    expect(screen.getByText("100%")).toBeInTheDocument();
+    expect(screen.queryByText("110%")).not.toBeInTheDocument();
     expect(screen.getByText("10%")).toBeInTheDocument();
     expect(screen.getByText("20%")).toBeInTheDocument();
+  });
+
+  it("still reaches the eidolon-boosted level when dragged there", () => {
+    renderKit(MEMOSPRITE_KIT, "honkai-star-rail");
+
+    // Basic ATK is the first ability in the kit, so the first of the two "Lv"
+    // sliders is its track.
+    const basic = screen.getAllByLabelText("Lv")[0];
+    fireEvent.change(basic, { target: { value: "7" } });
+    expect(screen.getByText("110%")).toBeInTheDocument();
   });
 
   it("moves only the abilities on the track whose slider changed", () => {
@@ -161,7 +172,7 @@ describe("SkillsBlock level tracks", () => {
     expect(screen.getByText("11%")).toBeInTheDocument();
     // The character's own skills are untouched.
     expect(screen.getByText("10%")).toBeInTheDocument();
-    expect(screen.getByText("110%")).toBeInTheDocument();
+    expect(screen.getByText("100%")).toBeInTheDocument();
   });
 
   it("labels a light cone's slider by superimposition", () => {
@@ -278,10 +289,10 @@ describe("SkillsBlock slider defaults", () => {
     expect(screen.getByLabelText("Superimposition")).toBeInTheDocument();
   });
 
-  it("still opens a character's kit at max level", () => {
+  it("still opens a character's kit at its base cap, not at S1", () => {
     renderKit(MEMOSPRITE_KIT, "honkai-star-rail");
 
-    expect(screen.getByText("110%")).toBeInTheDocument();
+    expect(screen.getByText("100%")).toBeInTheDocument();
     expect(screen.getByText("10%")).toBeInTheDocument();
   });
 

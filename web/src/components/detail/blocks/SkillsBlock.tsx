@@ -5,7 +5,7 @@ import type { ItemPageBundle } from "@/lib/seo";
 import type { SkillsConfig } from "@/lib/pageLayout";
 import type { SkillTrack } from "@/lib/skillPresets";
 import { hasTokens, renderTemplate, tokenizedScalings } from "@/lib/skillScaling";
-import { defaultTickOf, resolveTicks, skillPresetFor, trackFor } from "@/lib/skillPresets";
+import { defaultTickOf, isBoostedTick, resolveTicks, skillPresetFor, trackFor } from "@/lib/skillPresets";
 
 // A list of skills/abilities read from a field whose value is an array of
 // objects ({ type, name, description, icon_url, group, scalings } by default;
@@ -154,8 +154,20 @@ export function SkillsBlock({
                       onChange={(e) => setLevels((prev) => ({ ...prev, [s.key]: Number(e.target.value) }))}
                       className="flex-1 accent-amber-500"
                     />
-                    <span className="text-xs text-gray-300 w-8 text-right tabular-nums shrink-0">
+                    {/* A level past the base cap needs eidolons/masteries, so
+                        it is marked rather than shown as if everyone has it. */}
+                    <span
+                      className={`text-xs w-8 text-right tabular-nums shrink-0 ${
+                        isBoostedTick(s.track, level) ? "text-amber-400" : "text-gray-300"
+                      }`}
+                      title={
+                        isBoostedTick(s.track, level)
+                          ? `Above the base maximum of ${s.track?.baseTicks}`
+                          : undefined
+                      }
+                    >
                       {s.ticks[level - 1]}
+                      {isBoostedTick(s.track, level) && <span aria-hidden>*</span>}
                     </span>
                   </div>
                 );
