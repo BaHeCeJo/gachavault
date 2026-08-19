@@ -103,29 +103,20 @@ export function SkillsBlock({
     })
     .filter((sk) => sk.name || sk.desc || sk.icon || sk.type || sk.scalings.length > 0);
 
-  // One slider per track that any ability actually scales along — a kit with a
-  // memosprite, or a Basic ATK capping earlier than the Skill, gets independent
-  // controls instead of one slider silently clamping the shorter ones.
-  const sliders: { key: string; label: string; ticks: string[]; track?: SkillTrack }[] = [];
-  for (const sk of skills) {
-    const track = sk.track;
-    if (!track || sk.ticks.length < 2) continue;
-    const seen = sliders.find((s) => s.key === track.key);
-    // Two abilities can share a track with different value counts (an Ultimate
-    // with 10, a Talent with 8) — the slider spans the longer of them.
-    if (!seen) sliders.push({ key: track.key, label: track.label, ticks: sk.ticks, track });
-    else if (sk.ticks.length > seen.ticks.length) seen.ticks = sk.ticks;
-  }
+  // One slider per ability, not one per track. Two abilities can share a track
+  // and still need separate controls: Aglaea has two Basic ATKs, one for each
+  // of her stances, and a character's enhanced Skill is read against its base
+  // rather than in place of it. A shared control forced them to move together.
+  const scalable = skills.some((sk) => sk.ticks.length > 1);
 
-  // A missing entry means "untouched", so each slider opens on its track's own
-  // default — max for a character's kit, S1 for a light cone.
-  const [levels, setLevels] = useState<Record<string, number>>({});
+  // A missing entry means "untouched", so an ability opens on its track's own
+  // default — the base cap for a kit, S1 for a light cone.
+  const [levels, setLevels] = useState<Record<number, number>>({});
   const [showTable, setShowTable] = useState(false);
 
-  const levelOf = (track: SkillTrack | undefined, ticks: string[]) => {
+  const levelOf = (i: number, track: SkillTrack | undefined, ticks: string[]) => {
     const max = ticks.length;
-    const chosen = track !== undefined ? levels[track.key] : undefined;
-    return Math.min(chosen ?? defaultTickOf(track, max), max);
+    return Math.min(levels[i] ?? defaultTickOf(track, max), max);
   };
 
   if (skills.length === 0) return null;
@@ -134,64 +125,27 @@ export function SkillsBlock({
 
   return (
     <section className="mb-8">
-      {c.title && <h2 className="text-xl font-semibold mb-4">{c.title}</h2>}
-
-      {sliders.length > 0 && (
-        <div className="flex items-start gap-3 mb-4">
-          {!showTable && (
-            <div className="flex-1 min-w-0 space-y-1.5">
-              {sliders.map((s) => {
-                const level = levelOf(s.track, s.ticks);
-                return (
-                  <div key={s.key} className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500 shrink-0 w-28 truncate" title={s.label}>{s.label}</span>
-                    <input
-                      type="range"
-                      min={1}
-                      max={s.ticks.length}
-                      value={level}
-                      aria-label={s.label}
-                      onChange={(e) => setLevels((prev) => ({ ...prev, [s.key]: Number(e.target.value) }))}
-                      className="flex-1 accent-amber-500"
-                    />
-                    {/* A level past the base cap needs eidolons/masteries, so
-                        it is marked rather than shown as if everyone has it. */}
-                    <span
-                      className={`text-xs w-8 text-right tabular-nums shrink-0 ${
-                        isBoostedTick(s.track, level) ? "text-amber-400" : "text-gray-300"
-                      }`}
-                      title={
-                        isBoostedTick(s.track, level)
-                          ? `Above the base maximum of ${s.track?.baseTicks}`
-                          : undefined
-                      }
-                    >
-                      {s.ticks[level - 1]}
-                      {isBoostedTick(s.track, level) && <span aria-hidden>*</span>}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+      <div className="flex items-center justify-between gap-3 mb-4">
+        {c.title ? <h2 className="text-xl font-semibold">{c.title}</h2> : <span />}
+        {scalable && (
           <button
             type="button"
             onClick={() => setShowTable((v) => !v)}
             className="text-xs px-2.5 py-1 rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition shrink-0"
           >
-            {showTable ? "Slider" : "All levels"}
+            {showTable ? "Sliders" : "All levels"}
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="space-y-3">
         {skills.map((sk, i) => {
           const showHeader = sk.group !== "" && sk.group !== lastGroup;
           lastGroup = sk.group;
           const maxLen = sk.ticks.length;
-          // Each ability reads the slider for its own track, so a memosprite
-          // skill doesn't move when the main kit's level does.
-          const effLevel = levelOf(sk.track, sk.ticks);
+          // Each ability carries its own level, so moving one leaves the rest
+          // of the kit where the reader put it.
+          const effLevel = levelOf(i, sk.track, sk.ticks);
           // Scalings spliced into the sentence don't repeat as rows underneath
           // — but the "All levels" table still shows every one of them.
           const inlined = hasTokens(sk.desc) ? tokenizedScalings(sk.desc, sk.scalings) : new Set<number>();
@@ -215,6 +169,40 @@ export function SkillsBlock({
                     )}
                     {sk.name && <p className="text-sm font-semibold text-gray-200">{sk.name}</p>}
                   </div>
+
+                  {!showTable && sk.ticks.length > 1 && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-[11px] text-gray-500 shrink-0">{sk.track?.label ?? "Lv"}</span>
+                      <input
+                        type="range"
+                        min={1}
+                        max={sk.ticks.length}
+                        value={effLevel}
+                        aria-label={`${sk.name || sk.type || "Ability"} level`}
+                        onChange={(e) =>
+                          setLevels((prev) => ({ ...prev, [i]: Number(e.target.value) }))
+                        }
+                        className="flex-1 min-w-0 accent-amber-500 h-1"
+                      />
+                      {/* A level past the base cap needs eidolons or masteries,
+                          so it is marked rather than shown as if everyone has
+                          it. */}
+                      <span
+                        className={`text-[11px] w-8 text-right tabular-nums shrink-0 ${
+                          isBoostedTick(sk.track, effLevel) ? "text-amber-400" : "text-gray-400"
+                        }`}
+                        title={
+                          isBoostedTick(sk.track, effLevel)
+                            ? `Above the base maximum of ${sk.track?.baseTicks}`
+                            : undefined
+                        }
+                      >
+                        {sk.ticks[effLevel - 1]}
+                        {isBoostedTick(sk.track, effLevel) && <span aria-hidden>*</span>}
+                      </span>
+                    </div>
+                  )}
+
                   {sk.desc && (
                     <SkillDescription description={sk.desc} scalings={sk.scalings} levelIndex={effLevel - 1} />
                   )}
