@@ -43,6 +43,10 @@ VERBS = {
     "reduces", "heal", "heals", "grant", "grants", "gain", "gains", "provide",
     "provides", "inflict", "inflicts", "apply", "applies", "boost", "boosts",
     "raise", "raises", "lower", "lowers", "add", "adds", "has", "have",
+    # -ing forms, which open a trailing clause: "…, dealing DMG equal to 80%".
+    "dealing", "increasing", "restoring", "regenerating", "recovering",
+    "reducing", "granting", "gaining", "inflicting", "applying", "boosting",
+    "raising", "lowering", "adding", "providing",
 }
 
 MAX_LABEL_WORDS = 3

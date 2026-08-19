@@ -57,10 +57,11 @@ export function splitValues(raw: string): string[] {
 const STOPWORDS = new Set(["by", "to", "of", "for", "at", "as", "and", "or", "up", "a", "an", "the", "is", "are", "with", "plus", "additional", "that", "this", "equal", "each", "every"]);
 // Possessives that only ever lead a phrase, never end one.
 const LEADING_ONLY = new Set(["wearer's", "wearers", "their", "its", "his", "her", "'s"]);
-// Effect verbs. A label made only of these names an action, not a stat, so it
-// is a signal to look for the stat on the other side of the values instead —
+// Effect verbs, including the -ing forms that open a clause ("…, dealing
+// Lightning DMG equal to 80%"). A label made only of these names an action, not
+// a stat, so it is a signal to look for the stat on the other side instead —
 // Genshin writes "Deals 100.8%/109.4%/… of ATK", with the stat trailing.
-const VERBS = new Set(["deal", "deals", "dealt", "increase", "increases", "increased", "restore", "restores", "regenerate", "regenerates", "recover", "recovers", "reduce", "reduces", "heal", "heals", "grant", "grants", "gain", "gains", "provide", "provides", "inflict", "inflicts", "apply", "applies", "boost", "boosts", "raise", "raises", "lower", "lowers", "add", "adds", "has", "have"]);
+const VERBS = new Set(["deal", "deals", "dealt", "increase", "increases", "increased", "restore", "restores", "regenerate", "regenerates", "recover", "recovers", "reduce", "reduces", "heal", "heals", "grant", "grants", "gain", "gains", "provide", "provides", "inflict", "inflicts", "apply", "applies", "boost", "boosts", "raise", "raises", "lower", "lowers", "add", "adds", "has", "have", "dealing", "increasing", "restoring", "regenerating", "recovering", "reducing", "granting", "gaining", "inflicting", "applying", "boosting", "raising", "lowering", "adding", "providing"]);
 
 const MAX_LABEL_WORDS = 3;
 

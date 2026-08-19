@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { defaultTickOf, resolveTicks, skillPresetFor, trackFor } from "./skillPresets";
+import { defaultTickOf, isBoostedTick, resolveTicks, skillPresetFor, trackFor } from "./skillPresets";
 
 describe("skillPresetFor", () => {
   it("matches on slug and on display name", () => {
@@ -28,7 +28,9 @@ describe("skillPresetFor", () => {
 describe("track tick labels", () => {
   it("numbers HSR skills but prefixes light cone superimposition", () => {
     const tracks = skillPresetFor("honkai-star-rail").tracks;
-    expect(trackFor(tracks, undefined, "Skill")?.ticks).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]);
+    // 12 stops: 10 on the character's own, plus the two E5/E3 grant.
+    expect(trackFor(tracks, undefined, "Skill")?.ticks).toHaveLength(12);
+    expect(trackFor(tracks, undefined, "Skill")?.baseTicks).toBe(10);
     expect(trackFor(tracks, undefined, "Light Cone Effect")?.ticks).toEqual(["S1", "S2", "S3", "S4", "S5"]);
   });
 
@@ -115,10 +117,16 @@ describe("defaultTickOf", () => {
     expect(defaultTickOf(zzz, 5)).toBe(1);
   });
 
-  it("opens a character's kit at max level", () => {
+  it("opens a kit at its base cap, not its eidolon-boosted maximum", () => {
+    // The boosted levels stay reachable; they just aren't where a reader who
+    // owns one copy of the character starts.
     const hsr = skillPresetFor("honkai-star-rail").tracks;
-    expect(defaultTickOf(trackFor(hsr, undefined, "Ultimate"), 10)).toBe(10);
-    expect(defaultTickOf(trackFor(hsr, undefined, "Basic ATK"), 7)).toBe(7);
+    expect(defaultTickOf(trackFor(hsr, undefined, "Ultimate"), 12)).toBe(10);
+    expect(defaultTickOf(trackFor(hsr, undefined, "Basic ATK"), 7)).toBe(6);
+  });
+
+  it("still opens at the last tick for a track with no base cap", () => {
+    expect(defaultTickOf({ key: "k", label: "L", ticks: ["1", "2", "3"] }, 3)).toBe(3);
   });
 
   it("clamps a default beyond the ticks the data actually has", () => {
@@ -137,5 +145,28 @@ describe("track labels", () => {
     const superimp = trackFor(skillPresetFor("honkai-star-rail").tracks, "superimposition");
     expect(superimp?.label).toBe("Superimposition");
     expect(superimp?.ticks[0]).toBe("S1");
+  });
+});
+
+describe("isBoostedTick", () => {
+  const hsr = skillPresetFor("honkai-star-rail").tracks;
+
+  it("marks levels a character cannot reach on their own", () => {
+    const skill = trackFor(hsr, undefined, "Skill");
+    expect(isBoostedTick(skill, 10)).toBe(false);
+    expect(isBoostedTick(skill, 11)).toBe(true);
+    expect(isBoostedTick(skill, 12)).toBe(true);
+  });
+
+  it("marks Arknights masteries, which sit above rank 7", () => {
+    const ak = trackFor(skillPresetFor("arknights").tracks, undefined, "Skill 1");
+    expect(isBoostedTick(ak, 7)).toBe(false);
+    expect(isBoostedTick(ak, 8)).toBe(true);
+  });
+
+  it("marks nothing on a track with no base cap", () => {
+    const lc = trackFor(hsr, "superimposition");
+    expect(isBoostedTick(lc, 5)).toBe(false);
+    expect(isBoostedTick(undefined, 99)).toBe(false);
   });
 });

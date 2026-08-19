@@ -134,34 +134,44 @@ describe("SkillsBlock", () => {
 });
 
 describe("SkillsBlock level tracks", () => {
-  it("gives a memosprite kit one slider per track", () => {
+  it("gives every scaling ability its own slider", () => {
     renderKit(MEMOSPRITE_KIT, "honkai-star-rail");
 
-    // Skill (10), Basic ATK (7) and the memosprite (10) are three tracks, so
-    // one shared slider would have been wrong for two of them.
+    // One control per ability, not per track: two abilities can share a track
+    // and still need to be read at different levels.
     expect(screen.getAllByRole("slider")).toHaveLength(3);
-    expect(screen.getByLabelText("Memo Lv")).toBeInTheDocument();
+    expect(screen.getByLabelText("Basic level")).toBeInTheDocument();
+    expect(screen.getByLabelText("Skill level")).toBeInTheDocument();
+    expect(screen.getByLabelText("Ica's Skill level")).toBeInTheDocument();
   });
 
-  it("caps each track at its own last level", () => {
+  it("opens each track at its own base cap", () => {
     renderKit(MEMOSPRITE_KIT, "honkai-star-rail");
 
-    // The Basic ATK track stops at 7 while the Skill track reaches 10 — the
-    // old single slider clamped the shorter one silently.
-    expect(screen.getByText("110%")).toBeInTheDocument();
+    // Basic ATK opens at 6 of 7 (its 7th needs an eidolon), while the Skill and
+    // the memosprite open at 10. One shared slider could not express that.
+    expect(screen.getByText("100%")).toBeInTheDocument();
+    expect(screen.queryByText("110%")).not.toBeInTheDocument();
     expect(screen.getByText("10%")).toBeInTheDocument();
     expect(screen.getByText("20%")).toBeInTheDocument();
   });
 
-  it("moves only the abilities on the track whose slider changed", () => {
+  it("still reaches the eidolon-boosted level when dragged there", () => {
     renderKit(MEMOSPRITE_KIT, "honkai-star-rail");
 
-    fireEvent.change(screen.getByLabelText("Memo Lv"), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText("Basic level"), { target: { value: "7" } });
+    expect(screen.getByText("110%")).toBeInTheDocument();
+  });
+
+  it("moves only the ability whose slider changed", () => {
+    renderKit(MEMOSPRITE_KIT, "honkai-star-rail");
+
+    fireEvent.change(screen.getByLabelText("Ica's Skill level"), { target: { value: "1" } });
 
     expect(screen.getByText("11%")).toBeInTheDocument();
     // The character's own skills are untouched.
     expect(screen.getByText("10%")).toBeInTheDocument();
-    expect(screen.getByText("110%")).toBeInTheDocument();
+    expect(screen.getByText("100%")).toBeInTheDocument();
   });
 
   it("labels a light cone's slider by superimposition", () => {
@@ -177,8 +187,9 @@ describe("SkillsBlock level tracks", () => {
       "honkai-star-rail",
     );
 
-    // Ticks read S1..S5, and the slider opens on S1 rather than maxed.
-    expect(screen.getByLabelText("Superimposition")).toBeInTheDocument();
+    // Ticks read S1..S5, and the slider opens on S1 rather than maxed. The
+    // track name sits beside the slider as its unit.
+    expect(screen.getByText("Superimposition")).toBeInTheDocument();
     expect(screen.getByText("S1")).toBeInTheDocument();
     expect(screen.getByText("12%")).toBeInTheDocument();
   });
@@ -196,10 +207,10 @@ describe("SkillsBlock level tracks", () => {
       "zenless-zone-zero",
     );
 
-    expect(screen.getByLabelText("Core")).toBeInTheDocument();
+    expect(screen.getByText("Core")).toBeInTheDocument();
     expect(screen.getByText("F")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("Core"), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText("Core Passive level"), { target: { value: "1" } });
     expect(screen.getByText("A")).toBeInTheDocument();
     expect(screen.getByText("4%")).toBeInTheDocument();
   });
@@ -238,7 +249,7 @@ describe("SkillsBlock level tracks", () => {
       "honkai-star-rail",
     );
 
-    expect(screen.getByLabelText("Superimposition")).toBeInTheDocument();
+    expect(screen.getByText("Superimposition")).toBeInTheDocument();
   });
 
   it("shows no slider for a kit of level-less abilities", () => {
@@ -275,21 +286,64 @@ describe("SkillsBlock slider defaults", () => {
 
   it("labels that slider in full instead of a bare letter", () => {
     renderKit(LIGHT_CONE, "honkai-star-rail");
-    expect(screen.getByLabelText("Superimposition")).toBeInTheDocument();
+    expect(screen.getByText("Superimposition")).toBeInTheDocument();
   });
 
-  it("still opens a character's kit at max level", () => {
+  it("still opens a character's kit at its base cap, not at S1", () => {
     renderKit(MEMOSPRITE_KIT, "honkai-star-rail");
 
-    expect(screen.getByText("110%")).toBeInTheDocument();
+    expect(screen.getByText("100%")).toBeInTheDocument();
     expect(screen.getByText("10%")).toBeInTheDocument();
   });
 
   it("lets the reader move a defaulted slider up", () => {
     renderKit(LIGHT_CONE, "honkai-star-rail");
 
-    fireEvent.change(screen.getByLabelText("Superimposition"), { target: { value: "5" } });
+    fireEvent.change(screen.getByLabelText("Longing level"), { target: { value: "5" } });
     expect(screen.getByText("20%")).toBeInTheDocument();
     expect(screen.getByText("S5")).toBeInTheDocument();
+  });
+});
+
+describe("SkillsBlock abilities sharing a track", () => {
+  // Aglaea really has two Basic ATKs — one per stance — and a character like
+  // Blade has a Skill and its enhanced form. They land on the same level track
+  // but are different abilities, so each needs its own control.
+  const TWO_BASICS = [
+    {
+      type: "Basic ATK",
+      name: "Thorned Nectar",
+      description: "Deals Lightning DMG equal to {lightning_dmg} of ATK.",
+      scalings: [{ label: "Lightning DMG", values: ["50%", "60%", "70%", "80%", "90%", "100%", "110%"] }],
+    },
+    {
+      type: "Basic ATK",
+      name: "Slash by a Thousandfold Kiss",
+      description: "Joint ATK dealing Lightning DMG equal to {joint_dmg} of ATK.",
+      scalings: [{ label: "Joint DMG", values: ["20%", "24%", "28%", "32%", "36%", "40%", "44%"] }],
+    },
+  ];
+
+  it("gives each of them a separate slider", () => {
+    renderKit(TWO_BASICS, "honkai-star-rail");
+
+    expect(screen.getAllByRole("slider")).toHaveLength(2);
+    expect(screen.getByLabelText("Thorned Nectar level")).toBeInTheDocument();
+    expect(screen.getByLabelText("Slash by a Thousandfold Kiss level")).toBeInTheDocument();
+  });
+
+  it("moves one without moving the other", () => {
+    renderKit(TWO_BASICS, "honkai-star-rail");
+
+    // Both open at the base cap of 6.
+    expect(screen.getByText("100%")).toBeInTheDocument();
+    expect(screen.getByText("40%")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Thorned Nectar level"), { target: { value: "1" } });
+
+    expect(screen.getByText("50%")).toBeInTheDocument();
+    // The second Basic ATK stayed where it was.
+    expect(screen.getByText("40%")).toBeInTheDocument();
+    expect(screen.queryByText("100%")).not.toBeInTheDocument();
   });
 });

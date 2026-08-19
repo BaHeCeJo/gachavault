@@ -23,10 +23,15 @@ export interface SkillTrack {
   // Ability "Type" tags that default to this track, so an admin rarely picks
   // one by hand. The first track is the fallback for anything unmatched.
   types?: string[];
+  // The highest tick reachable without spending copies of the character —
+  // level 10 of a Skill, 6 of a Basic ATK, mastery-less rank 7 of an Arknights
+  // skill. The ticks above it exist and stay reachable; they just cost E5, M3
+  // or a constellation, which most readers do not have.
+  baseTicks?: number;
   // Which tick the slider sits on before the reader touches it, 1-based.
-  // Omitted = the last one. A character's kit is usually discussed at max
-  // level, but gear is not: nearly everyone holds a light cone at S1, so
-  // opening a light cone at S5 would quote numbers almost no reader has.
+  // Defaults to baseTicks when set, else the last one — so a kit opens at the
+  // numbers a reader actually has rather than at an eidolon-boosted level.
+  // Gear overrides it downwards: nearly everyone holds a light cone at S1.
   defaultTick?: number;
 }
 
@@ -57,11 +62,11 @@ const PRESETS: SkillPreset[] = [
     types: ["Basic ATK", "Enhanced Basic ATK", "Skill", "Enhanced Skill", "Ultimate", "Talent", "Technique", "Elation Skill", "Memosprite Skill", "Memosprite Talent", "Light Cone Effect"],
     groups: ["Memosprite", "Elation", "Transformation", "Traces", "Eidolons"],
     tracks: [
-      { key: "skill", label: "Lv", ticks: range(10), types: ["Skill", "Enhanced Skill", "Ultimate", "Talent", "Elation Skill"] },
-      { key: "basic", label: "Lv", ticks: range(7), types: ["Basic ATK", "Enhanced Basic ATK"] },
+      { key: "skill", label: "Lv", ticks: range(12), baseTicks: 10, types: ["Skill", "Enhanced Skill", "Ultimate", "Talent", "Elation Skill"] },
+      { key: "basic", label: "Lv", ticks: range(7), baseTicks: 6, types: ["Basic ATK", "Enhanced Basic ATK"] },
       // A memosprite levels with its summoner but is a separate kit, so its
       // abilities get their own slider (Hyacine, Castorice, Aglaea).
-      { key: "memo", label: "Memo Lv", ticks: range(10), types: ["Memosprite Skill", "Memosprite Talent"] },
+      { key: "memo", label: "Memo Lv", ticks: range(12), baseTicks: 10, types: ["Memosprite Skill", "Memosprite Talent"] },
       // Light cone superimposition.
       { key: "superimposition", label: "Superimposition", ticks: prefixed("S", 5), types: ["Light Cone Effect"], defaultTick: 1 },
     ],
@@ -72,7 +77,7 @@ const PRESETS: SkillPreset[] = [
     groups: ["Passive Talents", "Constellations"],
     tracks: [
       // 10 base, up to 15 with the C3/C5 constellation bonuses.
-      { key: "talent", label: "Lv", ticks: range(15), types: ["Normal Attack", "Elemental Skill", "Elemental Burst"] },
+      { key: "talent", label: "Lv", ticks: range(15), baseTicks: 10, types: ["Normal Attack", "Elemental Skill", "Elemental Burst"] },
       { key: "refinement", label: "Refinement", ticks: prefixed("R", 5), types: ["Weapon Passive"], defaultTick: 1 },
     ],
   },
@@ -113,7 +118,7 @@ const PRESETS: SkillPreset[] = [
     tracks: [
       // 1-7, then the three mastery ranks — a track that is numeric for most of
       // its length and then isn't.
-      { key: "skill", label: "Lv", ticks: [...range(7), "M1", "M2", "M3"], types: ["Skill 1", "Skill 2", "Skill 3"] },
+      { key: "skill", label: "Lv", ticks: [...range(7), "M1", "M2", "M3"], baseTicks: 7, types: ["Skill 1", "Skill 2", "Skill 3"] },
       { key: "module", label: "Stage", ticks: range(3), types: ["Module"] },
     ],
   },
@@ -219,11 +224,21 @@ export function trackFor(
 // directions — the slider spans exactly as many stops as there are values, and
 // any beyond the preset's labels fall back to their 1-based number so nothing
 // is silently unreachable.
-// The tick a track opens on, as a 1-based index clamped into range.
+// The tick a track opens on, as a 1-based index clamped into range. An
+// explicit defaultTick wins; otherwise a kit opens at its base cap (the level
+// reachable without eidolons) and everything else opens at its last tick.
 export function defaultTickOf(track: SkillTrack | undefined, tickCount: number): number {
   if (tickCount <= 0) return 0;
-  const want = track?.defaultTick ?? tickCount;
+  const want = track?.defaultTick ?? track?.baseTicks ?? tickCount;
   return Math.max(1, Math.min(want, tickCount));
+}
+
+// Whether a tick sits above what the character reaches on their own. Used to
+// mark the slider readout, so a number that needs E5 or M3 does not read as
+// though everyone has it.
+export function isBoostedTick(track: SkillTrack | undefined, tick: number): boolean {
+  const base = track?.baseTicks;
+  return base !== undefined && tick > base;
 }
 
 export function resolveTicks(track: SkillTrack | undefined, valueCount: number): string[] {
