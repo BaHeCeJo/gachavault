@@ -204,6 +204,10 @@ def main():
             atype = field(t, "type") or ""
             desc = clean(field(t, "desc"))
             entry = {
+                # The wiki page this came from. A "/Enhanced" suffix means the
+                # reworked kit (3.4/4.0/4.2), which supersedes the base page —
+                # a character page shows the two in Base/Enhanced tabs.
+                "page": title,
                 "title": field(t, "title") or title,
                 "type": atype,
                 "desc": desc,
@@ -233,6 +237,7 @@ def main():
                 problems.append("%s: no wikitext for eidolon %r" % (name, title))
                 continue
             eidolons.append({
+                "page": title,
                 "title": field(t, "title") or title,
                 "level": field(t, "level") or "",
                 "desc": clean(field(t, "desc")),

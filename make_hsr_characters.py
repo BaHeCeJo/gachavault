@@ -116,11 +116,14 @@ def infer_enhanced(abilities):
     distinction has to be reconstructed here.
 
     The rule is deliberately narrow, because guessing wrong renames a real
-    ability. It fires only when a type has exactly two abilities AND neither
-    came from an "/Enhanced" page, so a character like Blade — who has a base
-    pair and a genuine Enhanced pair — is left alone. Within the pair, the
-    single-target one is the base and the wider-hitting one is the alternate,
-    with sortkey breaking a tie.
+    ability: it fires only when a type has exactly two abilities. Within the
+    pair the single-target one is the base and the wider-hitting one is the
+    alternate, with sortkey breaking a tie.
+
+    Runs after current_kit(), so the pair is always two abilities of one kit —
+    never an ability and its superseded self. Blade comes through it correctly:
+    of his two 3.4 Basic ATKs, Shard Sword is the one he opens with and Forest
+    of Swords is what it becomes under Hellscape.
     """
     by_type = {}
     for a in abilities:
@@ -151,26 +154,26 @@ def infer_enhanced(abilities):
     return out
 
 
-def mark_enhanced(abilities):
-    """Retype the second ability of a repeated name as its Enhanced form.
+def current_kit(entries):
+    """Drop the superseded half of a reworked kit.
 
-    Some abilities have an "/Enhanced" subpage — Blade's Basic ATK becomes a
-    different attack while his Hellscape is up — and both carry the same
-    infobox title and type. The category lists the base page first (it sorts
-    before its own subpage), so a repeat is the enhanced one. Renaming the type
-    is what puts it on the right level track and stops a kit showing the same
-    ability twice with no way to tell them apart."""
-    seen, out = set(), []
-    for a in abilities:
-        atype = (a.get("type") or "").strip()
-        name = a.get("title", "")
-        if (name, atype.lower()) in seen:
-            enhanced = "Enhanced %s" % atype
-            if enhanced.lower() in LEVEL_CAPS:
-                a = dict(a, type=enhanced)
-        seen.add((name, atype.lower()))
-        out.append(a)
-    return out
+    Eleven characters have been reworked (Blade and Seele in 3.4, Sparkle in
+    4.0, Seele's Ultimate again in 4.2 …). The wiki keeps both kits: the
+    original on the plain page, the rework on a "<name>/Enhanced" subpage, shown
+    on the character page as Base and Enhanced tabs.
+
+    "/Enhanced" therefore does not mean an enhanced state in combat — it means
+    the current version of the ability. Merging both tabs printed every one of
+    those abilities twice, once with numbers the game no longer uses. When a
+    page has an /Enhanced counterpart the counterpart wins and the original is
+    dropped; abilities without one are untouched.
+    """
+    superseded = {
+        e["page"][: -len("/Enhanced")]
+        for e in entries
+        if str(e.get("page", "")).endswith("/Enhanced")
+    }
+    return [e for e in entries if e.get("page") not in superseded]
 
 
 def _num(v):
@@ -299,7 +302,7 @@ def ability_rows(entry):
         t = (a.get("type") or "").strip().lower()
         return (TYPE_ORDER.index(t) if t in TYPE_ORDER else len(TYPE_ORDER), a.get("title", ""))
 
-    for a in sorted(infer_enhanced(mark_enhanced(abilities)), key=order):
+    for a in sorted(infer_enhanced(current_kit(abilities)), key=order):
         atype = (a.get("type") or "").strip()
         desc = clean_wikitext(a.get("desc") or "")
         if not desc and not a.get("title"):
@@ -340,7 +343,7 @@ def ability_rows(entry):
 
 def eidolon_rows(entry):
     rows = []
-    for e in entry.get("eidolons") or []:
+    for e in current_kit(entry.get("eidolons") or []):
         lvl = e.get("level") or ""
         rows.append({
             "type": "E%s" % lvl if lvl else "Eidolon",
