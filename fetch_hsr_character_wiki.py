@@ -63,7 +63,7 @@ NAME_OVERRIDES = {
 LEVELLED_TYPES = {
     "basic atk", "enhanced basic atk", "skill", "enhanced skill", "ultimate",
     "talent", "technique", "memosprite skill", "memosprite talent",
-    "elation skill", "servant skill", "servant talent",
+    "elation skill", "servant skill", "servant talent", "assist skill",
 }
 
 

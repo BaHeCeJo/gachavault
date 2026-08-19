@@ -2690,7 +2690,33 @@
      "type": "Enhanced Basic ATK",
      "name": "Forest of Swords",
      "tag": "Blast",
-     "description": "Consumes HP equal to 10% of Blade's Max HP and deals Wind DMG equal to 65%—143% of his Max HP to one designated enemy. In addition, deals Wind DMG equal to 26%—57.2% of Blade's Max HP to adjacent targets.\nIf Blade's current HP is insufficient, his HP will be reduced to 1 when using \"Forest of Swords.\"\n\"Forest of Swords\" cannot regenerate Skill Points."
+     "description": "Consumes HP equal to 10% of Blade's Max HP and deals Wind DMG equal to {wind_dmg} of his Max HP to one designated enemy. In addition, deals Wind DMG equal to {2} of Blade's Max HP to adjacent targets.\nIf Blade's current HP is insufficient, his HP will be reduced to 1 when using \"Forest of Swords.\"\n\"Forest of Swords\" cannot regenerate Skill Points.",
+     "scalings": [
+      {
+       "label": "Wind DMG",
+       "values": [
+        "65%",
+        "78%",
+        "91%",
+        "104%",
+        "117%",
+        "130%",
+        "143%"
+       ]
+      },
+      {
+       "label": "Wind DMG",
+       "values": [
+        "26%",
+        "31.2%",
+        "36.4%",
+        "41.6%",
+        "46.8%",
+        "52%",
+        "57.2%"
+       ]
+      }
+     ]
     },
     {
      "type": "Enhanced Basic ATK",
@@ -9313,13 +9339,161 @@
      "type": "Assist Skill",
      "name": "Companion Protocol: Decimation",
      "tag": "AoE",
-     "description": "Enters the \"Companion Protocol: Decimation\" state. Increases all allies' CRIT DMG by 50%-110%, and additionally increases the CRIT DMG dealt by Skill by 50%-110%. For every 1 enemy target hit by allies, gains 1 Charge. When Charge reaches 9, consumes all Charge, and Himeko • Nova immediately launches 1 Assist Skill against enemies at no cost. This instance of Assist Skill cannot grant Charge."
+     "description": "Enters the \"Companion Protocol: Decimation\" state. Increases all allies' CRIT DMG by {allies_crit_dmg}, and additionally increases the CRIT DMG dealt by Skill by {skill}. For every 1 enemy target hit by allies, gains 1 Charge. When Charge reaches 9, consumes all Charge, and Himeko • Nova immediately launches 1 Assist Skill against enemies at no cost. This instance of Assist Skill cannot grant Charge.",
+     "scalings": [
+      {
+       "label": "allies' CRIT DMG",
+       "values": [
+        "50%",
+        "55%",
+        "60%",
+        "65%",
+        "70%",
+        "75%",
+        "81.25%",
+        "87.5%",
+        "93.75%",
+        "100%",
+        "105%",
+        "110%"
+       ]
+      },
+      {
+       "label": "Skill",
+       "values": [
+        "50%",
+        "55%",
+        "60%",
+        "65%",
+        "70%",
+        "75%",
+        "81.25%",
+        "87.5%",
+        "93.75%",
+        "100%",
+        "105%",
+        "110%"
+       ]
+      }
+     ]
     },
     {
      "type": "Assist Skill",
      "name": "Companion Protocol: Verdict",
      "tag": "AoE",
-     "description": "Enters the \"Companion Protocol: Verdict\" state. Increases DMG dealt by Himeko • Nova by 50%-110%, and additionally increases her Ultimate DMG dealt by 50%-110%. After Himeko • Nova's teammates actively use their Ultimate 2 time(s), Himeko • Nova immediately launches 1 Assist Skill against enemies at no cost."
+     "description": "Enters the \"Companion Protocol: Verdict\" state. Increases DMG dealt by Himeko • Nova by {himeko_nova}, and additionally increases her Ultimate DMG dealt by {ultimate_dmg}. After Himeko • Nova's teammates actively use their Ultimate 2 time(s), Himeko • Nova immediately launches 1 Assist Skill against enemies at no cost.",
+     "scalings": [
+      {
+       "label": "Himeko Nova",
+       "values": [
+        "50%",
+        "55%",
+        "60%",
+        "65%",
+        "70%",
+        "75%",
+        "81.25%",
+        "87.5%",
+        "93.75%",
+        "100%",
+        "105%",
+        "110%"
+       ]
+      },
+      {
+       "label": "Ultimate DMG",
+       "values": [
+        "50%",
+        "55%",
+        "60%",
+        "65%",
+        "70%",
+        "75%",
+        "81.25%",
+        "87.5%",
+        "93.75%",
+        "100%",
+        "105%",
+        "110%"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "Assist Skill",
+     "name": "Trailblaze, By Your Side",
+     "tag": "AoE",
+     "description": "Deals Fire DMG equal to {fire_dmg} of Himeko • Nova's ATK to all enemies, and additionally deals 3 instances of DMG, with each instance dealing Fire DMG equal to {2} of Himeko • Nova's ATK to one random enemy. When used by Himeko • Nova, deals Fire DMG equal to {3} of Himeko • Nova's ATK to all enemies, and additionally deals 4 instances of DMG, with each instance dealing Fire DMG equal to {4} of Himeko • Nova's ATK to one random enemy.\nIf the user is a Trailblaze Companions character other than Himeko • Nova, then depending on the user, Himeko • Nova additionally gains 1 of the Special Effects.\nThe extra Assist Skill via all Special Effects can be launched up to 2 time(s) per battle, and this count is reset after Himeko • Nova uses her Ultimate.",
+     "scalings": [
+      {
+       "label": "Fire DMG",
+       "values": [
+        "80%",
+        "88%",
+        "96%",
+        "104%",
+        "112%",
+        "120%",
+        "130%",
+        "140%",
+        "150%",
+        "160%",
+        "168%",
+        "176%"
+       ]
+      },
+      {
+       "label": "Fire DMG",
+       "values": [
+        "12%",
+        "13.2%",
+        "14.4%",
+        "15.6%",
+        "16.8%",
+        "18%",
+        "19.5%",
+        "21%",
+        "22.5%",
+        "24%",
+        "25.2%",
+        "26.4%"
+       ]
+      },
+      {
+       "label": "Fire DMG",
+       "values": [
+        "100%",
+        "110%",
+        "120%",
+        "130%",
+        "140%",
+        "150%",
+        "162.5%",
+        "175%",
+        "187.5%",
+        "200%",
+        "210%",
+        "220%"
+       ]
+      },
+      {
+       "label": "Fire DMG",
+       "values": [
+        "18%",
+        "19.4%",
+        "20.8%",
+        "22.2%",
+        "23.6%",
+        "25%",
+        "26.75%",
+        "28.5%",
+        "30.25%",
+        "32%",
+        "33.4%",
+        "34.8%"
+       ]
+      }
+     ]
     },
     {
      "type": "Trace",
@@ -9332,12 +9506,6 @@
      "name": "The Silver Rail, Hushed in Antiquity",
      "group": "Traces",
      "description": "When using Ultimate, immediately gains 3 \"Source Energy.\" If the current \"Source Energy\" is 3 or more, when using the \"Orbital Annihilation Pulse\" attack, the DMG multiplier of \"Orbital Annihilation Pulse\" against random single enemies increases by 30%."
-    },
-    {
-     "type": "Assist Skill",
-     "name": "Trailblaze, By Your Side",
-     "tag": "AoE",
-     "description": "Deals Fire DMG equal to 80%-176% of Himeko • Nova's ATK to all enemies, and additionally deals 3 instances of DMG, with each instance dealing Fire DMG equal to 12%-26.4% of Himeko • Nova's ATK to one random enemy. When used by Himeko • Nova, deals Fire DMG equal to 100%-220% of Himeko • Nova's ATK to all enemies, and additionally deals 4 instances of DMG, with each instance dealing Fire DMG equal to 18%-34.8% of Himeko • Nova's ATK to one random enemy.\nIf the user is a Trailblaze Companions character other than Himeko • Nova, then depending on the user, Himeko • Nova additionally gains 1 of the Special Effects.\nThe extra Assist Skill via all Special Effects can be launched up to 2 time(s) per battle, and this count is reset after Himeko • Nova uses her Ultimate."
     },
     {
      "type": "Trace",
@@ -20157,7 +20325,43 @@
      "type": "Enhanced Ultimate",
      "name": "Synthetic Black Hole",
      "tag": "AoE",
-     "description": "Deals Imaginary DMG equal to 90%—162% of Welt's ATK to all enemies. Has a 100% base chance to Imprison hit enemy targets for 1 turn.\nWhile Imprisoned, enemy targets have their actions delayed by 6%-13.2 and their SPD reduced by 10%. After using his Ultimate, inflicts the \"Weightless\" state on all enemies. When targets in \"Weightless\" state get attacked, their actions are delayed by 4.0%. This effect can trigger up to 8 time(s) per target per turn. \"Weightless\" lasts for 2 turn(s)."
+     "description": "Deals Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to all enemies. Has a 100% base chance to Imprison hit enemy targets for 1 turn.\nWhile Imprisoned, enemy targets have their actions delayed by {turn_while_imprisoned} and their SPD reduced by 10%. After using his Ultimate, inflicts the \"Weightless\" state on all enemies. When targets in \"Weightless\" state get attacked, their actions are delayed by 4.0%. This effect can trigger up to 8 time(s) per target per turn. \"Weightless\" lasts for 2 turn(s).",
+     "scalings": [
+      {
+       "label": "Imaginary DMG",
+       "values": [
+        "90%",
+        "96%",
+        "102%",
+        "108%",
+        "114%",
+        "120%",
+        "127.5%",
+        "135%",
+        "142.5%",
+        "150%",
+        "156%",
+        "162%"
+       ]
+      },
+      {
+       "label": "turn While Imprisoned",
+       "values": [
+        "6%",
+        "6.6%",
+        "7.2%",
+        "7.8%",
+        "8.4%",
+        "9%",
+        "9.8%",
+        "10.5%",
+        "11.3",
+        "12%",
+        "12.6%",
+        "13.2%"
+       ]
+      }
+     ]
     },
     {
      "type": "Talent",
@@ -20345,7 +20549,43 @@
      "type": "Ultimate",
      "name": "Divine Castigation",
      "tag": "Single Target",
-     "description": "Deals Quantum DMG equal to 150%—270% of Xueyi's ATK to a single target enemy. This attack ignores Weakness Types and reduces the enemy's Toughness. When the enemy's Weakness is Broken, the Quantum Weakness Break effect is triggered.\nIn this attack, the more Toughness is reduced, the higher the DMG will be dealt, up to a max of 36%—64.8% increase."
+     "description": "Deals Quantum DMG equal to {quantum_dmg} of Xueyi's ATK to a single target enemy. This attack ignores Weakness Types and reduces the enemy's Toughness. When the enemy's Weakness is Broken, the Quantum Weakness Break effect is triggered.\nIn this attack, the more Toughness is reduced, the higher the DMG will be dealt, up to a max of {higher_the_dmg} increase.",
+     "scalings": [
+      {
+       "label": "Quantum DMG",
+       "values": [
+        "150%",
+        "160%",
+        "170%",
+        "180%",
+        "190%",
+        "200%",
+        "212.5%",
+        "225%",
+        "237.5%",
+        "250%",
+        "260%",
+        "270%"
+       ]
+      },
+      {
+       "label": "higher the DMG",
+       "values": [
+        "36%",
+        "38.4%",
+        "40.8%",
+        "43.2%",
+        "45.6%",
+        "48%",
+        "51%",
+        "54%",
+        "57%",
+        "60%",
+        "62.4%",
+        "64.8%"
+       ]
+      }
+     ]
     },
     {
      "type": "Talent",

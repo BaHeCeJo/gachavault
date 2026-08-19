@@ -66,6 +66,8 @@ LEVEL_CAPS = {
     "elation skill": 12,
     "servant skill": 12,
     "servant talent": 12,
+    # Himeko • Nova's Companion Protocol abilities.
+    "assist skill": 12,
 }
 
 # Ability type -> the order it should appear in the kit. A reader scans a kit in
@@ -74,7 +76,7 @@ TYPE_ORDER = [
     "basic atk", "enhanced basic atk", "skill", "enhanced skill",
     "ultimate", "enhanced ultimate", "talent", "enhanced talent",
     "technique", "enhanced technique", "elation skill",
-    "servant skill", "servant talent",
+    "servant skill", "servant talent", "assist skill",
     "memosprite skill", "enhanced memosprite skill",
     "memosprite talent", "enhanced memosprite talent",
 ]
@@ -171,6 +173,57 @@ def mark_enhanced(abilities):
     return out
 
 
+def _num(v):
+    """A wiki value as a plain number: "57.2%" and "57.2" both -> 57.2."""
+    try:
+        return float(str(v).strip().rstrip("%"))
+    except ValueError:
+        return None
+
+
+def _endpoints(text):
+    """The first and last number of a range as written in the prose."""
+    parts = re.split(r"[—–-]", text)
+    if len(parts) < 2:
+        return None
+    lo, hi = _num(parts[0]), _num(parts[-1])
+    return None if lo is None or hi is None else (lo, hi)
+
+
+def match_by_value(ranges, attrs):
+    """Pair each range with the table row that starts and ends on its numbers.
+
+    The surest way to know which row a range belongs to is that they agree at
+    both ends. Position does not survive contact with the data: Xueyi's Ultimate
+    quotes two values that are rows 1 and 3 of its table, skipping the middle
+    one, and Blade's enhanced Basic ATK has a table listing its values twice —
+    once as percentages and once as decimals.
+
+    Returns a list of attr rows in range order, or None if any range matches no
+    row or more than one (ambiguous, so not worth guessing at).
+    """
+    ends = [(_endpoints(m.group(0)), m) for m in ranges]
+    if any(e is None for e, _ in ends):
+        return None
+
+    picked, used = [], set()
+    for target, _ in ends:
+        hits = [
+            i
+            for i, v in enumerate(attrs)
+            if i not in used
+            and len(v) > 1
+            and _num(v[0]) is not None
+            and abs(_num(v[0]) - target[0]) < 1e-9
+            and abs((_num(v[-1]) or 0) - target[1]) < 1e-9
+        ]
+        if len(hits) != 1:
+            return None
+        used.add(hits[0])
+        picked.append(attrs[hits[0]])
+    return picked
+
+
 def align_values(desc, attrs):
     """Match the ranges in an ability's prose to the rows of its table.
 
@@ -200,8 +253,12 @@ def align_values(desc, attrs):
             first_at[m.group(0)] = m
             distinct.append(m.group(0))
 
+    by_value = match_by_value(ranges, attrs)
     if len(ranges) == len(attrs):
         chosen, per_occurrence = list(zip(ranges, attrs)), True
+    elif by_value:
+        # The table has rows the prose never quotes, or quotes out of order.
+        chosen, per_occurrence = list(zip(ranges, by_value)), True
     elif len(distinct) == len(attrs):
         chosen, per_occurrence = [(first_at[t], v) for t, v in zip(distinct, attrs)], False
     else:

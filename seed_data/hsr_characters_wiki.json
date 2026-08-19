@@ -9701,9 +9701,40 @@
  "Himeko • Nova": {
   "abilities": [
    {
+    "attrs": [
+     [
+      "50%",
+      "55%",
+      "60%",
+      "65%",
+      "70%",
+      "75%",
+      "81.25%",
+      "87.5%",
+      "93.75%",
+      "100%",
+      "105%",
+      "110%"
+     ],
+     [
+      "50%",
+      "55%",
+      "60%",
+      "65%",
+      "70%",
+      "75%",
+      "81.25%",
+      "87.5%",
+      "93.75%",
+      "100%",
+      "105%",
+      "110%"
+     ]
+    ],
     "desc": "Enters the \"Companion Protocol: Decimation\" state. Increases all allies' CRIT DMG by 50%-110%, and additionally increases the CRIT DMG dealt by Skill by 50%-110%. For every 1 enemy target hit by allies, gains 1 Charge. When Charge reaches 9, consumes all Charge, and Himeko • Nova immediately launches 1 Assist Skill against enemies at no cost. This instance of Assist Skill cannot grant Charge.",
     "energy_cost": "",
     "energy_gen": "",
+    "levels": 12,
     "req_asc": "",
     "sortkey": "13",
     "tag": "AoE",
@@ -9711,9 +9742,40 @@
     "type": "Assist Skill"
    },
    {
+    "attrs": [
+     [
+      "50%",
+      "55%",
+      "60%",
+      "65%",
+      "70%",
+      "75%",
+      "81.25%",
+      "87.5%",
+      "93.75%",
+      "100%",
+      "105%",
+      "110%"
+     ],
+     [
+      "50%",
+      "55%",
+      "60%",
+      "65%",
+      "70%",
+      "75%",
+      "81.25%",
+      "87.5%",
+      "93.75%",
+      "100%",
+      "105%",
+      "110%"
+     ]
+    ],
     "desc": "Enters the \"Companion Protocol: Verdict\" state. Increases DMG dealt by Himeko • Nova by 50%-110%, and additionally increases her Ultimate DMG dealt by 50%-110%. After Himeko • Nova's teammates actively use their Ultimate 2 time(s), Himeko • Nova immediately launches 1 Assist Skill against enemies at no cost.",
     "energy_cost": "",
     "energy_gen": "",
+    "levels": 12,
     "req_asc": "",
     "sortkey": "12",
     "tag": "AoE",
@@ -9882,9 +9944,68 @@
     "type": "Bonus Ability"
    },
    {
+    "attrs": [
+     [
+      "80%",
+      "88%",
+      "96%",
+      "104%",
+      "112%",
+      "120%",
+      "130%",
+      "140%",
+      "150%",
+      "160%",
+      "168%",
+      "176%"
+     ],
+     [
+      "12%",
+      "13.2%",
+      "14.4%",
+      "15.6%",
+      "16.8%",
+      "18%",
+      "19.5%",
+      "21%",
+      "22.5%",
+      "24%",
+      "25.2%",
+      "26.4%"
+     ],
+     [
+      "100%",
+      "110%",
+      "120%",
+      "130%",
+      "140%",
+      "150%",
+      "162.5%",
+      "175%",
+      "187.5%",
+      "200%",
+      "210%",
+      "220%"
+     ],
+     [
+      "18%",
+      "19.4%",
+      "20.8%",
+      "22.2%",
+      "23.6%",
+      "25%",
+      "26.75%",
+      "28.5%",
+      "30.25%",
+      "32%",
+      "33.4%",
+      "34.8%"
+     ]
+    ],
     "desc": "Deals Fire DMG equal to 80%-176% of Himeko • Nova's ATK to all enemies, and additionally deals 3 instances of DMG, with each instance dealing Fire DMG equal to 12%-26.4% of Himeko • Nova's ATK to one random enemy. When used by Himeko • Nova, deals Fire DMG equal to 100%-220% of Himeko • Nova's ATK to all enemies, and additionally deals 4 instances of DMG, with each instance dealing Fire DMG equal to 18%-34.8% of Himeko • Nova's ATK to one random enemy.\nIf the user is a Trailblaze Companions character other than Himeko • Nova, then depending on the user, Himeko • Nova additionally gains 1 of the Special Effects.\nThe extra Assist Skill via all Special Effects can be launched up to 2 time(s) per battle, and this count is reset after Himeko • Nova uses her Ultimate.",
     "energy_cost": "",
     "energy_gen": "18",
+    "levels": 12,
     "req_asc": "",
     "sortkey": "11",
     "tag": "AoE",
