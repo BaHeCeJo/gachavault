@@ -70,8 +70,11 @@ def wiki(params):
 
 
 def infobox_field(text, key):
-    """One `|key = value` line of the Light Cone Infobox."""
-    m = re.search(r"^\|\s*%s\s*=\s*(.*?)\s*$" % re.escape(key), text, re.M)
+    """One `|key = value` line of the Light Cone Infobox.
+
+    [ 	] not \s: \s matches newlines, so an empty "|key =" would capture the
+    next line instead of an empty string."""
+    m = re.search(r"^\|\s*%s\s*=[ \t]*(.*?)[ \t]*$" % re.escape(key), text, re.M)
     return m.group(1).strip() if m else None
 
 

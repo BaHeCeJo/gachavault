@@ -2715,13 +2715,6 @@
    ]
   }
  },
- "Rise and Sing": {
-  "effect": "|effect_path    = Remembrance",
-  "passive": "|effect         =",
-  "title": "Rise and Sing",
-  "var_order": [],
-  "variables": {}
- },
  "River Flows in Spring": {
   "effect": "After entering battle, increases the wearer's SPD by (var1)% and DMG by (var2)%. When the wearer takes DMG, this effect will disappear. This effect will resume after the end of the wearer's next turn.",
   "passive": "Stave Off the Lingering Cold",
@@ -3088,13 +3081,6 @@
     "48"
    ]
   }
- },
- "Summer Rides the Surf": {
-  "effect": "|effect_path    = Elation",
-  "passive": "|effect         =",
-  "title": "Summer Rides the Surf",
-  "var_order": [],
-  "variables": {}
  },
  "Sweat Now, Cry Less": {
   "effect": "Increases the wearer's CRIT Rate by (var1)%. When the wearer's memosprite is on the field, increases the DMG dealt by the wearer and their memosprite by (var2)%.",

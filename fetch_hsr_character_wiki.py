@@ -80,7 +80,9 @@ def api(params):
 
 
 def field(text, key):
-    m = re.search(r"^\|\s*%s\s*=\s*(.*?)\s*$" % re.escape(key), text, re.M)
+    # [ 	] not \s: \s matches newlines, and an empty "|key =" would then
+    # capture the next line instead of an empty string.
+    m = re.search(r"^\|\s*%s\s*=[ \t]*(.*?)[ \t]*$" % re.escape(key), text, re.M)
     return m.group(1).strip() if m else None
 
 
@@ -208,6 +210,13 @@ def main():
                 "energy_cost": field(t, "energyCost") or "",
                 "energy_gen": field(t, "energyGen") or "",
                 "req_asc": field(t, "reqAsc") or "",
+                # How the ability hits — Single Target, Blast, AoE, Bounce,
+                # Enhance, Support. The wiki shows it beside the type, and it is
+                # what tells two same-typed abilities apart.
+                "tag": field(t, "tag") or "",
+                # The wiki's own ordering within a type. Sparse and not
+                # consistent between characters, so it only breaks ties.
+                "sortkey": field(t, "sortkey") or "",
             }
             # Only levelled abilities carry a table; a trace is a fixed effect.
             if atype.strip().lower() in LEVELLED_TYPES and "Scaling" in t:

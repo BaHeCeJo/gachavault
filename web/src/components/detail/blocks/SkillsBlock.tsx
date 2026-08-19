@@ -75,6 +75,7 @@ export function SkillsBlock({
   const typeKey = c.type_key || "type";
   const groupKey = c.group_key || "group";
   const scalingsKey = c.scalings_key || "scalings";
+  const tagKey = c.tag_key || "tag";
 
   const str = (v: unknown) => (typeof v === "string" ? v : "");
 
@@ -93,6 +94,7 @@ export function SkillsBlock({
         desc: str(s?.[descKey]),
         icon: str(s?.[iconKey]),
         type,
+        tag: str(s?.[tagKey]),
         group: str(s?.[groupKey]),
         scalings,
         track,
@@ -168,6 +170,14 @@ export function SkillsBlock({
                       </span>
                     )}
                     {sk.name && <p className="text-sm font-semibold text-gray-200">{sk.name}</p>}
+                    {/* How the ability hits. Quieter than the type badge — it
+                        is what distinguishes two abilities the game shows under
+                        the same type. */}
+                    {sk.tag && (
+                      <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded border border-gray-700 text-gray-400 shrink-0">
+                        {sk.tag}
+                      </span>
+                    )}
                   </div>
 
                   {!showTable && sk.ticks.length > 1 && (

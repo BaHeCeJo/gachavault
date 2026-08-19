@@ -99,6 +99,10 @@ export interface SkillsConfig {
   group_key?: string; // default "group" — a value change starts a labelled subsection (e.g. "Memosprite")
   scalings_key?: string; // default "scalings" — array of { label, values[] } per-level multipliers, shown via a level slider
   track_key?: string; // default "track" — names the level track an ability scales along
+  // default "tag" — a secondary badge beside the type (how an ability hits:
+  // Single Target, Blast, AoE…), which is what tells two same-typed abilities
+  // apart when the game shows them under one name.
+  tag_key?: string;
   // Level tracks for this schema. Omitted (the norm) = the game's preset
   // tracks, so a light cone slider reads S1-S5 and a ZZZ core passive A-F
   // without any per-schema setup.
