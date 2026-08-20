@@ -5,6 +5,14 @@
   "schema": "Character",
   "slug": "acheron",
   "data": {
+   "description": "A drifter claiming to be a Galaxy Ranger, though she is later revealed to be a Self-Annihilator. She walks the cosmos alone, carrying with her a long sword.\n\nThough aloof and taciturn, her blade flicks out like lashing lightning. And yet, she always strikes with her scabbard, never drawing the sword free.\n\nShe is also an Emanator of Nihility.",
+   "lore": "\"Lone voyagers in the cosmos are driven by two desires — to tread in the trails of the past and to forge their own way. But under THEIR scrutiny... most end up adhering to the former.\"",
+   "release_version": "2.1",
+   "release_date": "2024-03-27",
+   "voice_actor_en": "Allegra Clark",
+   "voice_actor_jp": "Sawashiro Miyuki (沢城みゆき)",
+   "voice_actor_cn": "Juhuahua (菊花花)",
+   "voice_actor_kr": "Park Ji-yoon (박지윤)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -271,6 +279,14 @@
   "schema": "Character",
   "slug": "aglaea",
   "data": {
+   "description": "In that holy city kissed by the dawn, the weaver caresses the golden thread and connects destiny.\n\nAglaea the Goldweaver, the Chrysos Heir bearing the Coreflame of \"Romance\"... You shall summon the heroes of this world, and lead them to once again embark on an endless journey —\n\n— Where they will smite down the gods, return the divine fire, and grant rebirth to the dying land of Amphoreus.",
+   "lore": "\"O, noble guest from afar. The wind brought me news of you along the golden threads. My name is Aglaea, the Dressmaster of Okhema and one of Amphoreus' Chrysos Heirs. I hope we treat each other with honesty.\"",
+   "release_version": "3.0",
+   "release_date": "2025-02-05",
+   "voice_actor_en": "Morgan Lauré",
+   "voice_actor_jp": "Endo Aya (遠藤 綾)",
+   "voice_actor_cn": "Chu Yue (楚越)",
+   "voice_actor_kr": "Oh Ro-ah (오로아)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -569,6 +585,14 @@
   "schema": "Character",
   "slug": "anaxa",
   "data": {
+   "description": "The Grove of Epiphany, where knowledge flourishes and philosophers are born. Yet here stands Anaxagoras the blasphemer, the Chrysos Heir who challenges the Coreflame of Reason: Would you truly embrace infamy and defy prophecy, driving the thorns of doubt into the Sacred Tree of wisdom?\n\n— \"Ridiculous. In a world full of lies, I am the only truth.\"",
+   "lore": "\"My name is Anaxagoras, one of the Seven Sages of the Grove of Epiphany, founder of the Nousporists. Now, don't make me repeat the following again. Rule number one: Do not call me Anaxa. Rule number two: Never interrupt me — silence is golden. Remember that.\"",
+   "release_version": "3.2",
+   "release_date": "2025-04-30",
+   "voice_actor_en": "Stephen Fu",
+   "voice_actor_jp": "Uchida Yuma (内田 雄馬)",
+   "voice_actor_cn": "Qian Wenqing (钱文青)",
+   "voice_actor_kr": "Lee Sang-jun (이상준)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -734,6 +758,13 @@
   "schema": "Character",
   "slug": "archer",
   "data": {
+   "description": "Despair plays in cycles from past and future. Countless grand ideals were incinerated before that red and sacred cloth. Yet, do not let this smear of ashes fool you...\n\nShould someone create a phantasmal sweet dream under the guise of false ideals, then he will burn again, facing down the hypocrites of the world till the very end.\n\nNo matter where he is, he always remains justice's steadfast companion.",
+   "lore": "\"First meeting, huh? Just call me Archer. Lucky for us, we're not here to kill each other, so let's keep things civil — if we can.\"",
+   "release_version": "3.4",
+   "release_date": "2025-07-11",
+   "voice_actor_jp": "Suwabe Junichi (諏訪部 順一)",
+   "voice_actor_cn": "Wu Lei (吴磊)",
+   "voice_actor_kr": "Lim Chae-heon (임채헌)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -921,6 +952,14 @@
   "schema": "Character",
   "slug": "argenti",
   "data": {
+   "description": "A classic knight of the Knights of Beauty. Forthright and candid, this noble and admirable man wanders the cosmos alone, resolutely following the Path of Beauty.\n\nUpholding the good name of Beauty is Argenti's duty. To fulfill this responsibility, one's must be pious when one initiates battle, and one must make their opponent yield willingly when one strikes with one's spear.",
+   "lore": "\"May this rose convey my heartfelt salutations.\"",
+   "release_version": "1.5",
+   "release_date": "2023-12-06",
+   "voice_actor_en": "Talon Warburton",
+   "voice_actor_jp": "Tachibana Shinnosuke (立花慎之介)",
+   "voice_actor_cn": "Liang Dawei (梁达伟)",
+   "voice_actor_kr": "Choi Seung-hoon (최승훈)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -1128,6 +1167,14 @@
   "schema": "Character",
   "slug": "arlan",
   "data": {
+   "description": "He is the head of Herta Space Station's security department, often seen with a dog named Peppy.",
+   "lore": "\"I'm proud of my wounds. They're a reminder of being able to protect everyone.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Dani Chambers",
+   "voice_actor_jp": "Shiraishi Ryoko (白石涼子)",
+   "voice_actor_cn": "Tao Dian (陶典)",
+   "voice_actor_kr": "Kim Yul (김율)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -1309,6 +1356,14 @@
   "schema": "Character",
   "slug": "ashveil",
   "data": {
+   "description": "Operates on a whim, hardcore Deduction... Relies purely on Intuition, yet repeatedly cracks strange cases. With a monkey for an assistant, retirement is the only goal. As for the detective sleeping in the fridge... he's just waiting for a willing bite.\n\nUnder the Phantasmoon, the vile beast howls. How will his game of Hounding Pursuit draw to a close?",
+   "lore": "\"I'm Ashveil, ace detective of the Ashen Detective Agency. Here's my card. I take on all kinds of commissions, such as looking for lost pets, pretending to be a parent in parent-teacher nights, capturing interstellar wanted criminals, or tracing the whereabouts of an Aeon... So, what can I do for you?\"",
+   "release_version": "4.0",
+   "release_date": "2026-03-25",
+   "voice_actor_en": "Blythe Melin",
+   "voice_actor_jp": "Koyasu Takehito (子安 武人)",
+   "voice_actor_cn": "Zhang Pei (张沛)",
+   "voice_actor_kr": "Kang Soo-jin (강수진)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -1525,6 +1580,14 @@
   "schema": "Character",
   "slug": "asta",
   "data": {
+   "description": "She is the inquisitive lead astronomer responsible for handling the Herta Space Station's affairs, including managing the staff and responding to the Intelligentsia Guild.\n\nShe can be obtained for free during the Warp tutorial.",
+   "lore": "\"The 'tortoise' galaxies are those that slooowly give birth to new stars. The ones that use up their fuel reserves in an instant, are the 'hare' galaxies.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Felecia Angelle",
+   "voice_actor_jp": "Akasaki Chinatsu (赤﨑千夏)",
+   "voice_actor_cn": "Guiniang (龟娘)",
+   "voice_actor_kr": "Kim Hyeon-ji (김현지)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -1689,6 +1752,14 @@
   "schema": "Character",
   "slug": "aventurine",
   "data": {
+   "description": "A senior manager in the IPC Strategic Investment Department and one of the Ten Stonehearts. His Cornerstone is the \"Aventurine of Stratagems.\" He possesses an air of frivolity and doesn't shy away from taking risks. His constant smile makes it difficult for people to discern his true feelings.\n\nHe won his current position by wagering against fate itself. He views life as a high-stakes, high-return investment, and he plays this particular gamble with masterful ease.",
+   "lore": "\"Go ahead, use me as you wish, even stab me in the back if you see fit. Exploitation and treachery are simply tools of the trade. But remember, I don't make deals that don't pay off... So, I hope you don't disappoint me.\"",
+   "release_version": "2.1",
+   "release_date": "2024-04-17",
+   "voice_actor_en": "Camden Sutkowski\nCaitlyn Elizabeth (child)",
+   "voice_actor_jp": "Kawanishi Kengo (河西 健吾)",
+   "voice_actor_cn": "Yang Chaoran (杨超然)\nPi Xiugang (貔貅肛) (child)",
+   "voice_actor_kr": "Park Jun-won (박준원)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -1905,6 +1976,14 @@
   "schema": "Character",
   "slug": "bailu",
   "data": {
+   "description": "Bailu is a playable character in Honkai: Star Rail.\n\nA vivacious young lady of the Vidyadhara race, she is known as the \"Healer Lady\" on The Xianzhou Luofu due to her expertise with medicine. She often dishes out unorthodox prescriptions such as \"Stay well hydrated\" and \"Get a good night's rest.\"\n\nBailu cannot bear to see people suffer, which is why her eyes will be shut tightly as she cures ailments.\n\n\"As long as they're cured, that's all that matters, right?\"",
+   "lore": "\"Lunch is like medicine — it has to have the right balance of ingredients. Two smoked patties and a cup of milk tea is a great way to heal your heart and lift your spirits!\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Su Ling Chan",
+   "voice_actor_jp": "Kato Emiri (加藤 英美里)",
+   "voice_actor_cn": "Duoduo (多多)",
+   "voice_actor_kr": "Jo Hyeon-jeong (조현정)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -2155,6 +2234,14 @@
   "schema": "Character",
   "slug": "black-swan",
   "data": {
+   "description": "A Memokeeper from the Garden of Recollection. A mysterious and elegant soothsayer.\n\nBears a warm smile and is willing to patiently heed the words of another, and thus uses such means as a pretext to enter \"memories\" and gain a comprehension over the flow of all information. Feels strongly about collecting unique memories, yet the thoughts that guide her are hard to glean.",
+   "lore": "\"If I can identify and encapsulate a fragment of memory before it's unveiled to the world, those solitary moments of delight are my most favored and unique memories.\"",
+   "release_version": "2.0",
+   "release_date": "2024-02-06",
+   "voice_actor_en": "Arryn Zech",
+   "voice_actor_jp": "Nabatame Hitomi (生天目仁美)",
+   "voice_actor_cn": "Yang Menglu (杨梦露)",
+   "voice_actor_kr": "Kim Ha-young (김하영)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -2405,6 +2492,14 @@
   "schema": "Character",
   "slug": "blade",
   "data": {
+   "description": "A member of the Stellaron Hunters and a swordsman who abandoned his body to become a blade. He pledges loyalty to Destiny's Slave and possesses a terrifying self-healing ability.",
+   "lore": "\"When will death come for me? My patience is wearing thin.\"",
+   "release_version": "1.2",
+   "release_date": "2023-07-19",
+   "voice_actor_en": "Daman Mills",
+   "voice_actor_jp": "Miki Shin-ichiro (三木眞一郎)",
+   "voice_actor_cn": "Liu Yijia (刘以嘉)",
+   "voice_actor_kr": "Kwak Yoon-sang (곽윤상)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -2635,6 +2730,14 @@
   "schema": "Character",
   "slug": "boothill",
   "data": {
+   "description": "A cyborg cowboy drifting among the stars. Extremely optimistic and unrestrained. He is a member of the Galaxy Rangers who swore to punish the wretched by any and all means...\n\nHis flamboyant and brash actions were all to draw the attention of the Interastral Peace Corporation — the target of his revenge.",
+   "lore": "\"So, here's the thing: someone went and tinkered with my Synesthesia Beacon, so now every time you muddle-fudgers hear me chinwaggin' with those shirtbags, it's all a bunch of \"fudge this\" and \"fork that...\" See what I'm sayin'?\"",
+   "release_version": "2.2",
+   "release_date": "2024-05-29",
+   "voice_actor_en": "Andrew Russell",
+   "voice_actor_jp": "Konishi Katsuyuki (小西克幸)",
+   "voice_actor_cn": "Peng Bo (彭博)\nKinsen (child)",
+   "voice_actor_kr": "Kim Dan (김단)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -2871,6 +2974,14 @@
   "schema": "Character",
   "slug": "bronya",
   "data": {
+   "description": "The current Supreme Guardian of Belobog, she is the young and capable commander of the Silvermane Guards. Bronya received rigorous education from an early age, and possesses the grace and affinity as expected of an heir.\n\nOriginally from Belobog's Underworld and the same orphanage as Seele, she was picked from a handful of children to become the next Supreme Guardian and adopted by Cocolia.\n\n\"Can all the training I've received really help me lead the people to the lives they want?\"",
+   "lore": "\"This place is always part of our homeland, even when it has been corroded by Fragmentum. Silvermane Guards will never turn their backs on their home.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Madeline Reiter",
+   "voice_actor_jp": "Asumi Kana (阿澄佳奈)",
+   "voice_actor_cn": "Xie Ying (谢莹)",
+   "voice_actor_kr": "Lee Bo-hee (이보희)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -3070,6 +3181,14 @@
   "schema": "Character",
   "slug": "castorice",
   "data": {
+   "description": "The land that reveres death, Aidonia, where snow falls endlessly, has today drifted into a sweet slumber. Castorice, daughter of the River of Souls, Chrysos Heir in search of \"Death\" Coreflame, sets forth. You must guard the lament of souls and embrace the solitude of destiny.\n\n— Life and death are but a journey. When butterfly alights on the branch, what withers will bloom anew.",
+   "lore": "\"Welcome to Okhema. I am Castorice. Apologies, it is my habit to keep my distance from others... I can get closer if you wish, however.\"",
+   "release_version": "3.2",
+   "release_date": "2025-04-09",
+   "voice_actor_en": "Melody Muze",
+   "voice_actor_jp": "Saito Chiwa (斎藤 千和)",
+   "voice_actor_cn": "Ruan Congqing (阮从青)",
+   "voice_actor_kr": "Lee Serena (이세레나)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -3427,6 +3546,14 @@
   "schema": "Character",
   "slug": "cerydra",
   "data": {
+   "description": "The Northern Empire, a lost dynasty, where frozen lands burn with ambitions of conquest.\n\nSovereign Cerydra, Chrysos Heir who wields the Coreflame of \"Law\", you shall set your pieces, challenge the gods, pass judgment upon the faithless, and carve the path of Flame-Chase into the fate of this world.\n\n\"This is no end. The path of Amphoreus shall blaze across the stars!\"",
+   "lore": "\"'Flamebearer,' 'Tyrant,' 'Empress,' 'Supreme Commander,' 'Imperator'... The world has given me countless titles, but you may simply call me by my true name — Cerydra.\"",
+   "release_version": "3.5",
+   "release_date": "2025-09-02",
+   "voice_actor_en": "Rhiannon Moushall",
+   "voice_actor_jp": "Takao Kanon (高尾 奏音)",
+   "voice_actor_cn": "Shi Xinlei (时欣蕾)",
+   "voice_actor_kr": "Kim Yun-chae (김윤채)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -3626,6 +3753,14 @@
   "schema": "Character",
   "slug": "cipher",
   "data": {
+   "description": "The lost city of rogues, Dolos, where 300 Rogues revel in their games, answering to no one. Race onward, fleet-Footed Thief Star Cifera, Chrysos Heir of the \"Trickery\" Coreflame, and may your web of lies spread with the breeze throughout all lands.\n\n— \"Ha! Trying to pull one over on me? Dream on!\"",
+   "lore": "\"Cifera? Ah, so you've heard of me... But few call me by that name these days. Call me Cipher. It's sharper and swifter, like the wind itself. A perfect name for a master thief, don't you think?\"",
+   "release_version": "3.3",
+   "release_date": "2025-06-11",
+   "voice_actor_en": "Shea Fairaday",
+   "voice_actor_jp": "Ito Ayasa (伊藤 彩沙)",
+   "voice_actor_cn": "Wang Yaxin (mini=1)",
+   "voice_actor_kr": "Mi So (미소)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -3824,6 +3959,14 @@
   "schema": "Character",
   "slug": "clara",
   "data": {
+   "description": "She is a shy young girl orphaned at an early age, accompanied by an ancient mech named Svarog. Her greatest wish is \"to have a family.\"",
+   "lore": "\"Mr. Svarog... is my family.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Emily Sun\nSvarog: D.C. Douglas",
+   "voice_actor_jp": "Hidaka Rina (日高里菜)\nSvarog: Yasumoto Hiroki (安元洋貴)",
+   "voice_actor_cn": "Zisu Jiuyue (紫苏九月)\nSvarog: Wang Yuhang (王宇航)",
+   "voice_actor_kr": "Kim Yea-lim (김예림)\nSvarog: Choi Nak-yoon (최낙윤)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -4022,6 +4165,14 @@
   "schema": "Character",
   "slug": "cyrene",
   "data": {
+   "description": "A meteor streaks across the night sky, sending ripples through the river of life, gleaming in thirteen hues.\n\nDaughter of Aedes Elysiae, Chrysos Heir who nourishes \"██,\" sow the Seed of Memory, so that flowers of the past may bloom in tomorrow. \n— \"And together, we shall write a verse unlike any before ♪\"\n\nAs a Pure Child of Anāsrava, she is also a special Emanator of Remembrance.",
+   "lore": "\"Is this a meeting ordained by fate, or... a long-overdue reunion? It's making my heart beat faster. Then... please once again call me 'Cyrene,' just like when we met the first time, okay?\"",
+   "release_version": "3.7",
+   "release_date": "2025-11-05",
+   "voice_actor_en": "Aiden Dawn",
+   "voice_actor_jp": "Inoue Marina (井上 麻里奈)",
+   "voice_actor_cn": "Yanning (宴宁)",
+   "voice_actor_kr": "Jo Kyoung-i (조경이)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -4739,6 +4890,14 @@
   "schema": "Character",
   "slug": "dan-heng",
   "data": {
+   "description": "Dan Heng is a playable character in Honkai: Star Rail.\n\nThe cold and reserved train guard and archivist of the Astral Express. Wielding a spear named Cloud-Piercer, he joined the Express crew to escape his secluded past.",
+   "lore": "\"Even as we speak, farewells are happening throughout the universe. The grief that we share is real, but there's nothing special about it.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Nicholas Leung",
+   "voice_actor_jp": "Ito Kent (伊東健人)",
+   "voice_actor_cn": "Li Chunyin (李春胤)",
+   "voice_actor_kr": "Kim Hye-sung (김혜성)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -4921,6 +5080,14 @@
   "schema": "Character",
   "slug": "dan-heng-imbibitor-lunae",
   "data": {
+   "description": "Dan Heng's true Vidyadhara form, revealed after accepting the residual powers from the previous reincarnation of \"Imbibitor Lunae.\" Upon accepting the majestic horns atop his crown, he must accept all the merits and faults attributed to that person.\n\nHowever, he was never himself.",
+   "lore": "\"I am nobody's shadow.\"",
+   "release_version": "1.3",
+   "release_date": "2023-08-30",
+   "voice_actor_en": "Nicholas Leung",
+   "voice_actor_jp": "Ito Kent (伊東健人)",
+   "voice_actor_cn": "Li Chunyin (李春胤)",
+   "voice_actor_kr": "Kim Hye-sung (김혜성)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -5187,6 +5354,14 @@
   "schema": "Character",
   "slug": "dan-heng-permansor-terrae",
   "data": {
+   "description": "The chest of Georios and the body of walking dragon shoulder the shattered earth, enduring a thousand years of suffering.\n\nNameless Dan Heng, Chrysos Heir who guards the Earth's Coreflame, you must steady the world as it falls, and guide all life across the land to a new home beyond.\n\n— All rivers flow to the sea, mountains echo in chorus, the path of Permanence shall stretch beyond horizons.",
+   "lore": "\"As you can see, that transformation was brought about by the power of the Permanence. Though you may have many questions, I'd like to reintroduce myself before I answer them — I am the Guard of the Astral Express, your companion, Dan Heng the Nameless.\"",
+   "release_version": "3.6",
+   "release_date": "2025-10-15",
+   "voice_actor_en": "Nicholas Leung",
+   "voice_actor_jp": "Ito Kent (伊東健人)",
+   "voice_actor_cn": "Li Chunyin (李春胤)",
+   "voice_actor_kr": "Kim Hye-sung (김혜성)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -5454,6 +5629,14 @@
   "schema": "Character",
   "slug": "dr-ratio",
   "data": {
+   "description": "A candid and self-centered Intelligentsia Guild member, who often conceals his appearance with a strange plaster sculpture.\n\nHe demonstrated unparalleled intelligence and talent since his youth, but now refers to himself as a \"Mundanite.\" He firmly believes that intellect and creativity are not confined to geniuses. He seeks to distribute knowledge to the entire universe to cure the persistent disease named ignorance.",
+   "lore": "\"The most annoying thing about idiocy is that you can't explain it to an idiot.\"",
+   "release_version": "1.6",
+   "release_date": "2024-01-17",
+   "voice_actor_en": "Jordan Paul Haro",
+   "voice_actor_jp": "Takeuchi Shunsuke (武内駿輔)",
+   "voice_actor_cn": "Sang Yuze (桑毓泽)",
+   "voice_actor_kr": "Lee Donghoon (이동훈)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -5619,6 +5802,14 @@
   "schema": "Character",
   "slug": "evanescia",
   "data": {
+   "description": "One season of Phantasmoon waxing full, one season of mortal ephemerality: the mysterious lady has appeared in Planarcadia once more!\n\nFallen petals scatter with ease, and her stay was but a fleeting instant. Everything about this new era enthralls her, and she will not allow anyone to bring it to ruin...\n\nA cutter adjudicates right and wrong, but who can say how much good or evil lies within oneself?\n\nShe is also an Emanator of Abundance, with ties to both the Panarch Elwood and the Crimson Moon.",
+   "lore": "\"Congrats, you've hit the jackpot! I'm Evanescia. Nice to meet you, Main Character Little Raccoon. Usually, amidst all this revelry, I just make sure the Phantasmoon Games run smoothly... But this time? Sharing the stage with you doesn't sound half bad!\"",
+   "release_version": "4.2",
+   "release_date": "2026-05-13",
+   "voice_actor_en": "Nathalie Ferare",
+   "voice_actor_jp": "Sakura Ayane (佐倉 綾音)",
+   "voice_actor_cn": "Suxun (溯浔)",
+   "voice_actor_kr": "Moon Yoo-jeong (문유정)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -5910,6 +6101,14 @@
   "schema": "Character",
   "slug": "evernight",
   "data": {
+   "description": "In the secluded Memory Zone, candlelight casts echoes of the past, softly fading away in the mist.\n\nEvernight, child of Remembrance born from the shadow, Chrysos Heir who conceals the Coreflame of Time, you shall stir the tide of Oblivion, guarding the wish of the mirrored soul.\n\n— \"Don't worry, I'll watch over your path of Trailblaze... no matter the cost♭\"\n\nAs a Pure Child of Anāsrava, she is also a special Emanator of Remembrance.",
+   "lore": "\"The third month of Amphoreus is the month reserved for the Veil of Evernight... Then let us call this incarnation — the shadow of her — 'Evernight.'\"",
+   "release_version": "3.6",
+   "release_date": "2025-09-24",
+   "voice_actor_en": "Skyler Davenport",
+   "voice_actor_jp": "Ogura Yui (小倉唯)",
+   "voice_actor_cn": "Nuoya (诺亚)",
+   "voice_actor_kr": "Jung Hye-won (정혜원)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -6213,6 +6412,14 @@
   "schema": "Character",
   "slug": "feixiao",
   "data": {
+   "description": "Feixiao, previously called Saran, is a playable character in Honkai: Star Rail.\n\nA former war slave of the borisin, Feixiao is now the Merlin's Claw of the Xianzhou Yaoqing and one of the Seven Arbiter-Generals. Her personality is unrestrained and frank, dashing and straightforward. She is skilled in all forms of martial arts and has honed herself into a supreme weapon. She is widely adored by Xianzhou soldiers and civilians alike as \"The Great General.\"\n\nHowever, she bears the burden of the Moon Rage affliction. If she were to hunt down all the abominations in her limited lifetime — Then the only enemy Feixiao has would be herself. She is also an Emanator of The Hunt.",
+   "lore": "\"'The Merlin's Claw' is what's written in the books, and 'The Great General' is what people call me. The former sounds too formal, the latter too exaggerated. Neither suits me. I prefer my own title, the 'Lacking General' — lacking in worries, regrets, and rivals.\"",
+   "release_version": "2.5",
+   "release_date": "2024-09-10",
+   "voice_actor_en": "Anairis Quiñones",
+   "voice_actor_jp": "Komatsu Mikako (小松未可子)",
+   "voice_actor_cn": "Ye Zhiqiu (叶知秋)",
+   "voice_actor_kr": "Son Jung-min (손정민)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -6496,6 +6703,14 @@
   "schema": "Character",
   "slug": "firefly",
   "data": {
+   "description": "A member of the Stellaron Hunters and a young girl clad in a mechanical armor \"SAM.\"\n\nBorn as a weapon, she's afflicted with the agony of Entropy Loss Syndrome due to genetic modification. She joined the Stellaron Hunters in search of the meaning of life, relentlessly pursuing ways to defy fate.",
+   "lore": "\"Fyreflies are such magical creatures, aren't they? They may throw themselves at a flame or suddenly grow old, but every night before that, they will shine brighter than the stars.\"",
+   "release_version": "2.3",
+   "release_date": "2024-06-19",
+   "voice_actor_en": "Analesa Fisher\nSAM: Adin Rudd",
+   "voice_actor_jp": "Kusunoki Tomori (楠木ともり)\nSAM: Kasama Jun (笠間淳)",
+   "voice_actor_cn": "Song Yuanyuan (宋媛媛)\nSAM: Gan Ziqi (淦子齐)",
+   "voice_actor_kr": "Yu Hye-ji (유혜지)\nSAM: Jang Seo-hwa (장서화)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -6773,6 +6988,14 @@
   "schema": "Character",
   "slug": "fu-xuan",
   "data": {
+   "description": "Fu Xuan is a playable character in Honkai: Star Rail.\n\nThe confident yet blunt Master Diviner of the Xianzhou Luofu's Divination Commission and one of the Six Charioteers. She calculates the Xianzhou Luofu's route and foretells the outcome of future events, as she feels that what she does is the wisest course of action.",
+   "lore": "\"Knowledge exchanged with pain.\"",
+   "release_version": "1.3",
+   "release_date": "2023-09-20",
+   "voice_actor_en": "Sarah Wiedenheft",
+   "voice_actor_jp": "Ito Miku (伊藤美来)",
+   "voice_actor_cn": "Hualing (花玲)",
+   "voice_actor_kr": "Lee Ji-hyeon (이지현)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -6972,6 +7195,14 @@
   "schema": "Character",
   "slug": "fugue",
   "data": {
+   "description": "Fugue is a playable character in Honkai: Star Rail.\n\nThe former chief representative of the Whistling Flames merchant guild in the Sky-Faring Commission, who nearly lost her life in a strange and catastrophic incident on her return journey.\n\nHer face, name, and identity were stolen by the one who orchestrated it all. Yet, by a twist of fate, a sliver of hope remained, and from the aftermath of the Destruction, she reclaimed her life.\n\nNow, she goes by the name \"Fugue.\" Whether it be the bitterness of never returning home or the allure of wandering through the starry seas that drives her, one thing is certain — she has risen once more and set out on her path anew.",
+   "lore": "\"Benefactor, though the Cosmos stretches far and wide, and the stars fill the sky, as long as we hold each other in our thoughts, there will always be a chance for reunion.\"",
+   "release_version": "2.7",
+   "release_date": "2024-12-25",
+   "voice_actor_en": "Anya Floris",
+   "voice_actor_jp": "Takada Yuuki (高田 憂希)",
+   "voice_actor_cn": "Jiang Li (蒋丽)",
+   "voice_actor_kr": "Lee Myeong-ho (이명호)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -7186,6 +7417,14 @@
   "schema": "Character",
   "slug": "gallagher",
   "data": {
+   "description": "A security officer of the Bloodhound Family at Penacony. He was also a slovenly and indolent mixologist. Though unorganized in apparel and casual in how he made his drinks, he was always courteous toward guests but kept his vigilance about him.\n\nHe seemed to be a character with a complicated past, yet never actively mentioned any details. He was later revealed to be closely related to the \"Death\" that had arrived on Penacony, a \"child\" of The Watchmaker, and a Pathstrider of the Enigmata.",
+   "lore": "\"Making a drink is a sensory skill. In dreams, creating fizzy concoctions requires adding a bit of your mood. Heavier if you're troubled, a touch sweeter if you're in high spirits... It's not just about mixing beverages. It's about mixing the experiences of life.\"",
+   "release_version": "2.1",
+   "release_date": "2024-03-27",
+   "voice_actor_en": "Erik Braa",
+   "voice_actor_jp": "Mikami Satoshi (三上哲)",
+   "voice_actor_cn": "Ma Yufei (马语非)",
+   "voice_actor_kr": "Park Sang-hoon (박상훈)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -7399,6 +7638,14 @@
   "schema": "Character",
   "slug": "gepard",
   "data": {
+   "description": "The honorable and upstanding captain of the Silvermane Guards who bears the noble Landau family name. In the frost-whipped city of Belobog, life can still go on in normality...\n\nThis is in no small part thanks to Gepard and his Silvermane Guards who protect the peace of everyday life.",
+   "lore": "\"Loyalty isn't an inherent virtue of humans. As such, the recipient of that loyalty also needs to be worthy.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Bryson Baugus",
+   "voice_actor_jp": "Furukawa Makoto (古川慎)",
+   "voice_actor_cn": "Ma Yang (马洋)",
+   "voice_actor_kr": "Min Seung-woo (민승우)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -7598,6 +7845,13 @@
   "schema": "Character",
   "slug": "gilgamesh",
   "data": {
+   "description": "The King of Heroes from the dawn of human history, hailing from a world beyond the stars.\n\nPossessing a nature two-thirds divine and one-third mortal, he claims a natural-born prerogative to rule over all of creation.\n\nLaughing out loud today as always, right up until getting dragged into another world by some adversarial Goddess—\n\nThis time, he will once again reclaim everything that is rightfully his as king.",
+   "lore": "\"Stellaron, my treasure. When you reach the end of your journey, I shall seal you within the deepest depths of my treasury, in the safest place of all... Hmph. That said, your 'Trailblaze' shall endure for a long time yet, reaching even beyond the ultimate horizon of my own foresight.\"",
+   "release_version": "4.4",
+   "release_date": "2026-07-24",
+   "voice_actor_jp": "Seki Tomokazu (関 智一)",
+   "voice_actor_cn": "Teng Xin (藤新)",
+   "voice_actor_kr": "Kim Jong-yeop (김종엽)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -7873,6 +8127,14 @@
   "schema": "Character",
   "slug": "guinaifen",
   "data": {
+   "description": "Guinaifen, real name Guinevere, is a playable character in Honkai: Star Rail.\n\nAn outworlder who ended up residing on the Xianzhou by accident. She is now a passionate and vivacious street performer, and has mastered many Xianzhou acrobatics such as \"fire-breathing, sword-swallowing, bowl-balancing, umbrella-dancing, neck-pulling, and boulder-smashing,\" among others.",
+   "lore": "\"Would you like to see me break this stone slab on somebody's chest?\"",
+   "release_version": "1.4",
+   "release_date": "2023-10-27",
+   "voice_actor_en": "Morgan Lauré",
+   "voice_actor_jp": "Suguta Hina (直田姬奈)",
+   "voice_actor_cn": "Xiao Gan (小敢)",
+   "voice_actor_kr": "Kim Soo-young (김수영)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -8088,6 +8350,14 @@
   "schema": "Character",
   "slug": "hanya",
   "data": {
+   "description": "Hanya is a playable character in Honkai: Star Rail.\n\nOne of the judges of the Ten-Lords Commission. Of the four duties of a judge — detention, imprisonment, punishment, and interrogation — Hanya is charged with the last task. She specializes in reading the karma and sins of criminals, and records their crimes and punishments with the Oracle Brush.\n\nAs she spends her days using dreams to predict karmic offenses and has to endure the torrential flood of information regarding the mara-strucks' actions, she has long become dull to all things in the world. Only when she operates with her sister and fellow judge, Xueyi, will Hanya momentarily reveal her true nature.",
+   "lore": "\"Using dreams to analyze the sins of the mara-struck is like touching a vine with thorns — it doesn't hurt as much when your fingers become numb.\"",
+   "release_version": "1.5",
+   "release_date": "2023-12-06",
+   "voice_actor_en": "Suzie Yeung",
+   "voice_actor_jp": "Suzushiro Sayumi (鈴代紗弓)",
+   "voice_actor_cn": "Zhang Yuxi (张雨曦)",
+   "voice_actor_kr": "Yoon Eun-seo (윤은서)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -8269,6 +8539,14 @@
   "schema": "Character",
   "slug": "herta",
   "data": {
+   "description": "A puppet of Herta, Member #83 of the Genius Society and master of the eponymous Herta Space Station, modeled after her younger self.",
+   "lore": "\"I'm already perfect, so what else should I do?\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "PJ Mattson",
+   "voice_actor_jp": "Yamazaki Haruka (山崎はるか)",
+   "voice_actor_cn": "Hou Xiaofei (侯小菲)",
+   "voice_actor_kr": "Kim Seo-yeong (김서영)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -8434,6 +8712,14 @@
   "schema": "Character",
   "slug": "himeko",
   "data": {
+   "description": "Murata Himeko is a playable character in Honkai: Star Rail.\n\nAn adventurous scientist who encountered and repaired a stranded train as a child, she now ventures across the universe with the Astral Express as its navigator.",
+   "lore": "\"Alright, crew! This world is the target of our next trailblazing expedition!\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Cia Court\nCaitlyn Elizabeth (child)",
+   "voice_actor_jp": "Tanaka Rie (田中 理恵)",
+   "voice_actor_cn": "Lin Su (林簌)",
+   "voice_actor_kr": "Kim Bo-na (김보나)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -8616,6 +8902,14 @@
   "schema": "Character",
   "slug": "himeko-nova",
   "data": {
+   "description": "Some fight by your side, while others watch over you, the Trailblaze is never a solitary voyage.\n\nShe paints a trailblazing miracle. The silver rail stretches on, and the Nameless set sail once more, illuminating the galaxy's eternal night. At the end of the line, she looks back once again. The dream of setting forth has never run aground.",
+   "lore": "\"No matter how tangled our pasts or how distant the future, our bond remains unchanged. I am Himeko, Navigator of the Astral Express — and your family, always looking out at the same horizon as you.\"",
+   "release_version": "4.4",
+   "release_date": "2026-07-15",
+   "voice_actor_en": "Cia Court",
+   "voice_actor_jp": "Tanaka Rie (田中 理恵)",
+   "voice_actor_cn": "Lin Su (林簌)",
+   "voice_actor_kr": "Kim Bo-na (김보나)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -9059,6 +9353,14 @@
   "schema": "Character",
   "slug": "hook",
   "data": {
+   "description": "The self-proclaimed boss of The Moles adventure squad and Fersman's adopted daughter. She views life as an opportunity for freedom and countless adventures.",
+   "lore": "\"Who am I? Heh, I'm the boss around here, you can call me... Pitch-Dark Hook the Great!\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Felecia Angelle",
+   "voice_actor_jp": "Tokui Sora (徳井青空)",
+   "voice_actor_cn": "Wang Xiaotong (王晓彤)",
+   "voice_actor_kr": "Lee Jae-hyun (이재현)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -9299,6 +9601,14 @@
   "schema": "Character",
   "slug": "huohuo",
   "data": {
+   "description": "Huohuo is a playable character in Honkai: Star Rail.\n\nA pitiable and helpless Foxian girl who is also a Ten-Lords Commission Judge-in-training, who fears ghosts but must catch them. Due to having a heliobus named Tail sealed in her tail by the judges of the Ten-Lords Commission, she became a \"cursed one\" who attracts inhuman beings.\n\nShe fears demons and heliobi, but contrarily is tasked with their capture and entrusted with the heavy task of eradicating vile spirits. Though she believes herself lacking in ability, she is unable to muster the courage to resign and continues onward despite walking in a valley of her own fear.",
+   "lore": "\"I can use this banner to dispel demons... but it also comes in handy when signaling my surrender...\"",
+   "release_version": "1.5",
+   "release_date": "2023-11-15",
+   "voice_actor_en": "Megan Shipman\nTail: Aaron Veach",
+   "voice_actor_jp": "Naganawa Maria (長縄まりあ)\nTail: Hirabayashi Takeshi (平林剛)",
+   "voice_actor_cn": "Ge Zirui (葛子瑞)\nTail: Liu Beichen (刘北辰)",
+   "voice_actor_kr": "Kim Chae-rin (김채린)\nTail: Han Bokhyun (한복현)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -9549,6 +9859,14 @@
   "schema": "Character",
   "slug": "hyacine",
   "data": {
+   "description": "As the city-state in the clouds crumbles through time, the Twilight Courtyard opens its gates once more, bringing a glimmer of light to Evernight. You, Physician Hyacinthia, Chrysos Heir who guards the Sky Coreflame, must inherit your ancestors' will and mend the torn fabric of dusk and dawn.\n\nMay the rainbow light pour down, dissolve all grudges, and bring the dawn back to this land.",
+   "lore": "\"As the descendant of Sky, I, Hyacinthia, will fulfill the Flame-Chase duty with all of you. At the same time, I'll do my best to help everyone as Hyacine, healer of the Twilight Courtyard. This is my good friend and assistant, the little pegasus Little Ica. Do you want pet them? Please, go ahead! They love being petted~\"",
+   "release_version": "3.3",
+   "release_date": "2025-05-21",
+   "voice_actor_en": "Holly Earl",
+   "voice_actor_jp": "Yomiya Hina (羊宮 妃那)",
+   "voice_actor_cn": "Jing Chen (静宸)",
+   "voice_actor_kr": "Kim Yeon-woo (김연우)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -9940,6 +10258,14 @@
   "schema": "Character",
   "slug": "hysilens",
   "data": {
+   "description": "Styxia, a coastal city of intoxication and dreams, where echoes of old songs still drift among the waves. Helektra, Daughter of the Sea, Chrysos Heir who cleanses the Ocean's Coreflame, dispels the murky undercurrents and orchestrates a feast of revelry for the heroes beyond the sky.\n\n— The show must go on. Even if hope is as fragile as bubbles, the waves will keep surging forward.",
+   "lore": "\"Helektra? That name has long since sunk into the depths of the past... Ah, it's you, little gray fry. Call me Hysilens. I am the Knight Commander of the holy city, and I will remain on watch — I will not let the storms of fate cloud your eyes.\"",
+   "release_version": "3.5",
+   "release_date": "2025-08-13",
+   "voice_actor_en": "Rosie Day",
+   "voice_actor_jp": "Iwami Manaka (石見 舞菜香)",
+   "voice_actor_cn": "Fumeng Ruowei (浮梦若薇)",
+   "voice_actor_kr": "Oh Eun-soo (오은수)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -10173,6 +10499,14 @@
   "schema": "Character",
   "slug": "jade",
   "data": {
+   "description": "A senior manager in the IPC Strategic Investment Department and one of the Ten Stonehearts. Her Cornerstone is the \"Jade of Credit.\"\n\nA cold and elegant moneylender, she is skilled at understanding the human heart, with a personal hobby called \"Bonajade Exchange.\" She's willing to wait patiently for high-value acquisitions and adept at extracting value from seemingly destitute clients.",
+   "lore": "\"Wealth is the recipe to happiness. Giving it to those who desire happiness is making the best use of it. In this way, my job also brings people happiness. Anyone can receive this blessing... They only have to pay an equivalent price.\"",
+   "release_version": "2.3",
+   "release_date": "2024-07-10",
+   "voice_actor_en": "Faye Mata",
+   "voice_actor_jp": "Mitsuishi Kotono (三石琴乃)",
+   "voice_actor_cn": "Zhang Ruoyu (张若瑜)",
+   "voice_actor_kr": "Kim Soon-mi (김순미)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -10384,6 +10718,14 @@
   "schema": "Character",
   "slug": "jiaoqiu",
   "data": {
+   "description": "Jiaoqiu is a playable character in Honkai: Star Rail.\n\nA foxian healer from the Xianzhou Yaoqing and a counselor. Often greets people with a smile, but is rather cunning. Born into a prestigious Alchemy Commission family, he once withdrew from practicing medicine due to a broken heart. However, he returned to the field to treat \"the Merlin's Claw,\" General Feixiao.\n\nSkilled in the study of alchemical prescription that views food as medicine, especially those that induce a sensation of spiciness. He invented a cauldron-based medicinal formula known as the \"nine-squared grid.\"",
+   "lore": "\"No matter how many times I say it, people always forget — cooking is medicine, and making medicine is cooking. Using food to treat the sick is my specialty. As the saying goes, a chef who doesn't want to be a healer isn't worth his salt... or pepper, for that matter.\"",
+   "release_version": "2.4",
+   "release_date": "2024-08-21",
+   "voice_actor_en": "Mark Whitten",
+   "voice_actor_jp": "Toyonaga Toshiyuki (豊永利行)",
+   "voice_actor_cn": "Chenzhang Taikang (陈张太康)",
+   "voice_actor_kr": "Lee Jung-min (이정민)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -10634,6 +10976,14 @@
   "schema": "Character",
   "slug": "jing-yuan",
   "data": {
+   "description": "Jing Yuan is a playable character in Honkai: Star Rail.\n\nOne of the seven Arbiter-Generals of the Xianzhou Alliance's Cloud Knights, and one of the Six Charioteers of the Xianzhou Luofu. Although he appears lazy, Jing Yuan has been a general on the Luofu for centuries, an amount of time exceeding most of his peers. This can be attributed to his wisdom and attention to routine measures, with Jing Yuan preferring to be preventive rather than corrective. He is also an Emanator of The Hunt.",
+   "lore": "\"A truly masterful chess player has no brilliant moves. People clamor excitedly over displays of extreme cunning, forgetting to worry about the overall dangers of the situation.\"",
+   "release_version": "1.0",
+   "release_date": "2023-05-17",
+   "voice_actor_en": "Alejandro Saab\nBrenna Larsen (child)",
+   "voice_actor_jp": "Ono Daisuke (小野 大輔)\nMatsumi Yuka (松見 優花) (child)",
+   "voice_actor_cn": "Sun Ye (孙晔)\nZhong Ke (钟可) (child)",
+   "voice_actor_kr": "Ryu Seung-gon (류승곤)\nKim Yea-lim (김예림) (child)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -10799,6 +11149,14 @@
   "schema": "Character",
   "slug": "jingliu",
   "data": {
+   "description": "Jingliu is a playable character in Honkai: Star Rail. She first appears in the Companion Mission Frosty Blade's Trial.\n\nOnce the Sword Champion of the Xianzhou Luofu, as well as Jing Yuan's mentor. After succumbing to mara and going insane, she managed to escape Starskiff Haven in the Year 7380 of the Star Calendar, and easily froze all the Cloud Knights sent after her before Jing Yuan finally confronted and defeated her in battle. However, she managed to survive the encounter and traveled the galaxies outside the Luofu for centuries. At some unknown point, Jingliu \"made a deal\" to regain her sanity, which Luocha has proposed to be the solution to mara.",
+   "lore": "\"Whoever wishes to learn my swordplay, I will teach them.\"",
+   "release_version": "1.4",
+   "release_date": "2023-10-11",
+   "voice_actor_en": "AmaLee",
+   "voice_actor_jp": "Kuwashima Houko (桑島法子)",
+   "voice_actor_cn": "Du Mingya (杜冥鸦)",
+   "voice_actor_kr": "Park Yi-seo (박이서)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -11040,6 +11398,14 @@
   "schema": "Character",
   "slug": "kafka",
   "data": {
+   "description": "A member of the Stellaron Hunters who is calm, collected, and beautiful. Her record on the wanted list of the Interastral Peace Corporation only lists her name and her hobby. People have always imagined her to be elegant, respectable, and in pursuit of things of beauty even in combat.",
+   "lore": "\"You won't remember a thing except me.\"",
+   "release_version": "1.2",
+   "release_date": "2023-08-09",
+   "voice_actor_en": "Cheryl Texiera",
+   "voice_actor_jp": "Ito Shizuka (伊藤静)",
+   "voice_actor_cn": "Xu Hui (徐慧)",
+   "voice_actor_kr": "Sa Moon-young (사문영)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -11289,6 +11655,14 @@
   "schema": "Character",
   "slug": "lingsha",
   "data": {
+   "description": "Lingsha, real name Dan Zhu, is a playable character in Honkai: Star Rail.\n\nThe new Cauldron Master of the Xianzhou Luofu's Alchemy Commission. An intelligent and quick-witted Vidyadhara healer.\n\nShe has a sharp sense of smell and often uses this to diagnose illnesses, as well as utilizing incense to calm the minds of others.\n\nShe is adept at dealing with complicated social relationships. Though she might be fuming inside, her expression would remain calm and serene.",
+   "lore": "\"I am a Vidyadhara, born and raised on the Luofu, and I once studied the healing arts under the name of 'Dan Zhu.' But my master became bogged down in politics and was banished to a place far from home. I followed her there. Now that I've changed my name and come home, many complicated feelings have returned.\"",
+   "release_version": "2.5",
+   "release_date": "2024-10-02",
+   "voice_actor_en": "Whitney Holland",
+   "voice_actor_jp": "Maeda Kaori (前田佳織里)",
+   "voice_actor_cn": "Rao Zijun (饶梓君)",
+   "voice_actor_kr": "Jang Ye-na (장예나)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -11590,6 +11964,14 @@
   "schema": "Character",
   "slug": "luka",
   "data": {
+   "description": "An optimistic and carefree member of Wildfire. He is the renowned boxing champion of the Belobog Underworld with a mixed martial arts prowess. His enthusiasm inspires other people, especially children, to dream big.",
+   "lore": "\"Tell you a secret — the trick to becoming a champion is training hard while everyone is resting.\"",
+   "release_version": "1.2",
+   "release_date": "2023-08-09",
+   "voice_actor_en": "Howard Wang",
+   "voice_actor_jp": "Kajiwara Gakuto (梶原岳人)",
+   "voice_actor_cn": "Xiao Zhai (萧翟)",
+   "voice_actor_kr": "Lee Joo-seung (이주승)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -11820,6 +12202,14 @@
   "schema": "Character",
   "slug": "luocha",
   "data": {
+   "description": "Luocha is a playable character in Honkai: Star Rail.\n\nA foreign trader who came from beyond the seas, he appears on the Xianzhou Luofu with a huge coffin. With his consummate medical skills, he always rescues people in times of danger. As a merchant, he is registered at the Xianzhou Yuque within the Alliance, and at the Star Unity Mall branch at the North Valley Star within the Interastral Peace Corporation.",
+   "lore": "\"This coffin isn't mine. I was merely entrusted to take the body back to the Luofu.\"",
+   "release_version": "1.1",
+   "release_date": "2023-06-28",
+   "voice_actor_en": "Craig Lee Thomas",
+   "voice_actor_jp": "Ishida Akira (石田彰)",
+   "voice_actor_cn": "Zhao Lu (赵路)",
+   "voice_actor_kr": "Shin Yong-woo (신용우)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -12019,6 +12409,14 @@
   "schema": "Character",
   "slug": "lynx",
   "data": {
+   "description": "The youngest daughter of the Landau Family, and one of Belobog's best extreme environments explorers. She is highly capable of action despite her apparent lack of motivation. She only appears introverted and lazy to avoid unnecessary socialization.\n\nAs for what counts as unnecessary socialization — \"Um, aren't all socialization unnecessary?\"",
+   "lore": "\"In the Landau family, things are simple: If you wanna do something, go do it.\"",
+   "release_version": "1.3",
+   "release_date": "2023-09-20",
+   "voice_actor_en": "Risa Mei",
+   "voice_actor_jp": "Terui Haruka (照井春佳)",
+   "voice_actor_cn": "Mihu (米糊)",
+   "voice_actor_kr": "Lee Eun-jo (이은조)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -12303,6 +12701,10 @@
   "schema": "Character",
   "slug": "march-7th",
   "data": {
+   "description": "March 7th: Preservation is one of March 7th's playable Paths.",
+   "lore": "Provides a single-unit Shield for a teammate. Use Counters and Freeze effects to control the battle.",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
    "kit": [
     {
      "type": "Basic ATK",
@@ -12501,6 +12903,9 @@
   "schema": "Character",
   "slug": "march-7th-the-hunt",
   "data": {
+   "description": "March 7th: The Hunt is one of March 7th's playable Paths.",
+   "lore": "Designate a teammate as \"Shifu\" to learn Enhancement effects from different schools and master powerful abilities.",
+   "release_date": "2024-07-31",
    "kit": [
     {
      "type": "Basic ATK",
@@ -12703,6 +13108,14 @@
   "schema": "Character",
   "slug": "misha",
   "data": {
+   "description": "A lovable and thoughtful bellboy of The Reverie Hotel. He wished to become an intergalactic adventurer like his grandfather. He was extremely hardworking and was skilled at fixing a variety of machines. He also had a fondness for sharing interstellar rumors with guests. He hoped he could grow up faster and looked forward to embarking on his own star-treading journey.\n\nMisha was later revealed to be a Memetic Entity originating from a fragment of Mikhail Char Legwork's memories, manifesting as an innocent reflection of his childhood dreams.",
+   "lore": "\"I'm going to work really hard, so I can save up and explore the stars just like grown-ups do!\"",
+   "release_version": "2.0",
+   "release_date": "2024-02-06",
+   "voice_actor_en": "Cat Protano",
+   "voice_actor_jp": "Matsui Eriko (松井 恵理子)",
+   "voice_actor_cn": "Liu Zhixiao (柳知萧)",
+   "voice_actor_kr": "Bak Sin-hee (박신희)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -12919,6 +13332,14 @@
   "schema": "Character",
   "slug": "mortenax-blade",
   "data": {
+   "description": "A body like spring wood, a heart like dead ashes, yet the sparks of a craftsman still linger at the fingertips. As ancient grudges are ignited once more, he promises to send both himself and the gods to the other side...\n\nTorn flesh, tempered a thousand times into a blade... what kind of answer will it forge?",
+   "lore": "\"I remember you. Time has made us both sharper. Yet you are still you... and I am still me.\"",
+   "release_version": "4.3",
+   "release_date": "2026-06-01",
+   "voice_actor_en": "Daman Mills",
+   "voice_actor_jp": "Miki Shin-ichiro (三木眞一郎)",
+   "voice_actor_cn": "Liu Yijia (刘以嘉)",
+   "voice_actor_kr": "Kwak Yoon-sang (곽윤상)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -13179,6 +13600,14 @@
   "schema": "Character",
   "slug": "moze",
   "data": {
+   "description": "Moze is a playable character in Honkai: Star Rail.\n\nA Shadow Guard of the Yaoqing. He is reticent and silent, always acting on his own.\n\nAs an expert in intelligence services and other affairs that must remain obscure, Moze rarely shows himself before others. The moment he shows his true capacities is usually the moment for his enemies to face death.\n\nHe has a wealth of knowledge regarding methods of assassination and seems to have an extraordinary obsession with tidiness and cleanliness.",
+   "lore": "\"Some people are silent because they have no desires. Some are silent because they have no thoughts. I am silent only because I do not wish to speak.\"",
+   "release_version": "2.5",
+   "release_date": "2024-09-10",
+   "voice_actor_en": "Ben Balmaceda",
+   "voice_actor_jp": "Sakata Shogo (坂田将吾)",
+   "voice_actor_cn": "Huang Jinze (黄进泽)",
+   "voice_actor_kr": "Choi Hyun-sik (최현식)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -13361,6 +13790,14 @@
   "schema": "Character",
   "slug": "mydei",
   "data": {
+   "description": "Kremnos, swallowed by mist! City riven between chaos and war! The blood of patricide flows through its royal line, and its god bears the title of calamity.\n\nThe undying Mydeimos, the lion apart from the rest. O Chrysos Heir that seeks the Coreflame of Strife, you must suffer a thousand deaths, be bathed in blood on the path home, and bear the madness of fate alone, for one was must slay a god to become one. Iron-hooves pound across the wilderness for the campaign, and must eventually soak in the blood of their homeland.",
+   "lore": "\"I am the crown prince of Kremnos 'Mydeimos,' and also the warrior of Okhema 'Mydei.' If you want to know me better, observe me in battle or fight me yourself.\"",
+   "release_version": "3.1",
+   "release_date": "2025-03-19",
+   "voice_actor_en": "Gabriel Warburton",
+   "voice_actor_jp": "Azakami Yohei (阿座上 洋平)",
+   "voice_actor_cn": "Zhao Chengchen (赵成晨)",
+   "voice_actor_kr": "Ahn Hyo-min (안효민)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -13661,6 +14098,14 @@
   "schema": "Character",
   "slug": "natasha",
   "data": {
+   "description": "Natasha is a playable character in Honkai: Star Rail.\n\nFastidious and kind, she is one of the few doctors from the Underworld where medical resources are scarce. It is later revealed that Natasha is the true leader of Wildfire, with Oleg as her acting leader.",
+   "lore": "\"Where's a doctor when you need one?\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Elizabeth Maxwell",
+   "voice_actor_jp": "Uchiyama Yumi (内山夕実)",
+   "voice_actor_cn": "Qin Ziyi (秦紫翼)",
+   "voice_actor_kr": "Gang Eun-ae (강은애)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -13893,6 +14338,14 @@
   "schema": "Character",
   "slug": "pela",
   "data": {
+   "description": "Pelageya Sergeyevna is a playable character in Honkai: Star Rail.\n\nThe meticulous Intelligence Officer of the Silvermane Guards. While young, she is undeniably brilliant. Whether it relates to maneuvering troops, distributing supplies, or the terrain, Pela can answer any problems with calm certainty.\n\nAs for her phone case...\n\n\"It has nothing to do with work, captain.\"",
+   "lore": "\"Net markers activated — time for a good old counterattack.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Xanthe Huynh",
+   "voice_actor_jp": "Morohoshi Sumire (諸星すみれ)",
+   "voice_actor_cn": "Yanning (宴宁)",
+   "voice_actor_kr": "Lee Da-eun (이다은)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -14074,6 +14527,14 @@
   "schema": "Character",
   "slug": "phainon",
   "data": {
+   "description": "Aedes Elysiae, a remote frontier village isolated from the world, now lives on only in cryptic legends.\n\nNameless hero , the Chrysos Heir carrying the Coreflame of \"Worldbearing\", you must memorize the ideals of all worlds, carry the fate of multitudes, and bring the first light of dawn to the new world.\n\n—\"But should dawn have never existed, let the fires of rage burn this body to ashes and transform into the blazing sun of tomorrow!\"",
+   "lore": "\"I'm Phainon of Aedes Elysiae. Greetings. As fellow outlanders in Okhema, our meeting is surely fate's design. Come. Maybe we'll even have a chance to fight alongside each other in the future.\"",
+   "release_version": "3.4",
+   "release_date": "2025-07-02",
+   "voice_actor_en": "Joshua Waters\nJustine Huxley (child)",
+   "voice_actor_jp": "Hino Satoshi (日野 聡)\nAihara Kotomi (藍原 ことみ) (child)",
+   "voice_actor_cn": "Qin Qiege (秦且歌)\nMi Yang (弭洋) (child)",
+   "voice_actor_kr": "Yoon Yong-sik (윤용식)\nPark Ha-jin (박하진) (child)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -14430,6 +14891,14 @@
   "schema": "Character",
   "slug": "qingque",
   "data": {
+   "description": "Qingque is a playable character in Honkai: Star Rail.\n\nAn average Diviner of the Divination Commission on the Xianzhou Luofu, and a librarian. She never slacks off when it comes to slacking off and is about to be demoted to a \"door guardian.\"",
+   "lore": "\"Work doesn't count as extracting value, it's just labor in exchange for payment. Extracting value is when you slack off at work.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Bryn Apprill",
+   "voice_actor_jp": "Date Arisa (伊達 朱里紗)",
+   "voice_actor_cn": "Liu Shisi (刘十四)",
+   "voice_actor_kr": "Seo Da-hye (서다혜)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -14627,6 +15096,14 @@
   "schema": "Character",
   "slug": "rappa",
   "data": {
+   "description": "Rappa is a playable character in Honkai: Star Rail.\n\nA peculiar girl who appears in Penacony like a flashbang at the darkest hour of night, identifying herself as a ninja and attributing everything in the world to \"ninjutsu.\"\n\nUpholding the recitation of ninja mantra, creating Dazzling Ninja Seals, and mastering ninja techniques, the Way of the Ninja involves rap, graffiti, and comics. Through rigorous self-discipline, she roams the stars, upholding justice and righteousness.\n\nAs a member of the Galaxy Rangers, she relentlessly pursues the villain known as Evil Ninja Osaru, chasing them to the very edge of the Cosmos.",
+   "lore": "\"With stars above, everywhere doth evil lurks! Under the witness of the solemn skyscraper, recite your final words — *three gunshots* — The winner has been decided. My Cosmic ninjutsu methods are ever-changing. Better luck next time... in your next life.\"",
+   "release_version": "2.6",
+   "release_date": "2024-10-23",
+   "voice_actor_en": "Kendell Byrd",
+   "voice_actor_jp": "Han Megumi (潘めぐみ)",
+   "voice_actor_cn": "Jin Na (金娜)",
+   "voice_actor_kr": "Kim Yurim (김유림)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -14853,6 +15330,13 @@
   "schema": "Character",
   "slug": "rin-tohsaka",
   "data": {
+   "description": "Rin Tohsaka is a playable character in Honkai: Star Rail from Fate/stay night: Unlimited Blade Works, introduced as a collaboration and crossover character between TYPE-MOON, ufotable, and HoYoverse.\n\nHailing from a world beyond our universe where magic and magecraft coexist, this young mage tirelessly hones her skills. She is the Sixth Head of the Tohsaka family, a prestigious lineage of Fuyuki City mages.\n\nCurrently studying under a renowned master at the \"Clock Tower\" who has deep ties to the Holy Grail War, hopping across dimensions and planes just to finish an internship assignment...\n\n\"Huh? Where am I? Why isn't there any magical energy here at all...? The Ho-Holy Grail? I'm saved! Sorry, just gonna borrow this!\"",
+   "lore": "\"The contract is complete. Relax, I'm not really one for strict hierarchies... well, not for most people, anyway. Got that, my Servant?\"",
+   "release_version": "4.4",
+   "release_date": "2026-07-24",
+   "voice_actor_jp": "Ueda Kana (植田 佳奈)",
+   "voice_actor_cn": "Shuo Xiaotu (朔小兔)",
+   "voice_actor_kr": "Kim Bo-min (김보민)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -15136,6 +15620,14 @@
   "schema": "Character",
   "slug": "robin",
   "data": {
+   "description": "A Halovian singer born in Penacony and rose to cosmic fame. An elegant and demure young lady. This time, she has been invited home by The Family to grace everyone with a song at the Charmony Festival. She can use the power of Harmony to broadcast her music, manifesting \"resonance\" among not only her fans but all manner of lifeforms.",
+   "lore": "\"There's a saying — the more demanding the diner, the stronger the skills of the chef... but no matter what others say, I'll always be demanding more from myself.\"",
+   "release_version": "2.2",
+   "release_date": "2024-05-08",
+   "voice_actor_en": "Alice Himora\nSong Vocals: Chevy",
+   "voice_actor_jp": "Nazuka Kaori (名塚 佳織)\nSong Vocals: Chevy",
+   "voice_actor_cn": "Qian Chen (钱琛)\nSong Vocals: Chevy",
+   "voice_actor_kr": "Shin Onyu (신온유)\nSong Vocals: Chevy",
    "kit": [
     {
      "type": "Basic ATK",
@@ -15335,6 +15827,14 @@
   "schema": "Character",
   "slug": "ruan-mei",
   "data": {
+   "description": "Ruan Mei is a playable character in Honkai: Star Rail.\n\nA sweet-tempered and elegant scholar, and Member #81 of the Genius Society.\n\nAn expert in the biological sciences. She earned Nous' attention with her talent and terrifying perseverance, and began her research on the origin of life in a secret corner of the universe. Because of that, she was invited by Herta to collaborate with Screwllum and Stephen to develop the Simulated Universe.\n\nSecretly, she greatly enjoys traditional theater and desserts, and she is also very interested in embroidery.",
+   "lore": "\"Without accelerating or postponing the arrival of death, life will always wither.\"",
+   "release_version": "1.6",
+   "release_date": "2023-12-27",
+   "voice_actor_en": "Emi Lo",
+   "voice_actor_jp": "Onishi Saori (大西沙織)",
+   "voice_actor_cn": "Zhang Wenyu (张文钰)",
+   "voice_actor_kr": "Yoon Yeo-jin (윤여진)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -15534,6 +16034,13 @@
   "schema": "Character",
   "slug": "saber",
   "data": {
+   "description": "The solitary Heroic Spirit traverses the long night of fate. The banner of the round table remains unfurled in a dream. Alas, the knight-king of Camelot has yet to reach that ever distant utopia.\n\nThough still a young maiden, she has heeded the call for this most unique iteration of the Holy Grail War. With the Sword in the Stone offering its choice once more, how shall she shatter the illusions of the past?\n\n\"The wishes I did not fulfil will end here.\"",
+   "lore": "\"Are you my master? My sword is yours to command. I will give it my all to bring you victory.\"",
+   "release_version": "3.4",
+   "release_date": "2025-07-11",
+   "voice_actor_jp": "Kawasumi Ayako (川澄 綾子)",
+   "voice_actor_cn": "Bai Xinzan (白杺瓒)",
+   "voice_actor_kr": "Jeong Yoo-jeong (정유정)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -15794,6 +16301,14 @@
   "schema": "Character",
   "slug": "sampo",
   "data": {
+   "description": "A silver-tongued salesman. Where there is profit to be made, you can be sure Sampo is nearby.\n\nSampo's unique knowledge makes it hard not to approach him for help, but becoming his \"customer\" is not necessarily a good thing. After all, \"customers\" can quickly turn into \"commodities\" for the right price.",
+   "lore": "\"All sorts of business are welcome — as long as you've got the cash.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Roger Rose",
+   "voice_actor_jp": "Hirakawa Daisuke (平川大輔)",
+   "voice_actor_cn": "Liu Shengbo (刘圣博)",
+   "voice_actor_kr": "Jeong Jae-heon (정재헌)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -15993,6 +16508,14 @@
   "schema": "Character",
   "slug": "seele",
   "data": {
+   "description": "A spirited and valiant key member of Wildfire who grew up in the perilous Underworld of Belobog. She is accustomed to being on her own. Like her nickname \"Babochka\", she flits through the battlefield with grace as she causes a storm.",
+   "lore": "\"To use our strength to create a fair society... Isn't that the obvious goal?\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Molly Zhang",
+   "voice_actor_jp": "Nakahara Mai (中原麻衣)",
+   "voice_actor_cn": "Tang Yajing (唐雅菁)",
+   "voice_actor_kr": "Song Ha-rim (송하림)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -16158,6 +16681,14 @@
   "schema": "Character",
   "slug": "serval",
   "data": {
+   "description": "The free and rebellious eldest daughter of the Landau family, once a close friend of Cocolia, her interests has now led her to become a mechanic. In the perpetually winter-stricken Belobog, she opened a workshop called \"Neverwinter\" that puts business on hold from time to time for rock 'n' roll performances.\n\nAnd should anyone ask her about the workshop's profitability...\n\n\"This is just a hobby, dear. I'm not short of money.\"",
+   "lore": "\"How can a rock star not have that kind of confidence?\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Natalie Van Sistine",
+   "voice_actor_jp": "Aimi (愛美)",
+   "voice_actor_cn": "Mu Xueting (穆雪婷)",
+   "voice_actor_kr": "Min-a (민아)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -16356,6 +16887,14 @@
   "schema": "Character",
   "slug": "silver-wolf",
   "data": {
+   "description": "A member of the Stellaron Hunters and a genius hacker. Silver Wolf has mastered the skill known as \"Aether Editing,\" which can be used to tamper with the data of reality. Hence, she always views the universe as a massive immersive simulation game and is eager to clear the stages awaiting ahead. She is also an Emanator of Elation.",
+   "lore": "\"Can you let me have some fun this time?\"",
+   "release_version": "1.1",
+   "release_date": "2023-06-07",
+   "voice_actor_en": "Melissa Fahn",
+   "voice_actor_jp": "Asumi Kana (阿澄 佳奈)",
+   "voice_actor_cn": "Hanser",
+   "voice_actor_kr": "Jang Mi (장미)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -16639,6 +17178,14 @@
   "schema": "Character",
   "slug": "silver-wolf-lv999",
   "data": {
+   "description": "A new season of Elation begins, featuring the limited-time return of the invincible player \"Silver Wolf LV.999\"!\n\nYou've become the biggest winner in the universe and unlocked every Cosmic Achievement there is... So, what's your next move?\n\n\"Reach the peak of 'Elation'? Bo-ring... Since I've got the cartridge now, I make the rules~\"\n\nShe is also an Emanator of Elation.",
+   "lore": "\"LV.999 mode, my final form, first time seeing it, right? Let's hit up a high-difficulty Raid. I'll carry you. One-button clear.\"",
+   "release_version": "4.2",
+   "release_date": "2026-04-22",
+   "voice_actor_en": "Melissa Fahn",
+   "voice_actor_jp": "Asumi Kana (阿澄 佳奈)",
+   "voice_actor_cn": "Hanser",
+   "voice_actor_kr": "Jang Mi (장미)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -16907,6 +17454,14 @@
   "schema": "Character",
   "slug": "sparkle",
   "data": {
+   "description": "A member of the Masked Fools. Inscrutable and unscrupulous. A dangerous master of theatrics engrossed in playing roles. A woman of countless masks and many faces. Wealth, status, power... None of this matters to Sparkle. The only thing that can lure her interest is \"amusement.\"",
+   "lore": "\"I'm not exactly a person loaded with cool skills, and dreaming big isn't really my thing. But, ya know, my latest thing is... getting myself into the Genius Society! Ha, I'm so ready to give it a go. Reckon anyone will buy it?\"",
+   "release_version": "2.0",
+   "release_date": "2024-02-29",
+   "voice_actor_en": "Lizzie Freeman",
+   "voice_actor_jp": "Ueda Reina (上田 麗奈)",
+   "voice_actor_cn": "Zhao Shuang (赵爽)",
+   "voice_actor_kr": "Sung Ye-won (성예원)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -17089,6 +17644,14 @@
   "schema": "Character",
   "slug": "sparxie",
   "data": {
+   "description": "Thumbs up! Follow! Stream! Views! Party till the world ends! Sparxie and Sparkle, the Mask and the Fool are fundamentally the same.\n\nWhoever is seen, whoever is liked, is the correct answer!",
+   "lore": "\"Hey there, Galactic Baseballer, welcome to the stream! I'm your good friend, Sparxie~ Are you ready for a day overflowing with dopamine? The world is full of sparkle, so don't forget to shine brightly just like Sparxie!\"",
+   "release_version": "4.0",
+   "release_date": "2026-03-03",
+   "voice_actor_en": "Lizzie Freeman",
+   "voice_actor_jp": "Ueda Reina (上田 麗奈)",
+   "voice_actor_cn": "Zhao Shuang (赵爽)",
+   "voice_actor_kr": "Sung Ye-won (성예원)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -17402,6 +17965,14 @@
   "schema": "Character",
   "slug": "sunday",
   "data": {
+   "description": "The dream of the Order has dissipated, yet there are still those who will not give up on their original intent.\n\n— The traveler whose wings were clipped... whereto shall his footsteps lead?\n\nHe was temporarily an Emanator of Harmony after usurping the Harmonious Choir.",
+   "lore": "\"There's always a paradise that needs to be built. That vow is like the sun in the sky — perhaps I'll melt and fall before reaching it... But some hardships I must endure.\"",
+   "release_version": "2.7",
+   "release_date": "2024-12-04",
+   "voice_actor_en": "Griffin Puatu\nAmber Lee Connors (child)",
+   "voice_actor_jp": "Otsuka Takeo (大塚剛央)",
+   "voice_actor_cn": "Xu Xiang (徐翔)",
+   "voice_actor_kr": "Kang Seong-woo (강성우)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -17601,6 +18172,14 @@
   "schema": "Character",
   "slug": "sushang",
   "data": {
+   "description": "Li Sushang is a playable character in Honkai: Star Rail.\n\nA naive and enthusiastic newcomer to the Cloud Knights who wields a greatsword. She yearns for the historic legends of the Cloud Knights, and is eager to become such a legendary figure herself.\n\nAs such, Sushang firmly believes in the philosophies \"be eager to help those in need,\" \"do one good deed a day and reflect on oneself three times a day,\" leading her to busy days full of helping others.\n\nOriginally a native of the Xianzhou Yaoqing, she transferred to the Xianzhou Luofu before the events of the story.",
+   "lore": "\"My name will go down in history, just like those heroes of legend!\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Anjali Kunapaneni",
+   "voice_actor_jp": "Fukuen Misato (福圓美里)",
+   "voice_actor_cn": "Chen Tingting (陈婷婷)",
+   "voice_actor_kr": "Park Shi-yoon (박시윤)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -17799,6 +18378,14 @@
   "schema": "Character",
   "slug": "the-dahlia",
   "data": {
+   "description": "The sweet dream burns the Ever-Flame Mansion, erasing every fragment of her existence. Destruction. Remembrance... Along its path, blossoms of betrayal rise and bloom—\n\nTo return to the dreamscape no one remembers, who will be the one to set her aflame again?",
+   "lore": "\"Your memories... are quite thorny. So, why don't we start with me laying my thoughts bare...? My name is Constance, and those who have fallen to my charms call me 'The Dahlia.' Don't be afraid. Come with me. In this duet belonging only to the two of us, you will learn how the past is being cremated and how the future is being buried...\"",
+   "release_version": "3.8",
+   "release_date": "2025-12-17",
+   "voice_actor_en": "Cristina Vee",
+   "voice_actor_jp": "Sasaki Mikoi (佐々木未来)",
+   "voice_actor_cn": "Ruan Congqing (阮从青)",
+   "voice_actor_kr": "Kim Do-hee (김도희)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -18014,6 +18601,14 @@
   "schema": "Character",
   "slug": "the-herta",
   "data": {
+   "description": "Esteemed member #83 of the Genius Society, human, female, young, beautiful, attractive.\n\nIt's said that she lives in the far edge of the Cosmos, almost never leaving. Sounds like her appearance this time... must be to deal with an issue that has to be handled herself, right?\n\nShe collaborated with Screwllum, Ruan Mei, and Stephen Lloyd to create the Simulated Universe in order to research the mysterious nature of Aeons. She is also an Emanator of Erudition.",
+   "lore": "\"The writers from the Intelligentsia Guild wanted to give me an extra title. Something like \"Herta Prime\" to separate me from my puppets. How banal. Are the puppets not \"me\" as well? So, I gave them a suggestion — if they dared to write that, then I would call myself THE Herta. It's short, simple, straight to the point, and elegant.\"",
+   "release_version": "3.0",
+   "release_date": "2025-01-15",
+   "voice_actor_en": "PJ Mattson",
+   "voice_actor_jp": "Yamazaki Haruka (山崎はるか)",
+   "voice_actor_cn": "Hou Xiaofei (侯小菲)",
+   "voice_actor_kr": "Kim Seo-yeong (김서영)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -18255,6 +18850,14 @@
   "schema": "Character",
   "slug": "tingyun",
   "data": {
+   "description": "Tingyun is a playable character in Honkai: Star Rail.\n\nA foxian working in the Sky-Faring Commission of the Xianzhou Luofu, she is the Amicassador of the Whistling Flames merchant guild.\n\nIn her first introduction, Tingyun was revealed to be an imposter impersonated by the Lord Ravager Phantylia, and presumed deceased after her body disappeared. The real Tingyun was later found by Ruan Mei in the wreckage of a Whistling Flames ship and brought back from the brink of death as Fugue.",
+   "lore": "\"In business, it's best to work with persuadable types. For those who are less persuadable, cooling them down with a fan works wonders.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Anya Floris",
+   "voice_actor_jp": "Takada Yuuki (高田 憂希)",
+   "voice_actor_cn": "Jiang Li (蒋丽)",
+   "voice_actor_kr": "Lee Myeong-ho (이명호)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -18454,6 +19057,14 @@
   "schema": "Character",
   "slug": "topaz-numby",
   "data": {
+   "description": "Topaz, real name Jelena, and Numby are a playable character in Honkai: Star Rail.\n\nTopaz is a Senior Manager of the Strategic Investment Department in the Interastral Peace Corporation, one of the Ten Stonehearts, and leader of the Special Debts Picket Team. Her Cornerstone is the \"Topaz of Debt Retrieval.\"\n\nTopaz's partner, the Warp Trotter \"Numby,\" is also capable of acutely perceiving where \"riches\" are located. It can even perform jobs involving security, debt collection, and actuarial sciences.",
+   "lore": "\"Money is a means, not an end. Work should make you happy... That's the most fundamental principle.\"",
+   "release_version": "1.4",
+   "release_date": "2023-10-27",
+   "voice_actor_en": "Sam Slade\nNumby: Lu Minyue (陆敏悦)",
+   "voice_actor_jp": "Nanjo Yoshino (南條愛乃)\nNumby: Lu Minyue (陆敏悦)",
+   "voice_actor_cn": "Lu Minyue (陆敏悦)\nNumby: Lu Minyue (陆敏悦)",
+   "voice_actor_kr": "Bang Si-u (방시우)\nNumby: Lu Minyue (陆敏悦)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -18653,6 +19264,14 @@
   "schema": "Character",
   "slug": "tribbie",
   "data": {
+   "description": "The Messenger departs from that holy land beloved by the tripartite prophecy, splitting herself into a thousand pieces and setting off on her journey.\n\nO Tribios, Holy Maidens of Janusopolis, the Chrysos Heir who stole Passage's Coreflame. You shall toil for the masses, bringing the news of deliverance to all domains — Go find the children of humanity with golden blood in their veins, shatter the dimmest dark in this world, and walk toward the tomorrow where the stars gleam.",
+   "lore": "\"We are Tribbie — the 'messenger' delivering prophecies~\"\n\"We are Trianne — the 'gatekeeper' traversing a hundred worlds!\"\n\"We are Trinnon — the 'priest' listening to the prophecy.\"\nWe are Tribios — the \"Holy Maiden of Janusopolis.\" Please join us on our journey to the end of the west wind, where flowers bloom.",
+   "release_version": "3.1",
+   "release_date": "2025-02-26",
+   "voice_actor_en": "Hayden Daviau",
+   "voice_actor_jp": "Tono Hikaru (遠野 ひかる)",
+   "voice_actor_cn": "Cai Shujin (蔡书瑾)",
+   "voice_actor_kr": "Bang Yeon-ji (방연지)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -18864,6 +19483,14 @@
   "schema": "Character",
   "slug": "welt",
   "data": {
+   "description": "An animator by trade, Welt is a seasoned member of the Astral Express Crew and the former sovereign of Anti-Entropy who has saved Earth from annihilation time and time again. He inherited the name of the world, \"Welt.\"",
+   "lore": "\"The galaxy is vast beyond compare, containing an infinite number of possibilities. An individual's fate shouldn't be limited to a single path ordained by heaven.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Corey Landis",
+   "voice_actor_jp": "Hosoya Yoshimasa (細谷佳正)",
+   "voice_actor_cn": "Peng Bo (彭博)",
+   "voice_actor_kr": "Han-sin (한신)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -19063,6 +19690,14 @@
   "schema": "Character",
   "slug": "xueyi",
   "data": {
+   "description": "Xueyi is a playable character in Honkai: Star Rail.\n\nOne of the judges of the Ten-Lords Commission. Of the four duties of a judge (detention, interrogation, incarceration, and punishment), she is charged with detention.\n\nHolding iron chains and a Marasunder Awl in her hands, she tirelessly tracks down wanted criminals and subdues them.",
+   "lore": "\"You are talking to a puppet. The Commission gifted me this body. The real me has already been reduced to ashes.\"",
+   "release_version": "1.6",
+   "release_date": "2023-12-27",
+   "voice_actor_en": "Jenny Yokobori",
+   "voice_actor_jp": "Kawase Maki (河瀬茉希)",
+   "voice_actor_cn": "Suxun (溯浔)",
+   "voice_actor_kr": "Park Ri-na (박리나)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -19261,6 +19896,14 @@
   "schema": "Character",
   "slug": "yanqing",
   "data": {
+   "description": "Yanqing is a playable character in Honkai: Star Rail.\n\nThe youngest lieutenant of the Xianzhou Alliance's Cloud Knights on board the Xianzhou Luofu, and General Jing Yuan's retainer. A swordsman gifted with the art of swordplay and war who has a prodigious interest in swords and always collects them from the Artisanship Commission.",
+   "lore": "\"I only called you 'teacher' because I admire your skill in this area. Don't expect me to start taking it easy on you.\"",
+   "release_version": "1.0",
+   "release_date": "2023-04-26",
+   "voice_actor_en": "Amber May",
+   "voice_actor_jp": "Inoue Marina (井上 麻里奈)",
+   "voice_actor_cn": "Miaojiang (喵酱)",
+   "voice_actor_kr": "Lee Sae-a (이새아)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -19511,6 +20154,14 @@
   "schema": "Character",
   "slug": "yao-guang",
   "data": {
+   "description": "Yao Guang is a playable character in Honkai: Star Rail.\n\nHer mysterious, bold, and radical actions were so revolutionary that they left everyone stunned. She saw all fortune, good and ill, through the \"eye\" of The Hunt. Yet, knowing that fate is not to be defied, the Seer Strategist still faced the danger alone. To be dealt such a cursed fortune... How can one ever hope to alter their fate? She is also an Emanator of The Hunt.",
+   "lore": "\"I am General Yao Guang, Seer Strategist aboard the Xianzhou Yuque. Like everyone else, you may simply call me Madam Yao. It's true, I could have divined the finer details of this encounter, but where's the fun in that? Being here in person has turned up some rather pleasant surprises.\"",
+   "release_version": "4.0",
+   "release_date": "2026-02-13",
+   "voice_actor_en": "Ari Thrash",
+   "voice_actor_jp": "Hanazawa Kana (花澤 香菜)",
+   "voice_actor_cn": "Qin Ziyi (秦紫翼)",
+   "voice_actor_kr": "Lee Seul (이슬)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -19730,6 +20381,14 @@
   "schema": "Character",
   "slug": "yukong",
   "data": {
+   "description": "Yukong is a playable character in Honkai: Star Rail.\n\nThe seasoned and authoritative Helm Master of the Xianzhou Alliance's Sky-Faring Commission and one of the Xianzhou Luofu's Six Charioteers. Despite having feats in piloting starskiffs, she no longer flies due to a brutal battle.",
+   "lore": "\"Some were born to be poets, some to be warriors — I was born to mingle among the stars.\"",
+   "release_version": "1.1",
+   "release_date": "2023-06-28",
+   "voice_actor_en": "Dawn M. Bennett",
+   "voice_actor_jp": "Touma Yumi (冬馬 由美)",
+   "voice_actor_cn": "Zhong Ke (钟可)",
+   "voice_actor_kr": "Jeon Sook-kyeong (전숙경)",
    "kit": [
     {
      "type": "Basic ATK",
@@ -19929,6 +20588,14 @@
   "schema": "Character",
   "slug": "yunli",
   "data": {
+   "description": "Yunli is a playable character in Honkai: Star Rail.\n\nA sword hunter from the Xianzhou Zhuming and \"the Flaming Heart\" General Huaiyan's darling granddaughter. Frank and straightforward. She practiced swordsmanship and forging from Huaiyan since young, and thus is the second-youngest prodigy swordmaster of the Flamewheel Octet.\n\nFueled by an intense loathing for the cursed swords that emerged from the Zhuming, she vowed to \"hunt down and wipe out all cursed swords.\"",
+   "lore": "\"Swords have a temper. Sometimes, you have to touch them to calm them down — put the hilt of the sword in your hand, and it'll tell you what's wrong!\"",
+   "release_version": "2.4",
+   "release_date": "2024-07-31",
+   "voice_actor_en": "Brenna Larsen",
+   "voice_actor_jp": "Wakayama Shion (若山詩音)",
+   "voice_actor_cn": "Liu Wen (刘雯)",
+   "voice_actor_kr": "Lee Ju-eun (이주은)",
    "kit": [
     {
      "type": "Basic ATK",

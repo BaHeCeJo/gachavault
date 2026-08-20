@@ -44,6 +44,16 @@ WIKI = os.path.join(DATA, "hsr_characters_wiki.json")
 CATALOG = os.path.join(DATA, "hsr_characters_catalog.json")
 OUT = os.path.join(DATA, "hsr_characters_import.json")
 
+# Profile text — the blurb, flavour quote, release and voice actors. Cached by
+# fetch_hsr_profiles.py; see seed_data/README.md.
+PROFILES = os.path.join(DATA, "hsr_profiles.json")
+
+
+def profile_fields(profiles, name, keys):
+    """The non-empty profile values for one item, ready to merge into its row."""
+    p = (profiles or {}).get(name) or {}
+    return {k: p[k] for k in keys if p.get(k)}
+
 # Highest level each kind of ability actually reaches, mirroring the tracks in
 # web/src/lib/skillPresets.ts. The wiki's table is longer than the game allows
 # for some skills (Acheron's shows 15), so it is trimmed rather than trusted —
@@ -365,6 +375,8 @@ def main():
         wiki = json.load(f)
     with io.open(CATALOG, encoding="utf-8") as f:
         catalog = json.load(f)
+    with io.open(PROFILES, encoding="utf-8") as f:
+        profiles = json.load(f)["characters"]
 
     rows, missing, unaligned = [], [], []
     for name in sorted(catalog):
@@ -382,7 +394,14 @@ def main():
             "section": "characters",
             "schema": "Character",
             "slug": catalog[name],
-            "data": {"kit": kit},
+            "data": dict(
+                profile_fields(profiles, name, (
+                    "description", "lore", "release_version", "release_date",
+                    "voice_actor_en", "voice_actor_jp", "voice_actor_cn",
+                    "voice_actor_kr",
+                )),
+                kit=kit,
+            ),
         })
 
     rows.sort(key=lambda r: r["slug"])

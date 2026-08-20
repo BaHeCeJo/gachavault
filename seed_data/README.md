@@ -80,6 +80,29 @@ hsr_warps.json ─> make_hsr_import.py ─> hsr_banners_import.json
 `hsr_warps.json` is a cached scrape of the wiki's warp history. Run times are
 converted from the wiki's GMT+8 to UTC and characters resolved to item slugs.
 
+## Profile text — both sections
+
+```
+hsr_profiles.json ─> merged into both import files by their make_ scripts
+        ^
+        └── fetch_hsr_profiles.py
+```
+
+One pass over the item pages themselves, for the fields describing what an item
+*is* rather than what it does: the blurb, the flavour quote, the release version
+and date, and the four voice actors. These sit behind the Overview, Lore,
+Release and Voice Actors blocks, which rendered empty on every character but one.
+
+`release_version` comes from the "Released in Version X" categories rather than
+from each page's own category list — the API caps categories per request, not
+per page, so a bulk query returns almost none. Walking the ~30 version
+categories is both complete and cheaper.
+
+The file also carries `_faction`, `_species` and `_world` for a later pass.
+Those three are **attribute** fields, and an attribute value that does not exist
+on the game renders as raw text rather than a pill, so they need their values
+creating in admin before they can be imported.
+
 ## Shared
 
 `scaling_extract.py` lifts per-level values out of prose and leaves a `{token}`
