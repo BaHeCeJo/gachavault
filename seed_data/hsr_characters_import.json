@@ -2160,50 +2160,6 @@
      "type": "Basic ATK",
      "name": "Percipience, Silent Dawn",
      "tag": "Single Target",
-     "description": "Deals Wind DMG equal to {wind_dmg} of Black Swan's ATK to a single target enemy, with a {black_swan_s_atk} base chance of inflicting 1 stack of Arcana on the target. Additionally, when attacking a target that suffers Wind Shear, Bleed, Burn, or Shock, there is respectively a {burn_or_shock} base chance of inflicting 1 extra stack of Arcana on the target.",
-     "scalings": [
-      {
-       "label": "Wind DMG",
-       "values": [
-        "30%",
-        "36%",
-        "42%",
-        "48%",
-        "54%",
-        "60%",
-        "66%"
-       ]
-      },
-      {
-       "label": "Black Swan's ATK",
-       "values": [
-        "50%",
-        "53%",
-        "56%",
-        "59%",
-        "62%",
-        "65%",
-        "68%"
-       ]
-      },
-      {
-       "label": "Burn or Shock",
-       "values": [
-        "50%",
-        "53%",
-        "56%",
-        "59%",
-        "62%",
-        "65%",
-        "68%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Basic ATK",
-     "name": "Percipience, Silent Dawn",
-     "tag": "Single Target",
      "description": "Deals Wind DMG equal to {wind_dmg} of Black Swan's ATK to one designated enemy.",
      "scalings": [
       {
@@ -2222,48 +2178,6 @@
     },
     {
      "type": "Skill",
-     "name": "Decadence, False Twilight",
-     "tag": "Blast",
-     "description": "Deals Wind DMG equal to {wind_dmg} of Black Swan's ATK to a single target enemy and any adjacent targets. At the same time, there is a 100% base chance of inflicting 1 stack of Arcana on the target enemy and the adjacent targets. Additionally, there is a 100% base chance of reducing the DEF of the target enemy and the adjacent targets by {def}, lasting for 3 turn(s).",
-     "scalings": [
-      {
-       "label": "Wind DMG",
-       "values": [
-        "45%",
-        "49.5%",
-        "54%",
-        "58.5%",
-        "63%",
-        "67.5%",
-        "73.125%",
-        "78.75%",
-        "84.375%",
-        "90%",
-        "94.5%",
-        "99%"
-       ]
-      },
-      {
-       "label": "DEF",
-       "values": [
-        "14.8%",
-        "15.4%",
-        "16%",
-        "16.6%",
-        "17.2%",
-        "17.8%",
-        "18.55%",
-        "19.3%",
-        "20.05%",
-        "20.8%",
-        "21.4%",
-        "22%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Skill",
      "name": "Decadence, False Twilight",
      "tag": "Blast",
      "description": "Deals Wind DMG equal to {wind_dmg} of Black Swan's ATK to one designated enemy and adjacent targets. At the same time, there is a 100% base chance of reducing the DEF of the enemy target and the adjacent targets by {def}, lasting for 3 turn(s).",
@@ -2308,48 +2222,6 @@
      "type": "Ultimate",
      "name": "Bliss of Otherworld's Embrace",
      "tag": "AoE",
-     "description": "Inflicts Epiphany on all enemies for 2 turn(s).\nWhile afflicted with Epiphany, enemies take {epiphany_enemies_take} increased DMG in their turn. Additionally, if enemies are also inflicted with Arcana, they are considered to be simultaneously afflicted with Wind Shear, Bleed, Burn, and Shock. After Arcana causes DMG at the start of each turn, its stacks are not reset. This non-reset effect of Arcana stacks can be triggered up to 1 time(s) for the duration of Epiphany. And the trigger count resets when Epiphany is applied again.\nDeals Wind DMG equal to {wind_dmg} of Black Swan's ATK to all enemies.",
-     "scalings": [
-      {
-       "label": "Epiphany enemies take",
-       "values": [
-        "15%",
-        "16%",
-        "17%",
-        "18%",
-        "19%",
-        "20%",
-        "21.25%",
-        "22.5%",
-        "23.75%",
-        "25%",
-        "26%",
-        "27%"
-       ]
-      },
-      {
-       "label": "Wind DMG",
-       "values": [
-        "72%",
-        "76.8%",
-        "81.6%",
-        "86.4%",
-        "91.2%",
-        "96%",
-        "102%",
-        "108%",
-        "114%",
-        "120%",
-        "124.8%",
-        "129.6%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Ultimate",
-     "name": "Bliss of Otherworld's Embrace",
-     "tag": "AoE",
      "description": "Inflicts \"Epiphany\" state on all enemies for 2 turn(s). Then deals Wind DMG to all enemies equal to {wind_dmg} of Black Swan's ATK.\nWhile in the \"Epiphany\" state, enemy targets take {in_the_epiphany} increased DMG. For every 1 stack of \"Arcana inflicted,\" there is a 50% fixed chance to additionally increase the number of \"Arcana\" stacked this time by 1. And \"Arcana\" stacks won't be halved after dealing DMG at the start of the turn.",
      "scalings": [
       {
@@ -2390,82 +2262,6 @@
     },
     {
      "type": "Talent",
-     "name": "Loom of Fate's Caprice",
-     "tag": "Impair",
-     "description": "Every time an enemy target receives DoT at the start of each turn, there is a {target_receives_dot} base chance for it to be inflicted with 1 stack of Arcana.\nWhile afflicted with Arcana, enemy targets receive Wind DoT equal to {receive_wind_dot} of Black Swan's ATK at the start of each turn. Each stack of Arcana increases this DMG multiplier by {dmg_multiplier}. Then Arcana resets to 1 stack. Arcana can stack up to 50 times.\nOnly when Arcana causes DMG at the start of an enemy target's turn, Black Swan triggers additional effects based on the number of Arcana stacks inflicted on the target:\nWhen there are 3 or more Arcana stacks, deals Wind DoT equal to {wind_dot} of Black Swan's ATK to adjacent targets, with a {target_receives_dot} base chance of inflicting 1 stack of Arcana on adjacent targets.\nWhen there are 7 or more Arcana stacks, enables the current DoT dealt this time to ignore 20% of the target's and adjacent targets' DEF.",
-     "scalings": [
-      {
-       "label": "target receives DoT",
-       "values": [
-        "50%",
-        "51.5%",
-        "53%",
-        "54.5%",
-        "56%",
-        "57.5%",
-        "59.375%",
-        "61.25%",
-        "63.125%",
-        "65%",
-        "66.5%",
-        "68%"
-       ]
-      },
-      {
-       "label": "receive Wind DoT",
-       "values": [
-        "96%",
-        "111.84%",
-        "127.68%",
-        "143.52%",
-        "159.36%",
-        "175.2%",
-        "189.6%",
-        "204%",
-        "222%",
-        "240%",
-        "252%",
-        "264%"
-       ]
-      },
-      {
-       "label": "DMG multiplier",
-       "values": [
-        "4.8%",
-        "5.592%",
-        "6.384%",
-        "7.176%",
-        "7.968%",
-        "8.76%",
-        "9.48%",
-        "10.2%",
-        "11.1%",
-        "12%",
-        "12.6%",
-        "13.2%"
-       ]
-      },
-      {
-       "label": "Wind DoT",
-       "values": [
-        "72%",
-        "83.88%",
-        "95.76%",
-        "107.64%",
-        "119.52%",
-        "131.4%",
-        "142.2%",
-        "153%",
-        "166.5%",
-        "180%",
-        "189%",
-        "198%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Talent",
      "name": "Loom of Fate's Caprice",
      "tag": "Impair",
      "description": "Every time an enemy target receives 1 instance of DoT, there is a {dot_there} base chance for it to be inflicted with 1 stack of \"Arcana\".\nWhile an enemy target is in the \"Arcana\" state, they are also considered to be simultaneously afflicted with Wind Shear, Bleed, Burn, and Shock. The target receives Wind DoT equal to {receives_wind_dot} of Black Swan's ATK at the start of each turn, after which the number of stacks is halved. Each stack of \"Arcana\" increases this DMG multiplier by {dmg_multiplier}. \"Arcana\" can stack 50 times, and can continue to stack beyond this limit, with the excess stacks removed after dealing DMG.\nDMG from \"Arcana\" ignores 20% of the target's DEF. Only when \"Arcana\" deals DMG at the start of the enemy target's turn, adjacent targets take 1 additional instance of Wind DoT equal to {wind_dot} of Black Swan's ATK.",
@@ -2550,19 +2346,19 @@
      "type": "Trace",
      "name": "Candleflame's Portent",
      "group": "Traces",
-     "description": "Increases this unit's DMG by an amount equal to 60% of Effect Hit Rate, up to a maximum DMG increase of 72%."
+     "description": "Increases the DMG dealt by all allies by an amount equal to 60% of Black Swan's Effect Hit Rate, up to a maximum DMG increase of 72%."
     },
     {
      "type": "Trace",
      "name": "Goblet's Dredges",
      "group": "Traces",
-     "description": "When an enemy target enters battle, there is a 65% base chance for it to be inflicted with 1 stack of Arcana.\nEvery time an enemy target receives 1 instance of DoT during a single attack by an ally, there is a 65% base chance for the target to be inflicted with 1 stack of Arcana. The maximum number of stacks that can be inflicted during 1 single attack is 3."
+     "description": "When an enemy targets enters combat, there is a 65% base chance for it to be inflicted with 1 stack of \"Arcana,\" and a 100% base chance to be inflicted with the DEF reduction effect from the Skill, which lasts for 3 turn(s).\nAfter using Basic ATK or Ultimate, there is also a 100% base chance to inflict the DEF reduction effect from the Skill on the hit enemy targets, which lasts for 3 turn(s)."
     },
     {
      "type": "Trace",
      "name": "Viscera's Disquiet",
      "group": "Traces",
-     "description": "After using Skill to attack one designated enemy that has Wind Shear, Bleed, Burn, or Shock, each of these debuffs respectively has a 65% base chance of inflicting 1 extra stack of Arcana."
+     "description": "When an enemy target gets attacked by Black Swan, there is a 65% base chance of inflicting 5 stack(s) of \"Arcana\" on them."
     },
     {
      "type": "E1",
@@ -2574,7 +2370,7 @@
      "type": "E2",
      "group": "Eidolons",
      "name": "Weep Not For Me, My Lamb",
-     "description": "When an enemy target afflicted with \"Arcana\" is defeated, there is a 100% base chance of inflicting 6 stack(s) of \"Arcana\" on adjacent targets."
+     "description": "When enemy targets enter combat, there is a 100% base chance to inflict 30 stack(s) of \"Arcana\" on them."
     },
     {
      "type": "E3",
@@ -2586,7 +2382,7 @@
      "type": "E4",
      "group": "Eidolons",
      "name": "In Tears We Gift",
-     "description": "While in the Epiphany state, enemy targets have their Effect RES reduced by 10% and Black Swan regenerates 8 Energy at the start of these targets' turns or when they are defeated. This Energy Regeneration effect can only trigger up to 1 time while Epiphany lasts. The trigger count is reset when Epiphany is applied again."
+     "description": "While in the \"Epiphany\" state, enemy targets take 20% increased DMG. And at the start of every turn or when they get defeated, regenerates 8 Energy for Black Swan."
     },
     {
      "type": "E5",
@@ -2598,7 +2394,7 @@
      "type": "E6",
      "group": "Eidolons",
      "name": "Pantheon Merciful, Masses Pitiful",
-     "description": "When an enemy target is attacked by Black Swan's teammates, Black Swan has a 65% base chance of inflicting 1 stack of \"Arcana\" on the target.\nEvery time Black Swan inflicts \"Arcana\" on an enemy target, there is a 50% fixed chance to additionally increase the number of \"Arcana\" stacked this time by 1."
+     "description": "The upper limit of stackable \"Arcana\" increases by 30.\nWhen an enemy target gets attacked by Black Swan's teammates, Black Swan has a 65% base chance of inflicting 1 stack of \"Arcana\" on the target.\nFor every 1 stack of \"Arcana\" Black Swan inflicts on an enemy target, additionally increases the number of \"Arcana\" stacked this time by 1."
     }
    ]
   }
@@ -2612,88 +2408,6 @@
    "kit": [
     {
      "type": "Basic ATK",
-     "name": "Forest of Swords",
-     "tag": "Blast",
-     "description": "Consumes HP equal to 10% of Blade's Max HP and deals Wind DMG equal to the sum of {wind_dmg} of his ATK and {atk} of his Max HP to a single enemy. In addition, deals Wind DMG equal to the sum of {3} of Blade's ATK and {4} of his Max HP to adjacent targets.\nIf Blade's current HP is insufficient, his HP will be reduced to 1 when using Forest of Swords.\nForest of Swords cannot regenerate Skill Points.",
-     "scalings": [
-      {
-       "label": "Wind DMG",
-       "values": [
-        "20%",
-        "24%",
-        "28%",
-        "32%",
-        "36%",
-        "40%",
-        "44%"
-       ]
-      },
-      {
-       "label": "ATK",
-       "values": [
-        "50%",
-        "60%",
-        "70%",
-        "80%",
-        "90%",
-        "100%",
-        "110%"
-       ]
-      },
-      {
-       "label": "Wind DMG",
-       "values": [
-        "8%",
-        "9.6%",
-        "11.2%",
-        "12.8%",
-        "14.4%",
-        "16%",
-        "17.6%"
-       ]
-      },
-      {
-       "label": "ATK",
-       "values": [
-        "20%",
-        "24%",
-        "28%",
-        "32%",
-        "36%",
-        "40%",
-        "44%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Basic ATK",
-     "name": "Shard Sword",
-     "tag": "Single Target",
-     "description": "Deals {atk} of Blade's ATK as Wind DMG to a target enemy.",
-     "scalings": [
-      {
-       "label": "ATK",
-       "values": [
-        "50%",
-        "60%",
-        "70%",
-        "80%",
-        "90%",
-        "100%",
-        "110%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Basic ATK",
-     "name": "Forest of Swords",
-     "tag": "Blast",
-     "description": "Consumes HP equal to 10% of Blade's Max HP and deals Wind DMG equal to 65%—143% of his Max HP to one designated enemy. In addition, deals Wind DMG equal to 26%—57.2% of Blade's Max HP to adjacent targets.\nIf Blade's current HP is insufficient, his HP will be reduced to 1 when using \"Forest of Swords.\"\n\"Forest of Swords\" cannot regenerate Skill Points."
-    },
-    {
-     "type": "Enhanced Basic ATK",
      "name": "Shard Sword",
      "tag": "Single Target",
      "description": "Deals Wind DMG equal to {wind_dmg} of Blade's Max HP to one designated enemy.",
@@ -2713,32 +2427,39 @@
      ]
     },
     {
-     "type": "Skill",
-     "name": "Hellscape",
-     "tag": "Enhance",
-     "description": "Consumes HP equal to 30% of Blade's Max HP to enter the Hellscape state.\nWhen Hellscape is active, his Skill cannot be used, his DMG dealt increases by {used_his_dmg}, and his Basic ATK Shard Sword is enhanced to Forest of Swords for 3 turn(s).\nIf Blade's current HP is insufficient, his HP will be reduced to 1 when he uses his Skill.\nThis Skill does not regenerate Energy. Using this Skill does not end the current turn.",
+     "type": "Enhanced Basic ATK",
+     "name": "Forest of Swords",
+     "tag": "Blast",
+     "description": "Consumes HP equal to 10% of Blade's Max HP and deals Wind DMG equal to {wind_dmg} of his Max HP to one designated enemy. In addition, deals Wind DMG equal to {2} of Blade's Max HP to adjacent targets.\nIf Blade's current HP is insufficient, his HP will be reduced to 1 when using \"Forest of Swords.\"\n\"Forest of Swords\" cannot regenerate Skill Points.",
      "scalings": [
       {
-       "label": "used his DMG",
+       "label": "Wind DMG",
        "values": [
-        "12%",
-        "14.8%",
-        "17.6%",
-        "20.4%",
-        "23.2%",
+        "65%",
+        "78%",
+        "91%",
+        "104%",
+        "117%",
+        "130%",
+        "143%"
+       ]
+      },
+      {
+       "label": "Wind DMG",
+       "values": [
         "26%",
-        "29.5%",
-        "33%",
-        "36.5%",
-        "40%",
-        "42.8%",
-        "45.6%"
+        "31.2%",
+        "36.4%",
+        "41.6%",
+        "46.8%",
+        "52%",
+        "57.2%"
        ]
       }
      ]
     },
     {
-     "type": "Enhanced Skill",
+     "type": "Skill",
      "name": "Hellscape",
      "tag": "Enhance",
      "description": "Consumes HP equal to 30% of Blade's Max HP to enter the \"Hellscape\" state.\nWhile under the \"Hellscape\" state, his Skill cannot be used, his DMG dealt increases by {used_his_dmg}, the chance of receiving attacks from enemy targets greatly increases, and his Basic ATK \"Shard Sword\" is enhanced to \"Forest of Swords\" for 3 turn(s).\nIf Blade's current HP is insufficient, his HP will be reduced to 1 when he uses his Skill.\nThis Skill does not regenerate Energy. Using this Skill does not end the current turn.",
@@ -2764,116 +2485,6 @@
     },
     {
      "type": "Ultimate",
-     "name": "Death Sentence",
-     "tag": "Blast",
-     "description": "Sets Blade's current HP to 50% of his Max HP and deals Wind DMG to a single enemy equal to the sum of {wind_dmg} of his ATK, {atk} of his Max HP, and {max_hp} of the tally of Blade's HP loss in the current battle. At the same time, deals Wind DMG to adjacent targets equal to the sum of {4} of his ATK, {5} of his Max HP, and {6} of the tally of his HP loss in the current battle.\nThe tally of Blade's HP loss in the current battle is capped at 90% of his Max HP. This value will be reset and re-accumulated after his Ultimate has been used.",
-     "scalings": [
-      {
-       "label": "Wind DMG",
-       "values": [
-        "24%",
-        "25.6%",
-        "27.2%",
-        "28.8%",
-        "30.4%",
-        "32%",
-        "34%",
-        "36%",
-        "38%",
-        "40%",
-        "41.6%",
-        "43.2%"
-       ]
-      },
-      {
-       "label": "ATK",
-       "values": [
-        "60%",
-        "64%",
-        "68%",
-        "72%",
-        "76%",
-        "80%",
-        "85%",
-        "90%",
-        "95%",
-        "100%",
-        "104%",
-        "108%"
-       ]
-      },
-      {
-       "label": "Max HP",
-       "values": [
-        "60%",
-        "64%",
-        "68%",
-        "72%",
-        "76%",
-        "80%",
-        "85%",
-        "90%",
-        "95%",
-        "100%",
-        "104%",
-        "108%"
-       ]
-      },
-      {
-       "label": "Wind DMG",
-       "values": [
-        "9.6%",
-        "10.24%",
-        "10.88%",
-        "11.52%",
-        "12.16%",
-        "12.8%",
-        "13.6%",
-        "14.4%",
-        "15.2%",
-        "16%",
-        "16.64%",
-        "17.28%"
-       ]
-      },
-      {
-       "label": "ATK",
-       "values": [
-        "24%",
-        "25.6%",
-        "27.2%",
-        "28.8%",
-        "30.4%",
-        "32%",
-        "34%",
-        "36%",
-        "38%",
-        "40%",
-        "41.6%",
-        "43.2%"
-       ]
-      },
-      {
-       "label": "Max HP",
-       "values": [
-        "24%",
-        "25.6%",
-        "27.2%",
-        "28.8%",
-        "30.4%",
-        "32%",
-        "34%",
-        "36%",
-        "38%",
-        "40%",
-        "41.6%",
-        "43.2%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Ultimate",
      "name": "Death Sentence",
      "tag": "Blast",
      "description": "Sets Blade's current HP to 50% of his Max HP and deals Wind DMG to one designated enemy equal to the sum of {wind_dmg} of his Max HP and {max_hp} of the tally of Blade's HP loss in the current battle. At the same time, deals Wind DMG to adjacent targets equal to the sum of {3} of his Max HP and {3} of the tally of his HP loss in the current battle.\nThe tally of Blade's HP loss in the current battle is capped at 90% of his Max HP. This value will be reset and re-accumulated after his Ultimate has been used.",
@@ -2935,48 +2546,6 @@
      "type": "Talent",
      "name": "Shuhu's Gift",
      "tag": "AoE",
-     "description": "When Blade sustains DMG or consumes his HP, he gains 1 stack of Charge, stacking up to 5 times. A max of 1 Charge stack can be gained every time he is attacked.\nWhen Charge stack reaches maximum, immediately launches a Follow-up ATK on all enemies, dealing Wind DMG equal to {wind_dmg} of Blade's ATK plus {atk} of his Max HP. At the same time, restores Blade's HP by 25% of his Max HP. After the Follow-up ATK, all Charges are consumed.",
-     "scalings": [
-      {
-       "label": "Wind DMG",
-       "values": [
-        "22%",
-        "24.2%",
-        "26.4%",
-        "28.6%",
-        "30.8%",
-        "33%",
-        "35.75%",
-        "38.5%",
-        "41.25%",
-        "44%",
-        "46.2%",
-        "48.4%"
-       ]
-      },
-      {
-       "label": "ATK",
-       "values": [
-        "55%",
-        "60.5%",
-        "66%",
-        "71.5%",
-        "77%",
-        "82.5%",
-        "89.375%",
-        "96.25%",
-        "103.125%",
-        "110%",
-        "115.5%",
-        "121%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Talent",
-     "name": "Shuhu's Gift",
-     "tag": "AoE",
      "description": "When Blade sustains DMG or consumes his HP, he gains 1 stack of Charge, stacking up to 5 times. A max of 1 Charge stack can be gained every time he is attacked.\nWhen Charge stack reaches maximum, immediately launches 1 Follow-up ATK on all enemies, dealing Wind DMG equal to {wind_dmg} of Blade's Max HP. At the same time, restores Blade's HP by 25% of his Max HP. After the Follow-up ATK, all Charges are consumed.",
      "scalings": [
       {
@@ -3007,25 +2576,25 @@
      "type": "Trace",
      "name": "Cyclone of Destruction",
      "group": "Traces",
-     "description": "Increases DMG dealt by the Talent's Follow-up ATK by 20%."
+     "description": "Increases DMG dealt by the Talent's Follow-up ATK by 20%. Additionally regenerates 15 Energy."
     },
     {
      "type": "Trace",
      "name": "Neverending Deaths",
      "group": "Traces",
-     "description": "If Blade hits a Weakness Broken enemy after using \"Forest of Swords,\" he will restore HP equal to 5% of his Max HP plus 100."
+     "description": "HP restored from healing increases by 20%. After receiving healing, 25% of the healed amount will be converted to Ultimate's tally of HP lost."
     },
     {
      "type": "Trace",
      "name": "Vita Infinita",
      "group": "Traces",
-     "description": "When Blade's current HP percentage is at 50% of Max HP or lower, Incoming Healing increases by 20%."
+     "description": "When Blade uses Ultimate, the total accumulated HP loss will be set to 50%"
     },
     {
      "type": "E1",
      "group": "Eidolons",
      "name": "Blade Cuts the Deepest in Hell",
-     "description": "Blade's Ultimate deals additionally increased DMG to a single enemy target, with the increased amount equal to 150% of the tally of Blade's HP loss in the current battle.\nThe tally of Blade's HP loss in the current battle is capped at 90% of his Max HP. The tally value will be reset and re-accumulated after his Ultimate has been used."
+     "description": "Blade's Enhanced Basic ATK and Ultimate deals additionally increased DMG to one designated enemy, with the increased amount equal to 150% of the tally of Blade's HP loss from his Ultimate."
     },
     {
      "type": "E2",
@@ -3043,7 +2612,7 @@
      "type": "E4",
      "group": "Eidolons",
      "name": "Rejected by Death, Infected With Life",
-     "description": "When Blade's current HP percentage drops to 50% or lower of his Max HP, increases his Max HP by 20%. Stacks up to 2 time(s)."
+     "description": "When Blade's current HP percentage drops from above 50% to 50% or lower of his Max HP, increases his Max HP by 20%. Stacks up to 2 time(s)."
     },
     {
      "type": "E5",
@@ -6970,48 +6539,6 @@
     },
     {
      "type": "Skill",
-     "name": "Fyrefly Type-IV: Deathstar Overload",
-     "tag": "Blast",
-     "description": "Restores HP by an amount equal to 25% of this unit's Max HP. Applies Fire Weakness to a single target enemy, lasting for 2 turn(s). Deals Fire DMG equal to (0.2 × Break Effect + {break_effect}) of SAM's ATK to this target. At the same time, deals Fire DMG equal to (0.1 × Break Effect + {2}) of SAM's ATK to adjacent targets. The Break Effect taken into the calculation is capped at 360%.",
-     "scalings": [
-      {
-       "label": "Break Effect",
-       "values": [
-        "100%",
-        "110%",
-        "120%",
-        "130%",
-        "140%",
-        "150%",
-        "162.5%",
-        "175%",
-        "187.5%",
-        "200%",
-        "210%",
-        "220%"
-       ]
-      },
-      {
-       "label": "Break Effect",
-       "values": [
-        "50%",
-        "55%",
-        "60%",
-        "65%",
-        "70%",
-        "75%",
-        "81.25%",
-        "87.5%",
-        "93.75%",
-        "100%",
-        "105%",
-        "110%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Skill",
      "name": "Order: Aerial Bombardment",
      "tag": "Single Target",
      "description": "Consumes HP equal to 40% of this unit's Max HP and regenerates a fixed amount of Energy equal to {amount_of_energy} of this unit's Max Energy. Deals Fire DMG equal to {fire_dmg} of SAM's ATK to a single target enemy. If the current HP is not sufficient, reduces SAM's HP to 1 when using this Skill. Advances this unit's next Action by 25%.",
@@ -7187,13 +6714,13 @@
      "type": "Trace",
      "name": "Module α: Antilag Outburst",
      "group": "Traces",
-     "description": "During the Complete Combustion, attacking enemies that have no Fire Weakness can also reduce their Toughness, with the effect being equivalent to 55% of the original Toughness Reduction from abilities."
+     "description": "While in the Complete Combustion state, SAM's Break Effect increases by 25%. When using Enhanced Basic ATK or Enhanced Skill to inflict Weakness Break on a target, the Complete Combustion countdown is delayed by 10%. This effect can trigger a maximum of 3 time(s) during each Complete Combustion state."
     },
     {
      "type": "Trace",
      "name": "Module β: Autoreactive Armor",
      "group": "Traces",
-     "description": "When SAM is in Complete Combustion with a Break Effect that is equal to or greater than 200%/360%, attacking a Weakness-Broken enemy target will convert the Toughness Reduction of this attack into 1 instance of 35%/50% Super Break DMG."
+     "description": "When SAM is in Complete Combustion with a Break Effect that is equal to or greater than 150%/300%, attacking a Weakness-Broken enemy target will convert the Toughness Reduction of this attack into 1 instance of 100%/150% Super Break DMG."
     },
     {
      "type": "Trace",
@@ -7211,7 +6738,7 @@
      "type": "E2",
      "group": "Eidolons",
      "name": "From Shattered Sky, I Free Fall",
-     "description": "While in Complete Combustion, using the Enhanced Basic ATK or the Enhanced Skill to defeat an enemy target or to Break their Weakness allows SAM to immediately gain 1 extra turn. This effect can trigger again after 1 turn(s)."
+     "description": "While in Complete Combustion, using the Enhanced Basic ATK or the Enhanced Skill to defeat an enemy target or to Break their Weakness allows SAM to immediately gain 1 extra turn. This effect can only trigger 1 time per turn, and the trigger count resets at the start of SAM's turn."
     },
     {
      "type": "E3",
@@ -9313,13 +8840,161 @@
      "type": "Assist Skill",
      "name": "Companion Protocol: Decimation",
      "tag": "AoE",
-     "description": "Enters the \"Companion Protocol: Decimation\" state. Increases all allies' CRIT DMG by 50%-110%, and additionally increases the CRIT DMG dealt by Skill by 50%-110%. For every 1 enemy target hit by allies, gains 1 Charge. When Charge reaches 9, consumes all Charge, and Himeko • Nova immediately launches 1 Assist Skill against enemies at no cost. This instance of Assist Skill cannot grant Charge."
+     "description": "Enters the \"Companion Protocol: Decimation\" state. Increases all allies' CRIT DMG by {allies_crit_dmg}, and additionally increases the CRIT DMG dealt by Skill by {skill}. For every 1 enemy target hit by allies, gains 1 Charge. When Charge reaches 9, consumes all Charge, and Himeko • Nova immediately launches 1 Assist Skill against enemies at no cost. This instance of Assist Skill cannot grant Charge.",
+     "scalings": [
+      {
+       "label": "allies' CRIT DMG",
+       "values": [
+        "50%",
+        "55%",
+        "60%",
+        "65%",
+        "70%",
+        "75%",
+        "81.25%",
+        "87.5%",
+        "93.75%",
+        "100%",
+        "105%",
+        "110%"
+       ]
+      },
+      {
+       "label": "Skill",
+       "values": [
+        "50%",
+        "55%",
+        "60%",
+        "65%",
+        "70%",
+        "75%",
+        "81.25%",
+        "87.5%",
+        "93.75%",
+        "100%",
+        "105%",
+        "110%"
+       ]
+      }
+     ]
     },
     {
      "type": "Assist Skill",
      "name": "Companion Protocol: Verdict",
      "tag": "AoE",
-     "description": "Enters the \"Companion Protocol: Verdict\" state. Increases DMG dealt by Himeko • Nova by 50%-110%, and additionally increases her Ultimate DMG dealt by 50%-110%. After Himeko • Nova's teammates actively use their Ultimate 2 time(s), Himeko • Nova immediately launches 1 Assist Skill against enemies at no cost."
+     "description": "Enters the \"Companion Protocol: Verdict\" state. Increases DMG dealt by Himeko • Nova by {himeko_nova}, and additionally increases her Ultimate DMG dealt by {ultimate_dmg}. After Himeko • Nova's teammates actively use their Ultimate 2 time(s), Himeko • Nova immediately launches 1 Assist Skill against enemies at no cost.",
+     "scalings": [
+      {
+       "label": "Himeko Nova",
+       "values": [
+        "50%",
+        "55%",
+        "60%",
+        "65%",
+        "70%",
+        "75%",
+        "81.25%",
+        "87.5%",
+        "93.75%",
+        "100%",
+        "105%",
+        "110%"
+       ]
+      },
+      {
+       "label": "Ultimate DMG",
+       "values": [
+        "50%",
+        "55%",
+        "60%",
+        "65%",
+        "70%",
+        "75%",
+        "81.25%",
+        "87.5%",
+        "93.75%",
+        "100%",
+        "105%",
+        "110%"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "Assist Skill",
+     "name": "Trailblaze, By Your Side",
+     "tag": "AoE",
+     "description": "Deals Fire DMG equal to {fire_dmg} of Himeko • Nova's ATK to all enemies, and additionally deals 3 instances of DMG, with each instance dealing Fire DMG equal to {2} of Himeko • Nova's ATK to one random enemy. When used by Himeko • Nova, deals Fire DMG equal to {3} of Himeko • Nova's ATK to all enemies, and additionally deals 4 instances of DMG, with each instance dealing Fire DMG equal to {4} of Himeko • Nova's ATK to one random enemy.\nIf the user is a Trailblaze Companions character other than Himeko • Nova, then depending on the user, Himeko • Nova additionally gains 1 of the Special Effects.\nThe extra Assist Skill via all Special Effects can be launched up to 2 time(s) per battle, and this count is reset after Himeko • Nova uses her Ultimate.",
+     "scalings": [
+      {
+       "label": "Fire DMG",
+       "values": [
+        "80%",
+        "88%",
+        "96%",
+        "104%",
+        "112%",
+        "120%",
+        "130%",
+        "140%",
+        "150%",
+        "160%",
+        "168%",
+        "176%"
+       ]
+      },
+      {
+       "label": "Fire DMG",
+       "values": [
+        "12%",
+        "13.2%",
+        "14.4%",
+        "15.6%",
+        "16.8%",
+        "18%",
+        "19.5%",
+        "21%",
+        "22.5%",
+        "24%",
+        "25.2%",
+        "26.4%"
+       ]
+      },
+      {
+       "label": "Fire DMG",
+       "values": [
+        "100%",
+        "110%",
+        "120%",
+        "130%",
+        "140%",
+        "150%",
+        "162.5%",
+        "175%",
+        "187.5%",
+        "200%",
+        "210%",
+        "220%"
+       ]
+      },
+      {
+       "label": "Fire DMG",
+       "values": [
+        "18%",
+        "19.4%",
+        "20.8%",
+        "22.2%",
+        "23.6%",
+        "25%",
+        "26.75%",
+        "28.5%",
+        "30.25%",
+        "32%",
+        "33.4%",
+        "34.8%"
+       ]
+      }
+     ]
     },
     {
      "type": "Trace",
@@ -9332,12 +9007,6 @@
      "name": "The Silver Rail, Hushed in Antiquity",
      "group": "Traces",
      "description": "When using Ultimate, immediately gains 3 \"Source Energy.\" If the current \"Source Energy\" is 3 or more, when using the \"Orbital Annihilation Pulse\" attack, the DMG multiplier of \"Orbital Annihilation Pulse\" against random single enemies increases by 30%."
-    },
-    {
-     "type": "Assist Skill",
-     "name": "Trailblaze, By Your Side",
-     "tag": "AoE",
-     "description": "Deals Fire DMG equal to 80%-176% of Himeko • Nova's ATK to all enemies, and additionally deals 3 instances of DMG, with each instance dealing Fire DMG equal to 12%-26.4% of Himeko • Nova's ATK to one random enemy. When used by Himeko • Nova, deals Fire DMG equal to 100%-220% of Himeko • Nova's ATK to all enemies, and additionally deals 4 instances of DMG, with each instance dealing Fire DMG equal to 18%-34.8% of Himeko • Nova's ATK to one random enemy.\nIf the user is a Trailblaze Companions character other than Himeko • Nova, then depending on the user, Himeko • Nova additionally gains 1 of the Special Effects.\nThe extra Assist Skill via all Special Effects can be launched up to 2 time(s) per battle, and this count is reset after Himeko • Nova uses her Ultimate."
     },
     {
      "type": "Trace",
@@ -9414,6 +9083,48 @@
     {
      "type": "Skill",
      "name": "Hey! Remember Hook?",
+     "tag": "Single Target",
+     "description": "Deals Fire DMG equal to {fire_dmg} of Hook's ATK to a single enemy. In addition, there is a 100% base chance to inflict Burn for 2 turn(s).\nWhen afflicted with Burn, enemies will take Fire DoT equal to {take_fire_dot} of Hook's ATK at the beginning of each turn.",
+     "scalings": [
+      {
+       "label": "Fire DMG",
+       "values": [
+        "120%",
+        "132%",
+        "144%",
+        "156%",
+        "168%",
+        "180%",
+        "195%",
+        "210%",
+        "225%",
+        "240%",
+        "252%",
+        "264%"
+       ]
+      },
+      {
+       "label": "take Fire DoT",
+       "values": [
+        "25%",
+        "28.75%",
+        "32.5%",
+        "36.25%",
+        "40%",
+        "43.75%",
+        "48.4375%",
+        "53.125%",
+        "57.8125%",
+        "62.5%",
+        "66.25%",
+        "70%"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "Enhanced Skill",
+     "name": "Hey! Remember Hook?",
      "tag": "Blast",
      "description": "Deals Fire DMG equal to {fire_dmg} of Hook's ATK to a single enemy, with a 100% base chance to Burn them for 2 turn(s). Additionally, deals Fire DMG equal to {2} of Hook's ATK to enemies adjacent to it.\nWhen afflicted with Burn, enemies will take Fire DoT equal to {take_fire_dot} of Hook's ATK at the beginning of each turn.",
      "scalings": [
@@ -9466,48 +9177,6 @@
         "80%",
         "84%",
         "88%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Skill",
-     "name": "Hey! Remember Hook?",
-     "tag": "Single Target",
-     "description": "Deals Fire DMG equal to {fire_dmg} of Hook's ATK to a single enemy. In addition, there is a 100% base chance to inflict Burn for 2 turn(s).\nWhen afflicted with Burn, enemies will take Fire DoT equal to {take_fire_dot} of Hook's ATK at the beginning of each turn.",
-     "scalings": [
-      {
-       "label": "Fire DMG",
-       "values": [
-        "120%",
-        "132%",
-        "144%",
-        "156%",
-        "168%",
-        "180%",
-        "195%",
-        "210%",
-        "225%",
-        "240%",
-        "252%",
-        "264%"
-       ]
-      },
-      {
-       "label": "take Fire DoT",
-       "values": [
-        "25%",
-        "28.75%",
-        "32.5%",
-        "36.25%",
-        "40%",
-        "43.75%",
-        "48.4375%",
-        "53.125%",
-        "57.8125%",
-        "62.5%",
-        "66.25%",
-        "70%"
        ]
       }
      ]
@@ -9655,82 +9324,6 @@
      "type": "Skill",
      "name": "Talisman: Protection",
      "tag": "Restore",
-     "description": "Dispels 1 debuff(s) from a single target ally and immediately restores this ally's HP by an amount equal to {hp} of Huohuo's Max HP plus {max_hp} At the same time, restores HP for allies that are adjacent to this target ally by an amount equal to {time_restores_hp} of Huohuo's Max HP plus {4}",
-     "scalings": [
-      {
-       "label": "HP",
-       "values": [
-        "14%",
-        "14.875%",
-        "15.75%",
-        "16.625%",
-        "17.5%",
-        "18.2%",
-        "18.9%",
-        "19.6%",
-        "20.3%",
-        "21%",
-        "21.7%",
-        "22.4%"
-       ]
-      },
-      {
-       "label": "Max HP",
-       "values": [
-        "140",
-        "224",
-        "287",
-        "350",
-        "392",
-        "434",
-        "465.5",
-        "497",
-        "528.5",
-        "560",
-        "591.5",
-        "623"
-       ]
-      },
-      {
-       "label": "time restores HP",
-       "values": [
-        "11.2%",
-        "11.9%",
-        "12.6%",
-        "13.3%",
-        "14%",
-        "14.56%",
-        "15.12%",
-        "15.68%",
-        "16.24%",
-        "16.8%",
-        "17.36%",
-        "17.92%"
-       ]
-      },
-      {
-       "label": "Max HP",
-       "values": [
-        "112",
-        "179.2",
-        "229.6",
-        "280",
-        "313.6",
-        "347.2",
-        "372.4",
-        "397.6",
-        "422.8",
-        "448",
-        "473.2",
-        "498.4"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Skill",
-     "name": "Talisman: Protection",
-     "tag": "Restore",
      "description": "Dispels 1 debuff(s) from one designated ally and immediately restores this ally's HP by an amount equal to {hp} of Huohuo's Max HP plus {max_hp} At the same time, restores HP for allies that are adjacent to this target ally by an amount equal to {time_restores_hp} of Huohuo's Max HP plus {4}",
      "scalings": [
       {
@@ -9849,48 +9442,6 @@
      "type": "Talent",
      "name": "Possession: Ethereal Metaflow",
      "tag": "Restore",
-     "description": "After using her Skill, Huohuo gains Divine Provision, lasting for 2 turn(s). This duration decreases by 1 turn at the start of Huohuo's every turn. If Huohuo has Divine Provision when an ally's turn starts or when an ally uses their Ultimate, restores HP for that ally by an amount equal to {ultimate_restores_hp} of Huohuo's Max HP plus {max_hp} At the same time, every ally with 50% HP percentage or lower receives healing once.\nWhen Divine Provision is triggered to heal an ally, dispel 1 debuff(s) from that ally. This effect can be triggered up to 6 time(s). Using the skill again resets the effect's trigger count.",
-     "scalings": [
-      {
-       "label": "Ultimate restores HP",
-       "values": [
-        "3%",
-        "3.1875%",
-        "3.375%",
-        "3.5625%",
-        "3.75%",
-        "3.9%",
-        "4.05%",
-        "4.2%",
-        "4.35%",
-        "4.5%",
-        "4.65%",
-        "4.8%"
-       ]
-      },
-      {
-       "label": "Max HP",
-       "values": [
-        "30",
-        "48",
-        "61.5",
-        "75",
-        "84",
-        "93",
-        "99.75",
-        "106.5",
-        "113.25",
-        "120",
-        "126.75",
-        "133.5"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Talent",
-     "name": "Possession: Ethereal Metaflow",
-     "tag": "Restore",
      "description": "After using her Skill or Ultimate, Huohuo gains \"Divine Provision,\" lasting for 3 turn(s). This duration decreases by 1 turn at the start of Huohuo's every turn. When Huohuo has \"Divine Provision\" at the start of an ally target's turn or when they use their Ultimate, restores HP for that ally target and the ally target with the lowest HP percentage by an amount equal to {lowest_hp} of Huohuo's Max HP plus {max_hp} Then, restores HP for every ally with a current HP percentage at or below 50% by an amount equal to {lowest_hp} of Huohuo's Max HP plus {max_hp}\nWhen \"Divine Provision\" is triggered to heal an ally target, dispels 1 debuff(s) from that target. This effect can be triggered 6 time(s). Gaining \"Divine Provision\" again resets the effect's trigger count.",
      "scalings": [
       {
@@ -9939,7 +9490,7 @@
      "type": "Trace",
      "name": "Fearful to Act",
      "group": "Traces",
-     "description": "When battle starts, Huohuo gains Divine Provision, lasting for 1 turn(s)."
+     "description": "When battle starts, Huohuo gains 30 Energy and \"Divine Provision,\" lasting for 2 turn(s)."
     },
     {
      "type": "Trace",
@@ -9951,13 +9502,13 @@
      "type": "Trace",
      "name": "The Cursed One",
      "group": "Traces",
-     "description": "Increases the chance to resist Crowd Control debuffs by 35%."
+     "description": "Increases the chance to resist Crowd Control debuffs by 35%. When using Ultimate, if an ally target's Max Energy is 160 or higher, additionally increases their ATK by 24%."
     },
     {
      "type": "E1",
      "group": "Eidolons",
      "name": "Anchored to Vessel, Specters Nestled",
-     "description": "The duration of Divine Provision produced by the Talent is extended by 1 turn(s). When Huohuo possesses Divine Provision, all allies' SPD increases by 12%."
+     "description": "The duration of \"Divine Provision\" produced by the Talent is extended by 1 turn(s). When Huohuo possesses \"Divine Provision,\" her Outgoing Healing increases by 20%, all allies' SPD increases by 12%."
     },
     {
      "type": "E2",
@@ -11253,26 +10804,6 @@
      "type": "Basic ATK",
      "name": "Lucent Moonglow",
      "tag": "Single Target",
-     "description": "Deals Ice DMG equal to {ice_dmg} of Jingliu's ATK to a single enemy.",
-     "scalings": [
-      {
-       "label": "Ice DMG",
-       "values": [
-        "50%",
-        "60%",
-        "70%",
-        "80%",
-        "90%",
-        "100%",
-        "110%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Basic ATK",
-     "name": "Lucent Moonglow",
-     "tag": "Single Target",
      "description": "Deals Ice DMG equal to {ice_dmg} of Jingliu's Max HP to one designated enemy.",
      "scalings": [
       {
@@ -11291,67 +10822,25 @@
     },
     {
      "type": "Skill",
-     "name": "Moon On Glacial River",
-     "tag": "Blast",
-     "description": "Deals Ice DMG equal to {ice_dmg} of Jingliu's ATK to a single enemy, and deals Ice DMG equal to {2} of Jingliu's ATK to adjacent enemies. Consumes 1 stack(s) of Syzygy. Using this ability does not consume Skill Points.",
-     "scalings": [
-      {
-       "label": "Ice DMG",
-       "values": [
-        "125%",
-        "137.5%",
-        "150%",
-        "162.5%",
-        "175%",
-        "187.5%",
-        "203.125%",
-        "218.75%",
-        "234.375%",
-        "250%",
-        "262.5%",
-        "275%"
-       ]
-      },
-      {
-       "label": "Ice DMG",
-       "values": [
-        "62.5%",
-        "68.75%",
-        "75%",
-        "81.25%",
-        "87.5%",
-        "93.75%",
-        "101.5625%",
-        "109.375%",
-        "117.1875%",
-        "125%",
-        "131.25%",
-        "137.5%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Skill",
      "name": "Transcendent Flash",
      "tag": "Single Target",
-     "description": "Deals Ice DMG equal to {ice_dmg} of Jingliu's ATK to a single enemy and obtains 1 stack(s) of Syzygy.",
+     "description": "Deals Ice DMG equal to {ice_dmg} of Jingliu's Max HP to one designated enemy and obtains 1 stack(s) of \"Syzygy.\"",
      "scalings": [
       {
        "label": "Ice DMG",
        "values": [
-        "100%",
-        "110%",
-        "120%",
-        "130%",
-        "140%",
+        "75%",
+        "82.5%",
+        "90%",
+        "97.5%",
+        "105%",
+        "112.5%",
+        "121.875%",
+        "131.25%",
+        "140.625%",
         "150%",
-        "162.5%",
-        "175%",
-        "187.5%",
-        "200%",
-        "210%",
-        "220%"
+        "157.5%",
+        "165%"
        ]
       }
      ]
@@ -11399,74 +10888,7 @@
      ]
     },
     {
-     "type": "Enhanced Skill",
-     "name": "Transcendent Flash",
-     "tag": "Single Target",
-     "description": "Deals Ice DMG equal to {ice_dmg} of Jingliu's Max HP to one designated enemy and obtains 1 stack(s) of \"Syzygy.\"",
-     "scalings": [
-      {
-       "label": "Ice DMG",
-       "values": [
-        "75%",
-        "82.5%",
-        "90%",
-        "97.5%",
-        "105%",
-        "112.5%",
-        "121.875%",
-        "131.25%",
-        "140.625%",
-        "150%",
-        "157.5%",
-        "165%"
-       ]
-      }
-     ]
-    },
-    {
      "type": "Ultimate",
-     "name": "Florephemeral Dreamflux",
-     "tag": "Blast",
-     "description": "Deals Ice DMG equal to {ice_dmg} of Jingliu's ATK to a single enemy, and deals Ice DMG equal to {2} of Jingliu's ATK to any adjacent enemies. Gains 1 stack(s) of Syzygy after attack ends.",
-     "scalings": [
-      {
-       "label": "Ice DMG",
-       "values": [
-        "180%",
-        "192%",
-        "204%",
-        "216%",
-        "228%",
-        "240%",
-        "255%",
-        "270%",
-        "285%",
-        "300%",
-        "312%",
-        "324%"
-       ]
-      },
-      {
-       "label": "Ice DMG",
-       "values": [
-        "90%",
-        "96%",
-        "102%",
-        "108%",
-        "114%",
-        "120%",
-        "127.5%",
-        "135%",
-        "142.5%",
-        "150%",
-        "156%",
-        "162%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Ultimate",
      "name": "Florephemeral Dreamflux",
      "tag": "Blast",
      "description": "Deals Ice DMG equal to {ice_dmg} of Jingliu's Max HP to one designated enemy, and deals Ice DMG equal to {2} of Jingliu's Max HP to their adjacent enemies. Gains 1 stack(s) of \"Syzygy\" after attack ends.",
@@ -11511,48 +10933,6 @@
      "type": "Talent",
      "name": "Crescent Transmigration",
      "tag": "Enhance",
-     "description": "When Jingliu has 2 stack(s) of Syzygy, she enters the Spectral Transmigration state with her action advanced by 100% and her CRIT Rate increases by {crit_rate}. Then, Jingliu's Skill \"Transcendent Flash\" is enhanced to \"Moon On Glacial River,\" and only this enhanced Skill is available for use in battle. When Jingliu uses an attack in the Spectral Transmigration state, she consumes HP from her teammates equal to 4% of their respective Max HP (this cannot reduce teammates' HP to lower than 1). Jingliu's ATK increases by 540% of the total HP consumed from all allies in this attack, capped at {total_hp} of her base ATK, lasting until the current attack ends. Jingliu cannot enter the Spectral Transmigration state again until the current Spectral Transmigration state ends. Syzygy can stack up to 3 times. When Syzygy stacks become 0, Jingliu will exit the Spectral Transmigration state.",
-     "scalings": [
-      {
-       "label": "CRIT Rate",
-       "values": [
-        "90%",
-        "99%",
-        "108%",
-        "117%",
-        "126%",
-        "135%",
-        "146.25%",
-        "157.5%",
-        "168.75%",
-        "180%",
-        "189%",
-        "198%"
-       ]
-      },
-      {
-       "label": "total HP",
-       "values": [
-        "40%",
-        "41%",
-        "42%",
-        "43%",
-        "44%",
-        "45%",
-        "46.25%",
-        "47.5%",
-        "48.75%",
-        "50%",
-        "51%",
-        "52%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Talent",
-     "name": "Crescent Transmigration",
-     "tag": "Enhance",
      "description": "When Jingliu has 2 stacks of \"Syzygy,\" she enters the \"Spectral Transmigration\" state, additionally gains 1 stack of \"Syzygy,\" action advances by 100%, and her CRIT Rate increases by {crit_rate}. Then, Jingliu's Skill \"Transcendent Flash\" is enhanced to \"Moon On Glacial River,\" and only this enhanced Skill is available for use in battle. When Jingliu uses an attack in the Spectral Transmigration state, she consumes HP from her teammates equal to 5% of their respective Max HP (this cannot reduce teammates' HP to lower than 1). When in the \"Spectral Transmigration\" state, Jingliu gains 1 stack of \"Moonlight\" whenever ally targets receive DMG or consume HP. Each stack of \"Moonlight\" increases Jingliu's CRIT DMG by {crit_dmg}, up to 5 stacks. Jingliu cannot enter the \"Spectral Transmigration\" state again until the current \"Spectral Transmigration\" state ends. \"Syzygy\" can stack up to 4 times. When \"Syzygy\" stacks become 0, Jingliu will exit the \"Spectral Transmigration\" state and remove all \"Moonlight.\" After ally targets receive DMG or consume HP a total of 20 times, Jingliu gains 1 stack of \"Syzygy.\" This takes effect a maximum of 1 time per attack received by each target.",
      "scalings": [
       {
@@ -11595,37 +10975,31 @@
      "type": "Technique",
      "name": "Shine of Truth",
      "tag": "Impair",
-     "description": "After using this Technique, creates a Special Dimension around Jingliu that lasts for 20 seconds, and all enemies in this Special Dimension will become Frozen. After entering combat with enemies in the Special Dimension, Jingliu immediately regenerates 15 Energy and obtains 1 stack(s) of Syzygy, with a 100% base chance of Freezing enemy targets for 1 turn(s). While Frozen, enemy targets cannot take action, and receive Ice Additional DMG equal to 80% of Jingliu's ATK at the start of every turn. Only 1 Dimension Effect created by allies can exist at the same time."
-    },
-    {
-     "type": "Enhanced Technique",
-     "name": "Shine of Truth",
-     "tag": "Impair",
      "description": "After using this Technique, creates a Special Dimension around Jingliu that lasts for 20 seconds, and all enemies in this Special Dimension will become Frozen. After entering combat with enemies in the Special Dimension, Jingliu immediately regenerates 15 Energy and obtains 1 stack(s) of \"Syzygy,\" with a 100% base chance of Freezing enemy targets for 1 turn(s). While Frozen, enemy targets cannot take action, and receive Ice Additional DMG equal to 80% of Jingliu's Max HP at the start of every turn. Only 1 Dimension Effect created by allies can exist at the same time."
     },
     {
      "type": "Trace",
      "name": "Deathrealm",
      "group": "Traces",
-     "description": "While in the Spectral Transmigration state, increases Effect RES by 35%."
+     "description": "While in the \"Spectral Transmigration\" state, Effect RES increases by 35%, and Ultimate DMG dealt increases by 20%."
     },
     {
      "type": "Trace",
      "name": "Frost Wraith",
      "group": "Traces",
-     "description": "While in the Spectral Transmigration state, increases DMG dealt by Ultimate by 20%."
+     "description": "Upon obtaining \"Syzygy,\" if its stack limit has been reached, Jingliu's next attack ignores 25% of the target's DEF."
     },
     {
      "type": "Trace",
      "name": "Sword Champion",
      "group": "Traces",
-     "description": "After using \"Transcendent Flash,\" the next action advances by 10%."
+     "description": "After using \"Transcendent Flash,\" regenerate an additional 15 Energy, and after using \"Moon On Glacial River,\" regenerate an additional 8 Energy."
     },
     {
      "type": "E1",
      "group": "Eidolons",
      "name": "Moon Crashes Tianguan Gate",
-     "description": "When using her Ultimate or Enhanced Skill, Jingliu's CRIT DMG increases by 24% for 1 turn(s). If only one enemy target is attacked, the target will additionally be dealt Ice DMG equal to 100% of Jingliu's ATK."
+     "description": "When using Ultimate or Enhanced Skill, Jingliu's CRIT DMG increases by 36% for 1 turn(s). Moreover, additionally deals 1 instance of Ice DMG equal to 80% of Jingliu's Max HP to the primary target."
     },
     {
      "type": "E2",
@@ -11643,7 +11017,7 @@
      "type": "E4",
      "group": "Eidolons",
      "name": "Lunarlance Shines Skyward Dome",
-     "description": "During the \"Spectral Transmigration\" state, the ATK gained from consuming teammates' HP is additionally increased by 90% of the total HP consumed from the entire team. The cap for ATK gained this way also increases by 30%."
+     "description": "During the \"Spectral Transmigration\" state, each \"Moonlight\" stack additionally increases CRIT DMG by 20%."
     },
     {
      "type": "E5",
@@ -11655,7 +11029,7 @@
      "type": "E6",
      "group": "Eidolons",
      "name": "Eclipse Hollows Corporeal Husk",
-     "description": "When Jingliu enters the \"Spectral Transmigration\" state, the \"Syzygy\" stack limit increases by 1, and Jingliu additionally gains 1 stack(s) of \"Syzygy.\" During the \"Spectral Transmigration\" state, her CRIT DMG increases by 50%."
+     "description": "When Jingliu enters the \"Spectral Transmigration\" state, the \"Syzygy\" stack limit increases by 1, and Jingliu additionally gains 2 stack(s) of \"Syzygy.\" During the \"Spectral Transmigration\" state, her Ice RES PEN increases by 30%."
     }
    ]
   }
@@ -11689,65 +11063,6 @@
     },
     {
      "type": "Skill",
-     "name": "Caressing Moonlight",
-     "tag": "Blast",
-     "description": "Deals Lightning DMG equal to {lightning_dmg} of Kafka's ATK to a target enemy and Lightning DMG equal to {2} of Kafka's ATK to enemies adjacent to it.\nIf the target enemy is currently receiving DoT, all DoTs currently placed on that enemy immediately produce DMG equal to {immediately_produce_dmg} of their original DMG.",
-     "scalings": [
-      {
-       "label": "Lightning DMG",
-       "values": [
-        "80%",
-        "88%",
-        "96%",
-        "104%",
-        "112%",
-        "120%",
-        "130%",
-        "140%",
-        "150%",
-        "160%",
-        "168%",
-        "176%"
-       ]
-      },
-      {
-       "label": "Lightning DMG",
-       "values": [
-        "30%",
-        "33%",
-        "36%",
-        "39%",
-        "42%",
-        "45%",
-        "48.75%",
-        "52.5%",
-        "56.25%",
-        "60%",
-        "63%",
-        "66%"
-       ]
-      },
-      {
-       "label": "immediately produce DMG",
-       "values": [
-        "60%",
-        "61.5%",
-        "63%",
-        "64.5%",
-        "66%",
-        "67.5%",
-        "69.375%",
-        "71.25%",
-        "73.125%",
-        "75%",
-        "76.5%",
-        "78%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Skill",
      "name": "Caressing Moonlight",
      "tag": "Blast",
      "description": "Deals Lightning DMG equal to {lightning_dmg} of Kafka's ATK to one designated enemy and Lightning DMG equal to {2} of Kafka's ATK to their adjacent units.\nIf the designated enemy or their adjacent target(s) is currently receiving DoT, all DoTs currently placed on that enemy immediately produce DMG equal to {immediately_produce_dmg} or {4} of their original DMG.",
@@ -11826,65 +11141,6 @@
      "type": "Ultimate",
      "name": "Twilight Trill",
      "tag": "AoE",
-     "description": "Deals Lightning DMG equal to {lightning_dmg} of Kafka's ATK to all enemies, with a 100% base chance for enemies hit to become Shocked and immediately take DMG from their current Shock state, equal to {current_shock_state} of its original DMG. Shock lasts for 2 turn(s).\nWhile Shocked, enemies receive Lightning DoT equal to {receive_lightning_dot} of Kafka's ATK at the beginning of each turn.",
-     "scalings": [
-      {
-       "label": "Lightning DMG",
-       "values": [
-        "48%",
-        "51.2%",
-        "54.4%",
-        "57.6%",
-        "60.8%",
-        "64%",
-        "68%",
-        "72%",
-        "76%",
-        "80%",
-        "83.2%",
-        "86.4%"
-       ]
-      },
-      {
-       "label": "current Shock state",
-       "values": [
-        "80%",
-        "82%",
-        "84%",
-        "86%",
-        "88%",
-        "90%",
-        "92.5%",
-        "95%",
-        "97.5%",
-        "100%",
-        "102%",
-        "104%"
-       ]
-      },
-      {
-       "label": "receive Lightning DoT",
-       "values": [
-        "116%",
-        "126.875%",
-        "137.75%",
-        "148.625%",
-        "159.5%",
-        "175.8125%",
-        "197.5625%",
-        "224.75%",
-        "257.375%",
-        "290%",
-        "304.1375%",
-        "318.275%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Ultimate",
-     "name": "Twilight Trill",
-     "tag": "AoE",
      "description": "Deals Lightning DMG equal to {lightning_dmg} of Kafka's ATK to all enemies, with a 100% base chance for attacked enemy targets to become Shocked and immediately take DMG from their current DoT debuff(s), equal to {dot_debuff_s} of its original DMG. Shock lasts for 2 turn(s).\nWhile Shocked, enemy targets receive Lightning DoT equal to {receive_lightning_dot} of Kafka's ATK at the beginning of each turn.",
      "scalings": [
       {
@@ -11944,31 +11200,6 @@
      "type": "Talent",
      "name": "Gentle but Cruel",
      "tag": "Single Target",
-     "description": "After Kafka's teammate uses Basic ATK on an enemy target, Kafka immediately launches Follow-up ATK and deals Lightning DMG equal to {lightning_dmg} of her ATK to that target, with a 100% base chance to inflict Shock equivalent to that applied by her Ultimate to the attacked enemy target, lasting for 2 turns. This effect can only be triggered 1 time per turn.",
-     "scalings": [
-      {
-       "label": "Lightning DMG",
-       "values": [
-        "42%",
-        "51.8%",
-        "61.6%",
-        "71.4%",
-        "81.2%",
-        "91%",
-        "103.25%",
-        "115.5%",
-        "127.75%",
-        "140%",
-        "149.8%",
-        "159.6%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Talent",
-     "name": "Gentle but Cruel",
-     "tag": "Single Target",
      "description": "After Kafka's teammate uses an attack on an enemy target, Kafka immediately launches Follow-up ATK and deals Lightning DMG equal to {lightning_dmg} of Kafka's ATK to the primary target, with a 100% base chance to inflict Shock equivalent to that applied by her Ultimate to the attacked enemy target, lasting for 2 turns. This effect can be triggered up to 2 time(s), with 1 use(s) recovered at the end of Kafka's turn.",
      "scalings": [
       {
@@ -12005,25 +11236,25 @@
      "type": "Trace",
      "name": "Thorns",
      "group": "Traces",
-     "description": "The base chance for target enemies to be Shocked by the Ultimate, the Technique, and the Talent-triggered Follow-up ATK increases by 30%."
+     "description": "After using Ultimate, restores the triggerable count of Talent's Follow-up ATK by 1. And the Talent's  Follow-up ATK can cause all DoTs debuffs currently on the target to immediately produce DMG equal to 80% of the original DMG."
     },
     {
      "type": "Trace",
      "name": "Torture",
      "group": "Traces",
-     "description": "When the Ultimate is used, enemy targets will now receive DMG immediately from all currently applied DoT sources instead of just receiving DMG immediately from the currently applied Shock state."
+     "description": "When an ally target's Effect Hit Rate is 75% or more, Kafka increases the target's ATK by 100%."
     },
     {
      "type": "E1",
      "group": "Eidolons",
      "name": "Da Capo",
-     "description": "When the Talent triggers a Follow-up ATK, there is a 100% base chance to increase the DoT received by the target by 30% for 2 turn(s)."
+     "description": "When using an attack, has a 100% base chance to increase the DoT taken by the target by 30% for 2 turn(s)."
     },
     {
      "type": "E2",
      "group": "Eidolons",
      "name": "Fortississimo",
-     "description": "While Kafka is on the field, DoT dealt by all allies increases by 25%."
+     "description": "While Kafka is on the field, DoT dealt by all allies increases by 33%."
     },
     {
      "type": "E3",
@@ -16787,31 +16018,6 @@
      "type": "Skill",
      "name": "Sheathed Blade",
      "tag": "Single Target",
-     "description": "Increases Seele's SPD by 25% for 2 turn(s) and deals Quantum DMG equal to {quantum_dmg} of Seele's ATK to a single enemy.",
-     "scalings": [
-      {
-       "label": "Quantum DMG",
-       "values": [
-        "110%",
-        "121%",
-        "132%",
-        "143%",
-        "154%",
-        "165%",
-        "178.75%",
-        "192.5%",
-        "206.25%",
-        "220%",
-        "231%",
-        "242%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Skill",
-     "name": "Sheathed Blade",
-     "tag": "Single Target",
      "description": "Increases Seele's SPD by 25% for 3 turn(s) and deals Quantum DMG equal to {quantum_dmg} of Seele's ATK to one designated enemy.\nAfter an ally target attacks, if the attack target's current HP percentage is 50% or below, Seele will automatically use her Skill at that target 1 time. This Skill does not consume Skill Points or regenerate Energy. This effect can only be triggered 1 time per turn and resets at the start of Seele's turn. If there are no valid targets to attack, she attacks the enemy target with the lowest HP percentage instead.",
      "scalings": [
       {
@@ -16835,31 +16041,6 @@
     },
     {
      "type": "Ultimate",
-     "name": "Butterfly Flurry",
-     "tag": "Single Target",
-     "description": "Seele enters the Amplification state and deals Quantum DMG equal to {quantum_dmg} of her ATK to a single enemy.",
-     "scalings": [
-      {
-       "label": "Quantum DMG",
-       "values": [
-        "255%",
-        "272%",
-        "289%",
-        "306%",
-        "323%",
-        "340%",
-        "361.25%",
-        "382.5%",
-        "403.75%",
-        "425%",
-        "442%",
-        "459%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Ultimate",
      "name": "Butterfly Flurry",
      "tag": "Single Target",
      "description": "Seele enters the Amplification state and deals Quantum DMG equal to {quantum_dmg} of her ATK to one designated enemy.",
@@ -16887,31 +16068,6 @@
      "type": "Talent",
      "name": "Resurgence",
      "tag": "Enhance",
-     "description": "Enters the Amplification state upon defeating an enemy with Basic ATK, Skill, or Ultimate, and receives an extra turn. While in the Amplification state, the DMG of Seele's attacks increases by {turn_s} for 1 turn(s).\nEnemies defeated in the extra turn provided by \"Resurgence\" will not trigger another \"Resurgence.\"",
-     "scalings": [
-      {
-       "label": "turn s",
-       "values": [
-        "40%",
-        "44%",
-        "48%",
-        "52%",
-        "56%",
-        "60%",
-        "65%",
-        "70%",
-        "75%",
-        "80%",
-        "84%",
-        "88%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Talent",
-     "name": "Resurgence",
-     "tag": "Enhance",
      "description": "Enters the Amplification state upon defeating an enemy with Basic ATK, Skill, or Ultimate, and receives an extra turn. While in the Amplification state, increases the DMG dealt by Seele increases by {turn_s} for 3 turn(s).\nEnemies defeated in the extra turn provided by \"Resurgence\" will not trigger another \"Resurgence.\"",
      "scalings": [
       {
@@ -16937,25 +16093,19 @@
      "type": "Technique",
      "name": "Phantom Illusion",
      "tag": "Enhance",
-     "description": "After using her Technique, Seele gains Stealth for 20 second(s). While Stealth is active, Seele cannot be detected by enemies. And when entering battle by attacking enemies, Seele will immediately enter the Amplification state."
-    },
-    {
-     "type": "Enhanced Technique",
-     "name": "Phantom Illusion",
-     "tag": "Enhance",
      "description": "After using her Technique, Seele gains Stealth for 20 second(s). While Stealth is active, Seele cannot be detected by enemies. And when entering battle by attacking enemies, Seele will immediately enter the Amplification state and deals Quantum DMG equal to Seele's Skill DMG multiplier to random enemy target 1 time. This DMG is a guaranteed CRIT Hit."
     },
     {
      "type": "Trace",
      "name": "Lacerate",
      "group": "Traces",
-     "description": "While Seele is in the Amplification state, her Quantum RES PEN increases by 20%."
+     "description": "While Seele is in the Amplification state, her Quantum RES PEN increases by 25%."
     },
     {
      "type": "Trace",
      "name": "Nightshade",
      "group": "Traces",
-     "description": "When current HP percentage is 50% or lower, reduces the chance of being attacked by enemies."
+     "description": "When defeating an enemy target, increases the wearer's DMG dealt by 50%. This effect can stack up to 3 time(s) and lasts for 3 turn(s)."
     },
     {
      "type": "Trace",
@@ -16967,7 +16117,7 @@
      "type": "E1",
      "group": "Eidolons",
      "name": "Extirpating Slash",
-     "description": "When dealing DMG to an enemy whose HP percentage is 80% or lower, CRIT Rate increases by 15%."
+     "description": "When dealing DMG to an enemy whose HP percentage is 80% or lower, increases CRIT Rate by 15%, and ignores 20% of target's DEF."
     },
     {
      "type": "E2",
@@ -16997,7 +16147,7 @@
      "type": "E6",
      "group": "Eidolons",
      "name": "Shattering Shambles",
-     "description": "After Seele uses Ultimate, inflict the attacked enemy with \"Butterfly Flurry\" for 1 turn(s). Enemies in \"Butterfly Flurry\" will additionally take 1 instance of Quantum Additional DMG equal to 15% of Seele's Ultimate DMG every time they are attacked. If the target is defeated by the \"Butterfly Flurry\" state's Additional DMG triggered by other allies' attacks, Seele's Talent will not be triggered.\nWhen Seele is knocked down, the \"Butterfly Flurry\" inflicted on the enemies will be removed."
+     "description": "After attacking with Ultimate, Seele inflicts \"Butterfly Flurry\" on the target for 3 turn(s). Enemy targets in \"Butterfly Flurry\" will additionally take 1 instance of True DMG equal to 30% of Seele's Ultimate DMG after receiving an attack. When the target under the \"Butterfly Flurry\" state is defeated by any unit, Seele's Talent will also be triggered.\nWhen Seele is knocked down, the \"Butterfly Flurry\" inflicted on the enemies will be removed."
     }
    ]
   }
@@ -17231,65 +16381,6 @@
      "type": "Skill",
      "name": "Allow Changes?",
      "tag": "Single Target",
-     "description": "There is a {there} base chance to add 1 Weakness of an on-field character's Type to the target enemy. This also reduces the enemy's DMG RES to that Weakness Type by 20% for 2 turn(s). If the enemy already has that Type Weakness, the effect of DMG RES reduction to that Weakness Type will not be triggered.\nEach enemy can only have 1 Weakness implanted by Silver Wolf. When Silver Wolf implants another Weakness to the target, only the most recent implanted Weakness will be kept.\nIn addition, there is a 100% base chance to further reduce the All-Type RES of the enemy by {all_type_res} for 2 turn(s).\nDeals Quantum DMG equal to {quantum_dmg} of Silver Wolf's ATK to this enemy.",
-     "scalings": [
-      {
-       "label": "There",
-       "values": [
-        "75%",
-        "76%",
-        "77%",
-        "78%",
-        "79%",
-        "80%",
-        "81.25%",
-        "82.5%",
-        "83.75%",
-        "85%",
-        "86%",
-        "87%"
-       ]
-      },
-      {
-       "label": "All-Type RES",
-       "values": [
-        "7.5%",
-        "7.8%",
-        "8%",
-        "8.3%",
-        "8.5%",
-        "8.8%",
-        "9.1%",
-        "9.4%",
-        "9.7%",
-        "10%",
-        "10.3%",
-        "10.5%"
-       ]
-      },
-      {
-       "label": "Quantum DMG",
-       "values": [
-        "98%",
-        "107.8%",
-        "117.6%",
-        "127.4%",
-        "137.2%",
-        "147%",
-        "159.25%",
-        "171.5%",
-        "183.75%",
-        "196%",
-        "205.8%",
-        "215.6%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Skill",
-     "name": "Allow Changes?",
-     "tag": "Single Target",
      "description": "There is a {there} base chance to add 1 Weakness of an on-field ally target's Type to one designated enemy target (prioritizes implanting the Weakness corresponding to the first ally target in the lineup), also reducing the enemy target's RES to that Weakness Type by 20% for 3 turn(s). If the enemy target already has that Type Weakness, the RES reduction effect to that Type will not be triggered.\nEach enemy target can only have 1 Weakness implanted by Silver Wolf. When Silver Wolf implants another Weakness to the target, only the most recent implanted Weakness will be kept.\nIn addition, there is a 100% base chance to further reduce the target's All-Type RES by {all_type_res} for 2 turn(s).\nDeals Quantum DMG equal to {quantum_dmg} of Silver Wolf's ATK to this target.",
      "scalings": [
       {
@@ -17347,65 +16438,6 @@
     },
     {
      "type": "Ultimate",
-     "name": "User Banned",
-     "tag": "Single Target",
-     "description": "There's a {base_chance} base chance to decrease the target enemy's DEF by {target_enemy_s_def} for 3 turn(s). And at the same time, deals Quantum DMG equal to {quantum_dmg} of Silver Wolf's ATK to the target enemy.",
-     "scalings": [
-      {
-       "label": "base chance",
-       "values": [
-        "85%",
-        "86.5%",
-        "88%",
-        "89.5%",
-        "91%",
-        "92.5%",
-        "94.375%",
-        "96.25%",
-        "98.125%",
-        "100%",
-        "101.5%",
-        "103%"
-       ]
-      },
-      {
-       "label": "target enemy's DEF",
-       "values": [
-        "36%",
-        "36.9%",
-        "37.8%",
-        "38.7%",
-        "39.6%",
-        "40.5%",
-        "41.625%",
-        "42.75%",
-        "43.875%",
-        "45%",
-        "45.9%",
-        "46.8%"
-       ]
-      },
-      {
-       "label": "Quantum DMG",
-       "values": [
-        "228%",
-        "243.2%",
-        "258.4%",
-        "273.6%",
-        "288.8%",
-        "304%",
-        "323%",
-        "342%",
-        "361%",
-        "380%",
-        "395.2%",
-        "410.4%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Ultimate",
      "name": "User Banned",
      "tag": "AoE",
      "description": "There's a {base_chance} base chance to decrease all enemies' DEF by {all_enemies_def} for 3 turn(s). At the same time, deals Quantum DMG equal to {quantum_dmg} of Silver Wolf's ATK to all enemies.",
@@ -17465,82 +16497,6 @@
     },
     {
      "type": "Talent",
-     "name": "Awaiting System Response...",
-     "tag": "Impair",
-     "description": "Silver Wolf can create three types of Bugs: Reduce ATK by {bugs_reduce_atk}, reduce DEF by {def}, and reduce SPD by {spd}.\nEvery time Silver Wolf attacks, she has a {base_chance} base chance to implant a random Bug that lasts for 3 turn(s) in an enemy target.",
-     "scalings": [
-      {
-       "label": "Bugs Reduce ATK",
-       "values": [
-        "5%",
-        "5.5%",
-        "6%",
-        "6.5%",
-        "7%",
-        "7.5%",
-        "8.125%",
-        "8.75%",
-        "9.375%",
-        "10%",
-        "10.5%",
-        "11%"
-       ]
-      },
-      {
-       "label": "DEF",
-       "values": [
-        "4%",
-        "4.4%",
-        "4.8%",
-        "5.2%",
-        "5.6%",
-        "6%",
-        "6.5%",
-        "7%",
-        "7.5%",
-        "8%",
-        "8.4%",
-        "8.8%"
-       ]
-      },
-      {
-       "label": "SPD",
-       "values": [
-        "3%",
-        "3.3%",
-        "3.6%",
-        "3.9%",
-        "4.2%",
-        "4.5%",
-        "4.875%",
-        "5.25%",
-        "5.625%",
-        "6%",
-        "6.3%",
-        "6.6%"
-       ]
-      },
-      {
-       "label": "base chance",
-       "values": [
-        "60%",
-        "61.2%",
-        "62.4%",
-        "63.6%",
-        "64.8%",
-        "66%",
-        "67.5%",
-        "69%",
-        "70.5%",
-        "72%",
-        "73.2%",
-        "74.4%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Talent",
      "name": "Awaiting System Response...",
      "tag": "Impair",
      "description": "Silver Wolf can create three types of \"Bugs\": Reduce ATK by {bugs_reduce_atk}, reduce DEF by {def}, and reduce SPD by {spd}.\nAfter every attack launched by Silver Wolf, she has a {base_chance} base chance to implant 1 random \"Bug\" that lasts for 3 turn(s) in the attacked enemy target. \nWhen the enemy target is defeated, the Weakness Silver Wolf implanted on it will be transferred to another surviving enemy on the field that hasn't been implanted with Weakness, prioritizing Elite targets and greater.",
@@ -17624,19 +16580,19 @@
      "type": "Trace",
      "name": "Generate",
      "group": "Traces",
-     "description": "\"Bug\"'s duration is extended for 1 turn(s). Every time an enemy is inflicted with Weakness Break, Silver Wolf has a 65% base chance of implanting a random \"Bug\" in the enemy."
+     "description": "The duration of \"Bug\" is extended for 1 turn(s). Every time an enemy target's Weakness is Broken, Silver Wolf has a 100% base chance of implanting 1 random \"Bug\" in that target."
     },
     {
      "type": "Trace",
      "name": "Inject",
      "group": "Traces",
-     "description": "The duration of the Weakness implanted by Silver Wolf's Skill increases by 1 turn(s)."
+     "description": "When the battle starts, immediately regenerates 20 Energy. When Silver Wolf's turn starts, she regenerates 5 Energy."
     },
     {
      "type": "Trace",
      "name": "Side Note",
      "group": "Traces",
-     "description": "If there are 3 or more debuff(s) affecting the enemy when the Skill is used, then the Skill decreases the enemy's All-Type RES by an additional 3%."
+     "description": "For every 10% Effect Hit Rate that Silver Wolf has, additionally increases her ATK by 10% to a max of 50%."
     },
     {
      "type": "E1",
@@ -17648,7 +16604,7 @@
      "type": "E2",
      "group": "Eidolons",
      "name": "Zombie Network",
-     "description": "When an enemy enters battle, reduces their Effect RES by 20%."
+     "description": "When an enemy target enters combat, increases their DMG taken by 20%. When an enemy target gets attacked by ally targets, Silver Wolf has a 100% base chance to implant 1 random \"Bug\" on the attacked enemy target."
     },
     {
      "type": "E3",
@@ -17660,7 +16616,7 @@
      "type": "E4",
      "group": "Eidolons",
      "name": "Bounce Attack",
-     "description": "After using her Ultimate to attack enemies, deals Quantum Additional DMG equal to 20% of Silver Wolf's ATK for every debuff currently on the enemy target. This effect can be triggered for a maximum of 5 time(s) during each use of her Ultimate."
+     "description": "After using Ultimate to attack an enemy target, deals Quantum Additional DMG equal to 20% of Silver Wolf's ATK for every debuff on the target. This effect can trigger up to 5 time(s) per target during each use of Ultimate."
     },
     {
      "type": "E5",
@@ -17976,48 +16932,6 @@
      "type": "Skill",
      "name": "Dreamdiver",
      "tag": "Support",
-     "description": "Increases the CRIT DMG of a single target ally by {crit_dmg} of Sparkle's CRIT DMG plus {2}, lasting for 1 turn(s). And at the same time, Advances Forward this ally's action by 50%.\nWhen Sparkle uses this ability on herself, the Action Advance effect will not trigger.",
-     "scalings": [
-      {
-       "label": "CRIT DMG",
-       "values": [
-        "12%",
-        "13.2%",
-        "14.4%",
-        "15.6%",
-        "16.8%",
-        "18%",
-        "19.5%",
-        "21%",
-        "22.5%",
-        "24%",
-        "25.2%",
-        "26.4%"
-       ]
-      },
-      {
-       "label": "CRIT DMG",
-       "values": [
-        "27%",
-        "28.8%",
-        "30.6%",
-        "32.4%",
-        "34.2%",
-        "36%",
-        "38.25%",
-        "40.5%",
-        "42.75%",
-        "45%",
-        "46.8%",
-        "48.6%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Skill",
-     "name": "Dreamdiver",
-     "tag": "Support",
      "description": "Increases the CRIT DMG of a designated ally by {crit_dmg} of Sparkle's CRIT DMG plus {2}, lasting for 2 turn(s). And at the same time, advances this ally's action by 50%.\nWhen Sparkle uses this ability on herself, the Action Advance effect will not trigger.",
      "scalings": [
       {
@@ -18060,31 +16974,6 @@
      "type": "Ultimate",
      "name": "The Hero with a Thousand Faces",
      "tag": "Support",
-     "description": "Recovers 4 Skill Points for the team and grants all allies Cipher. For allies with Cipher, each stack of the DMG Boost effect provided by Sparkle's Talent additionally increases by {talent_additionally}, lasting for 2 turns.",
-     "scalings": [
-      {
-       "label": "Talent additionally",
-       "values": [
-        "6%",
-        "6.4%",
-        "6.8%",
-        "7.2%",
-        "7.6%",
-        "8%",
-        "8.5%",
-        "9%",
-        "9.5%",
-        "10%",
-        "10.4%",
-        "10.8%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Ultimate",
-     "name": "The Hero with a Thousand Faces",
-     "tag": "Support",
      "description": "Recovers 6 Skill Point(s) for allies. If Skill Points overflow during recovery, the excess points will be recorded, up to a max of 10 points. When an ally character's turn ends, if Skill Points are below the maximum, Sparkle consumes the recorded value to recover Skill Points until the upper limit is reached. Then, grants all allies \"Cipher.\" For ally targets with \"Cipher,\" each stack of Boost of DMG taken by enemies provided by Sparkle's Talent additionally increases by {talent_additionally}, lasting for 3 turn(s).",
      "scalings": [
       {
@@ -18108,31 +16997,6 @@
     },
     {
      "type": "Talent",
-     "name": "Red Herring",
-     "tag": "Support",
-     "description": "While Sparkle is on the battlefield, additionally increases the max number of Skill Points by 2. Whenever an ally consumes 1 Skill Point, all allies' DMG dealt increases by {all_allies_dmg}. This effect lasts for 2 turn(s) and can stack up to 3 time(s).",
-     "scalings": [
-      {
-       "label": "all allies' DMG",
-       "values": [
-        "3%",
-        "3.3%",
-        "3.6%",
-        "3.9%",
-        "4.2%",
-        "4.5%",
-        "4.875%",
-        "5.25%",
-        "5.625%",
-        "6%",
-        "6.3%",
-        "6.6%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Talent",
      "name": "Red Herring",
      "tag": "Support",
      "description": "While Sparkle is on the battlefield, additionally increases the max number of Skill Points by 2. Whenever an ally target consumes 1 Skill Point, Sparkle gains 1 stack of \"Figment,\" with each stack increasing the DMG taken by all enemies by {dmg}. This effect lasts for 2 turn(s) and can stack up to 3 time(s).",
@@ -18160,43 +17024,37 @@
      "type": "Technique",
      "name": "Unreliable Narrator",
      "tag": "Support",
-     "description": "Using the Technique grants all allies Misdirect for 20 seconds. Characters with Misdirect will not be detected by enemies, and entering battle in the Misdirect state recovers 3 Skill Point(s) for the team."
-    },
-    {
-     "type": "Enhanced Technique",
-     "name": "Unreliable Narrator",
-     "tag": "Support",
      "description": "After using Technique, grants all allies Misdirect for 20 seconds. Characters with Misdirect will not be detected by enemies, and entering combat in the Misdirect state recovers 3 Skill Point(s) for the team and regenerates 20 Energy for Sparkle."
     },
     {
      "type": "Trace",
      "name": "Almanac",
      "group": "Traces",
-     "description": "When using Basic ATK, additionally regenerates 10 Energy."
+     "description": "Using Basic ATK additionally regenerates 10 Energy. When an ally character who holds the CRIT DMG Boost effect provided by the Skill consumes Skill Points, Sparkle additionally regenerates 1 Energy."
     },
     {
      "type": "Trace",
      "name": "Artificial Flower",
      "group": "Traces",
-     "description": "The CRIT DMG Boost effect provided by the Skill will be extended until the start of the target's next turn."
+     "description": "If an ally character consumes 3 or more Skill Points in a single turn, Sparkle's next use of Skill will not consume Skill Points."
     },
     {
      "type": "Trace",
      "name": "Nocturne",
      "group": "Traces",
-     "description": "Increases all allies' ATK by 15%. When there are 1/2/3 Quantum-Type allies in the team, additionally increases Quantum-Type allies' ATK by 5%/15%/30%."
+     "description": "Increases all allies's ATK by 45%. When an ally character holds the CRIT DMG Boost effect provided by the Skill, All-Type RES PEN increases by 10%."
     },
     {
      "type": "E1",
      "group": "Eidolons",
      "name": "Suspension of Disbelief",
-     "description": "The Cipher effect granted by the Ultimate lasts for 1 extra turn. All allies with Cipher have their ATK increased by 40%."
+     "description": "Increases the ATK of ally targets with \"Cipher\" by 40%. When the battle starts or when using Skill, increases Sparkle's SPD by 15%, lasting for 2 turn(s)."
     },
     {
      "type": "E2",
      "group": "Eidolons",
      "name": "Purely Fictitious",
-     "description": "Every stack of the Talent's effect allows allies to additionally ignore 8% of the target's DEF when dealing DMG."
+     "description": "Each stack of the Talent's effect additionally reduces the enemy target's DEF by 10%."
     },
     {
      "type": "E3",
@@ -20031,48 +18889,6 @@
      "type": "Skill",
      "name": "Edge of the Void",
      "tag": "Bounce",
-     "description": "Deals Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to a single enemy and further deals DMG 2 extra times, with each time dealing Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to a random enemy. On hit, there is a {on_hit_there} base chance to reduce the enemy's SPD by 10% for 2 turn(s).",
-     "scalings": [
-      {
-       "label": "Imaginary DMG",
-       "values": [
-        "36%",
-        "39.6%",
-        "43.2%",
-        "46.8%",
-        "50.4%",
-        "54%",
-        "58.5%",
-        "63%",
-        "67.5%",
-        "72%",
-        "75.6%",
-        "79.2%"
-       ]
-      },
-      {
-       "label": "On hit there",
-       "values": [
-        "65%",
-        "66%",
-        "67%",
-        "68%",
-        "69%",
-        "70%",
-        "71.25%",
-        "72.5%",
-        "73.75%",
-        "75%",
-        "76%",
-        "77%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Skill",
-     "name": "Edge of the Void",
-     "tag": "Bounce",
      "description": "Deals Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to one designated enemy and additionally deals DMG 4 times, with each time dealing Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to one random enemy. On hit, there is a {on_hit_there} base chance to reduce the enemy's SPD by 10% for 2 turn(s).",
      "scalings": [
       {
@@ -20115,7 +18931,7 @@
      "type": "Ultimate",
      "name": "Synthetic Black Hole",
      "tag": "AoE",
-     "description": "Deals Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to all enemies, with a 100% base chance for enemies hit by this ability to be Imprisoned for 1 turn.\nImprisoned enemies have their actions delayed by {turn_imprisoned} and SPD reduced by 10%.",
+     "description": "Deals Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to all enemies. Has a 100% base chance to Imprison hit enemy targets for 1 turn.\nWhile Imprisoned, enemy targets have their actions delayed by {turn_while_imprisoned} and their SPD reduced by 10%. After using his Ultimate, inflicts the \"Weightless\" state on all enemies. When targets in \"Weightless\" state get attacked, their actions are delayed by 4.0%. This effect can trigger up to 8 time(s) per target per turn. \"Weightless\" lasts for 2 turn(s).",
      "scalings": [
       {
        "label": "Imaginary DMG",
@@ -20135,57 +18951,26 @@
        ]
       },
       {
-       "label": "turn Imprisoned",
+       "label": "turn While Imprisoned",
        "values": [
-        "32%",
-        "32.8%",
-        "33.6%",
-        "34.4%",
-        "35.2%",
-        "36%",
-        "37%",
-        "38%",
-        "39%",
-        "40%",
-        "40.8%",
-        "41.6%"
+        "6%",
+        "6.6%",
+        "7.2%",
+        "7.8%",
+        "8.4%",
+        "9%",
+        "9.8%",
+        "10.5%",
+        "11.3",
+        "12%",
+        "12.6%",
+        "13.2%"
        ]
       }
      ]
-    },
-    {
-     "type": "Enhanced Ultimate",
-     "name": "Synthetic Black Hole",
-     "tag": "AoE",
-     "description": "Deals Imaginary DMG equal to 90%—162% of Welt's ATK to all enemies. Has a 100% base chance to Imprison hit enemy targets for 1 turn.\nWhile Imprisoned, enemy targets have their actions delayed by 6%-13.2 and their SPD reduced by 10%. After using his Ultimate, inflicts the \"Weightless\" state on all enemies. When targets in \"Weightless\" state get attacked, their actions are delayed by 4.0%. This effect can trigger up to 8 time(s) per target per turn. \"Weightless\" lasts for 2 turn(s)."
     },
     {
      "type": "Talent",
-     "name": "Time Distortion",
-     "tag": "Enhance",
-     "description": "When hitting an enemy that is already Slowed, Welt deals Imaginary Additional DMG equal to {imaginary_additional_dmg} of his ATK to the enemy.",
-     "scalings": [
-      {
-       "label": "Imaginary Additional DMG",
-       "values": [
-        "30%",
-        "33%",
-        "36%",
-        "39%",
-        "42%",
-        "45%",
-        "48.75%",
-        "52.5%",
-        "56.25%",
-        "60%",
-        "63%",
-        "66%"
-       ]
-      }
-     ]
-    },
-    {
-     "type": "Enhanced Talent",
      "name": "Time Distortion",
      "tag": "Enhance",
      "description": "Enemy targets in the \"Weightless\" state have their DEF reduced by 40% and their SPD reduced by 5%. When Welt attacks an enemy that is already Slowed, he additionally deals Imaginary Additional DMG equal to {imaginary_additional_dmg} of his ATK to the enemy.",
@@ -20219,25 +19004,25 @@
      "type": "Trace",
      "name": "Judgment",
      "group": "Traces",
-     "description": "Using Ultimate additionally regenerates 10 Energy."
+     "description": "When Welt uses Basic ATK or Skill, additionally deals 1 extra instance of Additional DMG to the enemy target. The Additional DMG dealt when using Basic ATK is equal to 80% of Basic ATK DMG multiplier. The Additional DMG dealt when using Skill is equal to 120% of Skill DMG multiplier."
     },
     {
      "type": "Trace",
      "name": "Punishment",
      "group": "Traces",
-     "description": "Deals 20% more DMG to enemies inflicted with Weakness Break."
+     "description": "When Welt's Effect Hit Rate is greater than 40%, for every 10% that exceeds this value, increases ATK by 20%, up to a maximum increase of 80%. When using Ultimate, additionally restores 5 Energy."
     },
     {
      "type": "Trace",
      "name": "Retribution",
      "group": "Traces",
-     "description": "When using Ultimate, there is a 100% base chance to increase the DMG taken by the targets by 12% for 2 turn(s)."
+     "description": "When ally targets attack targets under the \"Weightless\" state, their DMG dealt increases by 10%. This effect stacks up to 10 times and lasts for 2 turn(s). At the start of the battle, Welt regenerates 30 Energy."
     },
     {
      "type": "E1",
      "group": "Eidolons",
      "name": "Legacy of Honor",
-     "description": "After using Ultimate, Welt gets enhanced. Then, the next 2 time(s) he uses Basic ATK or Skill, deals 1 extra instance of Additional DMG to the enemy target. The Additional DMG dealt when using Basic ATK is equal to 50% of Basic ATK DMG multiplier. The Additional DMG dealt when using Skill is equal to 80% of Skill DMG multiplier."
+     "description": "After using a Skill or Ultimate to hit a target in the \"Weightless\" state, additionally deals 1 instance of Imaginary Additional DMG equal to 40% of the Ultimate's DMG multiplier. This effect can only be triggered once per target per attack."
     },
     {
      "type": "E2",
@@ -20255,7 +19040,7 @@
      "type": "E4",
      "group": "Eidolons",
      "name": "Appellation of Justice",
-     "description": "When using Skill, increases the base chance of reducing the attacked enemy target's SPD by 35%."
+     "description": "Enemy targets in the \"Weightless\" state have their All-Type RES reduced by 30%."
     },
     {
      "type": "E5",
@@ -20267,7 +19052,7 @@
      "type": "E6",
      "group": "Eidolons",
      "name": "Prospect of Glory",
-     "description": "When using Skill, deals DMG for 1 extra time to a random enemy."
+     "description": "When using Skill or Ultimate to hit an enemy target in the Slow state, increases CRIT Rate by 30% and CRIT DMG by 60% for the DMG dealt."
     }
    ]
   }
@@ -20345,7 +19130,43 @@
      "type": "Ultimate",
      "name": "Divine Castigation",
      "tag": "Single Target",
-     "description": "Deals Quantum DMG equal to 150%—270% of Xueyi's ATK to a single target enemy. This attack ignores Weakness Types and reduces the enemy's Toughness. When the enemy's Weakness is Broken, the Quantum Weakness Break effect is triggered.\nIn this attack, the more Toughness is reduced, the higher the DMG will be dealt, up to a max of 36%—64.8% increase."
+     "description": "Deals Quantum DMG equal to {quantum_dmg} of Xueyi's ATK to a single target enemy. This attack ignores Weakness Types and reduces the enemy's Toughness. When the enemy's Weakness is Broken, the Quantum Weakness Break effect is triggered.\nIn this attack, the more Toughness is reduced, the higher the DMG will be dealt, up to a max of {higher_the_dmg} increase.",
+     "scalings": [
+      {
+       "label": "Quantum DMG",
+       "values": [
+        "150%",
+        "160%",
+        "170%",
+        "180%",
+        "190%",
+        "200%",
+        "212.5%",
+        "225%",
+        "237.5%",
+        "250%",
+        "260%",
+        "270%"
+       ]
+      },
+      {
+       "label": "higher the DMG",
+       "values": [
+        "36%",
+        "38.4%",
+        "40.8%",
+        "43.2%",
+        "45.6%",
+        "48%",
+        "51%",
+        "54%",
+        "57%",
+        "60%",
+        "62.4%",
+        "64.8%"
+       ]
+      }
+     ]
     },
     {
      "type": "Talent",
