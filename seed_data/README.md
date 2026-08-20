@@ -33,7 +33,12 @@ hsr_light_cones_wiki.json ┘        ^
 | `hsr_light_cones_raw.txt` | **Source.** The catalog as pasted from a listing site. Trusted for name, rarity and path — *not* for numbers: it rounds decimals, truncates them, and is in places simply wrong. |
 | `hsr_light_cones_wiki.json` | **Cache.** Light Cone Infoboxes: the ability name, the effect sentence with a `(varN)` marker at each value, and the value at every superimposition rank. This is where the numbers come from. |
 | `hsr_light_cones_import.json` | **Output.** 167 rows, each with an `effect` skilllist. |
-| `hsr_light_cone_art.txt` | **Cache, currently unused.** `name → slot → wiki URL` for full art and icons, kept for when the art is self-hosted. Nothing reads it today. |
+
+Art is not cached here. The wiki names light cone images predictably —
+`File:Light Cone <name>.png` for the full art and `File:Light Cone <name> Icon.png`
+for the icon — so the URLs are a `prop=imageinfo&iiprop=url` query away when the
+images are self-hosted. One name differs: the wiki spells "Shadowed By Night" as
+"Shadowed by Night".
 
 Two wiki values are corrected in `VALUE_OVERRIDES` in `make_hsr_light_cones.py`;
 `arithmetic_breaks()` runs on every build so a new typo cannot slip in unnoticed.
