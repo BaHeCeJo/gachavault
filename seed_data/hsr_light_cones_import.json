@@ -121,11 +121,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "The wearer ignores {wearer_ignores} of the target's DEF when dealing DMG. When the wearer uses Assist Skill, they regenerate 6 Energy and gain \"Sail,\" lasting for 2 turns and stacking up to 3 time(s). Each stack of \"Sail\" increases Assist Skill DMG by {assist_skill_dmg}. When \"Sail\" reaches 3 stacks, each stack of \"Sail\" increases Ultimate DMG by {assist_skill_dmg}.",
+     "description": "The wearer ignores {def} of the target's DEF when dealing DMG. When the wearer uses Assist Skill, they regenerate 6 Energy and gain \"Sail,\" lasting for 2 turns and stacking up to 3 time(s). Each stack of \"Sail\" increases Assist Skill DMG by {assist_skill_dmg}. When \"Sail\" reaches 3 stacks, each stack of \"Sail\" increases Ultimate DMG by {assist_skill_dmg}.",
      "name": "First Wish",
      "scalings": [
       {
-       "label": "wearer ignores",
+       "label": "DEF",
        "values": [
         "32%",
         "36%",
@@ -241,11 +241,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "When the wearer defeats an enemy, increases SPD by {enemy_increases_spd} for 2 turn(s).",
+     "description": "When the wearer defeats an enemy, increases SPD by {spd} for 2 turn(s).",
      "name": "Alliance",
      "scalings": [
       {
-       "label": "enemy increases SPD",
+       "label": "SPD",
        "values": [
         "10%",
         "12%",
@@ -271,7 +271,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Break Effect by {break_effect}. After the wearer uses Ultimate, increases SPD by {ultimate_increases_spd}, lasting for 2 turn(s).",
+     "description": "Increases the wearer's Break Effect by {break_effect}. After the wearer uses Ultimate, increases SPD by {spd}, lasting for 2 turn(s).",
      "name": "Quiescence",
      "scalings": [
       {
@@ -285,7 +285,7 @@
        ]
       },
       {
-       "label": "Ultimate increases SPD",
+       "label": "SPD",
        "values": [
         "8%",
         "10%",
@@ -311,7 +311,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. When the wearer hits an enemy target, inflicts Mirage Fizzle on the enemy, lasting for 1 turn. Each time the wearer attacks, this effect can only trigger 1 time on each target. The wearer deals {dmg} increased DMG to targets afflicted with Mirage Fizzle, and the DMG dealt by Ultimate additionally increases by {ultimate_additionally}.",
+     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. When the wearer hits an enemy target, inflicts Mirage Fizzle on the enemy, lasting for 1 turn. Each time the wearer attacks, this effect can only trigger 1 time on each target. The wearer deals {dmg} increased DMG to targets afflicted with Mirage Fizzle, and the DMG dealt by Ultimate additionally increases by {ultimate}.",
      "name": "Steerer",
      "scalings": [
       {
@@ -335,7 +335,7 @@
        ]
       },
       {
-       "label": "Ultimate additionally",
+       "label": "Ultimate",
        "values": [
         "24%",
         "28%",
@@ -431,11 +431,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "At the start of the battle, the wearer's CRIT Rate increases by {turn_s} for 3 turn(s).",
+     "description": "At the start of the battle, the wearer's CRIT Rate increases by {crit_rate} for 3 turn(s).",
      "name": "Crisis",
      "scalings": [
       {
-       "label": "turn s",
+       "label": "CRIT Rate",
        "values": [
         "12%",
         "15%",
@@ -461,7 +461,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. For every debuff on the enemy target, the wearer's CRIT DMG dealt against this target additionally increases by {2}, stacking up to 3 times. When using Ultimate to attack the enemy target, the wearer receives the Disputation effect, which increases DMG dealt by {enables} and enables their follow-up attacks to ignore {which_increases_dmg} of the target's DEF. This effect lasts for 2 turns.",
+     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. For every debuff on the enemy target, the wearer's CRIT DMG dealt against this target additionally increases by {2}, stacking up to 3 times. When using Ultimate to attack the enemy target, the wearer receives the Disputation effect, which increases DMG dealt by {dmg} and enables their follow-up attacks to ignore {def} of the target's DEF. This effect lasts for 2 turns.",
      "name": "Mental Training",
      "scalings": [
       {
@@ -485,7 +485,7 @@
        ]
       },
       {
-       "label": "enables",
+       "label": "DMG",
        "values": [
         "36%",
         "42%",
@@ -495,7 +495,7 @@
        ]
       },
       {
-       "label": "which increases DMG",
+       "label": "DEF",
        "values": [
         "24%",
         "28%",
@@ -611,7 +611,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increase the wearer's CRIT Rate by {crit_rate}. The wearer deals {more_crit_dmg} more CRIT DMG to enemies that are currently Slowed or have reduced DEF.",
+     "description": "Increase the wearer's CRIT Rate by {crit_rate}. The wearer deals {crit_dmg} more CRIT DMG to enemies that are currently Slowed or have reduced DEF.",
      "name": "Scrutinize",
      "scalings": [
       {
@@ -625,7 +625,7 @@
        ]
       },
       {
-       "label": "more CRIT DMG",
+       "label": "CRIT DMG",
        "values": [
         "24%",
         "30%",
@@ -701,7 +701,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Energy Regeneration Rate by {energy_regeneration_rate} and regenerates 1 Skill Point when the wearer uses their Ultimate on an ally. This effect can be triggered once after every 2 uses of the wearer's Ultimate. When the wearer uses their Skill, the next ally taking action (except the wearer) deals {more_dmg} more DMG for 1 turn(s).",
+     "description": "Increases the wearer's Energy Regeneration Rate by {energy_regeneration_rate} and regenerates 1 Skill Point when the wearer uses their Ultimate on an ally. This effect can be triggered once after every 2 uses of the wearer's Ultimate. When the wearer uses their Skill, the next ally taking action (except the wearer) deals {dmg} more DMG for 1 turn(s).",
      "name": "Heir",
      "scalings": [
       {
@@ -715,7 +715,7 @@
        ]
       },
       {
-       "label": "more DMG",
+       "label": "DMG",
        "values": [
         "30%",
         "35%",
@@ -741,11 +741,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "At the start of the battle and whenever the wearer's turn begins, one of the following effects is applied randomly: All allies' ATK increases by {all_allies_atk}, all allies' CRIT DMG increases by {allies_crit_dmg}, or all allies' Energy Regeneration Rate increases by {energy_regeneration_rate}. The applied effect cannot be identical to the last effect applied, and will replace the previous effect. The applied effect will be removed when the wearer has been knocked down. Effects of the same type cannot be stacked.",
+     "description": "At the start of the battle and whenever the wearer's turn begins, one of the following effects is applied randomly: All allies' ATK increases by {allies_atk}, all allies' CRIT DMG increases by {allies_crit_dmg}, or all allies' Energy Regeneration Rate increases by {energy_regeneration_rate}. The applied effect cannot be identical to the last effect applied, and will replace the previous effect. The applied effect will be removed when the wearer has been knocked down. Effects of the same type cannot be stacked.",
      "name": "Secret",
      "scalings": [
       {
-       "label": "All allies' ATK",
+       "label": "allies' ATK",
        "values": [
         "10%",
         "12.5%",
@@ -821,11 +821,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "The wearer's Basic ATK and Skill deal {more_dmg} more DMG.",
+     "description": "The wearer's Basic ATK and Skill deal {dmg} more DMG.",
      "name": "Havoc",
      "scalings": [
       {
-       "label": "more DMG",
+       "label": "DMG",
        "values": [
         "20%",
         "25%",
@@ -921,7 +921,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT rate by {crit_rate}, and increases their CRIT rate against enemies with HP less than or equal to 50% by an extra {enemies_with_hp}. When the wearer defeats an enemy, their ATK is increased by {turn_s} for 2 turn(s).",
+     "description": "Increases the wearer's CRIT rate by {crit_rate}, and increases their CRIT rate against enemies with HP less than or equal to 50% by an extra {enemies_with_hp}. When the wearer defeats an enemy, their ATK is increased by {atk} for 2 turn(s).",
      "name": "Chase",
      "scalings": [
       {
@@ -945,7 +945,7 @@
        ]
       },
       {
-       "label": "turn s",
+       "label": "ATK",
        "values": [
         "20%",
         "25%",
@@ -1041,11 +1041,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "When the wearer defeats an enemy, increases ATK by {enemy_increases_atk} for 3 turn(s).",
+     "description": "When the wearer defeats an enemy, increases ATK by {atk} for 3 turn(s).",
      "name": "War Cry",
      "scalings": [
       {
-       "label": "enemy increases ATK",
+       "label": "ATK",
        "values": [
         "24%",
         "30%",
@@ -1141,7 +1141,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. While the wearer is on the field, for every Elation character on the team, increases the Skill Point upper limit by 1, up to a max increase of 3. For every 1 Skill Point the wearer consumes, ignores {skill_point} of enemy targets' DEF when this unit deals Elation DMG, stacking up to 4 times. If 4 or more Skill Points are consumed in the same turn, the wearer gains \"Stream Promo,\" which increases all allies' Elation by {all_allies_elation}. Light Cone effects of the same type cannot stack.",
+     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. While the wearer is on the field, for every Elation character on the team, increases the Skill Point upper limit by 1, up to a max increase of 3. For every 1 Skill Point the wearer consumes, ignores {enemy_targets_def} of enemy targets' DEF when this unit deals Elation DMG, stacking up to 4 times. If 4 or more Skill Points are consumed in the same turn, the wearer gains \"Stream Promo,\" which increases all allies' Elation by {allies_elation}. Light Cone effects of the same type cannot stack.",
      "name": "Center of Attention",
      "scalings": [
       {
@@ -1155,7 +1155,7 @@
        ]
       },
       {
-       "label": "Skill Point",
+       "label": "enemy targets' DEF",
        "values": [
         "5%",
         "6%",
@@ -1165,7 +1165,7 @@
        ]
       },
       {
-       "label": "all allies' Elation",
+       "label": "allies' Elation",
        "values": [
         "20%",
         "24%",
@@ -1191,11 +1191,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "When the wearer unleashes their Ultimate, they restore HP by {they_restore_hp} of their Max HP.",
+     "description": "When the wearer unleashes their Ultimate, they restore HP by {hp} of their Max HP.",
      "name": "Revitalization",
      "scalings": [
       {
-       "label": "they restore HP",
+       "label": "HP",
        "values": [
         "18%",
         "21%",
@@ -1341,7 +1341,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. At the start of the battle, the wearer gains Mask, lasting for 3 turn(s). While the wearer has Mask, the wearer's allies have their CRIT Rate increased by {crit_dmg_increased} and their CRIT DMG increased by {3}. For every 1 Skill Point the wearer recovers (including Skill Points that exceed the limit), they gain 1 stack of Radiant Flame. And when the wearer has 4 stacks of Radiant Flame, all the stacks are removed, and they gain Mask, lasting for 4 turn(s).",
+     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. At the start of the battle, the wearer gains Mask, lasting for 3 turn(s). While the wearer has Mask, the wearer's allies have their CRIT Rate increased by {2} and their CRIT DMG increased by {3}. For every 1 Skill Point the wearer recovers (including Skill Points that exceed the limit), they gain 1 stack of Radiant Flame. And when the wearer has 4 stacks of Radiant Flame, all the stacks are removed, and they gain Mask, lasting for 4 turn(s).",
      "name": "Capriciousness",
      "scalings": [
       {
@@ -1355,7 +1355,7 @@
        ]
       },
       {
-       "label": "CRIT DMG increased",
+       "label": "CRIT DMG",
        "values": [
         "10%",
         "11%",
@@ -1521,7 +1521,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's ATK by {atk}. After using an attack, for each enemy target hit, additionally increases ATK by {additionally_increases_atk}. This effect can stack up to 5 times and last until the next attack. If there are 3 or more enemy targets hit, this unit's SPD increases by {spd}, lasting for 1 turn(s).",
+     "description": "Increases the wearer's ATK by {atk}. After using an attack, for each enemy target hit, additionally increases ATK by {2}. This effect can stack up to 5 times and last until the next attack. If there are 3 or more enemy targets hit, this unit's SPD increases by {spd}, lasting for 1 turn(s).",
      "name": "Boundless Thought",
      "scalings": [
       {
@@ -1535,7 +1535,7 @@
        ]
       },
       {
-       "label": "additionally increases ATK",
+       "label": "ATK",
        "values": [
         "4%",
         "5%",
@@ -1711,7 +1711,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Max HP by {max_hp} and Incoming Healing by {incoming_healing}. When using Skill or Ultimate, consumes HP equal to {ultimate_consumes_hp} of the wearer's Max HP and increases the DMG dealt by this attack by {dmg}. If this effect's consumed HP is greater than 500, the DMG additionally increases by {dmg}.\nIf the current HP is not sufficient, this effect reduces the wearer's current HP down to 1.",
+     "description": "Increases the wearer's Max HP by {max_hp} and Incoming Healing by {incoming_healing}. When using Skill or Ultimate, consumes HP equal to {hp} of the wearer's Max HP and increases the DMG dealt by this attack by {dmg}. If this effect's consumed HP is greater than 500, the DMG additionally increases by {dmg}.\nIf the current HP is not sufficient, this effect reduces the wearer's current HP down to 1.",
      "name": "Vista",
      "scalings": [
       {
@@ -1735,7 +1735,7 @@
        ]
       },
       {
-       "label": "Ultimate consumes HP",
+       "label": "HP",
        "values": [
         "6.0%",
         "6.5%",
@@ -1771,11 +1771,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "When the wearer's cumulative HP loss during one attack exceeds 25% of their Max HP, or if the amount of their own HP consumed at one time is greater than 25% of their Max HP, immediately heals the wearer for 15% of their Max HP, and at the same time, increases the DMG they deal by {turn_s} for 2 turn(s). This effect can only be triggered once every 3 turn(s).",
+     "description": "When the wearer's cumulative HP loss during one attack exceeds 25% of their Max HP, or if the amount of their own HP consumed at one time is greater than 25% of their Max HP, immediately heals the wearer for 15% of their Max HP, and at the same time, increases the DMG they deal by {dmg} for 2 turn(s). This effect can only be triggered once every 3 turn(s).",
      "name": "Deflagration",
      "scalings": [
       {
-       "label": "turn s",
+       "label": "DMG",
        "values": [
         "25%",
         "31.25%",
@@ -1801,7 +1801,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT Rate by {crit_rate}. When any ally character consumes a total of 4 or more Skill Points in a single turn, the wearer gains \"Radiant Crown,\" lasting for 3 turn(s). While the wearer holds \"Radiant Crown,\" all allies' DMG dealt ignores {dmg_dealt_ignores} of the target's DEF, and the Skill DMG dealt by the wearer increases by {skill_dmg}. Effects of the same type cannot stack.",
+     "description": "Increases the wearer's CRIT Rate by {crit_rate}. When any ally character consumes a total of 4 or more Skill Points in a single turn, the wearer gains \"Radiant Crown,\" lasting for 3 turn(s). While the wearer holds \"Radiant Crown,\" all allies' DMG dealt ignores {def} of the target's DEF, and the Skill DMG dealt by the wearer increases by {skill_dmg}. Effects of the same type cannot stack.",
      "name": "Sprout",
      "scalings": [
       {
@@ -1815,7 +1815,7 @@
        ]
       },
       {
-       "label": "DMG dealt ignores",
+       "label": "DEF",
        "values": [
         "20%",
         "24%",
@@ -1851,7 +1851,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Every time an ally attacks, the wearer gains 1 stack of Cantillation. Each stack of Cantillation increases the wearer's Energy Regeneration Rate by {energy_regeneration_rate}, stacking up to 5 time(s). When the wearer uses their Ultimate, removes Cantillation and gains Cadenza. Cadenza increases the wearer's ATK by {atk} and increases all allies' DMG dealt by {all_allies_dmg}, lasting for 1 turn(s).",
+     "description": "Every time an ally attacks, the wearer gains 1 stack of Cantillation. Each stack of Cantillation increases the wearer's Energy Regeneration Rate by {energy_regeneration_rate}, stacking up to 5 time(s). When the wearer uses their Ultimate, removes Cantillation and gains Cadenza. Cadenza increases the wearer's ATK by {atk} and increases all allies' DMG dealt by {allies_dmg}, lasting for 1 turn(s).",
      "name": "Pacify",
      "scalings": [
       {
@@ -1875,7 +1875,7 @@
        ]
       },
       {
-       "label": "all allies' DMG",
+       "label": "allies' DMG",
        "values": [
         "24%",
         "28%",
@@ -1901,7 +1901,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. When equipped by Trailblazer (Remembrance), increases all ally targets' DMG dealt by {dmg_dealt} and DMG dealt by Enhanced Basic ATK \"Together, We Script Tomorrow!\" by {we_script_tomorrow}.",
+     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. When equipped by Trailblazer (Remembrance), increases all ally targets' DMG dealt by {dmg} and DMG dealt by Enhanced Basic ATK \"Together, We Script Tomorrow!\" by {we_script_tomorrow}.",
      "name": "Gaze",
      "scalings": [
       {
@@ -1915,7 +1915,7 @@
        ]
       },
       {
-       "label": "DMG dealt",
+       "label": "DMG",
        "values": [
         "8%",
         "10%",
@@ -2031,7 +2031,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's ATK by {atk}. When the wearer defeats an enemy, the wearer's CRIT DMG increases by {turn_s} for 3 turn(s).",
+     "description": "Increases the wearer's ATK by {atk}. When the wearer defeats an enemy, the wearer's CRIT DMG increases by {crit_dmg} for 3 turn(s).",
      "name": "Each Now Has a Role to Play",
      "scalings": [
       {
@@ -2045,7 +2045,7 @@
        ]
       },
       {
-       "label": "turn s",
+       "label": "CRIT DMG",
        "values": [
         "24%",
         "30%",
@@ -2171,7 +2171,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's DMG dealt by {dmg}. After the wearer attacks, there is a 100% base chance to inflict the attacked target with Vulnerability, increasing the DMG they receive by {dmg_they_receive} for 2 turn(s). Effects of the same type cannot stack.",
+     "description": "Increases the wearer's DMG dealt by {dmg}. After the wearer attacks, there is a 100% base chance to inflict the attacked target with Vulnerability, increasing the DMG they receive by {2} for 2 turn(s). Effects of the same type cannot stack.",
      "name": "Chill Out",
      "scalings": [
       {
@@ -2185,7 +2185,7 @@
        ]
       },
       {
-       "label": "DMG they receive",
+       "label": "DMG",
        "values": [
         "10.0%",
         "11.5%",
@@ -2281,7 +2281,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. When an ally (excluding the wearer) gets attacked or loses HP, the wearer gains 1 stack of Eclipse, up to a max of 3 stack(s). Each stack of Eclipse increases the DMG of the wearer's next attack by {dmg}. When 3 stack(s) are reached, additionally enables that attack to ignore {dmg_when} of the enemy's DEF. This effect will be removed after the wearer uses an attack.",
+     "description": "Increases the wearer's CRIT DMG by {crit_dmg}. When an ally (excluding the wearer) gets attacked or loses HP, the wearer gains 1 stack of Eclipse, up to a max of 3 stack(s). Each stack of Eclipse increases the DMG of the wearer's next attack by {dmg}. When 3 stack(s) are reached, additionally enables that attack to ignore {def} of the enemy's DEF. This effect will be removed after the wearer uses an attack.",
      "name": "With This Evening Jade",
      "scalings": [
       {
@@ -2305,7 +2305,7 @@
        ]
       },
       {
-       "label": "dmg When",
+       "label": "DEF",
        "values": [
         "12%",
         "14%",
@@ -2331,7 +2331,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT Rate by {crit_rate}. When the wearer launches a follow-up attack, gains 1 stack of \"Luminflux,\" stacking up to 2 time(s). Each stack of \"Luminflux\" enables the Ultimate DMG dealt by the wearer to ignore {ultimate_dmg} of the target's DEF. When the wearer's turn ends, removes 1 stack of \"Luminflux.\"",
+     "description": "Increases the wearer's CRIT Rate by {crit_rate}. When the wearer launches a follow-up attack, gains 1 stack of \"Luminflux,\" stacking up to 2 time(s). Each stack of \"Luminflux\" enables the Ultimate DMG dealt by the wearer to ignore {def} of the target's DEF. When the wearer's turn ends, removes 1 stack of \"Luminflux.\"",
      "name": "Intimidation",
      "scalings": [
       {
@@ -2345,7 +2345,7 @@
        ]
       },
       {
-       "label": "Ultimate DMG",
+       "label": "DEF",
        "values": [
         "27%",
         "30%",
@@ -2541,7 +2541,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Effect Hit Rate by {effect_hit_rate}. When the wearer deals DMG to an enemy that currently has 3 or more debuffs, increases the wearer's CRIT Rate by {crit_rate}. After the wearer uses their Basic ATK, Skill, or Ultimate, there is a 100% base chance to implant Aether Code on a random hit target that does not yet have it. Targets with Aether Code receive {aether_code_receive} increased DMG for 1 turn.",
+     "description": "Increases the wearer's Effect Hit Rate by {effect_hit_rate}. When the wearer deals DMG to an enemy that currently has 3 or more debuffs, increases the wearer's CRIT Rate by {crit_rate}. After the wearer uses their Basic ATK, Skill, or Ultimate, there is a 100% base chance to implant Aether Code on a random hit target that does not yet have it. Targets with Aether Code receive {dmg} increased DMG for 1 turn.",
      "name": "Mirage of Reality",
      "scalings": [
       {
@@ -2565,7 +2565,7 @@
        ]
       },
       {
-       "label": "Aether Code receive",
+       "label": "DMG",
        "values": [
         "12%",
         "14%",
@@ -2631,7 +2631,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's DEF by {def}. When the wearer provides a Shield to an ally, the wearer's CRIT DMG increases by {def}, lasting for 2 turn(s). When the wearer's follow-up attack hits an enemy target, there is a {turn_s_when} base chance to increase the DMG taken by the attacked enemy target by {dmg}, lasting for 2 turn(s).",
+     "description": "Increases the wearer's DEF by {def}. When the wearer provides a Shield to an ally, the wearer's CRIT DMG increases by {def}, lasting for 2 turn(s). When the wearer's follow-up attack hits an enemy target, there is a {base_chance} base chance to increase the DMG taken by the attacked enemy target by {dmg}, lasting for 2 turn(s).",
      "name": "All-In",
      "scalings": [
       {
@@ -2645,7 +2645,7 @@
        ]
       },
       {
-       "label": "turn s When",
+       "label": "base chance",
        "values": [
         "100%",
         "115%",
@@ -2721,7 +2721,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "When the wearer inflicts a debuff on an enemy, gains a stack of Trick. Every stack of Trick increases the wearer's DMG dealt by {dmg}, stacking up to 3 time(s). This effect lasts for 1 turn(s). When the wearer's Effect Hit Rate is 80% or higher, increases ATK by {higher_increases_atk}.",
+     "description": "When the wearer inflicts a debuff on an enemy, gains a stack of Trick. Every stack of Trick increases the wearer's DMG dealt by {dmg}, stacking up to 3 time(s). This effect lasts for 1 turn(s). When the wearer's Effect Hit Rate is 80% or higher, increases ATK by {atk}.",
      "name": "Self-Amusement",
      "scalings": [
       {
@@ -2735,7 +2735,7 @@
        ]
       },
       {
-       "label": "higher increases ATK",
+       "label": "ATK",
        "values": [
         "20%",
         "24%",
@@ -2951,7 +2951,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's SPD by {spd}. When the wearer uses Basic ATK, Skill, or Ultimate, consumes all allies' HP equal to {all_allies_hp} of their current HP and additionally deals 1 instance of Additional DMG of the wearer's memosprite Type equal to {memosprite_type} of the total consumed HP to the attacked target after the next attack launched by the wearer's memosprite. The total HP consumed is then reset. When the wearer's memosprite uses Memosprite Skill, increases the DMG taken by all enemies by {dmg} for 2 turn(s). The same types of effects cannot stack.",
+     "description": "Increases the wearer's SPD by {spd}. When the wearer uses Basic ATK, Skill, or Ultimate, consumes all allies' HP equal to {allies_hp} of their current HP and additionally deals 1 instance of Additional DMG of the wearer's memosprite Type equal to {memosprite_type} of the total consumed HP to the attacked target after the next attack launched by the wearer's memosprite. The total HP consumed is then reset. When the wearer's memosprite uses Memosprite Skill, increases the DMG taken by all enemies by {dmg} for 2 turn(s). The same types of effects cannot stack.",
      "name": "Tolerant",
      "scalings": [
       {
@@ -2965,7 +2965,7 @@
        ]
       },
       {
-       "label": "all allies' HP",
+       "label": "allies' HP",
        "values": [
         "1.0%",
         "1.25%",
@@ -3011,7 +3011,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Break Effect by {break_effect}. When an enemy target's Weakness gets broken, there is a 100% base chance to inflict the \"Charring\" state on it, which increases its Break DMG taken by {break_dmg_taken}, lasting for 2 turn(s). This effect can stack 2 time(s).",
+     "description": "Increases the wearer's Break Effect by {break_effect}. When an enemy target's Weakness gets broken, there is a 100% base chance to inflict the \"Charring\" state on it, which increases its Break DMG taken by {break_dmg}, lasting for 2 turn(s). This effect can stack 2 time(s).",
      "name": "Rebirth",
      "scalings": [
       {
@@ -3025,7 +3025,7 @@
        ]
       },
       {
-       "label": "Break DMG taken",
+       "label": "Break DMG",
        "values": [
         "18%",
         "21%",
@@ -3081,7 +3081,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Max HP by {max_hp}. When the wearer or their memosprite loses HP during their own turn, the wearer gains \"Death Flower.\" \"Death Flower\" allows the wearer and their memosprite to ignore {flower_death_flower} of the target's DEF when dealing DMG, lasting for 2 turn(s).\nWhen the wearer's memosprite disappears, advances the wearer's action by {turn_s_when}. This effect can only trigger up to 1 time, and the trigger count resets every time the wearer uses Ultimate.",
+     "description": "Increases the wearer's Max HP by {max_hp}. When the wearer or their memosprite loses HP during their own turn, the wearer gains \"Death Flower.\" \"Death Flower\" allows the wearer and their memosprite to ignore {def} of the target's DEF when dealing DMG, lasting for 2 turn(s).\nWhen the wearer's memosprite disappears, advances the wearer's action by {3}. This effect can only trigger up to 1 time, and the trigger count resets every time the wearer uses Ultimate.",
      "name": "Engrave",
      "scalings": [
       {
@@ -3095,7 +3095,7 @@
        ]
       },
       {
-       "label": "Flower Death Flower",
+       "label": "DEF",
        "values": [
         "30%",
         "35%",
@@ -3105,7 +3105,7 @@
        ]
       },
       {
-       "label": "turn s When",
+       "label": "Value 3",
        "values": [
         "12%",
         "15%",
@@ -3131,11 +3131,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "The wearer regenerates {energy_immediately_upon} Energy immediately upon entering battle, and increases DMG dealt by the wearer's Ultimate by {ultimate}.",
+     "description": "The wearer regenerates {energy} Energy immediately upon entering battle, and increases DMG dealt by the wearer's Ultimate by {ultimate}.",
      "name": "The Power of Sound",
      "scalings": [
       {
-       "label": "Energy immediately upon",
+       "label": "Energy",
        "values": [
         "20",
         "23",
@@ -3171,11 +3171,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Upon entering battle, increases SPD of all allies by {battle_increases_spd} points for 1 turn(s).",
+     "description": "Upon entering battle, increases SPD of all allies by {spd} points for 1 turn(s).",
      "name": "Family",
      "scalings": [
       {
-       "label": "battle increases SPD",
+       "label": "SPD",
        "values": [
         "12",
         "14",
@@ -3531,7 +3531,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "For every enemy on the field, increases the wearer's ATK by {atk}, up to 5 stacks. When an enemy is inflicted with Weakness Break, the DMG dealt by the wearer increases by {turn} for 1 turn.",
+     "description": "For every enemy on the field, increases the wearer's ATK by {atk}, up to 5 stacks. When an enemy is inflicted with Weakness Break, the DMG dealt by the wearer increases by {break_the_dmg} for 1 turn.",
      "name": "Meteor Swarm",
      "scalings": [
       {
@@ -3545,7 +3545,7 @@
        ]
       },
       {
-       "label": "turn",
+       "label": "Break the DMG",
        "values": [
         "30%",
         "35%",
@@ -3661,7 +3661,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's ATK by {atk}. Whenever the wearer defeats an enemy, they restore HP equal to {they_restore_hp} of their ATK.",
+     "description": "Increases the wearer's ATK by {atk}. Whenever the wearer defeats an enemy, they restore HP equal to {hp} of their ATK.",
      "name": "Desperate Times",
      "scalings": [
       {
@@ -3675,7 +3675,7 @@
        ]
       },
       {
-       "label": "they restore HP",
+       "label": "HP",
        "values": [
         "12%",
         "15%",
@@ -3701,7 +3701,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "When the wearer attacks, increases their ATK by {atk} in this battle. This effect can stack up to 4 time(s). After the wearer breaks an enemy's Weakness, increases DMG dealt by {weakness_increases_dmg}, lasting for 2 turn(s).",
+     "description": "When the wearer attacks, increases their ATK by {atk} in this battle. This effect can stack up to 4 time(s). After the wearer breaks an enemy's Weakness, increases DMG dealt by {dmg}, lasting for 2 turn(s).",
      "name": "Moth To Flames",
      "scalings": [
       {
@@ -3715,7 +3715,7 @@
        ]
       },
       {
-       "label": "Weakness increases DMG",
+       "label": "DMG",
        "values": [
         "12%",
         "15%",
@@ -3841,7 +3841,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Break Effect by {break_effect}. When the wearer uses their Ultimate, increases all allies' DMG by {all_allies_dmg}, lasting for 3 turn(s). If the wearer's Break Effect exceeds or equals 150%, 1 Skill Point will be recovered.\nAt the start of each wave, all allies regenerate {energy_immediately} Energy immediately. Abilities of the same type cannot stack.",
+     "description": "Increases the wearer's Break Effect by {break_effect}. When the wearer uses their Ultimate, increases all allies' DMG by {allies_dmg}, lasting for 3 turn(s). If the wearer's Break Effect exceeds or equals 150%, 1 Skill Point will be recovered.\nAt the start of each wave, all allies regenerate {energy} Energy immediately. Abilities of the same type cannot stack.",
      "name": "The Plum Fragrance In My Bones",
      "scalings": [
       {
@@ -3855,7 +3855,7 @@
        ]
       },
       {
-       "label": "all allies' DMG",
+       "label": "allies' DMG",
        "values": [
         "24%",
         "28%",
@@ -3865,7 +3865,7 @@
        ]
       },
       {
-       "label": "Energy immediately",
+       "label": "Energy",
        "values": [
         "10.0",
         "12.5",
@@ -3891,7 +3891,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases DMG dealt by the wearer by {dmg}. After every attack launched by wearer, their SPD increases by {wearer_their_spd}, stacking up to 3 times.\nIf the wearer hits an enemy target that is not afflicted by Erode, there is a 100% base chance to inflict Erode to the target. Enemies afflicted with Erode are also considered to be Shocked and will receive Lightning DoT at the start of each turn equal to {receive_lightning_dot} of the wearer's ATK, lasting for 1 turn(s).",
+     "description": "Increases DMG dealt by the wearer by {dmg}. After every attack launched by wearer, their SPD increases by {wearer_their_spd}, stacking up to 3 times.\nIf the wearer hits an enemy target that is not afflicted by Erode, there is a 100% base chance to inflict Erode to the target. Enemies afflicted with Erode are also considered to be Shocked and will receive Lightning DoT at the start of each turn equal to {lightning_dot} of the wearer's ATK, lasting for 1 turn(s).",
      "name": "Spider Web",
      "scalings": [
       {
@@ -3915,7 +3915,7 @@
        ]
       },
       {
-       "label": "receive Lightning DoT",
+       "label": "Lightning DoT",
        "values": [
         "60%",
         "70%",
@@ -3991,11 +3991,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "When the wearer Breaks an enemy's Weakness, the wearer restores HP by {wearer_restores_hp} of their Max HP.",
+     "description": "When the wearer Breaks an enemy's Weakness, the wearer restores HP by {hp} of their Max HP.",
      "name": "IPC",
      "scalings": [
       {
-       "label": "wearer restores HP",
+       "label": "HP",
        "values": [
         "12%",
         "14%",
@@ -4091,7 +4091,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Energy Regeneration Rate by {energy_regeneration_rate} and increases Outgoing Healing when they use their Ultimate by {use_their_ultimate}.",
+     "description": "Increases the wearer's Energy Regeneration Rate by {energy_regeneration_rate} and increases Outgoing Healing when they use their Ultimate by {ultimate}.",
      "name": "Mutual Healing",
      "scalings": [
       {
@@ -4105,7 +4105,7 @@
        ]
       },
       {
-       "label": "use their Ultimate",
+       "label": "Ultimate",
        "values": [
         "12%",
         "15%",
@@ -4191,7 +4191,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Effect Hit Rate by {effect_hit_rate}. When the wearer deals DMG to an enemy inflicted with Wind Shear, Burn, Shock, or Bleed, each respectively grants 1 stack of Prophet, stacking up to 4 time(s). In a single battle, only 1 stack of Prophet can be granted for each type of DoT. Every stack of Prophet increases wearer's ATK by {atk} and enables the DoT dealt to ignore {enables_the_dot} of the target's DEF.",
+     "description": "Increases the wearer's Effect Hit Rate by {effect_hit_rate}. When the wearer deals DMG to an enemy inflicted with Wind Shear, Burn, Shock, or Bleed, each respectively grants 1 stack of Prophet, stacking up to 4 time(s). In a single battle, only 1 stack of Prophet can be granted for each type of DoT. Every stack of Prophet increases wearer's ATK by {atk} and enables the DoT dealt to ignore {def} of the target's DEF.",
      "name": "Crystallize",
      "scalings": [
       {
@@ -4215,7 +4215,7 @@
        ]
       },
       {
-       "label": "enables the DoT",
+       "label": "DEF",
        "values": [
         "7.2%",
         "7.9%",
@@ -4241,11 +4241,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "When memosprite's turn starts, the wearer and memosprite each gain 1 stack of \"Commemoration.\" Each stack increases DMG dealt by {stack_increases_dmg}, stacking up to 4 time(s). When memosprite disappears, removes \"Commemoration\" from the wearer and memosprite.",
+     "description": "When memosprite's turn starts, the wearer and memosprite each gain 1 stack of \"Commemoration.\" Each stack increases DMG dealt by {dmg}, stacking up to 4 time(s). When memosprite disappears, removes \"Commemoration\" from the wearer and memosprite.",
      "name": "Going to Sleep",
      "scalings": [
       {
-       "label": "stack increases DMG",
+       "label": "DMG",
        "values": [
         "8%",
         "9%",
@@ -4271,11 +4271,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "When the wearer hits an enemy and if the hit enemy is not already \"Ensnared,\" then there is a {ensnared_then_there} base chance to \"Ensnare\" the hit enemy. \"Ensnared\" enemies' DEF decreases by {enemies_def_decreases} for 1 turn(s).",
+     "description": "When the wearer hits an enemy and if the hit enemy is not already \"Ensnared,\" then there is a {ensnared} base chance to \"Ensnare\" the hit enemy. \"Ensnared\" enemies' DEF decreases by {enemies_def_decreases} for 1 turn(s).",
      "name": "Glance Back",
      "scalings": [
       {
-       "label": "Ensnared then there",
+       "label": "Ensnared",
        "values": [
         "60%",
         "70%",
@@ -4311,7 +4311,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT Rate by {crit_rate}. After a CRIT Hit, there is a {crit_hit_there} fixed chance to dispel 1 buff on the target enemy. This effect can only trigger 1 time per attack.",
+     "description": "Increases the wearer's CRIT Rate by {crit_rate}. After a CRIT Hit, there is a {crit_hit} fixed chance to dispel 1 buff on the target enemy. This effect can only trigger 1 time per attack.",
      "name": "Raging Waves",
      "scalings": [
       {
@@ -4325,7 +4325,7 @@
        ]
       },
       {
-       "label": "CRIT Hit there",
+       "label": "CRIT Hit",
        "values": [
         "16%",
         "20%",
@@ -4403,11 +4403,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "When the wearer uses their Ultimate, increases ATK by {ultimate_increases_atk} for 2 turn(s).",
+     "description": "When the wearer uses their Ultimate, increases ATK by {atk} for 2 turn(s).",
      "name": "Genius",
      "scalings": [
       {
-       "label": "Ultimate increases ATK",
+       "label": "ATK",
        "values": [
         "24%",
         "30%",
@@ -4433,7 +4433,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Break Effect by {break_effect}. The Break DMG dealt by the wearer ignores {break_dmg} of the target's DEF. When the wearer's Break Effect in battle is at 150% or greater, increases their SPD by {spd}.",
+     "description": "Increases the wearer's Break Effect by {break_effect}. The Break DMG dealt by the wearer ignores {def} of the target's DEF. When the wearer's Break Effect in battle is at 150% or greater, increases their SPD by {spd}.",
      "name": "Rough Water",
      "scalings": [
       {
@@ -4447,7 +4447,7 @@
        ]
       },
       {
-       "label": "Break DMG",
+       "label": "DEF",
        "values": [
         "20%",
         "23%",
@@ -4483,7 +4483,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Break Effect by {break_effect}. After the wearer uses Ultimate to attack enemy targets, inflicts the targets with the \"Woefree\" state, lasting for 2 turn(s). While in \"Woefree,\" enemy targets take {while_in_woefree} increased DMG. The effect of increasing DMG taken is additionally boosted by {dmg} if the wearer's current Break Effect is 150% or higher.",
+     "description": "Increases the wearer's Break Effect by {break_effect}. After the wearer uses Ultimate to attack enemy targets, inflicts the targets with the \"Woefree\" state, lasting for 2 turn(s). While in \"Woefree,\" enemy targets take {dmg} increased DMG. The effect of increasing DMG taken is additionally boosted by {3} if the wearer's current Break Effect is 150% or higher.",
      "name": "Contentment",
      "scalings": [
       {
@@ -4497,7 +4497,7 @@
        ]
       },
       {
-       "label": "While in Woefree",
+       "label": "DMG",
        "values": [
         "10%",
         "12%",
@@ -4593,7 +4593,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Break Effect by {break_effect}. When entering battle or after dealing Break DMG, increases SPD by {dmg_increases_spd}, lasting for 2 turn(s). This effect can only trigger once per turn.",
+     "description": "Increases the wearer's Break Effect by {break_effect}. When entering battle or after dealing Break DMG, increases SPD by {spd}, lasting for 2 turn(s). This effect can only trigger once per turn.",
      "name": "Concealment",
      "scalings": [
       {
@@ -4607,7 +4607,7 @@
        ]
       },
       {
-       "label": "DMG increases SPD",
+       "label": "SPD",
        "values": [
         "8%",
         "9%",
@@ -4673,11 +4673,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "The wearer deals {more_dmg} more DMG to enemy targets whose HP percentage is greater than 50%.",
+     "description": "The wearer deals {dmg} more DMG to enemy targets whose HP percentage is greater than 50%.",
      "name": "Eradication",
      "scalings": [
       {
-       "label": "more DMG",
+       "label": "DMG",
        "values": [
         "20%",
         "25%",
@@ -4703,7 +4703,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Max HP by {max_hp} and Energy Regeneration Rate by {energy_regeneration_rate}. When the wearer's HP is reduced, all allies' DMG dealt increases by {all_allies_dmg}, lasting for 2 turn(s).\nAt the start of every wave, restores HP to all allies by an amount equal to {wave_restores_hp} of their respective lost HP.",
+     "description": "Increases the wearer's Max HP by {max_hp} and Energy Regeneration Rate by {energy_regeneration_rate}. When the wearer's HP is reduced, all allies' DMG dealt increases by {allies_dmg}, lasting for 2 turn(s).\nAt the start of every wave, restores HP to all allies by an amount equal to {hp} of their respective lost HP.",
      "name": "Visioscape",
      "scalings": [
       {
@@ -4727,7 +4727,7 @@
        ]
       },
       {
-       "label": "all allies' DMG",
+       "label": "allies' DMG",
        "values": [
         "9.0%",
         "10.5%",
@@ -4737,7 +4737,7 @@
        ]
       },
       {
-       "label": "wave restores HP",
+       "label": "HP",
        "values": [
         "80%",
         "85%",
@@ -4833,7 +4833,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Break Effect by {break_effect}. When the wearer uses their Ultimate, increases DoT dealt by the wearer by {ultimate_increases_dot}, lasting for 2 turn(s). When a target enemy suffering from DoT imposed by the wearer is defeated, regenerates {energy} Energy for the wearer.",
+     "description": "Increases the wearer's Break Effect by {break_effect}. When the wearer uses their Ultimate, increases DoT dealt by the wearer by {dot}, lasting for 2 turn(s). When a target enemy suffering from DoT imposed by the wearer is defeated, regenerates {energy} Energy for the wearer.",
      "name": "Chaos Elixir",
      "scalings": [
       {
@@ -4847,7 +4847,7 @@
        ]
       },
       {
-       "label": "Ultimate increases DoT",
+       "label": "DoT",
        "values": [
         "24%",
         "30%",
@@ -4883,7 +4883,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's ATK by {atk}. When the wearer defeats an enemy or is hit, immediately restores HP equal to {immediately_restores_hp} of the wearer's ATK. At the same time, the wearer's DMG is increased by {atk} until the end of their next turn. This effect cannot stack and can only trigger 1 time per turn.",
+     "description": "Increases the wearer's ATK by {atk}. When the wearer defeats an enemy or is hit, immediately restores HP equal to {hp} of the wearer's ATK. At the same time, the wearer's DMG is increased by {atk} until the end of their next turn. This effect cannot stack and can only trigger 1 time per turn.",
      "name": "Kinship",
      "scalings": [
       {
@@ -4897,7 +4897,7 @@
        ]
       },
       {
-       "label": "immediately restores HP",
+       "label": "HP",
        "values": [
         "8%",
         "9%",
@@ -4923,11 +4923,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "The wearer's Basic ATK and Skill deals {more_dmg} more DMG. This effect increases by an extra {more_dmg} when the wearer's current Energy reaches its max level.",
+     "description": "The wearer's Basic ATK and Skill deals {dmg} more DMG. This effect increases by an extra {dmg} when the wearer's current Energy reaches its max level.",
      "name": "Like Before You Leave!",
      "scalings": [
       {
-       "label": "more DMG",
+       "label": "DMG",
        "values": [
         "24%",
         "30%",
@@ -5155,7 +5155,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT Rate by {crit_rate}. At the start of battle or for every 4 instance(s) of Follow-Up ATK the wearer uses, the wearer gains \"Umbra Devourer,\" lasting for 3 turn(s). While the wearer holds \"Umbra Devourer,\" increases ATK by {devourer_increases_atk} and increases the DMG taken by all enemies by {dmg}. Effects of the same type cannot stack.",
+     "description": "Increases the wearer's CRIT Rate by {crit_rate}. At the start of battle or for every 4 instance(s) of Follow-Up ATK the wearer uses, the wearer gains \"Umbra Devourer,\" lasting for 3 turn(s). While the wearer holds \"Umbra Devourer,\" increases ATK by {atk} and increases the DMG taken by all enemies by {dmg}. Effects of the same type cannot stack.",
      "name": "Subsume",
      "scalings": [
       {
@@ -5169,7 +5169,7 @@
        ]
       },
       {
-       "label": "Devourer increases ATK",
+       "label": "ATK",
        "values": [
         "40%",
         "50%",
@@ -5235,7 +5235,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's ATK by {atk}. After the wearer uses Skill, increases ATK by {skill_increases_atk}, stacking up to 3 times.",
+     "description": "Increases the wearer's ATK by {atk}. After the wearer uses Skill, increases ATK by {2}, stacking up to 3 times.",
      "name": "So Good!",
      "scalings": [
       {
@@ -5249,7 +5249,7 @@
        ]
       },
       {
-       "label": "Skill increases ATK",
+       "label": "ATK",
        "values": [
         "8%",
         "10%",
@@ -5515,7 +5515,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's DEF by {def}. Increases the DMG of the wearer when they use their Ultimate by {use_their_ultimate} of the wearer's DEF. This effect only applies 1 time per enemy target during each use of the wearer's Ultimate.",
+     "description": "Increases the wearer's DEF by {def}. Increases the DMG of the wearer when they use their Ultimate by {ultimate} of the wearer's DEF. This effect only applies 1 time per enemy target during each use of the wearer's Ultimate.",
      "name": "New Chapter",
      "scalings": [
       {
@@ -5529,7 +5529,7 @@
        ]
       },
       {
-       "label": "use their Ultimate",
+       "label": "Ultimate",
        "values": [
         "60%",
         "75%",
@@ -5555,7 +5555,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's SPD by {spd}. When the wearer's memosprite uses a Memosprite Skill on an ally, gains \"Blank,\" which increases DMG taken by all enemies by  {which_increases_dmg}. When the wearer's memosprite uses a Memosprite Skill on an enemy, gains \"Verse,\" which increases CRIT DMG of all allies by  {crit_dmg}. When the wearer's memosprite has both \"Blank\" and \"Verse,\" increases the effects of \"Blank\" and \"Verse\" by  {blank_and_verse}.",
+     "description": "Increases the wearer's SPD by {spd}. When the wearer's memosprite uses a Memosprite Skill on an ally, gains \"Blank,\" which increases DMG taken by all enemies by  {dmg}. When the wearer's memosprite uses a Memosprite Skill on an enemy, gains \"Verse,\" which increases CRIT DMG of all allies by  {crit_dmg}. When the wearer's memosprite has both \"Blank\" and \"Verse,\" increases the effects of \"Blank\" and \"Verse\" by  {blank_and_verse}.",
      "name": "A Promise",
      "scalings": [
       {
@@ -5569,7 +5569,7 @@
        ]
       },
       {
-       "label": "which increases DMG",
+       "label": "DMG",
        "values": [
         "10%",
         "12%",
@@ -5615,7 +5615,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Effect Hit Rate by {effect_hit_rate}. After the wearer uses Basic ATK, Skill, or Ultimate to attack an enemy target, there is a 60% base chance to inflict \"Unarmored\" on the target. While in the Unarmored state, the enemy target receives {in_the_unarmored} increased DMG, lasting for 2 turn(s). If the target is under a DoT state inflicted by the wearer, there is a 60% base chance to upgrade the \"Unarmored\" state inflicted by the wearer to the \"Cornered\" state, which additionally increases the DMG the enemy target receives by {dmg}, lasting for 2 turn(s). During this period, the wearer cannot inflict \"Unarmored\" on the target.",
+     "description": "Increases the wearer's Effect Hit Rate by {effect_hit_rate}. After the wearer uses Basic ATK, Skill, or Ultimate to attack an enemy target, there is a 60% base chance to inflict \"Unarmored\" on the target. While in the Unarmored state, the enemy target receives {dmg} increased DMG, lasting for 2 turn(s). If the target is under a DoT state inflicted by the wearer, there is a 60% base chance to upgrade the \"Unarmored\" state inflicted by the wearer to the \"Cornered\" state, which additionally increases the DMG the enemy target receives by {3}, lasting for 2 turn(s). During this period, the wearer cannot inflict \"Unarmored\" on the target.",
      "name": "Wordly Affairs Leave No Mark",
      "scalings": [
       {
@@ -5629,7 +5629,7 @@
        ]
       },
       {
-       "label": "in the Unarmored",
+       "label": "DMG",
        "values": [
         "10%",
         "12%",
@@ -5665,7 +5665,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's ATK by {atk}. When the wearer uses Ultimate, restores HP equal to {ultimate_restores_hp} of the wearer's ATK for all allies, and additionally restores HP equal to {ultimate_restores_hp} of the wearer's ATK for the character with the lowest current HP, and grants \"Redoubt\" to all allies for 3 turn(s). Targets with \"Redoubt\" deal {dmg} increased DMG, which further increases by {if} if the targets have summons.",
+     "description": "Increases the wearer's ATK by {atk}. When the wearer uses Ultimate, restores HP equal to {hp} of the wearer's ATK for all allies, and additionally restores HP equal to {hp} of the wearer's ATK for the character with the lowest current HP, and grants \"Redoubt\" to all allies for 3 turn(s). Targets with \"Redoubt\" deal {dmg} increased DMG, which further increases by {if} if the targets have summons.",
      "name": "New Scale",
      "scalings": [
       {
@@ -5679,7 +5679,7 @@
        ]
       },
       {
-       "label": "Ultimate restores HP",
+       "label": "HP",
        "values": [
         "10%",
         "13%",
@@ -5725,7 +5725,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "The wearer's base SPD increases by {base_spd}. When dealing DMG, ignores {dmg_ignores} of the target's DEF. After the wearer uses Ultimate, gains \"Blazing Sun,\" which is removed at the start of the turn. While holding \"Blazing Sun,\" increases the wearer's DMG dealt by {dmg}.",
+     "description": "The wearer's base SPD increases by {base_spd}. When dealing DMG, ignores {def} of the target's DEF. After the wearer uses Ultimate, gains \"Blazing Sun,\" which is removed at the start of the turn. While holding \"Blazing Sun,\" increases the wearer's DMG dealt by {dmg}.",
      "name": "Dispossession",
      "scalings": [
       {
@@ -5739,7 +5739,7 @@
        ]
       },
       {
-       "label": "DMG ignores",
+       "label": "DEF",
        "values": [
         "18.0%",
         "22.5%",
@@ -5775,7 +5775,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Max HP by {max_hp} and Outgoing Healing by {outgoing_healing}. When the wearer heals allies, record the amount of Outgoing Healing. When any ally launches an attack, a random attacked enemy takes Additional DMG equal to {takes_additional_dmg} of the recorded Outgoing Healing value. The type of this Additional DMG is of the same Type as the wearer's. This Additional DMG is not affected by other buffs, and can only occur 1 time per turn.",
+     "description": "Increases the wearer's Max HP by {max_hp} and Outgoing Healing by {outgoing_healing}. When the wearer heals allies, record the amount of Outgoing Healing. When any ally launches an attack, a random attacked enemy takes Additional DMG equal to {dmg} of the recorded Outgoing Healing value. The type of this Additional DMG is of the same Type as the wearer's. This Additional DMG is not affected by other buffs, and can only occur 1 time per turn.",
      "name": "Morn, Noon, Dusk, and Night",
      "scalings": [
       {
@@ -5799,7 +5799,7 @@
        ]
       },
       {
-       "label": "takes Additional DMG",
+       "label": "DMG",
        "values": [
         "36%",
         "42%",
@@ -5865,7 +5865,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Max HP by {max_hp}. When the wearer's memosprite uses an ability, the wearer gains \"Noctis.\" While the wearer has \"Noctis,\" all allies' memosprites ignore {wearer_has_noctis} of the target's DEF when dealing DMG. Increases the DMG dealt by the wearer and their memosprite by {max_hp}. When the wearer's memosprite disappears, the wearer recovers {energy} Energy. Similar effects cannot stack.",
+     "description": "Increases the wearer's Max HP by {max_hp}. When the wearer's memosprite uses an ability, the wearer gains \"Noctis.\" While the wearer has \"Noctis,\" all allies' memosprites ignore {def} of the target's DEF when dealing DMG. Increases the DMG dealt by the wearer and their memosprite by {max_hp}. When the wearer's memosprite disappears, the wearer recovers {energy} Energy. Similar effects cannot stack.",
      "name": "Sleepless",
      "scalings": [
       {
@@ -5879,7 +5879,7 @@
        ]
       },
       {
-       "label": "wearer has Noctis",
+       "label": "DEF",
        "values": [
         "20%",
         "22.5%",
@@ -5915,11 +5915,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "After entering battle, increases the wearer's DMG based on their Max Energy. Each point of Energy increases DMG by {energy_increases_dmg}. A max of 160 Energy will be taken into account for this.",
+     "description": "After entering battle, increases the wearer's DMG based on their Max Energy. Each point of Energy increases DMG by {dmg}. A max of 160 Energy will be taken into account for this.",
      "name": "A Storm Is Coming",
      "scalings": [
       {
-       "label": "Energy increases DMG",
+       "label": "DMG",
        "values": [
         "0.20%",
         "0.25%",
@@ -6015,7 +6015,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's DEF by {def}. When the wearer is attacked, there is a {def_when} base chance to Burn the enemy. For each turn, the wearer deals DoT that is equal to {wearer_deals_dot} of the wearer's DEF for 2 turn(s).",
+     "description": "Increases the wearer's DEF by {def}. When the wearer is attacked, there is a {2} base chance to Burn the enemy. For each turn, the wearer deals DoT that is equal to {dot} of the wearer's DEF for 2 turn(s).",
      "name": "A New Round of Shuffling",
      "scalings": [
       {
@@ -6029,7 +6029,7 @@
        ]
       },
       {
-       "label": "def When",
+       "label": "def",
        "values": [
         "100%",
         "105%",
@@ -6039,7 +6039,7 @@
        ]
       },
       {
-       "label": "wearer deals DoT",
+       "label": "DoT",
        "values": [
         "40%",
         "50%",
@@ -6065,7 +6065,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's ATK by {atk}. When the wearer defeats an enemy, the wearer's CRIT Rate increases by {turn_s} for 3 turn(s).",
+     "description": "Increases the wearer's ATK by {atk}. When the wearer defeats an enemy, the wearer's CRIT Rate increases by {crit_rate} for 3 turn(s).",
      "name": "Rye Under the Sun",
      "scalings": [
       {
@@ -6079,7 +6079,7 @@
        ]
       },
       {
-       "label": "turn s",
+       "label": "CRIT Rate",
        "values": [
         "12%",
         "15%",
@@ -6235,11 +6235,11 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "At the start of the battle, the wearer's Effect Hit Rate increases by {turn_s} for 3 turn(s).",
+     "description": "At the start of the battle, the wearer's Effect Hit Rate increases by {effect_hit_rate} for 3 turn(s).",
      "name": "Fallen",
      "scalings": [
       {
-       "label": "turn s",
+       "label": "Effect Hit Rate",
        "values": [
         "20%",
         "25%",
@@ -6265,7 +6265,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Max HP by {max_hp}. When using Basic ATK or Skill, restores all allies' HP by an amount equal to {all_allies_hp} of their respective Max HP.",
+     "description": "Increases the wearer's Max HP by {max_hp}. When using Basic ATK or Skill, restores all allies' HP by an amount equal to {allies_hp} of their respective Max HP.",
      "name": "Tiny Light",
      "scalings": [
       {
@@ -6279,7 +6279,7 @@
        ]
       },
       {
-       "label": "all allies' HP",
+       "label": "allies' HP",
        "values": [
         "2.0%",
         "2.5%",
@@ -6305,7 +6305,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "At the start of the battle, the DMG dealt to all allies decreases by {battle_the_dmg} for 5 turn(s). At the same time, immediately restores HP to all allies equal to {immediately_restores_hp} of the respective HP difference between the characters' Max HP and current HP.",
+     "description": "At the start of the battle, the DMG dealt to all allies decreases by {battle_the_dmg} for 5 turn(s). At the same time, immediately restores HP to all allies equal to {hp} of the respective HP difference between the characters' Max HP and current HP.",
      "name": "Teary-Eyed",
      "scalings": [
       {
@@ -6319,7 +6319,7 @@
        ]
       },
       {
-       "label": "immediately restores HP",
+       "label": "HP",
        "values": [
         "30%",
         "35%",
@@ -6375,7 +6375,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's SPD by {spd}, and the Elation DMG dealt ignores {dmg_dealt_ignores} of the target's DEF. When the wearer uses Ultimate on themselves, gains {punchline} \"Punchline.\" This effect can be triggered up to 1 time, and will be reset after using Basic ATK 3 times.",
+     "description": "Increases the wearer's SPD by {spd}, and the Elation DMG dealt ignores {def} of the target's DEF. When the wearer uses Ultimate on themselves, gains {punchline} \"Punchline.\" This effect can be triggered up to 1 time, and will be reset after using Basic ATK 3 times.",
      "name": "Guaranteed Victory",
      "scalings": [
       {
@@ -6389,7 +6389,7 @@
        ]
       },
       {
-       "label": "DMG dealt ignores",
+       "label": "DEF",
        "values": [
         "20%",
         "24%",
@@ -6425,7 +6425,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Break Effect by {break_effect}. After using Basic ATK, restores HP for the wearer by an amount equal to {atk_restores_hp} of Max HP plus 800.",
+     "description": "Increases the wearer's Break Effect by {break_effect}. After using Basic ATK, restores HP for the wearer by an amount equal to {hp} of Max HP plus 800.",
      "name": "Hypothesis",
      "scalings": [
       {
@@ -6439,7 +6439,7 @@
        ]
       },
       {
-       "label": "ATK restores HP",
+       "label": "HP",
        "values": [
         "2.0%",
         "2.5%",
@@ -6525,7 +6525,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's Break Effect by {break_effect}. When the wearer deals Break DMG to an enemy target, inflicts Routed on the enemy, lasting for 2 turn(s). Targets afflicted with Routed receive {routed_receive} increased Break DMG from the wearer, and their SPD is lowered by 20%. Effects of the same type cannot be stacked.",
+     "description": "Increases the wearer's Break Effect by {break_effect}. When the wearer deals Break DMG to an enemy target, inflicts Routed on the enemy, lasting for 2 turn(s). Targets afflicted with Routed receive {break_dmg} increased Break DMG from the wearer, and their SPD is lowered by 20%. Effects of the same type cannot be stacked.",
      "name": "Metamorphosis",
      "scalings": [
       {
@@ -6539,7 +6539,7 @@
        ]
       },
       {
-       "label": "Routed receive",
+       "label": "Break DMG",
        "values": [
         "24.0%",
         "28.0%",
@@ -6705,7 +6705,7 @@
    "effect": [
     {
      "type": "Light Cone Effect",
-     "description": "Increases the wearer's CRIT Rate by {crit_rate}. While the wearer is in battle, for every 20% CRIT DMG that exceeds 120%, the DMG dealt by follow-up attack increases by {dmg}. This effect can stack up to 4 time(s). When the battle starts or after the wearer uses their Basic ATK, enables the DMG dealt by Ultimate or follow-up attack to ignore {ultimate} of the target's DEF, lasting for 2 turn(s).",
+     "description": "Increases the wearer's CRIT Rate by {crit_rate}. While the wearer is in battle, for every 20% CRIT DMG that exceeds 120%, the DMG dealt by follow-up attack increases by {dmg}. This effect can stack up to 4 time(s). When the battle starts or after the wearer uses their Basic ATK, enables the DMG dealt by Ultimate or follow-up attack to ignore {def} of the target's DEF, lasting for 2 turn(s).",
      "name": "Promise",
      "scalings": [
       {
@@ -6729,7 +6729,7 @@
        ]
       },
       {
-       "label": "Ultimate",
+       "label": "DEF",
        "values": [
         "20%",
         "24%",

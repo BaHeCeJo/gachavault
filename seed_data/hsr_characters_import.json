@@ -1220,10 +1220,10 @@
      "type": "Talent",
      "name": "Pain and Anger",
      "tag": "Enhance",
-     "description": "Based on Arlan's current missing HP percentage, gains DMG bonus, up to a maximum increase of {dmg_dealt} DMG dealt by Arlan.",
+     "description": "Based on Arlan's current missing HP percentage, gains DMG bonus, up to a maximum increase of {dmg} DMG dealt by Arlan.",
      "scalings": [
       {
-       "label": "DMG dealt",
+       "label": "DMG",
        "values": [
         "36%",
         "39.6%",
@@ -1334,10 +1334,10 @@
      "type": "Skill",
      "name": "Flog: Smite Evil",
      "tag": "Single Target",
-     "description": "Makes one designated enemy become the \"Bait,\" dealing it Lightning DMG equal to {it_lightning_dmg} of Ashveil's ATK. If the target is already the \"Bait,\" additionally deals it Lightning DMG equal to {2} of Ashveil's ATK, and recovers 1 Skill Point(s). When the \"Bait\" exists on the field, all enemies' DEF gets reduced by {def_gets_reduced}.\nWhen there is no \"Bait\" on the field, Ashveil immediately makes the enemy target with the lowest HP on the field become the \"Bait.\" The \"Bait\" state only takes effect on the most recently applied target.",
+     "description": "Makes one designated enemy become the \"Bait,\" dealing it Lightning DMG equal to {lightning_dmg} of Ashveil's ATK. If the target is already the \"Bait,\" additionally deals it Lightning DMG equal to {2} of Ashveil's ATK, and recovers 1 Skill Point(s). When the \"Bait\" exists on the field, all enemies' DEF gets reduced by {def_gets_reduced}.\nWhen there is no \"Bait\" on the field, Ashveil immediately makes the enemy target with the lowest HP on the field become the \"Bait.\" The \"Bait\" state only takes effect on the most recently applied target.",
      "scalings": [
       {
-       "label": "it Lightning DMG",
+       "label": "Lightning DMG",
        "values": [
         "100%",
         "110%",
@@ -1354,7 +1354,7 @@
        ]
       },
       {
-       "label": "it Lightning DMG",
+       "label": "Lightning DMG",
        "values": [
         "50%",
         "55%",
@@ -1393,10 +1393,10 @@
      "type": "Ultimate",
      "name": "Banquet: Insatiable Appetite",
      "tag": "Single Target",
-     "description": "Makes one designated enemy become the \"Bait,\" dealing it Lightning DMG equal to {it_lightning_dmg} of Ashveil's ATK. Then, immediately launches 1 instance of enhanced Talent's Follow-Up ATK against the \"Bait.\" And Ashveil gains 3 Charge.\nThis enhanced Talent's Follow-Up ATK does not consume Charge. Whenever \"Gluttony\" reaches 4 stack(s) or more, consumes 4 stack(s) of \"Gluttony\" to additionally deal 1 instance of Lightning DMG equal to {lightning_dmg} of Ashveil's ATK. And when this instance of Follow-Up ATK deals a killing blow to the target, it will continue to deal DMG to a new \"Bait.\" This triggers until \"Gluttony\" becomes lower than 4 stack(s). If all enemy targets currently on the field have been dealt killing blows, the enhanced Talent's Follow-Up ATK will immediately end.",
+     "description": "Makes one designated enemy become the \"Bait,\" dealing it Lightning DMG equal to {lightning_dmg} of Ashveil's ATK. Then, immediately launches 1 instance of enhanced Talent's Follow-Up ATK against the \"Bait.\" And Ashveil gains 3 Charge.\nThis enhanced Talent's Follow-Up ATK does not consume Charge. Whenever \"Gluttony\" reaches 4 stack(s) or more, consumes 4 stack(s) of \"Gluttony\" to additionally deal 1 instance of Lightning DMG equal to {2} of Ashveil's ATK. And when this instance of Follow-Up ATK deals a killing blow to the target, it will continue to deal DMG to a new \"Bait.\" This triggers until \"Gluttony\" becomes lower than 4 stack(s). If all enemy targets currently on the field have been dealt killing blows, the enhanced Talent's Follow-Up ATK will immediately end.",
      "scalings": [
       {
-       "label": "it Lightning DMG",
+       "label": "Lightning DMG",
        "values": [
         "200%",
         "220%",
@@ -1600,10 +1600,10 @@
      "type": "Talent",
      "name": "Astrometry",
      "tag": "Support",
-     "description": "Gains 1 stack of Charging for every different enemy hit by Asta plus an extra stack if the enemy hit has Fire Weakness.\nFor every stack of Charging Asta has, all allies' ATK increases by {all_allies_atk}, up to 5 time(s).\nStarting from her second turn, Asta's Charging stack count is reduced by 3 at the beginning of every turn.",
+     "description": "Gains 1 stack of Charging for every different enemy hit by Asta plus an extra stack if the enemy hit has Fire Weakness.\nFor every stack of Charging Asta has, all allies' ATK increases by {allies_atk}, up to 5 time(s).\nStarting from her second turn, Asta's Charging stack count is reduced by 3 at the beginning of every turn.",
      "scalings": [
       {
-       "label": "all allies' ATK",
+       "label": "allies' ATK",
        "values": [
         "7%",
         "7.7%",
@@ -1714,10 +1714,10 @@
      "type": "Skill",
      "name": "Cornerstone Deluxe",
      "tag": "Defense",
-     "description": "Provides all allies with a Fortified Wager shield that can block DMG equal to {can_block_dmg} of Aventurine's DEF plus {def}, lasting for 3 turn(s). When Fortified Wager is gained repeatedly, the Shield Effect can stack, up to 200% of the current Shield Effect provided by the Skill.",
+     "description": "Provides all allies with a Fortified Wager shield that can block DMG equal to {block_dmg} of Aventurine's DEF plus {def}, lasting for 3 turn(s). When Fortified Wager is gained repeatedly, the Shield Effect can stack, up to 200% of the current Shield Effect provided by the Skill.",
      "scalings": [
       {
-       "label": "can block DMG",
+       "label": "block DMG",
        "values": [
         "16%",
         "17%",
@@ -1972,10 +1972,10 @@
      "type": "Ultimate",
      "name": "Felicitous Thunderleap",
      "tag": "Restore",
-     "description": "Heals all allies for {all_allies} of Bailu's Max HP plus {max_hp}\nBailu applies Invigoration to allies that are not already Invigorated. For those already Invigorated, Bailu extends the duration of their Invigoration by 1 turn.\nThe effect of Invigoration can last for 2 turn(s). This effect cannot stack.",
+     "description": "Heals all allies for {allies} of Bailu's Max HP plus {max_hp}\nBailu applies Invigoration to allies that are not already Invigorated. For those already Invigorated, Bailu extends the duration of their Invigoration by 1 turn.\nThe effect of Invigoration can last for 2 turn(s). This effect cannot stack.",
      "scalings": [
       {
-       "label": "all allies",
+       "label": "allies",
        "values": [
         "9%",
         "9.5625%",
@@ -2222,7 +2222,7 @@
      "type": "Ultimate",
      "name": "Bliss of Otherworld's Embrace",
      "tag": "AoE",
-     "description": "Inflicts \"Epiphany\" state on all enemies for 2 turn(s). Then deals Wind DMG to all enemies equal to {wind_dmg} of Black Swan's ATK.\nWhile in the \"Epiphany\" state, enemy targets take {in_the_epiphany} increased DMG. For every 1 stack of \"Arcana inflicted,\" there is a 50% fixed chance to additionally increase the number of \"Arcana\" stacked this time by 1. And \"Arcana\" stacks won't be halved after dealing DMG at the start of the turn.",
+     "description": "Inflicts \"Epiphany\" state on all enemies for 2 turn(s). Then deals Wind DMG to all enemies equal to {wind_dmg} of Black Swan's ATK.\nWhile in the \"Epiphany\" state, enemy targets take {dmg} increased DMG. For every 1 stack of \"Arcana inflicted,\" there is a 50% fixed chance to additionally increase the number of \"Arcana\" stacked this time by 1. And \"Arcana\" stacks won't be halved after dealing DMG at the start of the turn.",
      "scalings": [
       {
        "label": "Wind DMG",
@@ -2242,7 +2242,7 @@
        ]
       },
       {
-       "label": "in the Epiphany",
+       "label": "DMG",
        "values": [
         "15%",
         "16%",
@@ -2264,10 +2264,10 @@
      "type": "Talent",
      "name": "Loom of Fate's Caprice",
      "tag": "Impair",
-     "description": "Every time an enemy target receives 1 instance of DoT, there is a {dot_there} base chance for it to be inflicted with 1 stack of \"Arcana\".\nWhile an enemy target is in the \"Arcana\" state, they are also considered to be simultaneously afflicted with Wind Shear, Bleed, Burn, and Shock. The target receives Wind DoT equal to {receives_wind_dot} of Black Swan's ATK at the start of each turn, after which the number of stacks is halved. Each stack of \"Arcana\" increases this DMG multiplier by {dmg_multiplier}. \"Arcana\" can stack 50 times, and can continue to stack beyond this limit, with the excess stacks removed after dealing DMG.\nDMG from \"Arcana\" ignores 20% of the target's DEF. Only when \"Arcana\" deals DMG at the start of the enemy target's turn, adjacent targets take 1 additional instance of Wind DoT equal to {wind_dot} of Black Swan's ATK.",
+     "description": "Every time an enemy target receives 1 instance of DoT, there is a {dot} base chance for it to be inflicted with 1 stack of \"Arcana\".\nWhile an enemy target is in the \"Arcana\" state, they are also considered to be simultaneously afflicted with Wind Shear, Bleed, Burn, and Shock. The target receives Wind DoT equal to {wind_dot} of Black Swan's ATK at the start of each turn, after which the number of stacks is halved. Each stack of \"Arcana\" increases this DMG multiplier by {dmg_multiplier}. \"Arcana\" can stack 50 times, and can continue to stack beyond this limit, with the excess stacks removed after dealing DMG.\nDMG from \"Arcana\" ignores 20% of the target's DEF. Only when \"Arcana\" deals DMG at the start of the enemy target's turn, adjacent targets take 1 additional instance of Wind DoT equal to {4} of Black Swan's ATK.",
      "scalings": [
       {
-       "label": "DoT there",
+       "label": "DoT",
        "values": [
         "50%",
         "51.5%",
@@ -2284,7 +2284,7 @@
        ]
       },
       {
-       "label": "receives Wind DoT",
+       "label": "Wind DoT",
        "values": [
         "96%",
         "111.84%",
@@ -2462,10 +2462,10 @@
      "type": "Skill",
      "name": "Hellscape",
      "tag": "Enhance",
-     "description": "Consumes HP equal to 30% of Blade's Max HP to enter the \"Hellscape\" state.\nWhile under the \"Hellscape\" state, his Skill cannot be used, his DMG dealt increases by {used_his_dmg}, the chance of receiving attacks from enemy targets greatly increases, and his Basic ATK \"Shard Sword\" is enhanced to \"Forest of Swords\" for 3 turn(s).\nIf Blade's current HP is insufficient, his HP will be reduced to 1 when he uses his Skill.\nThis Skill does not regenerate Energy. Using this Skill does not end the current turn.",
+     "description": "Consumes HP equal to 30% of Blade's Max HP to enter the \"Hellscape\" state.\nWhile under the \"Hellscape\" state, his Skill cannot be used, his DMG dealt increases by {dmg}, the chance of receiving attacks from enemy targets greatly increases, and his Basic ATK \"Shard Sword\" is enhanced to \"Forest of Swords\" for 3 turn(s).\nIf Blade's current HP is insufficient, his HP will be reduced to 1 when he uses his Skill.\nThis Skill does not regenerate Energy. Using this Skill does not end the current turn.",
      "scalings": [
       {
-       "label": "used his DMG",
+       "label": "DMG",
        "values": [
         "12%",
         "14.8%",
@@ -2680,10 +2680,10 @@
      "type": "Skill",
      "name": "Sizzlin' Tango",
      "tag": "Impair",
-     "description": "Forces Boothill and a single target enemy into the Standoff state. Boothill's Basic ATK gets Enhanced, and he cannot use his Skill, lasting for 2 turn(s). This duration decreases by 1 at the start of Boothill's every turn.\nThe enemy target in the Standoff becomes Taunted. When this enemy target/Boothill gets attacked by the other party in the Standoff, the DMG they receive increases by {dmg_they_receive}/15%.\nAfter this target is defeated or becomes Weakness Broken, Boothill gains 1 stack of Pocket Trickshot, then dispels the Standoff.\nThis Skill cannot regenerate Energy. After using this Skill, the current turn does not end.",
+     "description": "Forces Boothill and a single target enemy into the Standoff state. Boothill's Basic ATK gets Enhanced, and he cannot use his Skill, lasting for 2 turn(s). This duration decreases by 1 at the start of Boothill's every turn.\nThe enemy target in the Standoff becomes Taunted. When this enemy target/Boothill gets attacked by the other party in the Standoff, the DMG they receive increases by {dmg}/15%.\nAfter this target is defeated or becomes Weakness Broken, Boothill gains 1 stack of Pocket Trickshot, then dispels the Standoff.\nThis Skill cannot regenerate Energy. After using this Skill, the current turn does not end.",
      "scalings": [
       {
-       "label": "DMG they receive",
+       "label": "DMG",
        "values": [
         "15%",
         "16.5%",
@@ -3318,7 +3318,7 @@
      "type": "Memosprite Talent",
      "name": "Wings Sweep the Ruins",
      "tag": "Bounce",
-     "description": "When Netherwing disappears, deals 6 instance(s) of DMG, with each instance dealing Quantum DMG equal to {quantum_dmg} of Castorice's Max HP to one random enemy. At the same time, restores HP by an amount equal to {time_restores_hp} of Castorice's Max HP plus {max_hp} for all allies.",
+     "description": "When Netherwing disappears, deals 6 instance(s) of DMG, with each instance dealing Quantum DMG equal to {quantum_dmg} of Castorice's Max HP to one random enemy. At the same time, restores HP by an amount equal to {hp} of Castorice's Max HP plus {max_hp} for all allies.",
      "scalings": [
       {
        "label": "Quantum DMG",
@@ -3333,7 +3333,7 @@
        ]
       },
       {
-       "label": "time restores HP",
+       "label": "HP",
        "values": [
         "3%",
         "3.6%",
@@ -3519,10 +3519,10 @@
      "type": "Talent",
      "name": "Ave Imperator",
      "tag": "Support",
-     "description": "The character with \"Military Merit\" increases ATK by an amount equal to {merit_increases_atk} of Cerydra's ATK. When the character uses Basic ATK or Skill, Cerydra gains 1 Charge. During Coup de Main, Cerydra cannot gain Charge. After the character with \"Military Merit\" uses an attack, Cerydra additionally deals 1 instance of Wind Additional DMG equal to {wind_additional_dmg} of her ATK. This effect can trigger up to 20 time(s). The trigger count resets every time Cerydra uses her Ultimate. \"Military Merit\" only takes effect on the most recent target. When the target changes, Cerydra's Charge is reset to 0.",
+     "description": "The character with \"Military Merit\" increases ATK by an amount equal to {atk} of Cerydra's ATK. When the character uses Basic ATK or Skill, Cerydra gains 1 Charge. During Coup de Main, Cerydra cannot gain Charge. After the character with \"Military Merit\" uses an attack, Cerydra additionally deals 1 instance of Wind Additional DMG equal to {wind_additional_dmg} of her ATK. This effect can trigger up to 20 time(s). The trigger count resets every time Cerydra uses her Ultimate. \"Military Merit\" only takes effect on the most recent target. When the target changes, Cerydra's Charge is reset to 0.",
      "scalings": [
       {
-       "label": "Merit increases ATK",
+       "label": "ATK",
        "values": [
         "18%",
         "18.6%",
@@ -3891,10 +3891,10 @@
      "type": "Ultimate",
      "name": "Promise, Not Command",
      "tag": "Enhance",
-     "description": "After Clara uses Ultimate, DMG dealt to her is reduced by an extra {uses_ultimate_dmg}, and she has greatly increased chances of being attacked by enemies for 2 turn(s).\nIn addition, Svarog's Counter is enhanced. When an ally is attacked, Svarog immediately launches a Counter, and its DMG multiplier against the enemy increases by {dmg}. Enemies adjacent to it take 50% of the DMG dealt to the primary target enemy. Enhanced Counter(s) can take effect 2 time(s).",
+     "description": "After Clara uses Ultimate, DMG dealt to her is reduced by an extra {ultimate_dmg}, and she has greatly increased chances of being attacked by enemies for 2 turn(s).\nIn addition, Svarog's Counter is enhanced. When an ally is attacked, Svarog immediately launches a Counter, and its DMG multiplier against the enemy increases by {dmg}. Enemies adjacent to it take 50% of the DMG dealt to the primary target enemy. Enhanced Counter(s) can take effect 2 time(s).",
      "scalings": [
       {
-       "label": "uses Ultimate DMG",
+       "label": "Ultimate DMG",
        "values": [
         "15%",
         "16%",
@@ -4135,10 +4135,10 @@
      "type": "Talent",
      "name": "Hearts Gather as One",
      "tag": "Enhance",
-     "description": "When combat begins or after Cyrene takes action, other ally characters under any state and their memosprites gain \"Future.\" When ally targets with \"Future\" take action, consumes \"Future\" to grant Cyrene 1 \"Recollection\" point(s). When Cyrene has 24 \"Recollection\" points, can activate Ultimate and dispel all debuffs on her. When she has 12 \"Recollection\" points during the \"Ripples of Past Reverie\" state, can activate Ultimate. After reaching the maximum, it can overflow by up to 27 points. While Cyrene is on the field, increases DMG dealt by all ally targets by {field_increases_dmg}.",
+     "description": "When combat begins or after Cyrene takes action, other ally characters under any state and their memosprites gain \"Future.\" When ally targets with \"Future\" take action, consumes \"Future\" to grant Cyrene 1 \"Recollection\" point(s). When Cyrene has 24 \"Recollection\" points, can activate Ultimate and dispel all debuffs on her. When she has 12 \"Recollection\" points during the \"Ripples of Past Reverie\" state, can activate Ultimate. After reaching the maximum, it can overflow by up to 27 points. While Cyrene is on the field, increases DMG dealt by all ally targets by {dmg}.",
      "scalings": [
       {
-       "label": "field increases DMG",
+       "label": "DMG",
        "values": [
         "10%",
         "11%",
@@ -4290,7 +4290,7 @@
      "type": "Memosprite Skill",
      "name": "Ode to Life and Death",
      "tag": "Support",
-     "description": "Effective for the entire battle. When used on Castorice, \"Newbud\" can overflow up to 200%. When summoning Netherwing, consumes all overflowing \"Newbud.\" For every 1% overflow amount consumed, increases the multiplier by {overflowing_newbud} for the DMG dealt when this summoned Netherwing triggers the ability effect of its Talent \"Wings Sweep the Ruins.\" If there are 2 enemy target(s) or fewer on the field when summoned, the DMG multiplier additionally increases by {dmg_multiplier_additionally}.",
+     "description": "Effective for the entire battle. When used on Castorice, \"Newbud\" can overflow up to 200%. When summoning Netherwing, consumes all overflowing \"Newbud.\" For every 1% overflow amount consumed, increases the multiplier by {overflowing_newbud} for the DMG dealt when this summoned Netherwing triggers the ability effect of its Talent \"Wings Sweep the Ruins.\" If there are 2 enemy target(s) or fewer on the field when summoned, the DMG multiplier additionally increases by {dmg_multiplier}.",
      "scalings": [
       {
        "label": "overflowing Newbud",
@@ -4305,7 +4305,7 @@
        ]
       },
       {
-       "label": "DMG multiplier additionally",
+       "label": "DMG multiplier",
        "values": [
         "0.24%",
         "0.288%",
@@ -4322,7 +4322,7 @@
      "type": "Memosprite Skill",
      "name": "Ode to Ocean",
      "tag": "Support",
-     "description": "One-time effect. When used on Hysilens, Hysilens gains \"Flowing Warmth.\" After Hysilens uses an attack, consumes \"Flowing Warmth\" and regenerates 60 Energy for this unit. In this battle, increases the DMG dealt by Hysilens by {hysilens}. After Hysilens uses Basic ATK/Skill to attack enemies, causes all the DoT currently applied on the attacked enemy targets to immediately produce DMG equal to {immediately_produce_dmg}/{3} of the original DMG.",
+     "description": "One-time effect. When used on Hysilens, Hysilens gains \"Flowing Warmth.\" After Hysilens uses an attack, consumes \"Flowing Warmth\" and regenerates 60 Energy for this unit. In this battle, increases the DMG dealt by Hysilens by {hysilens}. After Hysilens uses Basic ATK/Skill to attack enemies, causes all the DoT currently applied on the attacked enemy targets to immediately produce DMG equal to {dmg}/{3} of the original DMG.",
      "scalings": [
       {
        "label": "Hysilens",
@@ -4337,7 +4337,7 @@
        ]
       },
       {
-       "label": "immediately produce DMG",
+       "label": "DMG",
        "values": [
         "30.0%",
         "36.0%",
@@ -4349,7 +4349,7 @@
        ]
       },
       {
-       "label": "immediately produce DMG",
+       "label": "DMG",
        "values": [
         "40.0%",
         "48.0%",
@@ -4366,10 +4366,10 @@
      "type": "Memosprite Skill",
      "name": "Ode to Passage",
      "tag": "Support",
-     "description": "Effective for the entire battle. When used on Tribbie, causes DMG dealt by Tribbie to ignore {tribbie_to_ignore} of enemies' DEF. When Tribbie launches Follow-Up ATK and triggers the Additional DMG from Tribbie's Zone, it further deals 1 instance(s) of Additional DMG.",
+     "description": "Effective for the entire battle. When used on Tribbie, causes DMG dealt by Tribbie to ignore {enemies_def} of enemies' DEF. When Tribbie launches Follow-Up ATK and triggers the Additional DMG from Tribbie's Zone, it further deals 1 instance(s) of Additional DMG.",
      "scalings": [
       {
-       "label": "Tribbie to ignore",
+       "label": "enemies' DEF",
        "values": [
         "6.0%",
         "7.2%",
@@ -4418,7 +4418,7 @@
      "type": "Memosprite Skill",
      "name": "Ode to Romance",
      "tag": "Support",
-     "description": "One-time effect. When used on Aglaea, causes Aglaea to gain \"Romance\" and immediately stacks Garmentmaker's Memosprite Talent's SPD Boost effect to its upper limit. After Aglaea or Garmentmaker uses an attack, consumes \"Romance\" and regenerates 70 Energy. Increases DMG dealt by Aglaea and Garmentmaker by {aglaea_and_garmentmaker}, and ignores {2} of the targets' DEF, lasting until Aglaea exits the \"Supreme Stance\" state.",
+     "description": "One-time effect. When used on Aglaea, causes Aglaea to gain \"Romance\" and immediately stacks Garmentmaker's Memosprite Talent's SPD Boost effect to its upper limit. After Aglaea or Garmentmaker uses an attack, consumes \"Romance\" and regenerates 70 Energy. Increases DMG dealt by Aglaea and Garmentmaker by {aglaea_and_garmentmaker}, and ignores {targets_def} of the targets' DEF, lasting until Aglaea exits the \"Supreme Stance\" state.",
      "scalings": [
       {
        "label": "Aglaea and Garmentmaker",
@@ -4433,7 +4433,7 @@
        ]
       },
       {
-       "label": "Aglaea and Garmentmaker",
+       "label": "targets' DEF",
        "values": [
         "18.0%",
         "21.6%",
@@ -4634,10 +4634,10 @@
      "type": "Memosprite Skill",
      "name": "This Ode, to All Lives",
      "tag": "Support",
-     "description": "Applies a buff to one designated ally character. When the character is a Chrysos Heir, the target gains a special effect. When the character is not a Chrysos Heir, increases the target's DMG dealt by {turns} for 2 turns. This effect also applies on memosprites.",
+     "description": "Applies a buff to one designated ally character. When the character is a Chrysos Heir, the target gains a special effect. When the character is not a Chrysos Heir, increases the target's DMG dealt by {dmg} for 2 turns. This effect also applies on memosprites.",
      "scalings": [
       {
-       "label": "turns",
+       "label": "DMG",
        "values": [
         "20.0%",
         "24.0%",
@@ -5212,10 +5212,10 @@
      "type": "Skill",
      "name": "Terra Omnibus",
      "tag": "Defense",
-     "description": "Designates one ally character as the \"Bondmate\" and provides all allies with a Shield that can offset DMG equal to {can_offset_dmg} of Dan Heng • Permansor Terrae's ATK plus {permansor_terrae_s_atk} for 3 turn(s). When repeatedly receiving Dan Heng • Permansor Terrae's Shield, can stack the Shield Effect, but it will not exceed 300% of the current Shield provided by Skill.\n\"Bondmate\" only applies to the most recent target of Dan Heng • Permansor Terrae's Skill.",
+     "description": "Designates one ally character as the \"Bondmate\" and provides all allies with a Shield that can offset DMG equal to {dmg} of Dan Heng • Permansor Terrae's ATK plus {permansor_terrae_s_atk} for 3 turn(s). When repeatedly receiving Dan Heng • Permansor Terrae's Shield, can stack the Shield Effect, but it will not exceed 300% of the current Shield provided by Skill.\n\"Bondmate\" only applies to the most recent target of Dan Heng • Permansor Terrae's Skill.",
      "scalings": [
       {
-       "label": "can offset DMG",
+       "label": "DMG",
        "values": [
         "14%",
         "14.75%",
@@ -5254,7 +5254,7 @@
      "type": "Ultimate",
      "name": "A Dragon's Zenith Knows No Rue",
      "tag": "AoE",
-     "description": "Deals Physical DMG equal to {physical_dmg} of Dan Heng • Permansor Terrae's ATK to all enemies, and provides a Shield to all allies that can offset DMG equal to {can_offset_dmg} of Dan Heng • Permansor Terrae's ATK plus {permansor_terrae_s_atk}, lasting for 3 turn(s). When repeatedly receiving Dan Heng • Permansor Terrae's Shield, can stack the Shield Effect, but it will not exceed 300% of the current Shield provided by Skill.\n\"Souldragon\" becomes enhanced. When \"Souldragon\" takes action, launches Follow-up ATK, dealing Physical DMG to all enemies equal to {4} of Dan Heng • Permansor Terrae's ATK and Additional DMG of the Bondmate's Type to all enemies equal to {type} of the Bondmate's ATK. The enhancement lasts for 2 \"Souldragon\" action(s).",
+     "description": "Deals Physical DMG equal to {physical_dmg} of Dan Heng • Permansor Terrae's ATK to all enemies, and provides a Shield to all allies that can offset DMG equal to {dmg} of Dan Heng • Permansor Terrae's ATK plus {permansor_terrae_s_atk}, lasting for 3 turn(s). When repeatedly receiving Dan Heng • Permansor Terrae's Shield, can stack the Shield Effect, but it will not exceed 300% of the current Shield provided by Skill.\n\"Souldragon\" becomes enhanced. When \"Souldragon\" takes action, launches Follow-up ATK, dealing Physical DMG to all enemies equal to {4} of Dan Heng • Permansor Terrae's ATK and Additional DMG of the Bondmate's Type to all enemies equal to {type} of the Bondmate's ATK. The enhancement lasts for 2 \"Souldragon\" action(s).",
      "scalings": [
       {
        "label": "Physical DMG",
@@ -5274,7 +5274,7 @@
        ]
       },
       {
-       "label": "can offset DMG",
+       "label": "DMG",
        "values": [
         "40%",
         "44%",
@@ -5347,10 +5347,10 @@
      "type": "Talent",
      "name": "Of Virtue, Forms Unfold",
      "tag": "Defense",
-     "description": "When an ally character becomes the \"Bondmate,\" Dan Heng • Permansor Terrae summons \"Souldragon\" for them, which has an initial SPD of 165.\nWhen \"Souldragon\" takes action, dispels 1 debuff(s) from all allies and provides a Shield that can offset DMG equal to {can_offset_dmg} of Dan Heng • Permansor Terrae's ATK plus {permansor_terrae_s_atk} for 3 turn(s). The Shield Effect provided by Dan Heng • Permansor Terrae and \"Souldragon\" can be stacked, but it will not exceed 300% of the Shield provided by Dan Heng • Permansor Terrae's Skill.\nWhen Dan Heng • Permansor Terrae or the \"Bondmate\" is knocked down, \"Souldragon\" disappears.",
+     "description": "When an ally character becomes the \"Bondmate,\" Dan Heng • Permansor Terrae summons \"Souldragon\" for them, which has an initial SPD of 165.\nWhen \"Souldragon\" takes action, dispels 1 debuff(s) from all allies and provides a Shield that can offset DMG equal to {dmg} of Dan Heng • Permansor Terrae's ATK plus {permansor_terrae_s_atk} for 3 turn(s). The Shield Effect provided by Dan Heng • Permansor Terrae and \"Souldragon\" can be stacked, but it will not exceed 300% of the Shield provided by Dan Heng • Permansor Terrae's Skill.\nWhen Dan Heng • Permansor Terrae or the \"Bondmate\" is knocked down, \"Souldragon\" disappears.",
      "scalings": [
       {
-       "label": "can offset DMG",
+       "label": "DMG",
        "values": [
         "7%",
         "7.38%",
@@ -5960,7 +5960,7 @@
      "type": "Ultimate",
      "name": "O Wakeful World, Goodnight",
      "tag": "AoE",
-     "description": "Summons memosprite Evey. Then Evey deals Ice DMG to all enemies equal to {ice_dmg} of Evey's Max HP and Evernight enters the \"Darkest Riddle\" state. During this state, all enemies take {riddle_state_during} increased DMG while both Evernight and Evey deal {dmg} increased DMG and are immune to Crowd Control debuffs. Gains 2 point(s) of Charge for \"Darkest Riddle.\" And Evey consumes 1 point after it uses \"Dream, Dissolving, as Dew.\" At the start of Evernight's turn, if no Charge remains, exits the \"Darkest Riddle\" state.",
+     "description": "Summons memosprite Evey. Then Evey deals Ice DMG to all enemies equal to {ice_dmg} of Evey's Max HP and Evernight enters the \"Darkest Riddle\" state. During this state, all enemies take {dmg} increased DMG while both Evernight and Evey deal {3} increased DMG and are immune to Crowd Control debuffs. Gains 2 point(s) of Charge for \"Darkest Riddle.\" And Evey consumes 1 point after it uses \"Dream, Dissolving, as Dew.\" At the start of Evernight's turn, if no Charge remains, exits the \"Darkest Riddle\" state.",
      "scalings": [
       {
        "label": "Ice DMG",
@@ -5980,7 +5980,7 @@
        ]
       },
       {
-       "label": "Riddle state During",
+       "label": "DMG",
        "values": [
         "30%",
         "33%",
@@ -6389,7 +6389,7 @@
      "type": "Talent",
      "name": "Thunderhunt",
      "tag": "Single Target",
-     "description": "Can activate Ultimate when \"Flying Aureus\" reaches 6 points, accumulating up to 12 points. Feixiao gains 1 point of \"Flying Aureus\" for every 2 attacks by ally targets. Feixiao's Ultimate attacks do not count towards this number.\nAfter Feixiao's teammates attack an Enemy target, Feixiao immediately launches Follow-up ATK against the primary target, dealing Wind DMG equal to {wind_dmg} of Feixiao's ATK. If there is no primary target available to attack, Feixiao attacks a single random enemy instead. This effect can only trigger once per turn and the trigger count resets at the start of Feixiao's turn. When using this attack, increases DMG dealt by this unit by {attack_increases_dmg}, lasting for 2 turn(s).",
+     "description": "Can activate Ultimate when \"Flying Aureus\" reaches 6 points, accumulating up to 12 points. Feixiao gains 1 point of \"Flying Aureus\" for every 2 attacks by ally targets. Feixiao's Ultimate attacks do not count towards this number.\nAfter Feixiao's teammates attack an Enemy target, Feixiao immediately launches Follow-up ATK against the primary target, dealing Wind DMG equal to {wind_dmg} of Feixiao's ATK. If there is no primary target available to attack, Feixiao attacks a single random enemy instead. This effect can only trigger once per turn and the trigger count resets at the start of Feixiao's turn. When using this attack, increases DMG dealt by this unit by {dmg}, lasting for 2 turn(s).",
      "scalings": [
       {
        "label": "Wind DMG",
@@ -6409,7 +6409,7 @@
        ]
       },
       {
-       "label": "attack increases DMG",
+       "label": "DMG",
        "values": [
         "30%",
         "33%",
@@ -6625,10 +6625,10 @@
      "type": "Ultimate",
      "name": "Fyrefly Type-IV: Complete Combustion",
      "tag": "Enhance",
-     "description": "Enters the Complete Combustion state, advances this unit's Action by 100%, and gains Enhanced Basic ATK and Enhanced Skill. While in Complete Combustion, increases SPD by {combustion_increases_spd}, and when using the Enhanced Basic ATK or Enhanced Skill, increases this unit's Weakness Break Efficiency by 50% and the Break DMG dealt by SAM to the enemy targets by {sam}, lasting until this current attack ends.\nA countdown timer for the Complete Combustion state appears on the Action Order. When the countdown timer's turn starts, SAM exits the Complete Combustion state. The countdown timer has a fixed SPD of 70.\nSAM cannot use Ultimate while in Complete Combustion.",
+     "description": "Enters the Complete Combustion state, advances this unit's Action by 100%, and gains Enhanced Basic ATK and Enhanced Skill. While in Complete Combustion, increases SPD by {spd}, and when using the Enhanced Basic ATK or Enhanced Skill, increases this unit's Weakness Break Efficiency by 50% and the Break DMG dealt by SAM to the enemy targets by {sam}, lasting until this current attack ends.\nA countdown timer for the Complete Combustion state appears on the Action Order. When the countdown timer's turn starts, SAM exits the Complete Combustion state. The countdown timer has a fixed SPD of 70.\nSAM cannot use Ultimate while in Complete Combustion.",
      "scalings": [
       {
-       "label": "Combustion increases SPD",
+       "label": "SPD",
        "values": [
         "10%",
         "11%",
@@ -6865,10 +6865,10 @@
      "type": "Talent",
      "name": "Bleak Breeds Bliss",
      "tag": "Restore",
-     "description": "While Fu Xuan is still active in battle, Misfortune Avoidance is applied to the entire team. With Misfortune Avoidance, allies take {avoidance_allies_take} less DMG.\nWhen Fu Xuan's current HP percentage falls to 50% of her Max HP or less, HP Restore will be triggered for Fu Xuan, restoring her HP by {hp} of the amount of HP she is currently missing. This effect cannot be triggered if she receives a killing blow. This effect has 1 trigger count by default and can hold up to a maximum of 2 trigger counts.",
+     "description": "While Fu Xuan is still active in battle, Misfortune Avoidance is applied to the entire team. With Misfortune Avoidance, allies take {dmg} less DMG.\nWhen Fu Xuan's current HP percentage falls to 50% of her Max HP or less, HP Restore will be triggered for Fu Xuan, restoring her HP by {hp} of the amount of HP she is currently missing. This effect cannot be triggered if she receives a killing blow. This effect has 1 trigger count by default and can hold up to a maximum of 2 trigger counts.",
      "scalings": [
       {
-       "label": "Avoidance allies take",
+       "label": "DMG",
        "values": [
         "10%",
         "10.8%",
@@ -7243,10 +7243,10 @@
      "type": "Skill",
      "name": "Special Brew",
      "tag": "Restore",
-     "description": "Immediately heals a target ally for {immediately} HP.",
+     "description": "Immediately heals a target ally for {hp} HP.",
      "scalings": [
       {
-       "label": "Immediately",
+       "label": "HP",
        "values": [
         "200",
         "340",
@@ -7293,10 +7293,10 @@
      "type": "Talent",
      "name": "Tipsy Tussle",
      "tag": "Restore",
-     "description": "The Besotted state makes targets receive {besotted} more Break DMG. Every time a Besotted target gets attacked by an ally, the attacking ally's HP is restored by {hp_is_restored}",
+     "description": "The Besotted state makes targets receive {break_dmg} more Break DMG. Every time a Besotted target gets attacked by an ally, the attacking ally's HP is restored by {hp_is_restored}",
      "scalings": [
       {
-       "label": "Besotted",
+       "label": "Break DMG",
        "values": [
         "6%",
         "6.6%",
@@ -7623,10 +7623,10 @@
      "type": "Skill",
      "name": "Gate of Babylon",
      "tag": "Blast",
-     "description": "Gains \"King's Acknowledgement,\" allowing this unit to ignore {acknowledgement} of the target's DEF when dealing DMG, lasting for 3 turn(s).\nDeals Lightning DMG equal to {lightning_dmg} of Gilgamesh's ATK to one designated enemy, and deals Lightning DMG equal to {3} of Gilgamesh's ATK to adjacent targets.",
+     "description": "Gains \"King's Acknowledgement,\" allowing this unit to ignore {def} of the target's DEF when dealing DMG, lasting for 3 turn(s).\nDeals Lightning DMG equal to {lightning_dmg} of Gilgamesh's ATK to one designated enemy, and deals Lightning DMG equal to {3} of Gilgamesh's ATK to adjacent targets.",
      "scalings": [
       {
-       "label": "Acknowledgement",
+       "label": "DEF",
        "values": [
         "15%",
         "16.5%",
@@ -7749,7 +7749,7 @@
      "type": "Talent",
      "name": "\"I Grant You Permission To Strike\"",
      "tag": "AoE",
-     "description": "When Gilgamesh or Saber attacks, the attack tally increases by 1. After any unit attacks, if the attack tally reaches 8, Gilgamesh and Saber launch Joint Follow-Up ATK, dealing Lightning DMG equal to {lightning_dmg} of Gilgamesh's ATK and Wind DMG equal to {wind_dmg} of Saber's ATK to all enemies, respectively. Then, Gilgamesh gains 3 \"Interest.\" Saber regenerates a fixed 120 Energy, and the next time she uses Ultimate, the DMG dealt becomes {dmg_dealt_becomes} of the original DMG.\nAfter using Joint Follow-Up ATK, resets the attack tally.",
+     "description": "When Gilgamesh or Saber attacks, the attack tally increases by 1. After any unit attacks, if the attack tally reaches 8, Gilgamesh and Saber launch Joint Follow-Up ATK, dealing Lightning DMG equal to {lightning_dmg} of Gilgamesh's ATK and Wind DMG equal to {wind_dmg} of Saber's ATK to all enemies, respectively. Then, Gilgamesh gains 3 \"Interest.\" Saber regenerates a fixed 120 Energy, and the next time she uses Ultimate, the DMG dealt becomes {original_dmg} of the original DMG.\nAfter using Joint Follow-Up ATK, resets the attack tally.",
      "scalings": [
       {
        "label": "Lightning DMG",
@@ -7786,7 +7786,7 @@
        ]
       },
       {
-       "label": "DMG dealt becomes",
+       "label": "original DMG",
        "values": [
         "120%",
         "128%",
@@ -7957,7 +7957,7 @@
      "type": "Ultimate",
      "name": "Watch This Showstopper",
      "tag": "AoE",
-     "description": "Deals Fire DMG equal to {fire_dmg} of Guinaifen's ATK to all enemies. If the target enemy is currently inflicted with Burn, then their Burn status immediately produces DMG equal to {immediately_produces_dmg} of their original DMG.",
+     "description": "Deals Fire DMG equal to {fire_dmg} of Guinaifen's ATK to all enemies. If the target enemy is currently inflicted with Burn, then their Burn status immediately produces DMG equal to {dmg} of their original DMG.",
      "scalings": [
       {
        "label": "Fire DMG",
@@ -7977,7 +7977,7 @@
        ]
       },
       {
-       "label": "immediately produces DMG",
+       "label": "DMG",
        "values": [
         "72%",
         "74%",
@@ -7999,10 +7999,10 @@
      "type": "Talent",
      "name": "PatrAeon Benefits",
      "tag": "Impair",
-     "description": "When Guinaifen is on the field, there is a 100% base chance to apply Firekiss to an enemy after their Burn status causes DMG. While inflicted with Firekiss, the enemy receives {inflicted_with_firekiss} increased DMG, which lasts for 3 turn(s) and can stack up to 3 time(s).",
+     "description": "When Guinaifen is on the field, there is a 100% base chance to apply Firekiss to an enemy after their Burn status causes DMG. While inflicted with Firekiss, the enemy receives {dmg} increased DMG, which lasts for 3 turn(s) and can stack up to 3 time(s).",
      "scalings": [
       {
-       "label": "inflicted with Firekiss",
+       "label": "DMG",
        "values": [
         "4%",
         "4.3%",
@@ -9084,7 +9084,7 @@
      "type": "Skill",
      "name": "Hey! Remember Hook?",
      "tag": "Single Target",
-     "description": "Deals Fire DMG equal to {fire_dmg} of Hook's ATK to a single enemy. In addition, there is a 100% base chance to inflict Burn for 2 turn(s).\nWhen afflicted with Burn, enemies will take Fire DoT equal to {take_fire_dot} of Hook's ATK at the beginning of each turn.",
+     "description": "Deals Fire DMG equal to {fire_dmg} of Hook's ATK to a single enemy. In addition, there is a 100% base chance to inflict Burn for 2 turn(s).\nWhen afflicted with Burn, enemies will take Fire DoT equal to {fire_dot} of Hook's ATK at the beginning of each turn.",
      "scalings": [
       {
        "label": "Fire DMG",
@@ -9104,7 +9104,7 @@
        ]
       },
       {
-       "label": "take Fire DoT",
+       "label": "Fire DoT",
        "values": [
         "25%",
         "28.75%",
@@ -9126,7 +9126,7 @@
      "type": "Enhanced Skill",
      "name": "Hey! Remember Hook?",
      "tag": "Blast",
-     "description": "Deals Fire DMG equal to {fire_dmg} of Hook's ATK to a single enemy, with a 100% base chance to Burn them for 2 turn(s). Additionally, deals Fire DMG equal to {2} of Hook's ATK to enemies adjacent to it.\nWhen afflicted with Burn, enemies will take Fire DoT equal to {take_fire_dot} of Hook's ATK at the beginning of each turn.",
+     "description": "Deals Fire DMG equal to {fire_dmg} of Hook's ATK to a single enemy, with a 100% base chance to Burn them for 2 turn(s). Additionally, deals Fire DMG equal to {2} of Hook's ATK to enemies adjacent to it.\nWhen afflicted with Burn, enemies will take Fire DoT equal to {fire_dot} of Hook's ATK at the beginning of each turn.",
      "scalings": [
       {
        "label": "Fire DMG",
@@ -9163,7 +9163,7 @@
        ]
       },
       {
-       "label": "take Fire DoT",
+       "label": "Fire DoT",
        "values": [
         "40%",
         "44%",
@@ -9324,7 +9324,7 @@
      "type": "Skill",
      "name": "Talisman: Protection",
      "tag": "Restore",
-     "description": "Dispels 1 debuff(s) from one designated ally and immediately restores this ally's HP by an amount equal to {hp} of Huohuo's Max HP plus {max_hp} At the same time, restores HP for allies that are adjacent to this target ally by an amount equal to {time_restores_hp} of Huohuo's Max HP plus {4}",
+     "description": "Dispels 1 debuff(s) from one designated ally and immediately restores this ally's HP by an amount equal to {hp} of Huohuo's Max HP plus {max_hp} At the same time, restores HP for allies that are adjacent to this target ally by an amount equal to {3} of Huohuo's Max HP plus {4}",
      "scalings": [
       {
        "label": "HP",
@@ -9361,7 +9361,7 @@
        ]
       },
       {
-       "label": "time restores HP",
+       "label": "HP",
        "values": [
         "12.8%",
         "13.6%",
@@ -9574,10 +9574,10 @@
      "type": "Skill",
      "name": "Love Over the Rainbow",
      "tag": "Restore",
-     "description": "Summons memosprite Little Ica, restores HP equal to {ica_restores_hp} of Hyacine's Max HP plus {max_hp} for all allies aside from Little Ica, and restores HP equal to {hp} of Hyacine's Max HP plus {4} for Little Ica.",
+     "description": "Summons memosprite Little Ica, restores HP equal to {hp} of Hyacine's Max HP plus {max_hp} for all allies aside from Little Ica, and restores HP equal to {3} of Hyacine's Max HP plus {4} for Little Ica.",
      "scalings": [
       {
-       "label": "Ica restores HP",
+       "label": "HP",
        "values": [
         "4%",
         "4.5%",
@@ -9650,10 +9650,10 @@
      "type": "Ultimate",
      "name": "We Who Fly Into Twilight",
      "tag": "Support",
-     "description": "Summons memosprite Little Ica, restores HP equal to {ica_restores_hp} of Hyacine's Max HP plus {max_hp} for all allies aside from Little Ica, and restores HP equal to {hp} of Hyacine's Max HP plus {4} for Little Ica. Hyacine enters the \"After Rain\" state for 3 turn(s) afterward. Reduces the state's duration by 1 turn each time Hyacine's turn begins. When in \"After Rain\" state, increases Max HP for all allies by {5} plus {6}",
+     "description": "Summons memosprite Little Ica, restores HP equal to {hp} of Hyacine's Max HP plus {max_hp} for all allies aside from Little Ica, and restores HP equal to {3} of Hyacine's Max HP plus {4} for Little Ica. Hyacine enters the \"After Rain\" state for 3 turn(s) afterward. Reduces the state's duration by 1 turn each time Hyacine's turn begins. When in \"After Rain\" state, increases Max HP for all allies by {5} plus {6}",
      "scalings": [
       {
-       "label": "Ica restores HP",
+       "label": "HP",
        "values": [
         "5%",
         "5.625%",
@@ -9760,10 +9760,10 @@
      "type": "Talent",
      "name": "First Light Heals the World",
      "tag": "Enhance",
-     "description": "The memosprite Little Ica initially has Max HP equal to 50% of Hyacine's Max HP. When Hyacine or Little Ica provides healing, increases Little Ica's DMG dealt by {turn_s} for 2 turn(s). Stacks up to 3 time(s).",
+     "description": "The memosprite Little Ica initially has Max HP equal to 50% of Hyacine's Max HP. When Hyacine or Little Ica provides healing, increases Little Ica's DMG dealt by {little_ica_s_dmg} for 2 turn(s). Stacks up to 3 time(s).",
      "scalings": [
       {
-       "label": "turn s",
+       "label": "Little Ica's DMG",
        "values": [
         "40%",
         "44%",
@@ -9825,7 +9825,7 @@
      "type": "Memosprite Talent",
      "name": "Take Sky in Hand",
      "tag": "Restore",
-     "description": "Little Ica's SPD remains at 0, is immune to debuffs, and they will not appear on the Action Order.\nIf ally targets (except Little Ica) have their HP reduced, then Little Ica will consume HP equal to 4% of their own Max HP and restore HP equal to {hp} of Hyacine's Max HP plus {max_hp} for the ally target with reduced HP at the start of any target's turn or after any target takes action.\nWhile Hyacine is in the \"After Rain\" state, Little Ica immediately obtains 1 extra turn and automatically uses \"Rainclouds, Time to Go!\" after Hyacine uses an ability. Moreover, when Little Ica triggers their Talent's healing effect, additionally restores HP for all ally targets by an amount equal to {additionally_restores_hp} of Hyacine's Max HP plus {4} After Little Ica uses an ability, all Continuous Effects' duration decreases by 1 turn.",
+     "description": "Little Ica's SPD remains at 0, is immune to debuffs, and they will not appear on the Action Order.\nIf ally targets (except Little Ica) have their HP reduced, then Little Ica will consume HP equal to 4% of their own Max HP and restore HP equal to {hp} of Hyacine's Max HP plus {max_hp} for the ally target with reduced HP at the start of any target's turn or after any target takes action.\nWhile Hyacine is in the \"After Rain\" state, Little Ica immediately obtains 1 extra turn and automatically uses \"Rainclouds, Time to Go!\" after Hyacine uses an ability. Moreover, when Little Ica triggers their Talent's healing effect, additionally restores HP for all ally targets by an amount equal to {3} of Hyacine's Max HP plus {4} After Little Ica uses an ability, all Continuous Effects' duration decreases by 1 turn.",
      "scalings": [
       {
        "label": "HP",
@@ -9852,7 +9852,7 @@
        ]
       },
       {
-       "label": "additionally restores HP",
+       "label": "HP",
        "values": [
         "1%",
         "1.2%",
@@ -10451,7 +10451,7 @@
      "type": "Ultimate",
      "name": "Pyrograph Arcanum",
      "tag": "AoE",
-     "description": "Sets the number of \"Ashen Roast\" stacks on enemy targets to the highest number of \"Ashen Roast\" stacks present on the battlefield. Then, activates a Zone and deals Fire DMG equal to {fire_dmg} of Jiaoqiu's ATK to all enemies.\nWhile inside the Zone, enemy targets receive {inside_the_zone} increased Ultimate DMG, with a {ultimate_dmg} base chance of being inflicted with 1 stack of Ashen Roast when taking action. While the Zone exists, this effect can trigger up to 6 time(s). And for each enemy target, it can only trigger once per turn. This trigger count resets every time Jiaoqiu uses Ultimate.\nThe Zone lasts for 3 turn(s), and its duration decreases by 1 at the start of this unit's every turn. If Jiaoqiu gets knocked down, the Zone will also be dispelled.",
+     "description": "Sets the number of \"Ashen Roast\" stacks on enemy targets to the highest number of \"Ashen Roast\" stacks present on the battlefield. Then, activates a Zone and deals Fire DMG equal to {fire_dmg} of Jiaoqiu's ATK to all enemies.\nWhile inside the Zone, enemy targets receive {ultimate_dmg} increased Ultimate DMG, with a {3} base chance of being inflicted with 1 stack of Ashen Roast when taking action. While the Zone exists, this effect can trigger up to 6 time(s). And for each enemy target, it can only trigger once per turn. This trigger count resets every time Jiaoqiu uses Ultimate.\nThe Zone lasts for 3 turn(s), and its duration decreases by 1 at the start of this unit's every turn. If Jiaoqiu gets knocked down, the Zone will also be dispelled.",
      "scalings": [
       {
        "label": "Fire DMG",
@@ -10471,7 +10471,7 @@
        ]
       },
       {
-       "label": "inside the Zone",
+       "label": "Ultimate DMG",
        "values": [
         "9%",
         "9.6%",
@@ -10510,10 +10510,10 @@
      "type": "Talent",
      "name": "Quartet Finesse, Octave Finery",
      "tag": "Impair",
-     "description": "When Jiaoqiu hits an enemy with Basic ATK, Skill or Ultimate, there is a 100% base chance to inflict 1 stack of Ashen Roast on them. At 1 stack, increases DMG received by the enemy by {stack_increases_dmg}. Then, each subsequent stack increases this by {then}.\nAshen Roast is capped at 5 stack(s) and lasts for 2 turn(s).\nWhen an enemy target is afflicted with Ashen Roast, they are also considered as being Burned at the same time, taking Fire DoT equal to {taking_fire_dot} of Jiaoqiu's ATK at the start of each turn.",
+     "description": "When Jiaoqiu hits an enemy with Basic ATK, Skill or Ultimate, there is a 100% base chance to inflict 1 stack of Ashen Roast on them. At 1 stack, increases DMG received by the enemy by {dmg}. Then, each subsequent stack increases this by {2}.\nAshen Roast is capped at 5 stack(s) and lasts for 2 turn(s).\nWhen an enemy target is afflicted with Ashen Roast, they are also considered as being Burned at the same time, taking Fire DoT equal to {taking_fire_dot} of Jiaoqiu's ATK at the start of each turn.",
      "scalings": [
       {
-       "label": "stack increases DMG",
+       "label": "DMG",
        "values": [
         "7.5%",
         "8.25%",
@@ -10530,7 +10530,7 @@
        ]
       },
       {
-       "label": "Then",
+       "label": "Value 2",
        "values": [
         "2.5%",
         "2.75%",
@@ -11065,7 +11065,7 @@
      "type": "Skill",
      "name": "Caressing Moonlight",
      "tag": "Blast",
-     "description": "Deals Lightning DMG equal to {lightning_dmg} of Kafka's ATK to one designated enemy and Lightning DMG equal to {2} of Kafka's ATK to their adjacent units.\nIf the designated enemy or their adjacent target(s) is currently receiving DoT, all DoTs currently placed on that enemy immediately produce DMG equal to {immediately_produce_dmg} or {4} of their original DMG.",
+     "description": "Deals Lightning DMG equal to {lightning_dmg} of Kafka's ATK to one designated enemy and Lightning DMG equal to {2} of Kafka's ATK to their adjacent units.\nIf the designated enemy or their adjacent target(s) is currently receiving DoT, all DoTs currently placed on that enemy immediately produce DMG equal to {dmg} or {4} of their original DMG.",
      "scalings": [
       {
        "label": "Lightning DMG",
@@ -11102,7 +11102,7 @@
        ]
       },
       {
-       "label": "immediately produce DMG",
+       "label": "DMG",
        "values": [
         "30%",
         "33%",
@@ -11119,7 +11119,7 @@
        ]
       },
       {
-       "label": "immediately produce DMG",
+       "label": "DMG",
        "values": [
         "40%",
         "41%",
@@ -11141,7 +11141,7 @@
      "type": "Ultimate",
      "name": "Twilight Trill",
      "tag": "AoE",
-     "description": "Deals Lightning DMG equal to {lightning_dmg} of Kafka's ATK to all enemies, with a 100% base chance for attacked enemy targets to become Shocked and immediately take DMG from their current DoT debuff(s), equal to {dot_debuff_s} of its original DMG. Shock lasts for 2 turn(s).\nWhile Shocked, enemy targets receive Lightning DoT equal to {receive_lightning_dot} of Kafka's ATK at the beginning of each turn.",
+     "description": "Deals Lightning DMG equal to {lightning_dmg} of Kafka's ATK to all enemies, with a 100% base chance for attacked enemy targets to become Shocked and immediately take DMG from their current DoT debuff(s), equal to {dot_debuff} of its original DMG. Shock lasts for 2 turn(s).\nWhile Shocked, enemy targets receive Lightning DoT equal to {lightning_dot} of Kafka's ATK at the beginning of each turn.",
      "scalings": [
       {
        "label": "Lightning DMG",
@@ -11161,7 +11161,7 @@
        ]
       },
       {
-       "label": "DoT debuff s",
+       "label": "DoT debuff",
        "values": [
         "116%",
         "126.875%",
@@ -11178,7 +11178,7 @@
        ]
       },
       {
-       "label": "receive Lightning DoT",
+       "label": "Lightning DoT",
        "values": [
         "100%",
         "102%",
@@ -11314,7 +11314,7 @@
      "type": "Skill",
      "name": "Smoke and Splendor",
      "tag": "AoE",
-     "description": "Deals Fire DMG equal to {fire_dmg} of Lingsha's ATK to all enemies and at the same time, restores HP equal to {time_restores_hp} of Lingsha's ATK plus {atk} for all allies. Fuyuan's action advances by 20%.",
+     "description": "Deals Fire DMG equal to {fire_dmg} of Lingsha's ATK to all enemies and at the same time, restores HP equal to {hp} of Lingsha's ATK plus {atk} for all allies. Fuyuan's action advances by 20%.",
      "scalings": [
       {
        "label": "Fire DMG",
@@ -11334,7 +11334,7 @@
        ]
       },
       {
-       "label": "time restores HP",
+       "label": "HP",
        "values": [
         "10%",
         "10.4%",
@@ -11373,10 +11373,10 @@
      "type": "Ultimate",
      "name": "Dripping Mistscape",
      "tag": "AoE",
-     "description": "Inflicts \"Befog\" on all enemies. While in \"Befog,\" targets receive {befog_targets_receive} increased Break DMG, lasting for 2 turn(s).\nDeals Fire DMG equal to {fire_dmg} of Lingsha's ATK to all enemies, and at the same time restores HP equal to {time_restores_hp} of Lingsha's ATK plus {atk} for all allies. Fuyuan's action advances by 100%.",
+     "description": "Inflicts \"Befog\" on all enemies. While in \"Befog,\" targets receive {break_dmg} increased Break DMG, lasting for 2 turn(s).\nDeals Fire DMG equal to {fire_dmg} of Lingsha's ATK to all enemies, and at the same time restores HP equal to {hp} of Lingsha's ATK plus {atk} for all allies. Fuyuan's action advances by 100%.",
      "scalings": [
       {
-       "label": "Befog targets receive",
+       "label": "Break DMG",
        "values": [
         "15%",
         "16%",
@@ -11410,7 +11410,7 @@
        ]
       },
       {
-       "label": "time restores HP",
+       "label": "HP",
        "values": [
         "8%",
         "8.4%",
@@ -11647,7 +11647,7 @@
      "type": "Skill",
      "name": "Lacerating Fist",
      "tag": "Single Target",
-     "description": "Deals Physical DMG equal to {physical_dmg} of Luka's ATK to a single enemy target. In addition, there is a 100% base chance to inflict Bleed on them, lasting for 3 turn(s).\nWhile Bleeding, the enemy will take 24% of their Max HP as Physical DoT at the start of each turn. This DMG will not exceed more than {turn_this_dmg} of Luka's ATK.",
+     "description": "Deals Physical DMG equal to {physical_dmg} of Luka's ATK to a single enemy target. In addition, there is a 100% base chance to inflict Bleed on them, lasting for 3 turn(s).\nWhile Bleeding, the enemy will take 24% of their Max HP as Physical DoT at the start of each turn. This DMG will not exceed more than {dmg} of Luka's ATK.",
      "scalings": [
       {
        "label": "Physical DMG",
@@ -11667,7 +11667,7 @@
        ]
       },
       {
-       "label": "turn This DMG",
+       "label": "DMG",
        "values": [
         "130%",
         "143%",
@@ -11731,10 +11731,10 @@
      "type": "Talent",
      "name": "Flying Sparks",
      "tag": "Enhance",
-     "description": "After Luka uses his Basic ATK \"Direct Punch\" or Skill \"Lacerating Fist,\" he receives 1 stack of Fighting Will, up to 4 stacks. When he has 2 or more stacks of Fighting Will, his Basic ATK \"Direct Punch\" is enhanced to \"Sky-Shatter Fist.\" After his Enhanced Basic ATK's \"Rising Uppercut\" hits a Bleeding enemy target, the Bleed status will immediately deal DMG for 1 time equal to {immediately_deal_dmg} of the original DMG to the target. At the start of battle, Luka will possess 1 stack of Fighting Will.",
+     "description": "After Luka uses his Basic ATK \"Direct Punch\" or Skill \"Lacerating Fist,\" he receives 1 stack of Fighting Will, up to 4 stacks. When he has 2 or more stacks of Fighting Will, his Basic ATK \"Direct Punch\" is enhanced to \"Sky-Shatter Fist.\" After his Enhanced Basic ATK's \"Rising Uppercut\" hits a Bleeding enemy target, the Bleed status will immediately deal DMG for 1 time equal to {dmg} of the original DMG to the target. At the start of battle, Luka will possess 1 stack of Fighting Will.",
      "scalings": [
       {
-       "label": "immediately deal DMG",
+       "label": "DMG",
        "values": [
         "68%",
         "69.7%",
@@ -12162,7 +12162,7 @@
      "type": "Talent",
      "name": "Outdoor Survival Experience",
      "tag": "Restore",
-     "description": "When using Lynx's Skill or Ultimate, applies continuous healing to the target ally for 2 turn(s), restoring the target ally's HP by an amount equal to {target_ally_s_hp} of Lynx's Max HP plus {max_hp} at the start of each turn. If the target has \"Survival Response,\" the continuous healing effect additionally restores HP by an amount equal to {additionally_restores_hp} of Lynx's Max HP plus {4}",
+     "description": "When using Lynx's Skill or Ultimate, applies continuous healing to the target ally for 2 turn(s), restoring the target ally's HP by an amount equal to {target_ally_s_hp} of Lynx's Max HP plus {max_hp} at the start of each turn. If the target has \"Survival Response,\" the continuous healing effect additionally restores HP by an amount equal to {hp} of Lynx's Max HP plus {4}",
      "scalings": [
       {
        "label": "target ally's HP",
@@ -12199,7 +12199,7 @@
        ]
       },
       {
-       "label": "additionally restores HP",
+       "label": "HP",
        "values": [
         "3%",
         "3.1875%",
@@ -12328,10 +12328,10 @@
      "type": "Skill",
      "name": "The Power of Cuteness",
      "tag": "Defense",
-     "description": "Provides a single ally with a Shield that can absorb DMG equal to {can_absorb_dmg} of March 7th's DEF plus {march_7th_s_def} for 3 turn(s).\nIf the ally's current HP percentage is 30% or higher, greatly increases the chance of enemies attacking that ally.",
+     "description": "Provides a single ally with a Shield that can absorb DMG equal to {absorb_dmg} of March 7th's DEF plus {march_7th_s_def} for 3 turn(s).\nIf the ally's current HP percentage is 30% or higher, greatly increases the chance of enemies attacking that ally.",
      "scalings": [
       {
-       "label": "can absorb DMG",
+       "label": "absorb DMG",
        "values": [
         "38%",
         "40.38%",
@@ -12613,10 +12613,10 @@
      "type": "Talent",
      "name": "Master, I've Ascended!",
      "tag": "Enhance",
-     "description": "After Shifu uses an attack or Ultimate, March 7th gains up to 1 point of Charge each time.\nUpon reaching 7 or more points of Charge, March 7th immediately takes action and increases the DMG she deals by {dmg_she}. Her Basic ATK gets Enhanced, and her Skill cannot be used. After using Enhanced Basic ATK, consumes 7 point(s) of Charge. Charge is capped at 10 points.",
+     "description": "After Shifu uses an attack or Ultimate, March 7th gains up to 1 point of Charge each time.\nUpon reaching 7 or more points of Charge, March 7th immediately takes action and increases the DMG she deals by {dmg}. Her Basic ATK gets Enhanced, and her Skill cannot be used. After using Enhanced Basic ATK, consumes 7 point(s) of Charge. Charge is capped at 10 points.",
      "scalings": [
       {
-       "label": "DMG she",
+       "label": "DMG",
        "values": [
         "40%",
         "44%",
@@ -13006,7 +13006,7 @@
      "type": "Ultimate",
      "name": "Fornax Ex Corpore",
      "tag": "Enhance",
-     "description": "Inflicts \"Balefire Bind\" on all enemies. Enemy targets in the \"Balefire Bind\" state have their DEF reduced by {def_reduced} and the DMG they receive increases by {dmg_they_receive}, lasting for 2 turn(s). Then, consumes HP equal to 20% of Mortenax Blade's Max HP to deploy a Zone. While the Zone is active, Mortenax Blade enters the \"Infinite Fury\" state.\nDuring the \"Infinite Fury\" state, increases CRIT Rate by 20%, increases CRIT DMG by {crit_dmg}, enhances Basic ATK, unlocks Skill, and gains a new Ultimate \"Tenax Per Ignem.\" When receiving a killing blow, this unit will not be knocked down, but will dispel the Zone, exit the \"Infinite Fury\" state, and restore HP equal to 50% of this unit's Max HP.\nWhen gaining the \"Infinite Fury\" state, a corresponding countdown appears on the Action Order. The countdown has a fixed SPD of 70. At the start of the countdown's turn, dispels the Zone and exits the \"Infinite Fury\" state.\nIf the current HP is insufficient, Mortenax Blade's current HP will be reduced to 1 when he uses this ability.",
+     "description": "Inflicts \"Balefire Bind\" on all enemies. Enemy targets in the \"Balefire Bind\" state have their DEF reduced by {def_reduced} and the DMG they receive increases by {dmg}, lasting for 2 turn(s). Then, consumes HP equal to 20% of Mortenax Blade's Max HP to deploy a Zone. While the Zone is active, Mortenax Blade enters the \"Infinite Fury\" state.\nDuring the \"Infinite Fury\" state, increases CRIT Rate by 20%, increases CRIT DMG by {crit_dmg}, enhances Basic ATK, unlocks Skill, and gains a new Ultimate \"Tenax Per Ignem.\" When receiving a killing blow, this unit will not be knocked down, but will dispel the Zone, exit the \"Infinite Fury\" state, and restore HP equal to 50% of this unit's Max HP.\nWhen gaining the \"Infinite Fury\" state, a corresponding countdown appears on the Action Order. The countdown has a fixed SPD of 70. At the start of the countdown's turn, dispels the Zone and exits the \"Infinite Fury\" state.\nIf the current HP is insufficient, Mortenax Blade's current HP will be reduced to 1 when he uses this ability.",
      "scalings": [
       {
        "label": "DEF reduced",
@@ -13026,7 +13026,7 @@
        ]
       },
       {
-       "label": "DMG they receive",
+       "label": "DMG",
        "values": [
         "30%",
         "32%",
@@ -13204,10 +13204,10 @@
      "type": "Skill",
      "name": "Fleetwinged Raid",
      "tag": "Single Target",
-     "description": "Marks a designated single enemy target as \"Prey\" and deals to it Lightning DMG equal to {it_lightning_dmg} of Moze's ATK, and gains 9 points of Charge.\nWhen there are no other characters on the field that are capable of combat, Moze cannot use his Skill and dispels the enemy's \"Prey\" state.",
+     "description": "Marks a designated single enemy target as \"Prey\" and deals to it Lightning DMG equal to {lightning_dmg} of Moze's ATK, and gains 9 points of Charge.\nWhen there are no other characters on the field that are capable of combat, Moze cannot use his Skill and dispels the enemy's \"Prey\" state.",
      "scalings": [
       {
-       "label": "it Lightning DMG",
+       "label": "Lightning DMG",
        "values": [
         "75%",
         "82.5%",
@@ -13571,10 +13571,10 @@
      "type": "Talent",
      "name": "Blood for Blood",
      "tag": "Enhance",
-     "description": "For each 1% of HP lost, accumulates 1 point of Charge (up to 200 points). When Charge reaches 100, consumes 100 points of Charge to enter the \"Vendetta\" state, restores HP equal to {state_restores_hp} of Mydei's Max HP, and advances action by 100%. While the \"Vendetta\" state is active, Max HP increases by 50% of the current Max HP and DEF remains at 0. At the start of this unit's turn, automatically uses \"Kingslayer Be King.\"\nWhen Charge reaches 150 points during the \"Vendetta\" state, Mydei immediately gains 1 extra turn and automatically uses \"Godslayer Be God.\"\nWhen receiving a killing blow during the \"Vendetta\" state, Mydei will not be knocked down, but will clear his Charge, exits the \"Vendetta\" state, and restores HP by 50% of his Max HP.",
+     "description": "For each 1% of HP lost, accumulates 1 point of Charge (up to 200 points). When Charge reaches 100, consumes 100 points of Charge to enter the \"Vendetta\" state, restores HP equal to {hp} of Mydei's Max HP, and advances action by 100%. While the \"Vendetta\" state is active, Max HP increases by 50% of the current Max HP and DEF remains at 0. At the start of this unit's turn, automatically uses \"Kingslayer Be King.\"\nWhen Charge reaches 150 points during the \"Vendetta\" state, Mydei immediately gains 1 extra turn and automatically uses \"Godslayer Be God.\"\nWhen receiving a killing blow during the \"Vendetta\" state, Mydei will not be knocked down, but will clear his Charge, exits the \"Vendetta\" state, and restores HP by 50% of his Max HP.",
      "scalings": [
       {
-       "label": "state restores HP",
+       "label": "HP",
        "values": [
         "15%",
         "16%",
@@ -13762,10 +13762,10 @@
      "type": "Ultimate",
      "name": "Gift of Rebirth",
      "tag": "Restore",
-     "description": "Heals all allies for {all_allies} of Natasha's Max HP plus {max_hp}",
+     "description": "Heals all allies for {allies} of Natasha's Max HP plus {max_hp}",
      "scalings": [
       {
-       "label": "all allies",
+       "label": "allies",
        "values": [
         "9.2%",
         "9.775%",
@@ -14131,7 +14131,7 @@
      "type": "Skill",
      "name": "Calamity: Soulscorch Edict",
      "tag": "Enhance",
-     "description": "Gains \"Scourge\" by an amount equal to the number of enemies and 1 stack of \"Soulscorch,\" then causes all enemies to immediately take action.\nWhile in the \"Soulscorch\" state, Khaslana takes 75.0% reduced DMG. After an enemy target attacks or takes action, gains 1 more stack of \"Soulscorch.\" After said enemy targets finish their actions, immediately launches Counter, deals Physical DMG to all enemies equal to {physical_dmg} of Khaslana's ATK, and additionally deals 4 instance(s) of DMG, with each instance being Physical DMG equal to {being_physical_dmg} of Khaslana's ATK. Afterward, \"Soulscorch\" is dispelled. Each \"Soulscorch\" stack increases the DMG multiplier of said Counter by 20.0% of its original multiplier value.\nDMG dealt through this ability is considered as Skill DMG. If \"Soulscorch\" is still active at the start of Khaslana's extra turn, immediately launches Counter.",
+     "description": "Gains \"Scourge\" by an amount equal to the number of enemies and 1 stack of \"Soulscorch,\" then causes all enemies to immediately take action.\nWhile in the \"Soulscorch\" state, Khaslana takes 75.0% reduced DMG. After an enemy target attacks or takes action, gains 1 more stack of \"Soulscorch.\" After said enemy targets finish their actions, immediately launches Counter, deals Physical DMG to all enemies equal to {physical_dmg} of Khaslana's ATK, and additionally deals 4 instance(s) of DMG, with each instance being Physical DMG equal to {2} of Khaslana's ATK. Afterward, \"Soulscorch\" is dispelled. Each \"Soulscorch\" stack increases the DMG multiplier of said Counter by 20.0% of its original multiplier value.\nDMG dealt through this ability is considered as Skill DMG. If \"Soulscorch\" is still active at the start of Khaslana's extra turn, immediately launches Counter.",
      "scalings": [
       {
        "label": "Physical DMG",
@@ -14151,7 +14151,7 @@
        ]
       },
       {
-       "label": "being Physical DMG",
+       "label": "Physical DMG",
        "values": [
         "15.0%",
         "16.5%",
@@ -14173,7 +14173,7 @@
      "type": "Skill",
      "name": "Foundation: Stardeath Verdict",
      "tag": "Bounce",
-     "description": "Dispels all debuffs on this unit, then deals Physical DMG equal to a max of {physical_dmg} of Khaslana's ATK.\nFor every 1 point of \"Scourge\" consumed, deals 4 instance(s) of DMG, with each instance being Physical DMG equal to {being_physical_dmg} of Khaslana's ATK dealt to one random enemy. When consuming 4 point(s) of \"Scourge\", additionally deals Physical DMG equal to {3} of Khaslana's ATK, which is evenly distributed across all enemies.",
+     "description": "Dispels all debuffs on this unit, then deals Physical DMG equal to a max of {physical_dmg} of Khaslana's ATK.\nFor every 1 point of \"Scourge\" consumed, deals 4 instance(s) of DMG, with each instance being Physical DMG equal to {2} of Khaslana's ATK dealt to one random enemy. When consuming 4 point(s) of \"Scourge\", additionally deals Physical DMG equal to {3} of Khaslana's ATK, which is evenly distributed across all enemies.",
      "scalings": [
       {
        "label": "Physical DMG",
@@ -14193,7 +14193,7 @@
        ]
       },
       {
-       "label": "being Physical DMG",
+       "label": "Physical DMG",
        "values": [
         "22.5%",
         "24.75%",
@@ -14299,10 +14299,10 @@
      "type": "Talent",
      "name": "Fate: Divine Vessel",
      "tag": "Enhance",
-     "description": "Khaslana's Talent. Upon transformation, gains 4 point(s) of \"Scourge\". If this happens during an ally target's turn, then the duration of all buffs on that target is extended by 1 turn and the current turn ends.\nKhaslana is immune to Crowd Control debuffs, has 1 Enhanced Basic ATK and 2 Enhanced Skills, but cannot use Ultimate. During the transformation, increases ATK by {transformation_increases_atk} and Max HP by {max_hp}. After using an attack, restores HP equal to 20% of his Max HP. When Khaslana takes a killing blow, he will not get knocked down. Instead, he will restore HP equal to 25% of Max HP and immediately launch a final hit. For every 1 remaining Khaslana's extra turn, the final hit's DMG multiplier decreases by 12.5% of its original multiplier value.\nWhen the transformation ends, increases all allies' SPD by 15% for 1 turn.",
+     "description": "Khaslana's Talent. Upon transformation, gains 4 point(s) of \"Scourge\". If this happens during an ally target's turn, then the duration of all buffs on that target is extended by 1 turn and the current turn ends.\nKhaslana is immune to Crowd Control debuffs, has 1 Enhanced Basic ATK and 2 Enhanced Skills, but cannot use Ultimate. During the transformation, increases ATK by {atk} and Max HP by {max_hp}. After using an attack, restores HP equal to 20% of his Max HP. When Khaslana takes a killing blow, he will not get knocked down. Instead, he will restore HP equal to 25% of Max HP and immediately launch a final hit. For every 1 remaining Khaslana's extra turn, the final hit's DMG multiplier decreases by 12.5% of its original multiplier value.\nWhen the transformation ends, increases all allies' SPD by 15% for 1 turn.",
      "scalings": [
       {
-       "label": "transformation increases ATK",
+       "label": "ATK",
        "values": [
         "40%",
         "44%",
@@ -14537,10 +14537,10 @@
      "type": "Talent",
      "name": "Celestial Jade",
      "tag": "Enhance",
-     "description": "When an ally's turn starts, Qingque randomly draws 1 tile from 3 different suits and can hold up to 4 tiles at one time.\nIf Qingque starts her turn with 4 tiles of the same suit, she consumes all tiles to enter the \"Hidden Hand\" state.\nWhile in this state, Qingque cannot use her Skill again. At the same time, Qingque's ATK increases by {time_qingque_s_atk}, and her Basic ATK \"Flower Pick\" is enhanced, becoming \"Cherry on Top!\" The \"Hidden Hand\" state ends after using \"Cherry on Top!\".",
+     "description": "When an ally's turn starts, Qingque randomly draws 1 tile from 3 different suits and can hold up to 4 tiles at one time.\nIf Qingque starts her turn with 4 tiles of the same suit, she consumes all tiles to enter the \"Hidden Hand\" state.\nWhile in this state, Qingque cannot use her Skill again. At the same time, Qingque's ATK increases by {atk}, and her Basic ATK \"Flower Pick\" is enhanced, becoming \"Cherry on Top!\" The \"Hidden Hand\" state ends after using \"Cherry on Top!\".",
      "scalings": [
       {
-       "label": "time Qingque's ATK",
+       "label": "ATK",
        "values": [
         "36%",
         "39.6%",
@@ -15186,10 +15186,10 @@
      "type": "Ultimate",
      "name": "Vox Harmonique, Opus Cosmique",
      "tag": "Support",
-     "description": "Robin enters the Concerto state and makes all teammates (i.e., excluding this unit) immediately take action.\nWhile in the Concerto state, increases all allies' ATK by {all_allies_atk} of Robin's ATK plus {atk} Moreover, after every attack by ally targets, Robin deals Physical Additional DMG equal to {physical_additional_dmg} of her ATK for 1 time, with a fixed CRIT Rate for this damage set at 100% and fixed CRIT DMG set at 150%.\nWhile in the Concerto state, Robin is immune to Crowd Control debuffs and cannot enter her turn or take action until the Concerto state ends.\nA Concerto countdown appears on the Action Order bar. When the countdown's turn begins, Robin exits the Concerto state and immediately takes action. The countdown has its own fixed SPD of 90.",
+     "description": "Robin enters the Concerto state and makes all teammates (i.e., excluding this unit) immediately take action.\nWhile in the Concerto state, increases all allies' ATK by {allies_atk} of Robin's ATK plus {atk} Moreover, after every attack by ally targets, Robin deals Physical Additional DMG equal to {physical_additional_dmg} of her ATK for 1 time, with a fixed CRIT Rate for this damage set at 100% and fixed CRIT DMG set at 150%.\nWhile in the Concerto state, Robin is immune to Crowd Control debuffs and cannot enter her turn or take action until the Concerto state ends.\nA Concerto countdown appears on the Action Order bar. When the countdown's turn begins, Robin exits the Concerto state and immediately takes action. The countdown has its own fixed SPD of 90.",
      "scalings": [
       {
-       "label": "all allies' ATK",
+       "label": "allies' ATK",
        "values": [
         "15.2%",
         "15.96%",
@@ -15385,10 +15385,10 @@
      "type": "Ultimate",
      "name": "Petals to Stream, Repose in Dream",
      "tag": "Support",
-     "description": "Ruan Mei deploys a Zone that lasts for 2 turns. The Zone's duration decreases by 1 at the start of her turn.\nWhile inside the Zone, all allies' All-Type RES PEN increases by {attacks_apply_thanatoplum} and their attacks apply Thanatoplum Rebloom to the enemies hit.\nWhen these enemies attempt to recover from Weakness Break, Thanatoplum Rebloom is triggered, extending the duration of their Weakness Break, delaying their action by an amount equal to 20% of Ruan Mei's Break Effect plus 10%, and dealing Break DMG equal to {break_dmg} of Ruan Mei's Ice Break DMG.\nEnemy targets cannot have Thanatoplum Rebloom re-applied to them until they recover from Weakness Break.",
+     "description": "Ruan Mei deploys a Zone that lasts for 2 turns. The Zone's duration decreases by 1 at the start of her turn.\nWhile inside the Zone, all allies' All-Type RES PEN increases by {thanatoplum} and their attacks apply Thanatoplum Rebloom to the enemies hit.\nWhen these enemies attempt to recover from Weakness Break, Thanatoplum Rebloom is triggered, extending the duration of their Weakness Break, delaying their action by an amount equal to 20% of Ruan Mei's Break Effect plus 10%, and dealing Break DMG equal to {break_dmg} of Ruan Mei's Ice Break DMG.\nEnemy targets cannot have Thanatoplum Rebloom re-applied to them until they recover from Weakness Break.",
      "scalings": [
       {
-       "label": "attacks apply Thanatoplum",
+       "label": "Thanatoplum",
        "values": [
         "15%",
         "16%",
@@ -15603,7 +15603,7 @@
      "type": "Skill",
      "name": "Strike Air: Hammer of the Wind King",
      "tag": "Blast",
-     "description": "Deals Wind DMG equal to {wind_dmg} of Saber's ATK to one designated enemy, and deals Wind DMG equal to {2} of Saber's ATK to adjacent targets. If Saber currently possesses \"Core Resonance\" and her Energy can be regenerated to full by consuming \"Core Resonance\" after this instance of Skill attack, then increase the DMG multiplier for this instance of Skill use by {skill_use} for each stack of \"Core Resonance,\" and consume all \"Core Resonance\" to regenerate Energy for Saber after attacking. Otherwise, immediately gains 3 point(s) of \"Core Resonance.\"",
+     "description": "Deals Wind DMG equal to {wind_dmg} of Saber's ATK to one designated enemy, and deals Wind DMG equal to {2} of Saber's ATK to adjacent targets. If Saber currently possesses \"Core Resonance\" and her Energy can be regenerated to full by consuming \"Core Resonance\" after this instance of Skill attack, then increase the DMG multiplier for this instance of Skill use by {stack} for each stack of \"Core Resonance,\" and consume all \"Core Resonance\" to regenerate Energy for Saber after attacking. Otherwise, immediately gains 3 point(s) of \"Core Resonance.\"",
      "scalings": [
       {
        "label": "Wind DMG",
@@ -15640,7 +15640,7 @@
        ]
       },
       {
-       "label": "Skill use",
+       "label": "stack",
        "values": [
         "7.0%",
         "7.7%",
@@ -15861,7 +15861,7 @@
      "type": "Ultimate",
      "name": "Surprise Present",
      "tag": "AoE",
-     "description": "Deals Wind DMG equal to {wind_dmg} of Sampo's ATK to all enemies, with a 100% base chance to increase the targets' DoT taken by {targets_dot_taken} for 2 turn(s).",
+     "description": "Deals Wind DMG equal to {wind_dmg} of Sampo's ATK to all enemies, with a 100% base chance to increase the targets' DoT taken by {targets_dot} for 2 turn(s).",
      "scalings": [
       {
        "label": "Wind DMG",
@@ -15881,7 +15881,7 @@
        ]
       },
       {
-       "label": "targets' DoT taken",
+       "label": "targets' DoT",
        "values": [
         "20%",
         "21%",
@@ -15903,10 +15903,10 @@
      "type": "Talent",
      "name": "Windtorn Dagger",
      "tag": "Enhance",
-     "description": "Sampo's attacks have a 65% base chance to inflict Wind Shear for 3 turn(s).\nEnemies inflicted with Wind Shear will take Wind DoT equal to {take_wind_dot} of Sampo's ATK at the beginning of each turn. Wind Shear can stack up to 5 time(s).",
+     "description": "Sampo's attacks have a 65% base chance to inflict Wind Shear for 3 turn(s).\nEnemies inflicted with Wind Shear will take Wind DoT equal to {wind_dot} of Sampo's ATK at the beginning of each turn. Wind Shear can stack up to 5 time(s).",
      "scalings": [
       {
-       "label": "take Wind DoT",
+       "label": "Wind DoT",
        "values": [
         "20%",
         "22%",
@@ -16068,10 +16068,10 @@
      "type": "Talent",
      "name": "Resurgence",
      "tag": "Enhance",
-     "description": "Enters the Amplification state upon defeating an enemy with Basic ATK, Skill, or Ultimate, and receives an extra turn. While in the Amplification state, increases the DMG dealt by Seele increases by {turn_s} for 3 turn(s).\nEnemies defeated in the extra turn provided by \"Resurgence\" will not trigger another \"Resurgence.\"",
+     "description": "Enters the Amplification state upon defeating an enemy with Basic ATK, Skill, or Ultimate, and receives an extra turn. While in the Amplification state, increases the DMG dealt by Seele increases by {seele} for 3 turn(s).\nEnemies defeated in the extra turn provided by \"Resurgence\" will not trigger another \"Resurgence.\"",
      "scalings": [
       {
-       "label": "turn s",
+       "label": "Seele",
        "values": [
         "40%",
         "44%",
@@ -16183,7 +16183,7 @@
      "type": "Skill",
      "name": "Lightning Flash",
      "tag": "Blast",
-     "description": "Deals Lightning DMG equal to {lightning_dmg} of Serval's ATK to a single enemy and Lightning DMG equal to {2} of Serval's ATK to enemies adjacent to it, with a 80% base chance for enemies hit to become Shocked for 2 turn(s).\nWhile Shocked, enemies take Lightning DoT equal to {take_lightning_dot} of Serval's ATK at the beginning of each turn.",
+     "description": "Deals Lightning DMG equal to {lightning_dmg} of Serval's ATK to a single enemy and Lightning DMG equal to {2} of Serval's ATK to enemies adjacent to it, with a 80% base chance for enemies hit to become Shocked for 2 turn(s).\nWhile Shocked, enemies take Lightning DoT equal to {lightning_dot} of Serval's ATK at the beginning of each turn.",
      "scalings": [
       {
        "label": "Lightning DMG",
@@ -16220,7 +16220,7 @@
        ]
       },
       {
-       "label": "take Lightning DoT",
+       "label": "Lightning DoT",
        "values": [
         "40%",
         "44%",
@@ -16381,10 +16381,10 @@
      "type": "Skill",
      "name": "Allow Changes?",
      "tag": "Single Target",
-     "description": "There is a {there} base chance to add 1 Weakness of an on-field ally target's Type to one designated enemy target (prioritizes implanting the Weakness corresponding to the first ally target in the lineup), also reducing the enemy target's RES to that Weakness Type by 20% for 3 turn(s). If the enemy target already has that Type Weakness, the RES reduction effect to that Type will not be triggered.\nEach enemy target can only have 1 Weakness implanted by Silver Wolf. When Silver Wolf implants another Weakness to the target, only the most recent implanted Weakness will be kept.\nIn addition, there is a 100% base chance to further reduce the target's All-Type RES by {all_type_res} for 2 turn(s).\nDeals Quantum DMG equal to {quantum_dmg} of Silver Wolf's ATK to this target.",
+     "description": "There is a {base_chance} base chance to add 1 Weakness of an on-field ally target's Type to one designated enemy target (prioritizes implanting the Weakness corresponding to the first ally target in the lineup), also reducing the enemy target's RES to that Weakness Type by 20% for 3 turn(s). If the enemy target already has that Type Weakness, the RES reduction effect to that Type will not be triggered.\nEach enemy target can only have 1 Weakness implanted by Silver Wolf. When Silver Wolf implants another Weakness to the target, only the most recent implanted Weakness will be kept.\nIn addition, there is a 100% base chance to further reduce the target's All-Type RES by {all_type_res} for 2 turn(s).\nDeals Quantum DMG equal to {quantum_dmg} of Silver Wolf's ATK to this target.",
      "scalings": [
       {
-       "label": "There",
+       "label": "base chance",
        "values": [
         "98%",
         "107.8%",
@@ -16440,7 +16440,7 @@
      "type": "Ultimate",
      "name": "User Banned",
      "tag": "AoE",
-     "description": "There's a {base_chance} base chance to decrease all enemies' DEF by {all_enemies_def} for 3 turn(s). At the same time, deals Quantum DMG equal to {quantum_dmg} of Silver Wolf's ATK to all enemies.",
+     "description": "There's a {base_chance} base chance to decrease all enemies' DEF by {enemies_def} for 3 turn(s). At the same time, deals Quantum DMG equal to {quantum_dmg} of Silver Wolf's ATK to all enemies.",
      "scalings": [
       {
        "label": "base chance",
@@ -16460,7 +16460,7 @@
        ]
       },
       {
-       "label": "all enemies' DEF",
+       "label": "enemies' DEF",
        "values": [
         "80%",
         "84%",
@@ -16499,10 +16499,10 @@
      "type": "Talent",
      "name": "Awaiting System Response...",
      "tag": "Impair",
-     "description": "Silver Wolf can create three types of \"Bugs\": Reduce ATK by {bugs_reduce_atk}, reduce DEF by {def}, and reduce SPD by {spd}.\nAfter every attack launched by Silver Wolf, she has a {base_chance} base chance to implant 1 random \"Bug\" that lasts for 3 turn(s) in the attacked enemy target. \nWhen the enemy target is defeated, the Weakness Silver Wolf implanted on it will be transferred to another surviving enemy on the field that hasn't been implanted with Weakness, prioritizing Elite targets and greater.",
+     "description": "Silver Wolf can create three types of \"Bugs\": Reduce ATK by {atk}, reduce DEF by {def}, and reduce SPD by {spd}.\nAfter every attack launched by Silver Wolf, she has a {base_chance} base chance to implant 1 random \"Bug\" that lasts for 3 turn(s) in the attacked enemy target. \nWhen the enemy target is defeated, the Weakness Silver Wolf implanted on it will be transferred to another surviving enemy on the field that hasn't been implanted with Weakness, prioritizing Elite targets and greater.",
      "scalings": [
       {
-       "label": "Bugs Reduce ATK",
+       "label": "ATK",
        "values": [
         "5%",
         "5.5%",
@@ -16974,10 +16974,10 @@
      "type": "Ultimate",
      "name": "The Hero with a Thousand Faces",
      "tag": "Support",
-     "description": "Recovers 6 Skill Point(s) for allies. If Skill Points overflow during recovery, the excess points will be recorded, up to a max of 10 points. When an ally character's turn ends, if Skill Points are below the maximum, Sparkle consumes the recorded value to recover Skill Points until the upper limit is reached. Then, grants all allies \"Cipher.\" For ally targets with \"Cipher,\" each stack of Boost of DMG taken by enemies provided by Sparkle's Talent additionally increases by {talent_additionally}, lasting for 3 turn(s).",
+     "description": "Recovers 6 Skill Point(s) for allies. If Skill Points overflow during recovery, the excess points will be recorded, up to a max of 10 points. When an ally character's turn ends, if Skill Points are below the maximum, Sparkle consumes the recorded value to recover Skill Points until the upper limit is reached. Then, grants all allies \"Cipher.\" For ally targets with \"Cipher,\" each stack of Boost of DMG taken by enemies provided by Sparkle's Talent additionally increases by {talent}, lasting for 3 turn(s).",
      "scalings": [
       {
-       "label": "Talent additionally",
+       "label": "Talent",
        "values": [
         "3.6%",
         "3.84%",
@@ -17710,10 +17710,10 @@
      "type": "Talent",
      "name": "Dancing Blade",
      "tag": "Enhance",
-     "description": "When an enemy has their Weakness Broken on the field, Sushang's SPD increases by {turn_s} for 2 turn(s).",
+     "description": "When an enemy has their Weakness Broken on the field, Sushang's SPD increases by {field_sushang_s_spd} for 2 turn(s).",
      "scalings": [
       {
-       "label": "turn s",
+       "label": "field Sushang's SPD",
        "values": [
         "15%",
         "15.5%",
@@ -18479,10 +18479,10 @@
      "type": "Skill",
      "name": "Difficulty Paying?",
      "tag": "Single Target",
-     "description": "Inflicts a single target enemy with a Proof of Debt status, increasing the Follow-up ATK DMG it receives by {dmg_it_receives}. Proof of Debt only takes effect on the most recent target it is applied to. If there are no enemies inflicted with Proof of Debt on the field when an ally's turn starts or when an ally takes action, Topaz will inflict a random enemy with Proof of Debt.\nNumby deals Fire DMG equal to {fire_dmg} of Topaz's ATK to this target. Using this Skill to deal DMG is considered as launching a Follow-up ATK.",
+     "description": "Inflicts a single target enemy with a Proof of Debt status, increasing the Follow-up ATK DMG it receives by {atk_dmg}. Proof of Debt only takes effect on the most recent target it is applied to. If there are no enemies inflicted with Proof of Debt on the field when an ally's turn starts or when an ally takes action, Topaz will inflict a random enemy with Proof of Debt.\nNumby deals Fire DMG equal to {fire_dmg} of Topaz's ATK to this target. Using this Skill to deal DMG is considered as launching a Follow-up ATK.",
      "scalings": [
       {
-       "label": "DMG it receives",
+       "label": "ATK DMG",
        "values": [
         "75%",
         "82.5%",
@@ -18521,10 +18521,10 @@
      "type": "Ultimate",
      "name": "Turn a Profit!",
      "tag": "Enhance",
-     "description": "Numby enters the Windfall Bonanza! state and its DMG multiplier increases by {crit_dmg_increases} and CRIT DMG increases by {crit_dmg}. Also, when enemies with Proof of Debt are hit by an ally's Basic ATK, Skill, or Ultimate, Numby's action is Advanced Forward by 50%. Numby exits the Windfall Bonanza! state after using 2 attacks.",
+     "description": "Numby enters the Windfall Bonanza! state and its DMG multiplier increases by {crit_dmg} and CRIT DMG increases by {2}. Also, when enemies with Proof of Debt are hit by an ally's Basic ATK, Skill, or Ultimate, Numby's action is Advanced Forward by 50%. Numby exits the Windfall Bonanza! state after using 2 attacks.",
      "scalings": [
       {
-       "label": "CRIT DMG increases",
+       "label": "CRIT DMG",
        "values": [
         "75%",
         "82.5%",
@@ -18715,7 +18715,7 @@
      "type": "Ultimate",
      "name": "Guess Who Lives Here",
      "tag": "AoE",
-     "description": "Activates a Zone and deals Quantum DMG equal to {quantum_dmg} of Tribbie's Max HP to all enemies.\nWhile the Zone lasts, increases enemy targets' DMG taken by {targets_dmg_taken}. After an ally target attacks, for every 1 target hit, deals 1 instance of Quantum Additional DMG equal to {quantum_additional_dmg} of Tribbie's Max HP to the target that has the highest HP among the hit targets.\nThe Zone lasts for 2 turn(s). This duration decreases by 1 at the start of this unit's every turn.",
+     "description": "Activates a Zone and deals Quantum DMG equal to {quantum_dmg} of Tribbie's Max HP to all enemies.\nWhile the Zone lasts, increases enemy targets' DMG taken by {enemy_targets_dmg}. After an ally target attacks, for every 1 target hit, deals 1 instance of Quantum Additional DMG equal to {quantum_additional_dmg} of Tribbie's Max HP to the target that has the highest HP among the hit targets.\nThe Zone lasts for 2 turn(s). This duration decreases by 1 at the start of this unit's every turn.",
      "scalings": [
       {
        "label": "Quantum DMG",
@@ -18735,7 +18735,7 @@
        ]
       },
       {
-       "label": "targets' DMG taken",
+       "label": "enemy targets' DMG",
        "values": [
         "15%",
         "16.5%",
@@ -18889,7 +18889,7 @@
      "type": "Skill",
      "name": "Edge of the Void",
      "tag": "Bounce",
-     "description": "Deals Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to one designated enemy and additionally deals DMG 4 times, with each time dealing Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to one random enemy. On hit, there is a {on_hit_there} base chance to reduce the enemy's SPD by 10% for 2 turn(s).",
+     "description": "Deals Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to one designated enemy and additionally deals DMG 4 times, with each time dealing Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to one random enemy. On hit, there is a {on_hit} base chance to reduce the enemy's SPD by 10% for 2 turn(s).",
      "scalings": [
       {
        "label": "Imaginary DMG",
@@ -18909,7 +18909,7 @@
        ]
       },
       {
-       "label": "On hit there",
+       "label": "On hit",
        "values": [
         "65%",
         "66%",
@@ -18931,7 +18931,7 @@
      "type": "Ultimate",
      "name": "Synthetic Black Hole",
      "tag": "AoE",
-     "description": "Deals Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to all enemies. Has a 100% base chance to Imprison hit enemy targets for 1 turn.\nWhile Imprisoned, enemy targets have their actions delayed by {turn_while_imprisoned} and their SPD reduced by 10%. After using his Ultimate, inflicts the \"Weightless\" state on all enemies. When targets in \"Weightless\" state get attacked, their actions are delayed by 4.0%. This effect can trigger up to 8 time(s) per target per turn. \"Weightless\" lasts for 2 turn(s).",
+     "description": "Deals Imaginary DMG equal to {imaginary_dmg} of Welt's ATK to all enemies. Has a 100% base chance to Imprison hit enemy targets for 1 turn.\nWhile Imprisoned, enemy targets have their actions delayed by {imprisoned} and their SPD reduced by 10%. After using his Ultimate, inflicts the \"Weightless\" state on all enemies. When targets in \"Weightless\" state get attacked, their actions are delayed by 4.0%. This effect can trigger up to 8 time(s) per target per turn. \"Weightless\" lasts for 2 turn(s).",
      "scalings": [
       {
        "label": "Imaginary DMG",
@@ -18951,7 +18951,7 @@
        ]
       },
       {
-       "label": "turn While Imprisoned",
+       "label": "Imprisoned",
        "values": [
         "6%",
         "6.6%",
@@ -19353,10 +19353,10 @@
      "type": "Talent",
      "name": "One With the Sword",
      "tag": "Single Target",
-     "description": "When Soulsteel Sync is active, Yanqing is less likely to be attacked by enemies. Yanqing's CRIT Rate increases by {crit_dmg_increases} and his CRIT DMG increases by {crit_dmg}. After Yanqing attacks an enemy, there is a {after_yanqing} fixed chance to launch Follow-up ATK, dealing Ice DMG equal to {ice_dmg} of Yanqing's ATK to the enemy, which has a 65% base chance to Freeze the enemy for 1 turn.\nThe Frozen target cannot take action and receives Ice Additional DMG equal to {ice_additional_dmg} of Yanqing's ATK at the beginning of each turn.\nWhen Yanqing receives DMG, the Soulsteel Sync effect will disappear.",
+     "description": "When Soulsteel Sync is active, Yanqing is less likely to be attacked by enemies. Yanqing's CRIT Rate increases by {crit_dmg} and his CRIT DMG increases by {2}. After Yanqing attacks an enemy, there is a {yanqing} fixed chance to launch Follow-up ATK, dealing Ice DMG equal to {ice_dmg} of Yanqing's ATK to the enemy, which has a 65% base chance to Freeze the enemy for 1 turn.\nThe Frozen target cannot take action and receives Ice Additional DMG equal to {ice_additional_dmg} of Yanqing's ATK at the beginning of each turn.\nWhen Yanqing receives DMG, the Soulsteel Sync effect will disappear.",
      "scalings": [
       {
-       "label": "CRIT DMG increases",
+       "label": "CRIT DMG",
        "values": [
         "15%",
         "15.5%",
@@ -19390,7 +19390,7 @@
        ]
       },
       {
-       "label": "After Yanqing",
+       "label": "Yanqing",
        "values": [
         "50%",
         "51%",
@@ -19548,10 +19548,10 @@
      "type": "Skill",
      "name": "Decalight Unveils All",
      "tag": "Support",
-     "description": "Deploys a Zone for 3 turn(s). This duration decreases by 1 at the start of this unit's every turn. While the Zone is active, increases all allies' Elation by an amount equal to {all_allies_elation} of Yao Guang's Elation. After Yao Guang uses Basic ATK or Skill, gains 3 Punchline.",
+     "description": "Deploys a Zone for 3 turn(s). This duration decreases by 1 at the start of this unit's every turn. While the Zone is active, increases all allies' Elation by an amount equal to {allies_elation} of Yao Guang's Elation. After Yao Guang uses Basic ATK or Skill, gains 3 Punchline.",
      "scalings": [
       {
-       "label": "all allies' Elation",
+       "label": "allies' Elation",
        "values": [
         "10%",
         "11%",
@@ -19629,7 +19629,7 @@
      "type": "Elation Skill",
      "name": "Let Thy Fortune Burst in Flames",
      "tag": "AoE",
-     "description": "Inflicts \"Woe's Whisper\" on all enemies, lasting for 3 turn(s). Enemy targets under the \"Woe's Whisper\" state take 16% increased DMG. Deals {physical_elation_dmg} Physical Elation DMG to all enemies. Then, deals 5 instance(s) of {all_enemies_then} Physical Elation DMG to one random enemy.",
+     "description": "Inflicts \"Woe's Whisper\" on all enemies, lasting for 3 turn(s). Enemy targets under the \"Woe's Whisper\" state take 16% increased DMG. Deals {physical_elation_dmg} Physical Elation DMG to all enemies. Then, deals 5 instance(s) of {enemies} Physical Elation DMG to one random enemy.",
      "scalings": [
       {
        "label": "Physical Elation DMG",
@@ -19649,7 +19649,7 @@
        ]
       },
       {
-       "label": "all enemies Then",
+       "label": "enemies",
        "values": [
         "10%",
         "11%",
@@ -20030,10 +20030,10 @@
      "type": "Ultimate",
      "name": "Earthbind, Etherbreak",
      "tag": "Enhance",
-     "description": "Consumes 120 Energy. Yunli gains Parry and Taunts all enemies, lasting until the end of the next ally's or enemy's turn. Increases the CRIT DMG dealt by Yunli's next Counter by {next_counter}. When triggering the Counter effect from Talent, launches the Counter \"Intuit: Cull\" instead and removes the Parry effect. If no Counter is triggered while Parry is active, Yunli will immediately launch the Counter \"Intuit: Slash\" on a random enemy target.\n\n\"Intuit: Slash\": Deals Physical DMG equal to {physical_dmg} of Yunli's ATK to the target, and deals Physical DMG equal to {3} of Yunli's ATK to adjacent targets.\n\"Intuit: Cull\": Deals Physical DMG equal to {physical_dmg} of Yunli's ATK to the target, and deals Physical DMG equal to {3} of Yunli's ATK to adjacent targets. Then, additionally deals 6 instances of DMG, each dealing Physical DMG equal to {4} of Yunli's ATK to a random single enemy.\n\nWhen Yunli deals DMG via this ability, it's considered as dealing Ultimate DMG.",
+     "description": "Consumes 120 Energy. Yunli gains Parry and Taunts all enemies, lasting until the end of the next ally's or enemy's turn. Increases the CRIT DMG dealt by Yunli's next Counter by {counter}. When triggering the Counter effect from Talent, launches the Counter \"Intuit: Cull\" instead and removes the Parry effect. If no Counter is triggered while Parry is active, Yunli will immediately launch the Counter \"Intuit: Slash\" on a random enemy target.\n\n\"Intuit: Slash\": Deals Physical DMG equal to {physical_dmg} of Yunli's ATK to the target, and deals Physical DMG equal to {3} of Yunli's ATK to adjacent targets.\n\"Intuit: Cull\": Deals Physical DMG equal to {physical_dmg} of Yunli's ATK to the target, and deals Physical DMG equal to {3} of Yunli's ATK to adjacent targets. Then, additionally deals 6 instances of DMG, each dealing Physical DMG equal to {4} of Yunli's ATK to a random single enemy.\n\nWhen Yunli deals DMG via this ability, it's considered as dealing Ultimate DMG.",
      "scalings": [
       {
-       "label": "next Counter",
+       "label": "Counter",
        "values": [
         "60%",
         "64%",

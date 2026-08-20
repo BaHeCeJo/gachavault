@@ -47,6 +47,29 @@ VERBS = {
     "dealing", "increasing", "restoring", "regenerating", "recovering",
     "reducing", "granting", "gaining", "inflicting", "applying", "boosting",
     "raising", "lowering", "adding", "providing",
+    "use", "uses", "used", "take", "takes", "taken", "offset", "produce",
+    "produces", "receive", "receives", "trigger", "triggers", "cause", "causes",
+    "consume", "consumes", "ignore", "ignores", "advance", "advances", "launch",
+    "launches", "enable", "enables", "enabling", "become", "becomes", "lasts",
+    "last", "stacking", "lasting",
+}
+
+# Words that can open a clause but never name a stat. Stripped from the front of
+# a label, where "it Lightning DMG" and "immediately produce DMG" come from.
+LEADING_NOISE = {
+    "it", "its", "they", "them", "their", "he", "she", "his", "her", "this",
+    "that", "these", "those", "all", "each", "every", "both", "immediately",
+    "additionally", "further", "greatly", "respectively", "also", "then", "can",
+    "will", "may", "must", "when", "while", "after", "before", "being", "more",
+    "less", "extra", "upon", "per", "once", "next", "such", "any", "another",
+    "there",
+}
+
+# Durations and counts. "for 2 turn(s)" is how long an effect lasts, never what
+# it scales, so these cannot stand as a label on either edge.
+DURATION_WORDS = {
+    "turn", "turns", "time", "times", "sec", "second", "seconds", "wave",
+    "waves",
 }
 
 MAX_LABEL_WORDS = 3
@@ -85,13 +108,30 @@ def _is_numeric(w):
     return re.match(r"^\d+(?:\.\d+)?$", w) is not None
 
 
+def _noise(w):
+    return w.lower() in LEADING_NOISE
+
+
 def _trim_edges(items):
     """A stat name never opens with a verb or a bare number ("increases the DMG"
     is the clause, "DMG" is the stat) and never closes with glue or a number."""
     out = list(items)
-    while out and (_is_stop(out[0]) or _is_possessive(out[0]) or _is_verb(out[0]) or _is_numeric(out[0])):
+    # A verb inside the phrase splits a clause from the stat it acts on: "time
+    # restores HP" is about HP, "take Fire DoT" about Fire DoT. Keep what follows
+    # the last verb, when anything does.
+    verbs = [i for i, w in enumerate(out) if _is_verb(w)]
+    if verbs and verbs[-1] < len(out) - 1:
+        out = out[verbs[-1] + 1 :]
+
+    while out and (_is_stop(out[0]) or _is_possessive(out[0]) or _is_verb(out[0])
+                   or _is_numeric(out[0]) or _noise(out[0])
+                   or out[0].lower() in DURATION_WORDS):
         out.pop(0)
-    while out and (_is_stop(out[-1]) or _is_numeric(out[-1])):
+    while out and (_is_stop(out[-1]) or _is_numeric(out[-1]) or _is_verb(out[-1])
+                   or _noise(out[-1])
+                   # "turn(s)" loses its brackets and leaves a stray "s" behind.
+                   or out[-1].lower() == "s"
+                   or out[-1].lower() in DURATION_WORDS):
         out.pop()
     return out
 

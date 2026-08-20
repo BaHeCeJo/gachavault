@@ -61,7 +61,15 @@ const LEADING_ONLY = new Set(["wearer's", "wearers", "their", "its", "his", "her
 // Lightning DMG equal to 80%"). A label made only of these names an action, not
 // a stat, so it is a signal to look for the stat on the other side instead —
 // Genshin writes "Deals 100.8%/109.4%/… of ATK", with the stat trailing.
-const VERBS = new Set(["deal", "deals", "dealt", "increase", "increases", "increased", "restore", "restores", "regenerate", "regenerates", "recover", "recovers", "reduce", "reduces", "heal", "heals", "grant", "grants", "gain", "gains", "provide", "provides", "inflict", "inflicts", "apply", "applies", "boost", "boosts", "raise", "raises", "lower", "lowers", "add", "adds", "has", "have", "dealing", "increasing", "restoring", "regenerating", "recovering", "reducing", "granting", "gaining", "inflicting", "applying", "boosting", "raising", "lowering", "adding", "providing"]);
+const VERBS = new Set(["deal", "deals", "dealt", "increase", "increases", "increased", "restore", "restores", "regenerate", "regenerates", "recover", "recovers", "reduce", "reduces", "heal", "heals", "grant", "grants", "gain", "gains", "provide", "provides", "inflict", "inflicts", "apply", "applies", "boost", "boosts", "raise", "raises", "lower", "lowers", "add", "adds", "has", "have", "dealing", "increasing", "restoring", "regenerating", "recovering", "reducing", "granting", "gaining", "inflicting", "applying", "boosting", "raising", "lowering", "adding", "providing", "use", "uses", "used", "take", "takes", "taken", "offset", "produce", "produces", "receive", "receives", "trigger", "triggers", "cause", "causes", "consume", "consumes", "ignore", "ignores", "advance", "advances", "regenerates", "launch", "launches", "enable", "enables", "enabling", "become", "becomes", "lasts", "last", "stacking", "lasting"]);
+
+// Words that can open a clause but never name a stat. Stripped from the front
+// of a label, where "it Lightning DMG" and "immediately produce DMG" come from.
+const LEADING_NOISE = new Set(["it", "its", "they", "them", "their", "he", "she", "his", "her", "this", "that", "these", "those", "all", "each", "every", "both", "immediately", "additionally", "further", "greatly", "respectively", "also", "then", "can", "will", "may", "must", "when", "while", "after", "before", "being", "more", "less", "extra", "upon", "per", "once", "next", "such", "any", "another", "there"]);
+
+// Durations and counts. "for 2 turn(s)" is how long an effect lasts, never
+// what it scales, so these cannot stand as a label on either edge.
+const DURATION_WORDS = new Set(["turn", "turns", "time", "times", "sec", "second", "seconds", "wave", "waves"]);
 
 const MAX_LABEL_WORDS = 3;
 
@@ -87,11 +95,30 @@ const isNumeric = (w: string) => /^\d+(?:\.\d+)?$/.test(w);
 // A stat name never opens with a verb or a bare number ("increases the DMG" is
 // the clause, "DMG" is the stat) and never closes with glue or a number.
 function trimEdges(list: string[]): string[] {
-  const out = list.slice();
-  while (out.length > 0 && (isStop(out[0]) || isPossessive(out[0]) || isVerb(out[0]) || isNumeric(out[0]))) {
+  let out = list.slice();
+  // A verb inside the phrase splits a clause from the stat it acts on:
+  // "time restores HP" is about HP, "take Fire DoT" about Fire DoT. Keep what
+  // follows the last verb, when anything does.
+  const lastVerb = out.map(isVerb).lastIndexOf(true);
+  if (lastVerb >= 0 && lastVerb < out.length - 1) out = out.slice(lastVerb + 1);
+
+  while (
+    out.length > 0 &&
+    (isStop(out[0]) || isPossessive(out[0]) || isVerb(out[0]) || isNumeric(out[0]) ||
+      LEADING_NOISE.has(out[0].toLowerCase()) || DURATION_WORDS.has(out[0].toLowerCase()))
+  ) {
     out.shift();
   }
-  while (out.length > 0 && (isStop(out[out.length - 1]) || isNumeric(out[out.length - 1]))) out.pop();
+  while (
+    out.length > 0 &&
+    (isStop(out[out.length - 1]) || isNumeric(out[out.length - 1]) ||
+      isVerb(out[out.length - 1]) || LEADING_NOISE.has(out[out.length - 1].toLowerCase()) ||
+      // "turn(s)" loses its brackets and leaves a stray "s" behind.
+      out[out.length - 1].toLowerCase() === "s" ||
+      DURATION_WORDS.has(out[out.length - 1].toLowerCase()))
+  ) {
+    out.pop();
+  }
   return out;
 }
 
