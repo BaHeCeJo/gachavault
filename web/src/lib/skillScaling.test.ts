@@ -218,3 +218,29 @@ describe("shared extraction fixtures", () => {
     });
   }
 });
+
+describe("label tidying", () => {
+  // Real shapes from the HSR catalog that used to produce clause fragments
+  // rather than stat names.
+  const cases: [string, string][] = [
+    ["When the wearer's HP is decreased, increases the DMG of all allies by 12/14/16/18/20%.", "DMG"],
+    // The value is what gets restored, so the stat before the numbers wins
+    // over the "of Max HP" that qualifies it.
+    ["Each time this ability restores HP by 4/5/6/7/8% of Max HP.", "HP"],
+    ["The wearer's Basic ATK deals 8/10/12/14/16% more DMG.", "DMG"],
+    ["Enemies take Fire DoT equal to 30/35/40/45/50% of ATK.", "Fire DoT"],
+    ["Lasting for 2 turn(s), it increases Lightning DMG by 6/7/8/9/10%.", "Lightning DMG"],
+  ];
+
+  for (const [src, want] of cases) {
+    it(`names it ${want}`, () => {
+      const { scalings } = extractScalingRuns(src);
+      expect(scalings[0].label).toBe(want);
+    });
+  }
+
+  it("keeps a genuine multi-word stat name intact", () => {
+    expect(extractScalingRuns("Increases Energy Regeneration Rate by 8/10/12/14/16%.").scalings[0].label)
+      .toBe("Energy Regeneration Rate");
+  });
+});
