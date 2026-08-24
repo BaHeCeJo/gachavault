@@ -86,6 +86,66 @@ hsr_warps.json ─> make_hsr_import.py ─> hsr_banners_import.json
 `hsr_warps.json` is a cached scrape of the wiki's warp history. Run times are
 converted from the wiki's GMT+8 to UTC and characters resolved to item slugs.
 
+Upload the banners at **Admin → Items → Import** first and the events at
+**Admin → Events → Import** second: every run points at a banner preset by slug.
+
+**The cache is behind its own output.** `hsr_warps.json` holds 108 character
+warps; `hsr_events_import.json` holds 136, because it was built from a scrape
+that also covered the light cone warps. Re-running `make_hsr_import.py` today
+silently drops those 42 runs. Re-scrape the warp history first, or read the
+built file instead — which is what `make_hsr_versions.py` does.
+
+## Honkai: Star Rail — versions
+
+```
+hsr_events_import.json ─> make_hsr_versions.py ─> hsr_versions_import.json
+```
+
+The calendar has filtered on an `event_type` of `version` since it shipped, with
+nothing ever writing one. Each run already carries its version and phase, so one
+row per version is derivable: it opens with its first phase and closes with its
+last. Upload at **Admin → Events → Import**; it references nothing, so the order
+against the runs does not matter.
+
+The start is knowingly approximate — a patch goes live a few hours before its
+first warp, after maintenance — so every row records `data.derived_from`, and a
+real patch-note time can replace it later without guessing which were estimates.
+
+Open-ended runs are excluded. The wiki publishes collaboration warps with
+`time_end = none` and no version of their own, so the version they carry was
+inferred by the scraper and is wrong: the two Fate collab runs starting
+2025-07-11 are labelled 4.4, a patch a year later. The build prints which runs
+it skipped, and asserts no two versions overlap.
+
+## Honkai: Star Rail — relics
+
+```
+hsr_relics_wiki.json ─> make_hsr_relics.py ─> hsr_relics_import.json
+        ^
+        └── fetch_hsr_relic_wiki.py
+```
+
+| File | |
+|---|---|
+| `hsr_relics_wiki.json` | **Cache.** Relic Set Infoboxes for the 60 sets in `Category:Relic Sets`: type, pieces, 2pc/4pc bonuses, rarity span, drop sources and the wiki's own utility tags. |
+| `hsr_relics_import.json` | **Output.** 60 rows — 32 Cavern Relics, 28 Planar Ornaments — for a `relics` section using a `Relic Sets` schema. |
+
+Unlike the other two sections there is no pasted catalog, so the fetch both
+discovers the set list and caches it.
+
+`type` is what separates the two families, and it is read rather than inferred:
+a Cavern Relic has four pieces and both bonuses, a Planar Ornament has two and
+only a 2-piece. The build treats a cavern set missing its 4-piece as a failure
+and an ornament missing one as correct.
+
+`set_bonus` and `pieces` are lists of `{type, name, description}` rows, the same
+shape as the character `kit` and light cone `effect` fields, so the detail-page
+block that renders those renders relics with no new component.
+
+The section and its schema do not exist yet — create them in admin before the
+first upload, with `relic_type`, `rarity`, `rarity_range`, `set_bonus`,
+`pieces`, `release_version`, `sources` and `tags`.
+
 ## Profile text — both sections
 
 ```
@@ -128,8 +188,11 @@ ten minutes. Rebuilding from cache is instant:
 ```bash
 python make_hsr_light_cones.py     # -> hsr_light_cones_import.json
 python make_hsr_characters.py      # -> hsr_characters_import.json
-python make_hsr_import.py          # -> banners + events
+python make_hsr_import.py          # -> banners + events  (see the caution above)
+python make_hsr_relics.py          # -> hsr_relics_import.json
+python make_hsr_versions.py        # -> hsr_versions_import.json
 
 python fetch_hsr_light_cone_wiki.py                       # refresh the cone cache
 python fetch_hsr_character_wiki.py --chars <names.json>    # refresh the kit cache
+python fetch_hsr_relic_wiki.py                            # refresh the relic cache
 ```
