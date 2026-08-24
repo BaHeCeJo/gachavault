@@ -311,7 +311,10 @@ def main():
             {
                 "game": GAME,
                 "section": "light-cones",
-                "schema": "Light Cones",
+                # Section plural, schema singular. The importer resolves a
+                # schema by exact name, so this has to spell it the way admin
+                # does.
+                "schema": "Light Cone",
                 "slug": e["slug"],
                 # HP/ATK/DEF stay out — see the module docstring.
                 "data": data,
