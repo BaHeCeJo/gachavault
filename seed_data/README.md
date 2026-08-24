@@ -128,8 +128,8 @@ hsr_relics_wiki.json ─> make_hsr_relics.py ─> hsr_relics_import.json
 | File | |
 |---|---|
 | `hsr_relics_wiki.json` | **Cache.** Relic Set Infoboxes for the 60 sets in `Category:Relic Sets`: type, pieces, 2pc/4pc bonuses, rarity span, drop sources and the wiki's own utility tags. |
-| `hsr_relics_import.json` | **Output.** 32 Cavern Relics, for a `relics` section using a `Relic Sets` schema. |
-| `hsr_ornaments_import.json` | **Output.** 28 Planar Ornaments, for a `planar-ornaments` section using a `Planar Ornaments` schema. |
+| `hsr_relics_import.json` | **Output.** 32 Cavern Relics, for a `relics` section using a `Relic` schema. |
+| `hsr_ornaments_import.json` | **Output.** 28 Planar Ornaments, for a `planar-ornaments` section using a `Planar Ornament` schema. |
 
 Unlike the other two sections there is no pasted catalog, so the fetch both
 discovers the set list and caches it.
@@ -150,8 +150,7 @@ section already says which family a set belongs to.
 shape as the character `kit` and light cone `effect` fields, so the detail-page
 block that renders those renders relics with no new component.
 
-Neither section exists yet — create both in admin before the first upload. They
-share one field list: `name` (text), `rarity` (attribute, `attribute_type:
+Both sections exist on the site. They share one field list: `name` (text), `rarity` (attribute, `attribute_type:
 rarity`, reusing the values light cones already store), `rarity_range` (text),
 `set_bonus` (skilllist), `pieces` (skilllist), `release_version` (text),
 `sources` (text), `tags` (text). Both are **not collectable**.
@@ -192,9 +191,9 @@ The build asserts that every material a character asks for has a catalog row, so
 an ascension cost can never name an item the site has no page for.
 
 Upload the materials before the character enrichment, so the names the costs
-mention already resolve. The `materials` section and its `Materials` schema
-(`rarity`, `material_type`, `description`, `source`) need creating in admin
-first.
+mention already resolve. The `materials` section and its `Material` schema exist on the site; the
+importer resolves a schema by exact name, so these files must keep spelling
+them the way admin does.
 
 ## Profile text — both sections
 

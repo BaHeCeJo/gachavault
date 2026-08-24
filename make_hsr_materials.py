@@ -5,7 +5,7 @@ Reads seed_data/hsr_ascension_wiki.json (see fetch_hsr_ascension_wiki.py) and
 writes three files:
 
   seed_data/hsr_materials_import.json
-      One row per material, for a `materials` section using a `Materials`
+      One row per material, for a `materials` section using a `Material`
       schema — name, rarity, type and the description from its own page.
       Upload at Admin -> Items -> Import.
 
@@ -82,7 +82,7 @@ def material_rows(materials):
         rows.append({
             "game": GAME,
             "section": "materials",
-            "schema": "Materials",
+            "schema": "Material",
             "slug": slugify(name),
             "data": data,
         })

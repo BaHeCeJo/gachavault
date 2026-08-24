@@ -44,12 +44,12 @@ WIKI = os.path.join(DATA, "hsr_relics_wiki.json")
 FAMILIES = {
     "Cavern Relic": {
         "section": "relics",
-        "schema": "Relic Sets",
+        "schema": "Relic",
         "out": os.path.join(DATA, "hsr_relics_import.json"),
     },
     "Planar Ornament": {
         "section": "planar-ornaments",
-        "schema": "Planar Ornaments",
+        "schema": "Planar Ornament",
         "out": os.path.join(DATA, "hsr_ornaments_import.json"),
     },
 }
