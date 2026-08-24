@@ -8,6 +8,12 @@ that you load in the admin bulk-import screen yourself, so a person is in front
 of every write to production data. The scripts only ever read external sources
 (the Honkai: Star Rail wiki) and write files.
 
+**The data files are gitignored**, so a fresh clone finds this directory almost
+empty. That is expected: the sources are scraped third-party content and the
+outputs are large, so they stay local and you regenerate them with the scripts
+below. Only this README and `scaling_extraction_fixtures.json` (a test fixture
+`web/src/lib/skillScaling.test.ts` reads) are tracked.
+
 ## Importing
 
 Upload an `*_import.json` at **Admin → Items → Import**.

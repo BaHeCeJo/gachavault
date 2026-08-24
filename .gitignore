@@ -38,3 +38,10 @@ secrets/
 # Python bytecode from the seed/transform scripts
 __pycache__/
 *.pyc
+
+# Seed data - scraped caches and import files, local-only. Two exceptions:
+# the README documents how to run the pipeline, and the scaling fixtures are a
+# hand-written test fixture that skillScaling.test.ts reads in CI.
+seed_data/*
+!seed_data/README.md
+!seed_data/scaling_extraction_fixtures.json
