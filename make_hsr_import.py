@@ -17,6 +17,14 @@ writes:
 
   seed_data/hsr_banner_art.txt
       Banner slug -> wiki art URL, for uploading art separately.
+
+CAUTION: hsr_warps.json is behind the import files it produces. Re-running this
+today rebuilds hsr_events_import.json with 108 runs where the built file has
+136 — the cache covers character warps only, and the built file also carries
+the light cone warps (Cauldron Contrivance, Contract Zero, ...). Re-scrape the
+warp history before re-running, or you will silently drop 42 runs. Anything
+that only needs to *read* the runs should read hsr_events_import.json instead,
+which is what make_hsr_versions.py does.
 """
 
 import io
