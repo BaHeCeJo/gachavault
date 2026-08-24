@@ -93,10 +93,14 @@ def build(wiki):
         }
         if entry.get("release_version"):
             data["release_version"] = entry["release_version"]
+        # Joined, not left as lists: no field type stores an array of plain
+        # strings. The closest is a multi-value attribute, which stores
+        # attribute keys and needs every value creating in admin first — worth
+        # doing for tags once they drive filtering, but a text field until then.
         if entry.get("sources"):
-            data["sources"] = entry["sources"]
+            data["sources"] = ", ".join(entry["sources"])
         if entry.get("utilities"):
-            data["tags"] = entry["utilities"]
+            data["tags"] = ", ".join(entry["utilities"])
 
         rows.append({
             "game": GAME,
