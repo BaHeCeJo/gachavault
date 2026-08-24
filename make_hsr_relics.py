@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""Build the Honkai: Star Rail relic set import file.
+"""Build the Honkai: Star Rail relic set import files.
 
 Reads seed_data/hsr_relics_wiki.json (see fetch_hsr_relic_wiki.py) and writes
-seed_data/hsr_relics_import.json — one row per set:
+one file per family, because they are separate sections on the site:
 
-  {game, section, schema, slug, data} — name, type, rarity, set bonuses and
-  the pieces that make up the set.
+  seed_data/hsr_relics_import.json      32 Cavern Relics    -> `relics`
+  seed_data/hsr_ornaments_import.json   28 Planar Ornaments -> `planar-ornaments`
+
+Each row is {game, section, schema, slug, data} — name, rarity, set bonuses and
+the pieces that make up the set.
 
 Two of the fields are shaped as lists of {type, name, description} rows rather
 than flat strings, matching the character `kit` and light cone `effect` fields.
@@ -32,13 +35,24 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "seed_data")
 GAME = "honkai-star-rail"
 WIKI = os.path.join(DATA, "hsr_relics_wiki.json")
-OUT = os.path.join(DATA, "hsr_relics_import.json")
 
-SECTION = "relics"
-SCHEMA = "Relic Sets"
-
-# The site writes types as lowercase keys the way it does paths and elements.
-TYPE_KEYS = {"Cavern Relic": "cavern_relic", "Planar Ornament": "planar_ornament"}
+# Cavern Relics and Planar Ornaments are separate sections, not one section
+# with a type field. They are separate equipment categories in-game, farmed in
+# different places, and only cavern sets have a 4-piece bonus -- a field that
+# would be null for every ornament. Until faceted filtering exists a shared
+# section could not be narrowed to one family anyway.
+FAMILIES = {
+    "Cavern Relic": {
+        "section": "relics",
+        "schema": "Relic Sets",
+        "out": os.path.join(DATA, "hsr_relics_import.json"),
+    },
+    "Planar Ornament": {
+        "section": "planar-ornaments",
+        "schema": "Planar Ornaments",
+        "out": os.path.join(DATA, "hsr_ornaments_import.json"),
+    },
+}
 
 
 def slugify(name):
@@ -67,7 +81,7 @@ def build(wiki):
     for name in sorted(wiki):
         entry = wiki[name]
         kind = entry.get("type")
-        if kind not in TYPE_KEYS:
+        if kind not in FAMILIES:
             problems.append("%s: unknown type %r" % (name, kind))
             continue
 
@@ -79,7 +93,8 @@ def build(wiki):
         rarities = entry.get("rarities") or []
         data = {
             "name": name,
-            "relic_type": TYPE_KEYS[kind],
+            # No relic_type field: the section already says which family this
+            # is, so storing it again would be a second source of truth.
             # The top rarity is the one a set is farmed at; the full span is
             # kept alongside it because low-rarity drops still exist in-game.
             "rarity": str(max(rarities)) if rarities else "",
@@ -104,8 +119,8 @@ def build(wiki):
 
         rows.append({
             "game": GAME,
-            "section": SECTION,
-            "schema": SCHEMA,
+            "section": FAMILIES[kind]["section"],
+            "schema": FAMILIES[kind]["schema"],
             "slug": slugify(name),
             "data": data,
         })
@@ -123,7 +138,6 @@ def build(wiki):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--wiki", default=WIKI)
-    ap.add_argument("--out", default=OUT)
     args = ap.parse_args()
 
     wiki = json.load(io.open(args.wiki, encoding="utf-8"))
@@ -131,22 +145,21 @@ def main():
     if problems:
         raise SystemExit("\n".join("!! " + p for p in problems))
 
-    rows.sort(key=lambda r: r["slug"])
-    with io.open(args.out, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(rows, f, ensure_ascii=False, indent=1)
-        f.write("\n")
+    for kind, family in FAMILIES.items():
+        payload = sorted(
+            (r for r in rows if r["section"] == family["section"]),
+            key=lambda r: r["slug"],
+        )
+        with io.open(family["out"], "w", encoding="utf-8", newline="\n") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=1)
+            f.write("\n")
 
-    by_type = {}
-    for r in rows:
-        k = r["data"]["relic_type"]
-        by_type[k] = by_type.get(k, 0) + 1
-    four_pc = sum(1 for r in rows for b in r["data"]["set_bonus"] if b["type"] == "4-Piece")
-    print("%-30s %d rows" % (os.path.basename(args.out), len(rows)))
-    print("  type:    %s" % ", ".join("%s %d" % (k, by_type[k]) for k in sorted(by_type)))
-    print("  bonuses: %d sets with a 4-piece, %d pieces total"
-          % (four_pc, sum(len(r["data"]["pieces"]) for r in rows)))
-    print("  tagged:  %d sets carry the wiki's utility tags"
-          % sum(1 for r in rows if r["data"].get("tags")))
+        four_pc = sum(1 for r in payload for b in r["data"]["set_bonus"] if b["type"] == "4-Piece")
+        pieces = sum(len(r["data"]["pieces"]) for r in payload)
+        print("%-30s %d rows  (section %s)"
+              % (os.path.basename(family["out"]), len(payload), family["section"]))
+        print("  %d with a 4-piece bonus, %d pieces, %d tagged"
+              % (four_pc, pieces, sum(1 for r in payload if r["data"].get("tags"))))
 
 
 if __name__ == "__main__":

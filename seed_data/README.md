@@ -121,14 +121,15 @@ it skipped, and asserts no two versions overlap.
 
 ```
 hsr_relics_wiki.json ─> make_hsr_relics.py ─> hsr_relics_import.json
-        ^
+        ^                                        hsr_ornaments_import.json
         └── fetch_hsr_relic_wiki.py
 ```
 
 | File | |
 |---|---|
 | `hsr_relics_wiki.json` | **Cache.** Relic Set Infoboxes for the 60 sets in `Category:Relic Sets`: type, pieces, 2pc/4pc bonuses, rarity span, drop sources and the wiki's own utility tags. |
-| `hsr_relics_import.json` | **Output.** 60 rows — 32 Cavern Relics, 28 Planar Ornaments — for a `relics` section using a `Relic Sets` schema. |
+| `hsr_relics_import.json` | **Output.** 32 Cavern Relics, for a `relics` section using a `Relic Sets` schema. |
+| `hsr_ornaments_import.json` | **Output.** 28 Planar Ornaments, for a `planar-ornaments` section using a `Planar Ornaments` schema. |
 
 Unlike the other two sections there is no pasted catalog, so the fetch both
 discovers the set list and caches it.
@@ -138,13 +139,22 @@ a Cavern Relic has four pieces and both bonuses, a Planar Ornament has two and
 only a 2-piece. The build treats a cavern set missing its 4-piece as a failure
 and an ornament missing one as correct.
 
+**They are two sections, not one with a type field.** They are separate
+equipment categories in-game, farmed in different places, and only cavern sets
+have a 4-piece bonus — as one section that field would be null for all 28
+ornaments. A shared section could not be narrowed to one family either, since
+faceted filtering does not exist yet. No `relic_type` field is stored: the
+section already says which family a set belongs to.
+
 `set_bonus` and `pieces` are lists of `{type, name, description}` rows, the same
 shape as the character `kit` and light cone `effect` fields, so the detail-page
 block that renders those renders relics with no new component.
 
-The section and its schema do not exist yet — create them in admin before the
-first upload, with `relic_type`, `rarity`, `rarity_range`, `set_bonus`,
-`pieces`, `release_version`, `sources` and `tags`.
+Neither section exists yet — create both in admin before the first upload. They
+share one field list: `name` (text), `rarity` (attribute, `attribute_type:
+rarity`, reusing the values light cones already store), `rarity_range` (text),
+`set_bonus` (skilllist), `pieces` (skilllist), `release_version` (text),
+`sources` (text), `tags` (text). Both are **not collectable**.
 
 ## Honkai: Star Rail — materials and ascension
 
