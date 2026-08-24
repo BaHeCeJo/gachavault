@@ -146,6 +146,46 @@ The section and its schema do not exist yet — create them in admin before the
 first upload, with `relic_type`, `rarity`, `rarity_range`, `set_bonus`,
 `pieces`, `release_version`, `sources` and `tags`.
 
+## Honkai: Star Rail — materials and ascension
+
+```
+hsr_ascension_wiki.json ─> make_hsr_materials.py ─> hsr_materials_import.json
+        ^                                           hsr_ascension_import.json
+        └── fetch_hsr_ascension_wiki.py             hsr_stats_import.json (parked)
+```
+
+| File | |
+|---|---|
+| `hsr_ascension_wiki.json` | **Cache.** Per character: base stats at every breakpoint, the six ascension costs, and the two trace totals. Plus `_materials`, the infobox of every item any character references. |
+| `hsr_materials_import.json` | **Output.** 132 rows for a `materials` section — 102 Trace Materials, 29 Character Ascension Materials, Credits. |
+| `hsr_ascension_import.json` | **Output.** 85 enrichment rows adding `ascension_cost` and `trace_cost` to characters that already exist. Import with **Update them**. |
+| `hsr_stats_import.json` | **Parked.** 85 rows of base HP/ATK/DEF/SPD. Needs the table field from `feature/leveling-table-field`; uploading before that merges stores opaque JSON. |
+
+**This is the only fetch that reads rendered HTML.** A character page states its
+whole progression as two Lua template calls — `{{Character Ascensions and
+Stats|Acheron}}` and `{{Trace Upgrades|Acheron}}` — so the wikitext holds no
+numbers at all and `action=parse` is the only way to reach them. That makes it
+the most fragile of the pipelines: a skin change on the wiki breaks it where a
+wikitext change would not.
+
+Two card layouts exist in that HTML and both are handled: ascension cells put
+the quantity in the caption, total-cost blocks put it in a `card-text` span and
+the name in the caption. The item name comes from the anchor `title` either way.
+Each step is also rendered twice, once for desktop and once in a `mobile-only`
+row, so the first occurrence wins.
+
+There are exactly two trace totals per character — one for the Basic ATK trace,
+one for any other trace — because that is what the wiki states, not because the
+parse stops early.
+
+The build asserts that every material a character asks for has a catalog row, so
+an ascension cost can never name an item the site has no page for.
+
+Upload the materials before the character enrichment, so the names the costs
+mention already resolve. The `materials` section and its `Materials` schema
+(`rarity`, `material_type`, `description`, `source`) need creating in admin
+first.
+
 ## Profile text — both sections
 
 ```
@@ -191,8 +231,10 @@ python make_hsr_characters.py      # -> hsr_characters_import.json
 python make_hsr_import.py          # -> banners + events  (see the caution above)
 python make_hsr_relics.py          # -> hsr_relics_import.json
 python make_hsr_versions.py        # -> hsr_versions_import.json
+python make_hsr_materials.py       # -> materials + ascension costs (+ parked stats)
 
 python fetch_hsr_light_cone_wiki.py                       # refresh the cone cache
 python fetch_hsr_character_wiki.py --chars <names.json>    # refresh the kit cache
 python fetch_hsr_relic_wiki.py                            # refresh the relic cache
+python fetch_hsr_ascension_wiki.py                        # refresh the ascension cache
 ```
