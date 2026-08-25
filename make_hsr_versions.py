@@ -1,25 +1,32 @@
 #!/usr/bin/env python3
-"""Build a patch timeline out of the warp runs.
+"""Build a patch timeline for the calendar.
 
-The calendar already offers a "version" filter next to "banner", but nothing
-has ever written an event of that type, so the filter is there and empty. Every
-run in seed_data/hsr_events_import.json carries its version and phase in the
-event's `data`, which is enough to derive one row per version.
+The calendar has filtered on an `event_type` of `version` since it shipped,
+with nothing ever writing one.
 
-Reads seed_data/hsr_events_import.json — not hsr_warps.json, which is the older
-and thinner of the two; see the caution in make_hsr_import.py — and writes:
+Reads two files:
 
-  seed_data/hsr_versions_import.json
-      One row per game version, spanning its warp phases. Upload it at
-      /admin/events/import. It references nothing, so it can go before or
-      after the runs.
+  seed_data/hsr_versions_wiki.json   the Version Infobox per version -- the
+                                     real patch name and release date
+  seed_data/hsr_events_import.json   the warp runs, for the phase count and to
+                                     sanity-check the dates
 
-A version's span is derived: it opens with its first phase and closes when its
-last phase does. That start is knowingly approximate — a patch goes live a few
-hours before its first warp, after maintenance — but the warp history is the
-only source cached here, so the alternative is inventing times. Every row says
-so in `data.derived_from`, so a real patch-note time can overwrite it later
-without guessing which rows were estimates.
+and writes seed_data/hsr_versions_import.json. Upload at
+**Admin -> Events -> Import**; it references nothing, so the order against the
+runs does not matter.
+
+A version now starts on its stated release date rather than whenever its first
+warp opened, and ends when the next version starts, so the timeline tiles with
+no gaps or overlaps. The last version is the exception: nothing follows it yet,
+so it ends with its final warp.
+
+Two honesty notes carried in each row's `data`:
+
+  * `release_date` is a date, not a timestamp. The wiki does not state the hour
+    an update goes live, so the start is midnight in the game's UTC+8.
+  * if a version's own first warp somehow opens before that, the start is
+    clamped back to the warp -- a version must never begin after a banner it
+    contains. The build prints every clamp.
 
     python make_hsr_versions.py
 """
@@ -28,12 +35,17 @@ import argparse
 import io
 import json
 import os
+from datetime import datetime, timedelta
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "seed_data")
 GAME = "honkai-star-rail"
 EVENTS = os.path.join(DATA, "hsr_events_import.json")
+WIKI = os.path.join(DATA, "hsr_versions_wiki.json")
 OUT = os.path.join(DATA, "hsr_versions_import.json")
+
+# The game's own clock. Release dates are stated as plain dates in it.
+GAME_UTC_OFFSET = 8
 
 
 def version_slug(version):
@@ -45,23 +57,28 @@ def version_slug(version):
     return "version-" + "".join(c if c.isalnum() else "-" for c in version).strip("-")
 
 
-def build(events):
-    spans, problems, skipped = {}, [], []
+def release_start(release_date):
+    """"2026-07-15" -> the UTC instant of midnight UTC+8 on that day."""
+    midnight = datetime.strptime(release_date, "%Y-%m-%d")
+    return (midnight - timedelta(hours=GAME_UTC_OFFSET)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def warp_spans(events):
+    """Per version: earliest start, latest end, and how many phases it ran."""
+    spans, skipped = {}, []
     for e in events:
         if e.get("event_type") != "banner":
             continue
         version = (e.get("data") or {}).get("version")
         if not version:
-            problems.append("%s: no version" % e.get("slug"))
             continue
         if not e.get("start_at") or not e.get("end_at"):
             # Open-ended runs are the collaboration warps, which the wiki
-            # publishes with `time_end = none` and no version of their own — so
-            # the version they carry here was inferred by the scraper and is
-            # not trustworthy. Two Fate collab runs starting 2025-07-11 are
-            # labelled 4.4, a patch from a year later, which would drag that
-            # version's span back twelve months. A run that cannot close a
-            # version does not get to open one either.
+            # publishes with `time_end = none` and no version of their own -- so
+            # the version they carry here was inferred by the scraper and is not
+            # trustworthy. Two Fate collab runs starting 2025-07-11 are labelled
+            # 4.4, a patch from a year later. A run that cannot close a version
+            # does not get to place one either.
             skipped.append(e.get("slug"))
             continue
         span = spans.setdefault(version, {"start": e["start_at"], "end": e["end_at"], "phases": set()})
@@ -70,39 +87,77 @@ def build(events):
         phase = (e.get("data") or {}).get("phase")
         if phase is not None:
             span["phases"].add(phase)
+    return spans, skipped
+
+
+def build(events, versions):
+    spans, skipped = warp_spans(events)
+    problems, clamped = [], []
+
+    dated = []
+    for version, meta in versions.items():
+        if not meta.get("release_date"):
+            problems.append("%s: no release date" % version)
+            continue
+        dated.append((release_start(meta["release_date"]), version, meta))
+    dated.sort()
 
     rows = []
-    for version, span in sorted(spans.items(), key=lambda kv: kv[1]["start"]):
-        phases = len(span["phases"])
+    for i, (start, version, meta) in enumerate(dated):
+        span = spans.get(version) or {}
+
+        # A version must never begin after a banner it contains.
+        if span.get("start") and span["start"] < start:
+            clamped.append("%s (%s -> %s)" % (version, start[:10], span["start"][:10]))
+            start = span["start"]
+
+        # Versions are contiguous: one ends where the next begins. Only the
+        # newest has nothing after it, so it falls back to its last warp.
+        if i + 1 < len(dated):
+            end = dated[i + 1][0]
+        else:
+            end = span.get("end")
+            if not end:
+                problems.append("%s: newest version has no warp end to close on" % version)
+                continue
+
+        phases = len(span.get("phases") or ())
+        patch = meta.get("patch_title")
         rows.append({
             "game": GAME,
             "event_type": "version",
             "slug": version_slug(version),
-            "title": "Version %s" % version,
-            "description": "Version %s update, %d phase%s of warps."
-            % (version, phases, "" if phases == 1 else "s"),
-            "start_at": span["start"],
-            "end_at": span["end"],
+            "title": "Version %s: %s" % (version, patch) if patch else "Version %s" % version,
+            "description": "%s. %s"
+            % (patch or "Version %s" % version,
+               "%d phase%s of warps." % (phases, "" if phases == 1 else "s") if phases
+               else "No warps recorded."),
+            "start_at": start,
+            "end_at": end,
             "timezone": "UTC+8",
             "is_published": True,
             "data": {
                 "version": version,
+                "patch_title": patch,
+                "release_date": meta["release_date"],
                 "phases": phases,
                 "source": "honkai-star-rail.fandom.com",
-                "derived_from": "warp phase times",
+                "derived_from": "wiki release_date at 00:00 UTC+8; ends at the next version",
             },
         })
-    return rows, problems, skipped
+    return rows, problems, skipped, clamped
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--events", default=EVENTS)
+    ap.add_argument("--wiki", default=WIKI)
     ap.add_argument("--out", default=OUT)
     args = ap.parse_args()
 
     events = json.load(io.open(args.events, encoding="utf-8"))
-    rows, problems, skipped = build(events)
+    versions = json.load(io.open(args.wiki, encoding="utf-8"))
+    rows, problems, skipped, clamped = build(events, versions)
 
     with io.open(args.out, "w", encoding="utf-8", newline="\n") as f:
         json.dump(rows, f, ensure_ascii=False, indent=1)
@@ -120,6 +175,9 @@ def main():
         print("  span:    %s -> %s" % (rows[0]["start_at"][:10], rows[-1]["end_at"][:10]))
         print("  phases:  %d runs across %d versions"
               % (sum(r["data"]["phases"] for r in rows), len(rows)))
+    if clamped:
+        print("  clamped %d version start%s back to their first warp: %s"
+              % (len(clamped), "" if len(clamped) == 1 else "s", ", ".join(clamped)))
     if skipped:
         print("  skipped %d open-ended run%s (no reliable version): %s"
               % (len(skipped), "" if len(skipped) == 1 else "s", ", ".join(skipped)))

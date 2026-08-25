@@ -98,18 +98,33 @@ built file instead — which is what `make_hsr_versions.py` does.
 ## Honkai: Star Rail — versions
 
 ```
-hsr_events_import.json ─> make_hsr_versions.py ─> hsr_versions_import.json
+hsr_versions_wiki.json ─┐
+        ^               ├─> make_hsr_versions.py ─> hsr_versions_import.json
+        │               │
+ fetch_hsr_version_wiki.py
+hsr_events_import.json ─┘
 ```
 
 The calendar has filtered on an `event_type` of `version` since it shipped, with
-nothing ever writing one. Each run already carries its version and phase, so one
-row per version is derivable: it opens with its first phase and closes with its
-last. Upload at **Admin → Events → Import**; it references nothing, so the order
-against the runs does not matter.
+nothing ever writing one. Upload at **Admin → Events → Import**; it references
+nothing, so the order against the runs does not matter.
 
-The start is knowingly approximate — a patch goes live a few hours before its
-first warp, after maintenance — so every row records `data.derived_from`, and a
-real patch-note time can replace it later without guessing which were estimates.
+Each version takes its **real patch name and release date** from the wiki's
+Version Infobox — "Version 4.4: In Ravages Does the Whistle Sound", released
+2026-07-15 — rather than a generic label and a date inferred from when the first
+warp opened. The warp runs are still read, for the phase count and to check the
+dates against each other.
+
+A version ends where the next one begins, so the timeline tiles with no gaps or
+overlaps; the newest version has nothing after it and ends with its last warp.
+The build asserts contiguity.
+
+Two approximations remain, both recorded in `data.derived_from`: the wiki states
+a release *date* and not the hour an update goes live, so the start is midnight
+in the game's UTC+8; and if a version's own first warp somehow opens before
+that, the start is clamped back to the warp, because a version must never begin
+after a banner it contains. Exactly one version clamps today (1.0). Every clamp
+is printed.
 
 Open-ended runs are excluded. The wiki publishes collaboration warps with
 `time_end = none` and no version of their own, so the version they carry was
@@ -246,4 +261,5 @@ python fetch_hsr_light_cone_wiki.py                       # refresh the cone cac
 python fetch_hsr_character_wiki.py --chars <names.json>    # refresh the kit cache
 python fetch_hsr_relic_wiki.py                            # refresh the relic cache
 python fetch_hsr_ascension_wiki.py                        # refresh the ascension cache
+python fetch_hsr_version_wiki.py                          # refresh the version infoboxes
 ```
