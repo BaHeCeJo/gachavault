@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useGames, useEvents } from "@/hooks/queries";
 import { BannerShowcase } from "@/components/BannerShowcase";
-import type { CalendarEvent } from "@/lib/events";
+import { type CalendarEvent, currentCycleStart, inCurrentCycle } from "@/lib/events";
 
 interface GameOption {
   slug: string;
@@ -31,6 +31,27 @@ export default function BannersPage() {
   };
 
   const { data: events = [] as CalendarEvent[], isLoading, isError } = useEvents(params, locale);
+
+  // Same cut as the calendar: "current" is this patch cycle and what has been
+  // announced after it. Without it the collaboration warps the wiki publishes
+  // with no end date are still listed as running years later.
+  const { data: startedVersions = [] as CalendarEvent[] } = useEvents(
+    { ...(gameSlug ? { game: gameSlug } : {}), event_type: "version", to: nowIso },
+    locale,
+  );
+
+  const cycleStart = useMemo(
+    () => currentCycleStart(startedVersions, nowIso),
+    [startedVersions, nowIso],
+  );
+
+  const visibleEvents = useMemo(
+    () =>
+      scope === "current"
+        ? events.filter((e: CalendarEvent) => inCurrentCycle(e, cycleStart, nowIso))
+        : events,
+    [events, cycleStart, scope, nowIso],
+  );
 
   const selectClass =
     "rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-200 focus:border-amber-500/60 focus:outline-none";
@@ -71,7 +92,7 @@ export default function BannersPage() {
         </div>
       </div>
 
-      <BannerShowcase events={events} isLoading={isLoading} isError={isError} />
+      <BannerShowcase events={visibleEvents} isLoading={isLoading} isError={isError} />
     </main>
   );
 }

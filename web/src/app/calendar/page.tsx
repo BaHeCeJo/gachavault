@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useGames, useEvents } from "@/hooks/queries";
 import { CalendarView } from "@/components/CalendarView";
-import type { CalendarEvent } from "@/lib/events";
+import { type CalendarEvent, currentCycleStart, inCurrentCycle } from "@/lib/events";
 
 interface GameOption {
   slug: string;
@@ -34,6 +34,30 @@ export default function CalendarPage() {
   };
 
   const { data: events = [] as CalendarEvent[], isLoading, isError } = useEvents(params, locale);
+
+  // Versions tile the timeline back to back, so the newest one that has already
+  // started marks where the current patch cycle begins. `to` gives every
+  // version started so far; the latest per game is the live one.
+  const { data: startedVersions = [] as CalendarEvent[] } = useEvents(
+    { ...(gameSlug ? { game: gameSlug } : {}), event_type: "version", to: nowIso },
+    locale,
+  );
+
+  const cycleStart = useMemo(
+    () => currentCycleStart(startedVersions, nowIso),
+    [startedVersions, nowIso],
+  );
+
+  // "Current" means this patch cycle and what has been announced after it, not
+  // everything the API has not ruled out. See inCurrentCycle for why that is
+  // not the same thing.
+  const visibleEvents = useMemo(
+    () =>
+      scope === "current"
+        ? events.filter((e: CalendarEvent) => inCurrentCycle(e, cycleStart, nowIso))
+        : events,
+    [events, cycleStart, scope, nowIso],
+  );
 
   const selectClass =
     "rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-200 focus:border-amber-500/60 focus:outline-none";
@@ -88,7 +112,7 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      <CalendarView events={events} isLoading={isLoading} isError={isError} />
+      <CalendarView events={visibleEvents} isLoading={isLoading} isError={isError} />
     </main>
   );
 }

@@ -267,3 +267,43 @@ export function formatDateRange(e: CalendarEvent, locale: string): string {
   const { start, end } = effectiveTimes(e);
   return formatRange(start, end, locale);
 }
+
+// ── Current patch cycle ──────────────────────────────────────────────────────
+// The events API keeps an event in "current" while it has not ended, and an
+// event with no end date never ends. The wiki publishes collaboration warps
+// with `time_end = none`, so runs from years ago stay permanently current and,
+// because results sort by start ascending, sit at the top of the timeline
+// forever. Versions tile the calendar back to back, which gives a better
+// definition of "now": the patch cycle that is running.
+
+/** Per game, the start of the newest version that has already begun.
+ *
+ *  Pass versions the API has filtered to `to = now`; anything later than `now`
+ *  is ignored anyway, so an unfiltered list is also safe. */
+export function currentCycleStart(versions: CalendarEvent[], nowIso: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const v of versions) {
+    if (v.start_at > nowIso) continue;
+    const seen = out[v.game_slug];
+    if (!seen || v.start_at > seen) out[v.game_slug] = v.start_at;
+  }
+  return out;
+}
+
+/** Whether an event belongs to the current cycle or to what comes after it.
+ *
+ *  True if it started this cycle (which covers everything announced for later),
+ *  or if it is genuinely still running — a limited event that straddles a
+ *  version bump is still current. An open-ended event from an older cycle is
+ *  not "still running", it is undated, so it fails both tests. A game with no
+ *  version timeline has nothing to measure against and keeps everything. */
+export function inCurrentCycle(
+  event: CalendarEvent,
+  cycleStart: Record<string, string>,
+  nowIso: string,
+): boolean {
+  const start = cycleStart[event.game_slug];
+  if (!start) return true;
+  if (event.start_at >= start) return true;
+  return event.end_at !== null && event.end_at >= nowIso;
+}
