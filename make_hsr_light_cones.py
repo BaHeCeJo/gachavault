@@ -66,6 +66,16 @@ RAW = os.path.join(DATA, "hsr_light_cones_raw.txt")
 OUT = os.path.join(DATA, "hsr_light_cones_import.json")
 WIKI = os.path.join(DATA, "hsr_light_cones_wiki.json")
 
+# Profile text — the blurb, flavour quote, release and voice actors. Cached by
+# fetch_hsr_profiles.py; see seed_data/README.md.
+PROFILES = os.path.join(DATA, "hsr_profiles.json")
+
+
+def profile_fields(profiles, name, keys):
+    """The non-empty profile values for one item, ready to merge into its row."""
+    p = (profiles or {}).get(name) or {}
+    return {k: p[k] for k in keys if p.get(k)}
+
 # The site writes the Hunt without its article; the game's attribute key has it.
 PATH_KEYS = {
     "abundance": "abundance",
@@ -270,6 +280,8 @@ def main():
 
     with io.open(WIKI, encoding="utf-8") as f:
         wiki_effects = json.load(f)
+    with io.open(PROFILES, encoding="utf-8") as f:
+        profiles = json.load(f)["light_cones"]
 
     with io.open(RAW, encoding="utf-8") as f:
         entries = parse(f.read())
@@ -284,6 +296,7 @@ def main():
         if not e["stats"]:
             placeholder.append(e["name"])
         data = {"name": e["name"], "rarity": e["rarity"], "path": e["path"]}
+        data.update(profile_fields(profiles, e["name"], ("description", "release_version")))
         row = effect_row_from_wiki(e["name"], wiki_effects.get(e["name"]) or {})
         if row:
             data["effect"] = [row]
@@ -298,7 +311,10 @@ def main():
             {
                 "game": GAME,
                 "section": "light-cones",
-                "schema": "Light Cones",
+                # Section plural, schema singular. The importer resolves a
+                # schema by exact name, so this has to spell it the way admin
+                # does.
+                "schema": "Light Cone",
                 "slug": e["slug"],
                 # HP/ATK/DEF stay out — see the module docstring.
                 "data": data,

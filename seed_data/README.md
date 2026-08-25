@@ -8,6 +8,12 @@ that you load in the admin bulk-import screen yourself, so a person is in front
 of every write to production data. The scripts only ever read external sources
 (the Honkai: Star Rail wiki) and write files.
 
+**The data files are gitignored**, so a fresh clone finds this directory almost
+empty. That is expected: the sources are scraped third-party content and the
+outputs are large, so they stay local and you regenerate them with the scripts
+below. Only this README and `scaling_extraction_fixtures.json` (a test fixture
+`web/src/lib/skillScaling.test.ts` reads) are tracked.
+
 ## Importing
 
 Upload an `*_import.json` at **Admin → Items → Import**.
@@ -80,6 +86,153 @@ hsr_warps.json ─> make_hsr_import.py ─> hsr_banners_import.json
 `hsr_warps.json` is a cached scrape of the wiki's warp history. Run times are
 converted from the wiki's GMT+8 to UTC and characters resolved to item slugs.
 
+Upload the banners at **Admin → Items → Import** first and the events at
+**Admin → Events → Import** second: every run points at a banner preset by slug.
+
+**The cache is behind its own output.** `hsr_warps.json` holds 108 character
+warps; `hsr_events_import.json` holds 136, because it was built from a scrape
+that also covered the light cone warps. Re-running `make_hsr_import.py` today
+silently drops those 42 runs. Re-scrape the warp history first, or read the
+built file instead — which is what `make_hsr_versions.py` does.
+
+## Honkai: Star Rail — versions
+
+```
+hsr_versions_wiki.json ─┐
+        ^               ├─> make_hsr_versions.py ─> hsr_versions_import.json
+        │               │
+ fetch_hsr_version_wiki.py
+hsr_events_import.json ─┘
+```
+
+The calendar has filtered on an `event_type` of `version` since it shipped, with
+nothing ever writing one. Upload at **Admin → Events → Import**; it references
+nothing, so the order against the runs does not matter.
+
+Each version takes its **real patch name and release date** from the wiki's
+Version Infobox — "Version 4.4: In Ravages Does the Whistle Sound", released
+2026-07-15 — rather than a generic label and a date inferred from when the first
+warp opened. The warp runs are still read, for the phase count and to check the
+dates against each other.
+
+A version ends where the next one begins, so the timeline tiles with no gaps or
+overlaps; the newest version has nothing after it and ends with its last warp.
+The build asserts contiguity.
+
+Two approximations remain, both recorded in `data.derived_from`: the wiki states
+a release *date* and not the hour an update goes live, so the start is midnight
+in the game's UTC+8; and if a version's own first warp somehow opens before
+that, the start is clamped back to the warp, because a version must never begin
+after a banner it contains. Exactly one version clamps today (1.0). Every clamp
+is printed.
+
+Open-ended runs are excluded. The wiki publishes collaboration warps with
+`time_end = none` and no version of their own, so the version they carry was
+inferred by the scraper and is wrong: the two Fate collab runs starting
+2025-07-11 are labelled 4.4, a patch a year later. The build prints which runs
+it skipped, and asserts no two versions overlap.
+
+## Honkai: Star Rail — relics
+
+```
+hsr_relics_wiki.json ─> make_hsr_relics.py ─> hsr_relics_import.json
+        ^                                        hsr_ornaments_import.json
+        └── fetch_hsr_relic_wiki.py
+```
+
+| File | |
+|---|---|
+| `hsr_relics_wiki.json` | **Cache.** Relic Set Infoboxes for the 60 sets in `Category:Relic Sets`: type, pieces, 2pc/4pc bonuses, rarity span, drop sources and the wiki's own utility tags. |
+| `hsr_relics_import.json` | **Output.** 32 Cavern Relics, for a `relics` section using a `Relic` schema. |
+| `hsr_ornaments_import.json` | **Output.** 28 Planar Ornaments, for a `planar-ornaments` section using a `Planar Ornament` schema. |
+
+Unlike the other two sections there is no pasted catalog, so the fetch both
+discovers the set list and caches it.
+
+`type` is what separates the two families, and it is read rather than inferred:
+a Cavern Relic has four pieces and both bonuses, a Planar Ornament has two and
+only a 2-piece. The build treats a cavern set missing its 4-piece as a failure
+and an ornament missing one as correct.
+
+**They are two sections, not one with a type field.** They are separate
+equipment categories in-game, farmed in different places, and only cavern sets
+have a 4-piece bonus — as one section that field would be null for all 28
+ornaments. A shared section could not be narrowed to one family either, since
+faceted filtering does not exist yet. No `relic_type` field is stored: the
+section already says which family a set belongs to.
+
+`set_bonus` and `pieces` are lists of `{type, name, description}` rows, the same
+shape as the character `kit` and light cone `effect` fields, so the detail-page
+block that renders those renders relics with no new component.
+
+Both sections exist on the site. They share one field list: `name` (text), `rarity` (attribute, `attribute_type:
+rarity`, reusing the values light cones already store), `rarity_range` (text),
+`set_bonus` (skilllist), `pieces` (skilllist), `release_version` (text),
+`sources` (text), `tags` (text). Both are **not collectable**.
+
+## Honkai: Star Rail — materials and ascension
+
+```
+hsr_ascension_wiki.json ─> make_hsr_materials.py ─> hsr_materials_import.json
+        ^                                           hsr_ascension_import.json
+        └── fetch_hsr_ascension_wiki.py             hsr_stats_import.json (parked)
+```
+
+| File | |
+|---|---|
+| `hsr_ascension_wiki.json` | **Cache.** Per character: base stats at every breakpoint, the six ascension costs, and the two trace totals. Plus `_materials`, the infobox of every item any character references. |
+| `hsr_materials_import.json` | **Output.** 132 rows for a `materials` section — 102 Trace Materials, 29 Character Ascension Materials, Credits. |
+| `hsr_ascension_import.json` | **Output.** 85 enrichment rows adding `ascension_cost` and `trace_cost` to characters that already exist. Import with **Update them**. |
+| `hsr_stats_import.json` | **Parked.** 85 rows of base HP/ATK/DEF/SPD. Needs the table field from `feature/leveling-table-field`; uploading before that merges stores opaque JSON. |
+
+**This is the only fetch that reads rendered HTML.** A character page states its
+whole progression as two Lua template calls — `{{Character Ascensions and
+Stats|Acheron}}` and `{{Trace Upgrades|Acheron}}` — so the wikitext holds no
+numbers at all and `action=parse` is the only way to reach them. That makes it
+the most fragile of the pipelines: a skin change on the wiki breaks it where a
+wikitext change would not.
+
+Two card layouts exist in that HTML and both are handled: ascension cells put
+the quantity in the caption, total-cost blocks put it in a `card-text` span and
+the name in the caption. The item name comes from the anchor `title` either way.
+Each step is also rendered twice, once for desktop and once in a `mobile-only`
+row, so the first occurrence wins.
+
+There are exactly two trace totals per character — one for the Basic ATK trace,
+one for any other trace — because that is what the wiki states, not because the
+parse stops early.
+
+The build asserts that every material a character asks for has a catalog row, so
+an ascension cost can never name an item the site has no page for.
+
+Upload the materials before the character enrichment, so the names the costs
+mention already resolve. The `materials` section and its `Material` schema exist on the site; the
+importer resolves a schema by exact name, so these files must keep spelling
+them the way admin does.
+
+## Profile text — both sections
+
+```
+hsr_profiles.json ─> merged into both import files by their make_ scripts
+        ^
+        └── fetch_hsr_profiles.py
+```
+
+One pass over the item pages themselves, for the fields describing what an item
+*is* rather than what it does: the blurb, the flavour quote, the release version
+and date, and the four voice actors. These sit behind the Overview, Lore,
+Release and Voice Actors blocks, which rendered empty on every character but one.
+
+`release_version` comes from the "Released in Version X" categories rather than
+from each page's own category list — the API caps categories per request, not
+per page, so a bulk query returns almost none. Walking the ~30 version
+categories is both complete and cheaper.
+
+The file also carries `_faction`, `_species` and `_world` for a later pass.
+Those three are **attribute** fields, and an attribute value that does not exist
+on the game renders as raw text rather than a pill, so they need their values
+creating in admin before they can be imported.
+
 ## Shared
 
 `scaling_extract.py` lifts per-level values out of prose and leaves a `{token}`
@@ -99,8 +252,14 @@ ten minutes. Rebuilding from cache is instant:
 ```bash
 python make_hsr_light_cones.py     # -> hsr_light_cones_import.json
 python make_hsr_characters.py      # -> hsr_characters_import.json
-python make_hsr_import.py          # -> banners + events
+python make_hsr_import.py          # -> banners + events  (see the caution above)
+python make_hsr_relics.py          # -> hsr_relics_import.json
+python make_hsr_versions.py        # -> hsr_versions_import.json
+python make_hsr_materials.py       # -> materials + ascension costs (+ parked stats)
 
 python fetch_hsr_light_cone_wiki.py                       # refresh the cone cache
 python fetch_hsr_character_wiki.py --chars <names.json>    # refresh the kit cache
+python fetch_hsr_relic_wiki.py                            # refresh the relic cache
+python fetch_hsr_ascension_wiki.py                        # refresh the ascension cache
+python fetch_hsr_version_wiki.py                          # refresh the version infoboxes
 ```
