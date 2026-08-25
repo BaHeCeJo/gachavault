@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { availabilityOf, type CalendarEvent } from "@/lib/events";
+import {
+  availabilityOf,
+  currentCycleStart,
+  inCurrentCycle,
+  type CalendarEvent,
+} from "@/lib/events";
 
 const NOW = new Date("2026-08-13T12:00:00Z").getTime();
 const DAY = 86_400_000;
@@ -52,5 +57,83 @@ describe("availabilityOf", () => {
     const result = availabilityOf([run("permanent", -5, null)], NOW);
     expect(result?.state).toBe("active");
     expect(result?.run.end_at).toBeNull();
+  });
+});
+
+// ── Current patch cycle ──────────────────────────────────────────────────────
+
+const NOW_ISO = new Date(NOW).toISOString();
+
+const ev = (
+  slug: string,
+  startDays: number,
+  endDays: number | null,
+  game = "honkai-star-rail",
+): CalendarEvent =>
+  ({
+    id: slug,
+    slug,
+    game_slug: game,
+    start_at: at(startDays),
+    end_at: endDays === null ? null : at(endDays),
+    server_times: [],
+    featured_items: [],
+  }) as unknown as CalendarEvent;
+
+describe("currentCycleStart", () => {
+  it("picks the newest version that has already started", () => {
+    const versions = [ev("v1", -80, -40), ev("v2", -40, -1), ev("v3", -1, 40)];
+    expect(currentCycleStart(versions, NOW_ISO)["honkai-star-rail"]).toBe(at(-1));
+  });
+
+  it("ignores versions that have not started yet", () => {
+    const versions = [ev("v3", -1, 40), ev("v4", 40, 80)];
+    expect(currentCycleStart(versions, NOW_ISO)["honkai-star-rail"]).toBe(at(-1));
+  });
+
+  it("tracks each game separately", () => {
+    const cycles = currentCycleStart(
+      [ev("hsr", -5, 30), ev("gi", -20, 20, "genshin-impact")],
+      NOW_ISO,
+    );
+    expect(cycles).toEqual({ "honkai-star-rail": at(-5), "genshin-impact": at(-20) });
+  });
+
+  it("is empty when no version has started", () => {
+    expect(currentCycleStart([ev("v4", 10, 50)], NOW_ISO)).toEqual({});
+  });
+});
+
+describe("inCurrentCycle", () => {
+  const cycle = { "honkai-star-rail": at(-5) };
+
+  it("keeps an event that started this cycle", () => {
+    expect(inCurrentCycle(ev("now", -2, 10), cycle, NOW_ISO)).toBe(true);
+  });
+
+  it("keeps an announced future event", () => {
+    expect(inCurrentCycle(ev("soon", 20, 40), cycle, NOW_ISO)).toBe(true);
+  });
+
+  it("keeps an older event that is genuinely still running", () => {
+    expect(inCurrentCycle(ev("straddler", -20, 5), cycle, NOW_ISO)).toBe(true);
+  });
+
+  it("drops an older event that has ended", () => {
+    expect(inCurrentCycle(ev("done", -60, -30), cycle, NOW_ISO)).toBe(false);
+  });
+
+  // The case this exists for: the wiki publishes collaboration warps with
+  // `time_end = none`, so the API never stops calling them current.
+  it("drops an older open-ended event", () => {
+    expect(inCurrentCycle(ev("excalibur-excelsior", -400, null), cycle, NOW_ISO)).toBe(false);
+  });
+
+  it("keeps an open-ended event that started this cycle", () => {
+    expect(inCurrentCycle(ev("live", -1, null), cycle, NOW_ISO)).toBe(true);
+  });
+
+  it("keeps everything for a game with no version timeline", () => {
+    expect(inCurrentCycle(ev("orphan", -400, null, "arknights"), cycle, NOW_ISO)).toBe(true);
   });
 });
