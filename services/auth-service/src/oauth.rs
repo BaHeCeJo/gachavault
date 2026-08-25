@@ -84,8 +84,7 @@ fn verify_oauth_state(secret: &str, state_param: &str) -> bool {
 fn base64url_encode(data: &[u8]) -> String {
     const CHARSET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
     let mut out = String::with_capacity(data.len().div_ceil(3) * 4);
-    let chunks = data.chunks_exact(3);
-    let remainder = chunks.remainder().to_vec();
+    let (chunks, remainder) = data.as_chunks::<3>();
     for chunk in chunks {
         let b = ((chunk[0] as u32) << 16) | ((chunk[1] as u32) << 8) | (chunk[2] as u32);
         out.push(CHARSET[((b >> 18) & 0x3F) as usize] as char);
@@ -309,4 +308,45 @@ pub async fn google_callback(
 fn google_redirect_uri() -> String {
     let base = std::env::var("BACKEND_URL").unwrap_or_else(|_| "http://localhost:3001".into());
     format!("{}/api/v1/auth/google/callback", base)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// RFC 4648 §10 vectors, which cover all three remainder cases (0, 1 and 2
+    /// bytes over a group of three), plus two that exercise the URL-safe
+    /// alphabet itself — standard base64 would emit `+` and `/` there.
+    #[test]
+    fn base64url_encode_matches_rfc4648_without_padding() {
+        let cases: &[(&[u8], &str)] = &[
+            (b"", ""),
+            (b"f", "Zg"),
+            (b"fo", "Zm8"),
+            (b"foo", "Zm9v"),
+            (b"foob", "Zm9vYg"),
+            (b"fooba", "Zm9vYmE"),
+            (b"foobar", "Zm9vYmFy"),
+            (&[0xfb, 0xff], "-_8"),
+            (&[0xfb, 0xff, 0xbf], "-_-_"),
+        ];
+        for (input, want) in cases {
+            assert_eq!(&base64url_encode(input), want, "input {input:?}");
+        }
+    }
+
+    /// PKCE requires the verifier to stay in the unreserved set, so a byte that
+    /// would encode to `+` or `/` in standard base64 must never appear.
+    #[test]
+    fn base64url_encode_never_emits_padding_or_unsafe_chars() {
+        for len in 0..64usize {
+            let data: Vec<u8> = (0..len).map(|i| (i * 7 + 251) as u8).collect();
+            let out = base64url_encode(&data);
+            assert!(!out.contains(['=', '+', '/']), "len {len} produced {out:?}");
+            assert_eq!(
+                out.len(),
+                data.len().div_ceil(3) * 4 - (3 - data.len() % 3) % 3
+            );
+        }
+    }
 }
